@@ -3015,8 +3015,11 @@ if {[info exists argv0] && [info script] eq $argv0} {
             set help [::shtmlview::shtmlview .help \
                       -tablesupport true -home $docu]
             $help browse [$help cget -home]
-            pack $help -fill both -expand true -side left
+            pack $help -fill both -expand true -side top
         } elseif {[file exists [lindex $argv 0]]} {
+            set help [::shtmlview::shtmlview .help \
+                      -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
+            pack $help -side top -fill both -expand true 
             $help browse [lindex $argv 0] 
         } else {
             puts "Error: file [lindex $argv 0] does not exists\n or unknown option [lindex $argv 0]"
