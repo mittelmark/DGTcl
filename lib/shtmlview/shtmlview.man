@@ -1,19 +1,19 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin shtmlview n 0.9.0]
+[manpage_begin shtmlview n 0.9.1]
 [see_also text]
 [keywords text]
 [keywords html]
 [keywords widget]
-[copyright {2018, Detlef Groth <detlef@dgroth.de>}]
+[copyright {2018-2020, Detlef Groth <detlef@dgroth.de>}]
 [copyright {1995-1999, Stephen Uhler}]
 [copyright {2000, Clif Flynt}]
 [copyright {2009, Robert Heller}]
 
-[moddesc   {text widget with basic support for html markup rendering}]
+[moddesc   {basic html viewer widget}]
 [titledesc {text widget with basic support for html markup rendering}]
 [require Tk]
 [require snit]
-[require shtmlview::shtmlview [opt 0.9.0]]
+[require shtmlview::shtmlview [opt 0.9.1]]
 [description]
 
 The [package shtmlview::shtmlview] package provides the shtmlview::shtmlview widget which
