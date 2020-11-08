@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Mon Nov 2 20:24:20 2020
-#  Last Modified : <201108.0934>
+#  Last Modified : <201108.0941>
 #
 #  Description	 : creating flow charts using natural coordinate systems like 
 #                  chessboard coordinates  
@@ -421,7 +421,11 @@ snit::widget chesschart {
 #'  # canvas commands still work
 #'  $chart move all -10 -40
 #'  $chart itemconfigure oval -fill "light blue"
-#   $chart delete B9
+#'  $chart delete B9
+#'  catch {
+#'    # requires canvas::snap from tklib
+#'    $chart figure chesschart-example.png
+#'  }
 #' ```
 #'
 #' ![chesschart example](chesschart-example.png "chesschart example")

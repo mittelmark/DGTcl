@@ -190,6 +190,11 @@ methods used by the chesschart user to create flow charts.
  # canvas commands still work
  $chart move all -10 -40
  $chart itemconfigure oval -fill "light blue"
+ $chart delete B9
+ catch {
+   # requires canvas::snap from tklib
+   $chart figure chesschart-example.png
+ }
 ```
 
 ![chesschart example](chesschart-example.png "chesschart example")

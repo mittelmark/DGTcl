@@ -166,7 +166,12 @@ chesschart pathName ?canvasoptions chesschartoption?</code></pre>
  $chart arrow A8 B10 -cut 0.7
  # canvas commands still work
  $chart move all -10 -40
- $chart itemconfigure oval -fill &quot;light blue&quot;</code></pre>
+ $chart itemconfigure oval -fill &quot;light blue&quot;
+ $chart delete B9
+ catch {
+   # requires canvas::snap from tklib
+   $chart figure chesschart-example.png
+ }</code></pre>
 <figure>
 <img src="chesschart-example.png" title="chesschart example" alt="chesschart example" /><figcaption>chesschart example</figcaption>
 </figure>
