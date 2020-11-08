@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Dr. Detlef Groth, Schwielowsee, Germany" />
+  <title>chesschart 0.1</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="dgw.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">chesschart 0.1</h1>
+<p class="author">Dr. Detlef Groth, Schwielowsee, Germany</p>
+</header>
+<h2 id="name"><a>NAME</a></h2>
+<p><strong>chesschart</strong> - Tk widget based on canvas to create flow charts using natural coordinate systems like the chessboard coordinate system.</p>
+<h2 id="table-of-contents"><a name='toc'>TABLE OF CONTENTS</a></h2>
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a>
+<ul>
+<li><a href="#arrow">arrow</a></li>
+<li><a href="#figure">figure</a></li>
+<li><a href="#line">line</a></li>
+<li><a href="#mv">mv</a></li>
+<li><a href="#oval">oval</a></li>
+<li><a href="#rect">rect</a></li>
+<li><a href="#text">text</a></li>
+</ul></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE AND COPYRIGHT</a></li>
+</ul>
+<h2 id="synopsis"><a name='synopsis'>SYNOPSIS</a></h2>
+<pre><code>package require chesschart
+chesschart pathName ?canvasoptions chesschartoption?</code></pre>
+<h2 id="description"><a name='description'>DESCRIPTION</a></h2>
+<p><strong>chesschart</strong> - is a flowchart widget based on the standard Tk canvas. Items like rectangles, ovals, circles, text, arrow, lines can be placed on the widget using an easy to remember coordiate system such as chess coordinates. As the <strong>chesschart</strong> widget is based on the Tk canvas widget, all options and methods of the widget are support. See below for additional options and methods.</p>
+<h2 id="command"><a name='command'>COMMAND</a></h2>
+<p><strong>chesschart</strong> <em>pathName ?canvas options chesschart options?</em></p>
+<blockquote>
+<p>Creates and configures a new <strong>chesschart</strong> widget using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+<h2 id="widget-options"><a name='options'>WIDGET OPTIONS</a></h2>
+<p>The <strong>chesschart</strong> widget is Tk widget based on the standard Tk canvas widget. It therefore supports the standard options and commands of the canvas widget.</p>
+<p>The <strong>chesschart</strong> widgets modifies a few default options of the canvas widget and adds the following options in addition to the options available for the canvas widget:</p>
+<p><strong>-bg</strong> <em>color</em></p>
+<blockquote>
+<p>Default background for the canvas widget, here changed to white.</p>
+</blockquote>
+<p><strong>-color</strong> <em>color</em></p>
+<blockquote>
+<p>Default color for oval and rect items, default: salmon</p>
+</blockquote>
+<p><strong>-font</strong> <em>fontname</em></p>
+<blockquote>
+<p>Default font for the text items on the widget, defaults to times16, there are as well times10, times12, times14, times16, times18, times20, times24, times28 available. During construction the widget as well tries to initialize nice the true type font Purisa which must be downloaded from the internet: <a href="https://www.onlinewebfonts.com/fonts/purisa">https://www.onlinewebfonts.com/fonts/purisa</a> to use it. It is then available as well in the sizes purisa10 … purisa28.</p>
+</blockquote>
+<p><strong>-ovalheight</strong> <em>px</em></p>
+<blockquote>
+<p>Default height of oval items, default: 70. If height and weight of ovals are the same you get an circle. If height and weight of ovals are the same you get an circle. Default for both is 70 - you get a circle per default.</p>
+</blockquote>
+<p><strong>-ovalwidth</strong> <em>px</em></p>
+<blockquote>
+<p>Default width of oval items, default: 70.</p>
+</blockquote>
+<p><strong>-rectheight</strong> <em>px</em></p>
+<blockquote>
+<p>Default height of rect items, default: 40.</p>
+</blockquote>
+<p><strong>-rectwidth</strong> <em>px</em></p>
+<blockquote>
+<p>Default width of rect items, default: 80.</p>
+</blockquote>
+<h2 id="widget-commands"><a name='commands'>WIDGET COMMANDS</a></h2>
+<p>Each <strong>chesschart</strong> widgets supports all the Tk canvas commands. Further additional methods are implmented which should be the major methods used by the chesschart user to create flow charts.</p>
+<p><a name='arrow'><em>pathName</em> <strong>arrow</strong> <em>pos1 pos2 args</em></a></p>
+<blockquote>
+<p>Draw and arrow from pos1 to pos2. The resulting arrow gets the tags <em>arrow</em> and <em>pos1pos2</em>. Positions can be currently only given using chessboard coordinates like A1, C7, etc.</p>
+</blockquote>
+<blockquote>
+<p>The following additional arguments to modify the item are available:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><em>-width px</em> - the strength of the arrow, default: 3</li>
+<li><em>-cut 0.0..1.0</em> - the position of the arrow head, default: 0.6</li>
+</ul>
+</blockquote>
+<p><a name='figure'><em>pathName</em> <strong>figure</strong> <em>filename.png</em></a></p>
+<blockquote>
+<p>Saves the current items on the canvas into the given filename. This functionality currently with Tcl/Tk 8.6 requires the additional package <em>canvas::snap</em> from the <em>tklib</em> library.</p>
+</blockquote>
+<p><a name='line'><em>pathName</em> <strong>line</strong> <em>pos1 pos2 args</em></a></p>
+<blockquote>
+<p>Draw an line from pos1 to pos2. The resulting line gets the tags <em>line</em> and <em>pos1pos2</em>. Positions can be currently only given using chessboard coordinates like A1, C7, etc.</p>
+</blockquote>
+<blockquote>
+<p>The following additional argument to modify the line item is available:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><em>-width px</em> - the strength of the arrow, default: 3</li>
+</ul>
+</blockquote>
+<p><a name='mv'><em>pathName</em> <strong>mv</strong> <em>pos1 pos2</em></a></p>
+<blockquote>
+<p>Moves the items at pos1 to pos2. To gradually shift items you should use the canvas move command (not really recommended). Items at a certain coordinates have the position as an added tag. Positions can be currently only given using chessboard coordinates like A1, C7, etc. The position tag will be updated automatically.</p>
+</blockquote>
+<p><a name='oval'><em>pathName</em> <strong>oval</strong> <em>pos args</em></a></p>
+<blockquote>
+<p>Adds a oval or cicle on the coordinate given with pos. Positions can be currently only given using chessboard coordinates like A1, C7, etc. The coordinate system is currently limited to the letters A-L and the numbers 1-10. To get a circle the options <em>-height</em> and <em>-width</em> should have the same value. The resulting oval gets the tags <em>oval</em> and <em>pos</em>. The following additional arguments to modify the item are available:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><em>-color colorname</em> - fill color of the item, default: salmon</li>
+<li><em>-height px</em> - height of the oval, default: widget -ovalheight option</li>
+<li><em>-width px</em> - width of the oval, default: widget -ovalwidth option</li>
+<li><em>-text text</em> - display text in the rectangle, default the given position, to display nothing give an empty string as argument</li>
+</ul>
+</blockquote>
+<p><a name="rect"><em>pathName</em> <strong>rect</strong> <em>pos args</em></a></p>
+<blockquote>
+<p>Adds a rectangle on the coordinate given with pos. Positions can be currently only given using chessboard coordinates like A1, C7 etc. The coordinate system is currently limited to the letters A-L and the numbers 1-10. The resulting rectange gets the tags <em>rect</em> and <em>pos</em>. The following additional arguments to modify the item are available:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><em>-color colorname</em> - fill color of the item, default: salmon</li>
+<li><em>-height px</em> - height of the rectangle, default: widget -rectheight option</li>
+<li><em>-radius int</em> - for rounded corners the radius, the larger the more round, default: 10</li>
+<li><em>-round bool</em> - should the rectangle have rounded corners, default: false</li>
+<li><em>-width px</em> - width of the rectangle, default: widget -rectwidth option</li>
+<li><em>-text text</em> - display text in the rectangle, default the given position, to display nothing give an empty string as argument</li>
+</ul>
+</blockquote>
+<p><a name="test"><em>pathName</em> <strong>text</strong> <em>pos text</em></a></p>
+<blockquote>
+<p>At the coordinate given with pos place the given text, The resulting text gets the tags <em>text</em> and <em>pos</em>. Positions can be currently only given using chessboard coordinates like A1, C7, etc.</p>
+</blockquote>
+<h2 id="example"><a name='example'>EXAMPLE</a></h2>
+<pre><code> package require chesschart
+ 
+ set chart [chesschart .chart -rectwidth 100 -rectheight 50]
+ pack $chart -side top -fill both -expand true
+ $chart rect A8 -text Tcl/Tk
+ $chart rect C8
+ $chart oval C6 -text chesschart -width 120
+ $chart line A8 C6
+ $chart oval B10 -text tmdoc -width 120
+ $chart oval B9 -text del -color &quot;light blue&quot;
+ $chart arrow A8 B10 -cut 0.7
+ # canvas commands still work
+ $chart move all -10 -40
+ $chart itemconfigure oval -fill &quot;light blue&quot;</code></pre>
+<figure>
+<img src="chesschart-example.png" title="chesschart example" alt="chesschart example" /><figcaption>chesschart example</figcaption>
+</figure>
+<h2 id="demo"><a name='demo'>DEMO</a></h2>
+<p>Example code for this package can be executed by running this file using the following command line:</p>
+<pre><code>$ wish chesschart.tcl --demo</code></pre>
+<h2 id="todo"><a name='todo'>TODO</a></h2>
+<ul>
+<li>Other coordinate system likes WeekdayHour (Mo08, Sa10)</li>
+</ul>
+<h2 id="authors"><a name='authors'>AUTHORS</a></h2>
+<p>The <strong>chesschart</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+<h2 id="copyright"><a name='copyright'>COPYRIGHT</a></h2>
+<p>Copyright (c) 2020 Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+<h2 id="license"><a name='license'>LICENSE</a></h2>
+<p>Chesschart - Tcl/Tk widget to display flowcharts, version 0.1.</p>
+<p>Copyright (c) 2020 Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+<p>This library is free software; you can use, modify, and redistribute it for any purpose, provided that existing copyright notices are retained in all copies and that this notice is included verbatim in any distributions.</p>
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+</body>
+</html>
