@@ -202,17 +202,18 @@ Example code for this package can  be executed by running this file using the fo
 $ wish chesschart.tcl --demo
 ```
 
+## <a name='changes'>CHANGES</a>
+
+- Nov 2nd 2020 - project started
+- Nov 8th 2020 - version 0.1 released
+
 ## <a name='todo'>TODO</a>
 
 - Other coordinate system likes WeekdayHour (Mo08, Sa10)
 
-## <a name='authors'>AUTHORS</a>
+## <a name='authors'>AUTHOR</a>
 
 The **chesschart** widget was written by Detlef Groth, Schwielowsee, Germany.
-
-## <a name='copyright'>COPYRIGHT</a>
-
-Copyright (c) 2020 Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 
 ## <a name='license'>LICENSE</a>
 
