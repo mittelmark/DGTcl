@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="tmdoc::tmdoc 0.4 ">
+<meta name="author" content="Dr. Detlef Groth, Schwielowsee, Germany">
+<title>tmdoc::tmdoc 0.4 </title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+
+    <div class="title"><h1>tmdoc::tmdoc 0.4 </h1></div>
+    <div class="author"><h3>Dr. Detlef Groth, Schwielowsee, Germany</h3></div>
+    <div class="date"><h3>2020-11-09</h3></div>
+
+<h2><a>NAME</a></h2>
+
+<p><strong>tmdoc::tmdoc</strong>  - Literate Programming with Tcl and Markdown. 
+Flexible framework for mixing Markdown text and Tcl code for 
+automatic report generation. The results of the Tcl code evaluation 
+are embedded into the output document.</p>
+
+<h2><a name='toc'>TABLE OF CONTENTS</a></h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#format">BASIC FORMATTING</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE AND COPYRIGHT</a>
+</li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<p>Usage as package:</p>
+
+<pre class='synopsis'><code>package require tmdoc::tmdoc
+namespace import tmdoc::tmdoc
+tmdoc infile ?-outfile outputfile -mode tangle?
+</code></pre>
+
+<p>Usage as command line application:</p>
+
+<pre class='synopsis'><code>tclsh tmdoc.tcl infile ?--outfile outputfile --mode tangle?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>tmdoc::tmdoc</strong> is a tool for literate programming. It either evaluates Tcl code
+   embedded within Markdown documents in <em>weave</em> mode or it alternativly extracts 
+   Tcl code from such documents in <em>tangle</em> mode. The results of the Tcl code 
+   written in code chunks using backticks as code indicators oas well as the 
+   Tcl code can be displayed or hidden by setting code chunk options.
+   <em>tmdoc::tmdoc</em> can be used as Tcl package or standalone as a console application.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>tmdoc::tmdoc</strong> infile ?-outfile filename -mode weave|tangle?</p>
+
+<blockquote>
+<p>Reads the inputfile <em>infile</em> and either evaluates the Tcl code within '
+the code chunks in the <em>infile</em> document and adds the evaluation results if
+the given mode is <em>weave</em>, which is default. If the given mode is <em>tangle</em><br/>
+the tcl code within code chunks is written out. The output is either send to
+the <em>stdout</em> channel or to the given <em>outfile</em>. The following arguments or options can be given:</p>
+
+<ul>
+<li><em>infile</em> (mandatory) the file which contains Tcl code embedded within Markdown or LaTeX documents, usually the file has an extension <em>.tmd</em>, if you process LaTeX files, given them an extension <em>.tnw</em> or <em>.Tnw</em> or choose the -outfile option. </li>
+<li><em>-outfile filename</em> (optional) the file where the output is written to, if the file has the extension <em>.tex</em> the processing mode is LaTeX, default: <em>stdout</em>.</li>
+<li><em>-mode weave|tangle</em> (optional) either <em>weave</em> for evaluating the Tcl code or <em>tangle</em> for extracting the Tcl code, default: <em>weave</em>.</li></ul>
+
+
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code>package require tmdoc
+namespace import tmdoc::tmdoc
+tmdoc tmdoc-example.tmd --outfile tmdoc-example.md
+tmdoc tmdoc-example.tmd --mode tangle --outfile tmdoc-example.tcl
+</code></pre>
+
+<h2><a name='format'>BASIC FORMATTING</a></h2>
+
+<p>For a complete list of Markdown formatting commands consult the basic 
+Markdown syntax at <a href="https://daringfireball.net/projects/markdown/syntax">https://daringfireball.net</a>.</p>
+
+<h3><a>Code chunks</a></h3>
+
+<p>Tcl code is embedded as chunks into the Markdown documents using backticks. Code blocks are started with triple backticks and indicated with the the string &quot;tcl&quot; within curly braces. See the following example.</p>
+
+<pre><code> ```{tcl}
+ set x 1
+ ```
+</code></pre>
+
+<p>This would show both the Tcl code as well the output of the last statement.</p>
+
+<p>Within the curly braces a few chunk options can be placed in the form of <em>prop=value</em> like in the example below:</p>
+
+<pre><code> ```{tcl label=mlabel,echo=false,results=hide}
+ set x 1
+ ```
+</code></pre>
+
+<ul>
+<li><em>label=mlabel</em> option gives the chunk a label, sometimes useful for 
+   debugging or for embedding images. For this see below.</li>
+<li><em>echo=false</em> - hides the Tcl code in the output</li>
+<li><em>results=hide</em> did not show the output of the Tcl command
+</li></ul>
+
+<h3><a>Inline code chunks</a></h3>
+
+<p>Short Tcl codes can be as well evaluated within the standard text flow. For instance:</p>
+
+<pre><code> The current date is `tcl clock format [clock seconds] -format &quot;%Y-%m-%d&quot;`
+</code></pre>
+
+<p>Would insert the current date into the text. So text inline code chunks are possible using single backticks such as here <code>\</code>tcl set x` `.</p>
+
+<h3><a>Images</a></h3>
+
+<p>Inside standard code chunks as well images with Tcl can be generated with normal Tcl code.</p>
+
+<p>To support the standard chunk properties <em>fig=true</em>, optionally with <em>include=false</em> however a Tcl procedure proc must be provided. Below is an example to use the tklib package <em>canvas::snap</em> to create images using the Tk canvas.</p>
+
+<pre><code> ```{tcl}
+ package require Tk
+ package require canvas::snap
+ pack [canvas .c -background beige] \
+   -padx 5 -pady 5 -side top -fill both -expand yes
+ proc figure {outfile}
+    set img [canvas::snap .c]
+    $img write $outfile -format png
+ }
+ ```
+</code></pre>
+
+<p>After preparing the canvas and the figure procedure the canvas can be used for 
+making images like in the example below:</p>
+
+<pre><code> ```{tcl,fig=true,results=hide}
+ .c create rectangle 60 60 90 90  -fill blue
+ ```
+</code></pre>
+
+<p>The code above will create a canvas figure and embeds it automatically. 
+If you need more control on the figure placement you can 
+use the option <em>include=false</em></p>
+
+<pre><code> ```{tcl,label=mfig,fig=true,results=hide,include=false}
+ .c create rectangle 65 65 85 85  -fill blue
+ ```
+</code></pre>
+
+<p>You can now manually place the figure. The filename of the figure will 
+be automatically created, it is the basename of the tmd-file  and the label.
+So in principle: <code>basename-label.png</code>. You can embed the figure using Markdown 
+figure markup such as:</p>
+
+<pre><code>  ![](basename-label.png)
+</code></pre>
+
+<p>For a detailed tutorial on how to do literate programming with Tcl have a look at the <a href="tutorial/tmd.html">Tcl Markdown tutorial</a></p>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>The <em>tmdoc::tmdoc</em> package needs a working installation of Tcl8.6 or Tcl8.7. Tcl 8.4 and 8.5 might wortk but are untested and not supported.</p>
+
+<p>The <em>tmdoc::tmdoc</em> package can be installed either as command line application or as a Tcl module.</p>
+
+<p>Installation as command line application can be done by copying the <code>tmdoc.tcl</code> as 
+<code>tmdoc</code> to a directory which is in your executable path. You should make this file executable using <code>chmod</code>.</p>
+
+<p>Installation as Tcl module is achieved by copying the file <code>tmdoc.tcl</code> to a place 
+which is your Tcl module path as <code>tmdoc/tmdoc-0.3.tm</code> for instance. See the <a href="https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm">tm manual page</a></p>
+
+<p>Installation as Tcl package is done if you copy the <em>tmdoc</em> folder with all it's files to a path that belongs to the list of your Tcl library paths.</p>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains it's own documentation written in Markdown. 
+The documentation can be extracted by using the commandline swith <em>--man</em></p>
+
+<pre><code>tclsh tmdoc.tcl --man
+</code></pre>
+
+<p>The documentation can be converted to HTML, PDF or Unix manual pages with the 
+aid of a Markdown processor such as pandoc ot the Tcl application <a href="https://chiselapp.com/user/dgroth/repository/tclcode">mkdoc</a>. Here an example for the conversion using mkdoc</p>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="tutorial/tmd.html">tmdoc tutorial</a></li>
+<li><a href="https://chiselapp.com/user/dgroth/repository/tclcode">mkdoc</a> for embedding Markdown code into Tcl code as source code documentation.</li>
+<li><a href="https://pandoc.org/">pandoc</a> a universal document converter
+</li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-02-19 Release 0.1</li>
+<li>2020-02-21 Release 0.2
+<ul>
+<li>docu updates</li>
+<li>nonewline puts fix</li>
+<li><em>-outfile filename</em> option </li>
+<li><em>-mode tangle</em> option</li></ul>
+
+</li>
+<li>2020-02-23 Release 0.3
+<ul>
+<li>fix for puts into channels</li></ul>
+
+</li>
+<li>2020-11-09 Release 0.4
+<ul>
+<li>github release</li>
+<li>LaTeX support</li>
+<li>fig.width support LaTeX</li>
+<li>documentation fixes</li>
+<li>LaTeX sample document</li>
+<li>fix for inline code special markup using underlines</li>
+<li>other file type extensions for figure using ext option for code chunks
+</li></ul>
+
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>LaTeX mode if file extension is tnw intead of tmd (done)</li>
+<li>fig.width, fig.height options by using args argument in figure (for LaTeX done)</li>
+<li>your suggestions ...
+</li></ul>
+
+<h2><a name='authors'>AUTHOR(s)</a></h2>
+
+<p>The <strong>tmdoc::tmdoc</strong> package was written by Dr. Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='license'>LICENSE AND COPYRIGHT</a></h2>
+
+<p>Tcl Markdown processor tmdoc::tmdoc, version 0.4</p>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: &lt;detlef(at)dgroth(dot)de&gt;</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>
