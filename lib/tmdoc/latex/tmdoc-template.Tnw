@@ -1,0 +1,306 @@
+\documentclass[12pt]{scrartcl}
+
+% xelatex can use True Type fonts
+%\usepackage{fontspec} 
+%\setmainfont{Alegreya}
+%\setmainfont{Purisa}
+\usepackage{../tmdoc}
+
+\author{Detlef Groth}
+\title{Tmdoc LaTeX Template}
+\date{\today}
+
+\begin{document}
+
+\large
+\maketitle
+
+\tableofcontents
+
+\section{Color codes}
+
+Some notes about the color code:
+
+\begin{itemize}
+    \item red foreground: code written into the LaTeX document but not evaluated
+    \item grey background: code evaluated by Tcl if \textit{echo=true} (default)
+    \item blue background: Tcl output, the last statement of the code block is return automatically.
+    \item red background: error messages of the Tcl interpreter is shown
+\end{itemize}
+
+
+\section{Tcl code blocks}
+
+Code block start with triple codes at the line start:
+% spaces needed to avoid interpretation by tmdoc
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+     ```{tcl}
+     set x 1
+     ```    
+\end{Verbatim}
+
+Output: 
+
+```{tcl}
+set x 1
+```
+
+\noindent Showing the code can be hidden using \textit{echo=false} as option for the code chunk:
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+     ```{tcl echo=false}
+     set x 1
+     ```    
+\end{Verbatim}
+
+```{tcl echo=false}
+set x 1
+```
+The output can be as well hidden using the option \textit{results=hide}.
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+     ```{tcl echo=false,results=hide}
+     set x 3
+     ```    
+\end{Verbatim}
+
+```{tcl echo=false,results=hide}
+set x 3
+```
+
+Nothing will be displayed, the value of x is changed invisible.
+Alternatively you can return at the end of the code block an empty string.
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+     ```{tcl}
+     set x 4
+     return {}
+     ```    
+\end{Verbatim}
+
+```{tcl}
+set x 4
+return {}
+```
+
+\section{Tcl code blocks with puts}
+
+Puts works as well:
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+     ```{tcl echo=false}
+     set x 1
+     foreach i [list 1 2 3] {
+        puts {Hello World!}
+     }    
+     set x {} ;# supress return
+     ```    
+\end{Verbatim}
+
+\vspace{-0.3cm}
+```{tcl echo=false}
+set x 1
+foreach i [list 1 2 3] {
+    puts {Hello World!}
+}    
+set x {} ;# supress return
+```
+
+\section{Tcl inline codes}
+
+
+In standard text outside of code blocks as well short Tcl statements can be executed using single backticks: like this \texttt{\btick{}tcl code\btick}.
+
+\vspace{0.3cm}
+
+\noindent Here two examples in the following lines:
+
+\vspace{0.3cm}
+
+\noindent Tcl/Tk: \texttt{\btick{}tcl set tcl\_patchLevel\btick{ }}
+ produces ==> Tcl/Tk: `tcl set tcl_patchLevel`
+
+\vspace{0.3cm}
+ 
+\noindent and:
+
+\vspace{0.3cm}
+
+\noindent x is \texttt{\btick{}tcl set x 5\btick{ }}
+ produces ==> x is `tcl set x 5` ...
+
+
+\section{Images with Tcl}
+
+Images can be generated with Tcl in various ways:
+
+\begin{itemize}
+    \item with the canvas widget together with canvas::snap library from tklib
+    \item with tcl.gd
+    \item with other libraries (see for more at the end of this document)
+\end{itemize}
+
+Here an example were we create an image using a basic Tk installation which
+was programmed by Maurice Bredelet, code at
+\url{https://wiki.tcl-lang.org/page/Generating+a+color+image}:
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+    ```{tcl}
+    package require Tk
+    set size 128
+    ... see below
+    img put $pixels
+    img write test.png -format png 
+    ```
+\end{Verbatim}    
+
+```{tcl}
+package require Tk
+set size 128
+# create image
+image create photo img -width $size -height $size
+# compute colors
+set pixels {}
+set k [expr {128.0 / $size}]
+for {set i 0} {$i < $size} {incr i} {
+  set row {}
+  for {set j 0} {$j < $size} {incr j} {
+      set R [expr {int($i * 2 * $k)}]
+      set G [expr {int(($i + $j) * $k)}]
+      set B [expr {int($j * 2 * $k)}]
+      lappend row [format #%02x%02x%02x $R $G $B]
+   }
+  lappend pixels $row
+}
+img put $pixels
+img write test.png -format png 
+```
+
+You can then use the LaTeX command \textit{includegraphics} to place the figure.
+
+\includegraphics[width=5cm]{test.png}
+
+To avoid this manual writing of the file to the file system with a self
+selected name, we can give a code chunk option \textit{fig=true} together with
+a label. That is close to the approach R's well known Sweave and Knitr
+packages are using. To get this working, we have to create procedure with the
+name \textit{figure} before. Within this procedure we could use for instance
+the Tcl package \textit{canvas::snap} to select items from a canvas and save
+them to the file system. This \textit{figure} procedure must have as first
+argument a filename argument which is the filename wherein the file is saved.
+The extension png is automatically appended. To overwrite the png extension
+you have to use the chunk option \textit{ext}, for instance \textit{ext=pdf}
+will generate a filename with a pdf extension. It does not matter where this
+\textit{figure} procedure is declared it just must be there if you use the
+option \textit{fig=true}: You can as well redefine this procedure at any later
+tpoint to switch to an other graphical object or library.
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+    ```{tcl label=testimg,fig=true,fig.width=4cm}
+    proc figure {filename args} {
+        img write $filename -format png 
+    }
+    # set transparency
+    set s2 [expr {$size / 2}]
+    ... see below
+        }
+    }
+    ```
+\end{Verbatim}    
+
+```{tcl label=testimg,fig=true,fig.width=4cm}
+proc figure {filename args} {
+    img write $filename -format png 
+}
+# set transparency
+set s2 [expr {$size / 2}]
+for {set i 0} {$i < $s2} {incr i} {
+    set i2 [expr {$s2 - $i}]
+    for {set j 0} {$j < $size} {incr j} {
+        if {$j > $i2 && $j < $size - $i2} { 
+            img transparency set $j $i 1 
+        }
+    }
+}
+```
+
+If you use as well the option \textit{include=false} the automatic placement
+is avoided and you can again use the \textit{includegraphics} command of LaTeX
+to place the figure as you like. The filename you have to use in the LaTeX code consists of the basename of
+the LateX file and the label of the code chunk. So the filename for the following chunk is
+\textit{tmdoc-template-testimg2.png}
+
+\begin{Verbatim}[gobble=4,formatcom=\color{darkred}]
+    ```{tcl label=testimg3,fig=true,include=false}
+    for {} {$i < $size} {incr i} {
+        set i2 [expr {$i - $s2}]
+    ...
+    }
+    ```
+\end{Verbatim}    
+
+```{tcl label=testimg3,fig=true,include=false}
+for { } {$i < $size} {incr i} {
+    set i2 [expr {$i - $s2}]
+    for {set j 0} {$j < $size} {incr j} {
+        if {$j > $i2 && $j < $size - $i2} { 
+            img transparency set $j $i 1 
+        }
+    }
+}
+```
+
+\includegraphics[width=5cm]{tmdoc-template-testimg3.png}
+
+\section{Summary}
+
+\begin{itemize}
+    \item triple ticks code block \texttt{\btick\btick\btick{}tcl option=value ... code ... \btick\btick\btick}
+    \item single ticks with normal text \texttt{\btick{}tcl code\btick}
+\end{itemize}
+
+Chode chunk options:
+
+\begin{itemize}
+    \item \textit{label=labelname} - label for chunk, defaults to \textit{chunk-nn} where nn is the automatically generated chunk number, default chunk-nn
+    \item \textit{echo=true|false} - should the Tcl code from the code block be shown, default:  true
+    \item \textit{results=show|hide} - should the return value or puts output be shown or hidden, default: show
+    \item \textit{fig=true|false} - should procedure figure called at the end of the block, default: false
+    \item \textit{fig.width=12cm} - width for figure if \textit{include=true}, default: 12cm
+    \item \textit{include=true|false} - should the figure generated be included, default: true
+    \item \textit{ext=png|pdf} - file extension of the generated image file if \textit{fig=true}, default: png
+\end{itemize}
+
+
+Some Tcl packages to create figures are:
+
+\begin{itemize}
+    \item canvas::snap from Tklib \url{https://core.tcl-lang.org/tklib/home}
+    \item tcl.gd \url{https://github.com/flightaware/tcl.gd}
+    \item TclMagic \url{http://tclmagick.sourceforge.net/}
+    \item pdf4tcl \url{http://pdf4tcl.sourceforge.net/}
+    \item tclcairo \url{https://wiki.tcl-lang.org/page/tclcairo}
+\end{itemize}
+
+```{tcl results=hide,echo=false} 
+source ../tmdoc.tcl
+package require tmdoc::tmdoc
+```
+
+This document was created on `tcl clock format [clock seconds]` using Tcl/Tk `tcl set tcl_patchLevel` 
+with package \textit{tmdoc::tmdoc} `tcl package present tmdoc::tmdoc` on operating system `tcl set tcl_platform(osVersion)`.
+
+\vspace{0.3cm}
+To create process the PDF document document you should do the following coommands:
+
+\begin{verbatim}
+mkdir build
+cd build
+tclsh ../../tmdoc.tcl ../tmdoc-template.Tnw \
+    --outfile tmdoc-template.tex 
+pdflatex tmdoc-template.tex 
+pdflatex tmdoc-template.tex 
+\end{verbatim}
+
+\end{document}
