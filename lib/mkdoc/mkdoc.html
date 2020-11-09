@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="mkdoc::mkdoc 0.4">
+<meta name="author" content="Dr. Detlef Groth, Schwielowsee, Germany">
+<title>mkdoc::mkdoc 0.4</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+
+    <div class="title"><h1>mkdoc::mkdoc 0.4</h1></div>
+    <div class="author"><h3>Dr. Detlef Groth, Schwielowsee, Germany</h3></div>
+    <div class="date"><h3>2020-11-09</h3></div>
+
+<h2>NAME</h2>
+
+<p><strong>mkdoc::mkdoc</strong>  - Tcl package and command line application to extract and format 
+embedded programming documentation from source code files written in Markdown and 
+optionally converts them into HTML.</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a>
+<ul>
+<li><a href="#mkdoc">mkdoc::mkdoc</a></li>
+<li><a href="#run">mkdoc::run</a></li></ul>
+
+</li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#format">BASIC FORMATTING</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE AND COPYRIGHT</a>
+</li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<p>Usage as package:</p>
+
+<pre class='synopsis'><code>package require mkdoc::mkdoc
+mkdoc::mkdoc inputfile outputfile ?-html|-md|-pandoc -css file.css?
+</code></pre>
+
+<p>Usage as command line application for extraction of Markdown comments prefixed with <code>#'</code>:</p>
+
+<pre class='synopsis'><code>mkdoc inputfile outputfile ?--html|--md|--pandoc --css file.css?
+</code></pre>
+
+<p>Usage as command line application for conversion of Markdown to HTML:</p>
+
+<pre class='synopsis'><code>mkdoc inputfile.md outputfile.html ?--css file.css?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>mkdoc::mkdoc</strong>  extracts embedded Markdown documentation from source code files and  as well converts Markdown output to HTML if desired.
+The documentation inside the source code must be prefixed with the <code>#'</code> character sequence.
+The file extension of the output file determines the output format. File extensions can bei either <code>.md</code> for Markdown output or <code>.html</code> for html output. The latter requires the tcllib Markdown extension to be installed. If the file extension of the inputfile is <em>.md</em> and file extension of the output files is <em>.html</em> there will be simply a conversion from a Markdown to a HTML file.</p>
+
+<p>The file <code>mkdoc.tcl</code> can be as well directly used as a console application. An explanation on how to do this, is given in the section <a href="#install">Installation</a>.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><a name="mkdoc" />
+<strong>mkdoc::mkdoc</strong> <em>infile outfile ?-mode -css file.css?</em></p>
+
+<blockquote>
+<p>Extracts the documentation in Markdown format from <em>infile</em> and writes the documentation 
+   to <em>outfile</em> either in Markdown  or HTML format.</p>
+
+<ul>
+<li><em>-infile filename</em> - file with embedded markdown documentation</li>
+<li><em>-outfile filename</em> -  name of output file extension</li>
+<li><em>-html</em> - (mode) outfile should be a html file, not needed if the outfile extension is html</li>
+<li><em>-md</em> - (mode) outfile should be a Markdown file, not needed if the outfile extension is md</li>
+<li><em>-pandoc</em> - (mode) outfile should be a pandoc Markdown file with YAML header, needed even if the outfile extension is md</li>
+<li><em>-css cssfile</em> if outfile mode is html uses the given <em>cssfile</em>
+</li></ul>
+
+<p>If the <em>-mode</em> flag  (one of -html, -md, -pandoc) is not given, the output format is taken from the file extension of the output file, either <em>.html</em> for HTML or <em>.md</em> for Markdown format. This deduction from the filetype can be overwritten giving either <code>-html</code> or <code>-md</code> as command line flags. If as mode <code>-pandoc</code> is given, the Markdown markup code as well contains the YAML header.
+  If infile has the extension .md than conversion to html will be performed, outfile file extension
+  In this case must be .html. If output is html a <em>-css</em> flag can be given to use the given stylesheet file instead of the default style sheet embedded within the mkdoc code.</p>
+
+<p>Example:</p>
+
+<pre class='code'><code>package require mkdoc::mkdoc
+mkdoc::mkdoc mkdoc.tcl mkdoc.html
+mkdoc::mkdoc mkdoc.tcl mkdoc.rmd -md</code></pre>
+</blockquote>
+
+<p><a name="run" />
+<strong>mkdoc::run</strong> <em>infile</em></p>
+
+<blockquote>
+<p>Source the code in infile and runs the examples in the documentation section
+   written with Markdown documentation. Below follows an example section which can be
+   run with <code>tclsh mkdoc.tcl mkdoc.tcl -run</code></p>
+</blockquote>
+
+<h2><a name="example">EXAMPLE</a></h2>
+
+<pre><code>puts &quot;Hello mkdoc package&quot;
+puts &quot;I am in the example section&quot;
+</code></pre>
+
+<h2><a name='format'>BASIC FORMATTING</a></h2>
+
+<p>For a complete list of Markdown formatting commands consult the basic Markdown syntax at <a href="https://daringfireball.net/projects/markdown/syntax">https://daringfireball.net</a>. 
+Here just the most basic essentials  to create documentation are described.
+Please note, that formatting blocks in Markdown are separated by an empty line, and empty line in this documenting mode is a line prefixed with the <code>#'</code> and nothing thereafter.</p>
+
+<p><strong>Title and Author</strong></p>
+
+<p>Title and author can be set at the beginning of the documentation in a so called YAML header. 
+This header will be as well used by the document converter <a href="https://pandoc.org">pandoc</a>  to handle various options for later processing if you extract not HTML but Markdown code from your documentation.</p>
+
+<p>A YAML header starts and ends with three hyphens. Here is the YAML header of this document:</p>
+
+<pre><code>#' ---
+#' title: mkdoc - Markdown extractor and formatter
+#' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' ---
+</code></pre>
+
+<p>Those four lines produce the two lines on top of this document. You can extend the header if you would like to process your document after extracting the Markdown with other tools, for instance with Pandoc.</p>
+
+<p>You can as well specify an other style sheet, than the default by adding
+the following style information:</p>
+
+<pre><code>#' ---
+#' title: mkdoc - Markdown extractor and formatter
+#' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' output:
+#'   html_document:
+#'     css: tufte.css
+#' ---
+</code></pre>
+
+<p>Please note, that the indentation is required and it is two spaces.</p>
+
+<p><strong>Headers</strong></p>
+
+<p>Headers are prefixed with the hash symbol, single hash stands for level 1 heading, double hashes for level 2 heading, etc.
+Please note, that the embedded style sheet centers level 1 and level 3 headers, there are intended to be used
+for the page title (h1), author (h3) and date information (h3) on top of the page.</p>
+
+<pre><code>#' ## &lt;a name=&quot;sectionname&quot;&gt;Section title&lt;/a&gt;
+#'
+#' Some free text that follows after the required empty 
+#' line above ...
+</code></pre>
+
+<p>This produces a level 2 header. Please note, if you have a section name <code>synopsis</code> the code fragments thereafer will be hilighted different than the other code fragments. You should only use level 2 and 3 headers for the documentation. Level 1 header are reserved for the title.</p>
+
+<p><strong>Lists</strong></p>
+
+<p>Lists can be given either using hyphens or stars at the beginning of a line.</p>
+
+<pre><code>#' - item 1
+#' - item 2
+#' - item 3
+</code></pre>
+
+<p>Here the output:</p>
+
+<ul>
+<li>item 1</li>
+<li>item 2</li>
+<li>item 3
+</li></ul>
+
+<p>A special list on top of the help page could be the table of contents list. Here is an example:</p>
+
+<pre><code>#' ## Table of Contents
+#'
+#' - [Synopsis](#synopsis)
+#' - [Description](#description)
+#' - [Command](#command)
+#' - [Example](#example)
+#' - [Authors](#author)
+</code></pre>
+
+<p>This will produce in HTML mode a clickable hyperlink list. You should however create
+the name targets using html code like so:</p>
+
+<pre><code>## &lt;a name='synopsis'&gt;Synopsis&lt;/a&gt; 
+</code></pre>
+
+<p><strong>Hyperlinks</strong></p>
+
+<p>Hyperlinks are written with the following markup code:</p>
+
+<pre><code>[Link text](URL)
+</code></pre>
+
+<p>Let's link to the Tcler's Wiki:</p>
+
+<pre><code>[Tcler's Wiki](https://wiki.tcl-lang.org/)
+</code></pre>
+
+<p>produces: <a href="https://wiki.tcl-lang.org/">Tcler's Wiki</a></p>
+
+<p><strong>Indentations</strong></p>
+
+<p>Indentations are achieved using the greater sign:</p>
+
+<pre><code>#' Some text before
+#'
+#' &gt; this will be indented
+#'
+#' This will be not indented again
+</code></pre>
+
+<p>Here the output:</p>
+
+<p>Some text before</p>
+
+<blockquote>
+<p>this will be indented</p>
+</blockquote>
+
+<p>This will be not indented again</p>
+
+<p>Also lists can be indented:</p>
+
+<pre><code>&gt; - item 1
+  - item 2
+  - item 3
+</code></pre>
+
+<p>produces:</p>
+
+<blockquote>
+<ul>
+<li>item 1</li>
+<li>item 2</li>
+<li>item 3</li></ul>
+
+
+</blockquote>
+
+<p><strong>Fontfaces</strong></p>
+
+<p>Italic font face can be requested by using single stars or underlines at the beginning 
+and at the end of the text. Bold is achieved by dublicating those symbols:
+Monospace font appears within backticks.
+Here an example:</p>
+
+<pre><code>I am _italic_ and I am __bold__! But I am programming code: `ls -l`
+</code></pre>
+
+<blockquote>
+<p>I am <em>italic</em> and I am <strong>bold</strong>! But I am programming code: <code>ls -l</code></p>
+</blockquote>
+
+<p><strong>Code blocks</strong></p>
+
+<p>Code blocks can be started using either three or more spaces after the #' sequence 
+or by embracing the code block with triple backticks on top and on bottom. Here an example:</p>
+
+<pre><code>#' ```
+#' puts &quot;Hello World!&quot;
+#' ```
+</code></pre>
+
+<p>Here the output:</p>
+
+<pre><code>puts &quot;Hello World!&quot;
+</code></pre>
+
+<p><strong>Images</strong></p>
+
+<p>If you insist on images in your documentation, images can be embedded in Markdown with a syntax close to links.
+The links here however start with an exclamation mark:</p>
+
+<pre><code>![image caption](filename.png)
+</code></pre>
+
+<p>The source code of mkdoc.tcl is a good example for usage of this source code 
+annotation tool. Don't overuse the possibilities of Markdown, sometimes less is more. 
+Write clear and concise, don't use fancy visual effects.</p>
+
+<p><strong>Includes</strong></p>
+
+<p>mkdoc in contrast to standard markdown as well support includes. Using the <code>#' #include &quot;filename.md&quot;</code> syntax 
+it is possible to include other markdown files. This might be useful for instance to include the same 
+header or a footer in a set of related files.</p>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the Markdown package from tcllib to be installed.</p>
+
+<p>Installation as command line application can be done by copying the <code>mkdoc.tcl</code> as 
+<code>mkdoc</code> to a directory which is in your executable path. You should make this file executable using <code>chmod</code>. There exists as well a standalone script which does not need already installed tcllib package.  You can download this script named: <code>mkdoc-version.app</code> from the <a href="https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases">chiselapp release page</a>.</p>
+
+<p>Installation as Tcl module is achieved by copying the file <code>mkdoc.tcl</code> to a place 
+which is your Tcl module path as <code>mkdoc/mkdoc-0.1.tm</code> for instance. See the <a href="https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm">tm manual page</a></p>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a> for the Markdown and the textutil packages</li>
+<li><a href="https://chiselapp.com/user/dgroth/repository/tclcode">dgtools</a> project for example help page</li>
+<li><a href="https://pandoc.org">pandoc</a> - a universal document converter</li>
+<li><a href="https://github.com/apnadkarni/ruff">Ruff!</a> Ruff! documentation generator for Tcl using Markdown syntax as well
+</li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2019-11-19 Relase 0.1</li>
+<li>2019-11-22 Adding direct conversion from Markdown files to HTML files.</li>
+<li>2019-11-27 Documentation fixes</li>
+<li>2019-11-28 Kit version</li>
+<li>2019-11-28 Release 0.2 to fossil</li>
+<li>2019-12-06 Partial R-Roxygen/Markdown support</li>
+<li>2020-01-05 Documentation fixes and version information</li>
+<li>2020-02-02 Adding include syntax</li>
+<li>2020-02-26 Adding stylesheet option --css </li>
+<li>2020-02-26 Adding files pandoc.css and dgw.css</li>
+<li>2020-02-26 Making standalone file using pkgDeps and mk_tm</li>
+<li>2020-02-26 Release 0.3 to fossil</li>
+<li>2020-02-27 support for __DATE__, __PKGNAME__, __PKGVERSION__ macros  in Tcl code based on package provide line</li>
+<li>2020-09-01 Roxygen2 plugin</li>
+<li>2020-11-09 argument --run supprt</li>
+<li>2020-11-10 Release 0.4
+
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>extract Roxygen2 documentation codes from R files (done)</li>
+<li>standalone files using mk_tm module maker (done, just using cat ;)</li>
+<li>support for __PKGVERSION__ and __PKGNAME__ replacements at least in Tcl files and via command line for other file types (done)
+</li></ul>
+
+<h2><a name='authors'>AUTHOR(s)</a></h2>
+
+<p>The <strong>mkdoc::mkdoc</strong> package was written by Dr. Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='license'>LICENSE AND COPYRIGHT</a></h2>
+
+<p>Markdown extractor and converter mkdoc::mkdoc, version 0.4</p>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: &lt;detlef(at)dgroth(dot)de&gt;</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

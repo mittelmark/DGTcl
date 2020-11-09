@@ -1,0 +1,4865 @@
+#!/usr/bin/env tclsh
+# string.tcl --
+#
+#	Utilities for manipulating strings, words, single lines,
+#	paragraphs, ...
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2000      by Eric Melski <ericm@ajubasolutions.com>
+# Copyright (c) 2002      by Joe English <jenglish@users.sourceforge.net>
+# Copyright (c) 2001-2014 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+# 
+# RCS: @(#) $Id: string.tcl,v 1.2 2008/03/22 16:03:11 mic42 Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+
+namespace eval ::textutil::string {}
+
+# ### ### ### ######### ######### #########
+## API implementation
+
+# @c Removes the last character from the given <a string>.
+#
+# @a string: The string to manipulate.
+#
+# @r The <a string> without its last character.
+#
+# @i chopping
+
+proc ::textutil::string::chop {string} {
+    return [string range $string 0 [expr {[string length $string]-2}]]
+}
+
+# @c Removes the first character from the given <a string>.
+# @c Convenience procedure.
+#
+# @a string: string to manipulate.
+#
+# @r The <a string> without its first character.
+#
+# @i tail
+
+proc ::textutil::string::tail {string} {
+    return [string range $string 1 end]
+}
+
+# @c Capitalizes first character of the given <a string>.
+# @c Complementary procedure to <p ::textutil::uncap>.
+#
+# @a string: string to manipulate.
+#
+# @r The <a string> with its first character capitalized.
+#
+# @i capitalize
+
+proc ::textutil::string::cap {string} {
+    return [string toupper [string index $string 0]][string range $string 1 end]
+}
+
+# @c unCapitalizes first character of the given <a string>.
+# @c Complementary procedure to <p ::textutil::cap>.
+#
+# @a string: string to manipulate.
+#
+# @r The <a string> with its first character uncapitalized.
+#
+# @i uncapitalize
+
+proc ::textutil::string::uncap {string} {
+    return [string tolower [string index $string 0]][string range $string 1 end]
+}
+
+# @c Capitalizes first character of each word of the given <a sentence>.
+#
+# @a sentence: string to manipulate.
+#
+# @r The <a sentence> with the first character of each word capitalized.
+#
+# @i capitalize
+
+proc ::textutil::string::capEachWord {sentence} {
+    regsub -all {\S+} [string map {\\ \\\\ \$ \\$} $sentence] {[string toupper [string index & 0]][string range & 1 end]} cmd
+    return [subst -nobackslashes -novariables $cmd]
+}
+
+# Compute the longest string which is common to all strings given to
+# the command, and at the beginning of said strings, i.e. a prefix. If
+# only one argument is specified it is treated as a list of the
+# strings to look at. If more than one argument is specified these
+# arguments are the strings to be looked at. If only one string is
+# given, in either form, the string is returned, as it is its own
+# longest common prefix.
+
+proc ::textutil::string::longestCommonPrefix {args} {
+    return [longestCommonPrefixList $args]
+}
+
+proc ::textutil::string::longestCommonPrefixList {list} {
+    if {[llength $list] <= 1} {
+	return [lindex $list 0]
+    }
+
+    set list [lsort $list]
+    set min [lindex $list 0]
+    set max [lindex $list end]
+
+    # Min and max are the two strings which are most different. If
+    # they have a common prefix, it will also be the common prefix for
+    # all of them.
+
+    # Fast bailouts for common cases.
+
+    set n [string length $min]
+    if {$n == 0} {return ""}
+    if {0 == [string compare $min $max]} {return $min}
+
+    set prefix ""
+    set i 0
+    while {[string index $min $i] == [string index $max $i]} {
+	append prefix [string index $min $i]
+	if {[incr i] > $n} {break}
+    }
+    set prefix
+}
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::string {
+    # Export the imported commands
+
+    namespace export chop tail cap uncap capEachWord
+    namespace export longestCommonPrefix
+    namespace export longestCommonPrefixList
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::string 0.8
+# repeat.tcl --
+#
+#	Emulation of string repeat for older
+#	revisions of Tcl.
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2001-2006 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# RCS: @(#) $Id: repeat.tcl,v 1.1 2006/04/21 04:42:28 andreas_kupries Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+
+namespace eval ::textutil::repeat {}
+
+# ### ### ### ######### ######### #########
+
+namespace eval ::textutil::repeat {
+    variable HaveBuiltin [expr {![catch {string repeat a 1}]}]
+}
+
+if {0} {
+    # Problems with the deactivated code:
+    # - Linear in 'num'.
+    # - Tests for 'string repeat' in every call!
+    #   (Ok, just the variable, still a test every call)
+    # - Fails for 'num == 0' because of undefined 'str'.
+
+    proc textutil::repeat::StrRepeat { char num } {
+	variable HaveBuiltin
+	if { $HaveBuiltin == 0 } then {
+	    for { set i 0 } { $i < $num } { incr i } {
+		append str $char
+	    }
+	} else {
+	    set str [ string repeat $char $num ]
+	}
+	return $str
+    }
+}
+
+if {$::textutil::repeat::HaveBuiltin} {
+    proc ::textutil::repeat::strRepeat {char num} {
+	return [string repeat $char $num]
+    }
+
+    proc ::textutil::repeat::blank {n} {
+	return [string repeat " " $n]
+    }
+} else {
+    proc ::textutil::repeat::strRepeat {char num} {
+	if {$num <= 0} {
+	    # No replication required
+	    return ""
+	} elseif {$num == 1} {
+	    # Quick exit for recursion
+	    return $char
+	} elseif {$num == 2} {
+	    # Another quick exit for recursion
+	    return $char$char
+	} elseif {0 == ($num % 2)} {
+	    # Halving the problem results in O (log n) complexity.
+	    set result [strRepeat $char [expr {$num / 2}]]
+	    return "$result$result"
+	} else {
+	    # Uneven length, reduce problem by one
+	    return "$char[strRepeat $char [incr num -1]]"
+	}
+    }
+
+    proc ::textutil::repeat::blank {n} {
+	return [strRepeat " " $n]
+    }
+}
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::repeat {
+    namespace export strRepeat blank
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::repeat 0.7
+# trim.tcl --
+#
+#	Various ways of trimming a string.
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2000      by Eric Melski <ericm@ajubasolutions.com>
+# Copyright (c) 2002-2004 by Johannes-Heinrich Vogeler <vogeler@users.sourceforge.net>
+# Copyright (c) 2001-2006 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+#
+# RCS: @(#) $Id: adjust.tcl,v 1.16 2011/12/13 18:12:56 andreas_kupries Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+package require textutil::repeat
+package require textutil::string
+
+namespace eval ::textutil::adjust {}
+
+# ### ### ### ######### ######### #########
+## API implementation
+
+namespace eval ::textutil::adjust {
+    namespace import -force ::textutil::repeat::strRepeat
+}
+
+proc ::textutil::adjust::adjust {text args} {
+    if {[string length [string trim $text]] == 0} {
+        return ""
+    }
+
+    Configure $args
+    Adjust text newtext
+
+    return $newtext
+}
+
+proc ::textutil::adjust::Configure {args} {
+    variable Justify      left
+    variable Length       72
+    variable FullLine     0
+    variable StrictLength 0
+    variable Hyphenate    0
+    variable HyphPatterns    ; # hyphenation patterns (TeX)
+
+    set args [ lindex $args 0 ]
+    foreach { option value } $args {
+	switch -exact -- $option {
+	    -full {
+		if { ![ string is boolean -strict $value ] } then {
+		    error "expected boolean but got \"$value\""
+		}
+		set FullLine [ string is true $value ]
+	    }
+	    -hyphenate {
+		# the word exceeding the length of line is tried to be
+		# hyphenated; if a word cannot be hyphenated to fit into
+		# the line processing stops! The length of the line should
+		# be set to a reasonable value!
+
+		if { ![ string is boolean -strict $value ] } then {
+		    error "expected boolean but got \"$value\""
+		}
+		set Hyphenate [string is true $value]
+		if { $Hyphenate && ![info exists HyphPatterns(_LOADED_)]} {
+		    error "hyphenation patterns not loaded!"
+		}
+	    }
+	    -justify {
+		set lovalue [ string tolower $value ]
+		switch -exact -- $lovalue {
+		    left -
+		    right -
+		    center -
+		    plain {
+			set Justify $lovalue
+		    }
+		    default {
+			error "bad value \"$value\": should be center, left, plain or right"
+		    }
+		}
+	    }
+	    -length {
+		if { ![ string is integer $value ] } then {
+		    error "expected positive integer but got \"$value\""
+		}
+		if { $value < 1 } then {
+		    error "expected positive integer but got \"$value\""
+		}
+		set Length $value
+	    }
+	    -strictlength {
+		# the word exceeding the length of line is moved to the
+		# next line without hyphenation; words longer than given
+		# line length are cut into smaller pieces
+
+		if { ![ string is boolean -strict $value ] } then {
+		    error "expected boolean but got \"$value\""
+		}
+		set StrictLength [ string is true $value ]
+	    }
+	    default {
+		error "bad option \"$option\": must be -full, -hyphenate, \
+			-justify, -length, or -strictlength"
+	    }
+	}
+    }
+
+    return ""
+}
+
+# ::textutil::adjust::Adjust
+#
+# History:
+#      rewritten on 2004-04-13 for bugfix tcllib-bugs-882402 (jhv)
+
+proc ::textutil::adjust::Adjust { varOrigName varNewName } {
+    variable Length
+    variable FullLine
+    variable StrictLength
+    variable Hyphenate
+
+    upvar $varOrigName orig
+    upvar $varNewName  text
+
+    set pos 0;                                   # Cursor after writing
+    set line ""
+    set text ""
+
+
+    if {!$FullLine} {
+	regsub -all -- "(\n)|(\t)"     $orig   " "  orig
+	regsub -all -- " +"            $orig  " "   orig
+	regsub -all -- "(^ *)|( *\$)"  $orig  ""    orig
+    }
+
+    set words [split $orig]
+    set numWords [llength $words]
+    set numline 0
+
+    for {set cnt 0} {$cnt < $numWords} {incr cnt} {
+
+	set w [lindex $words $cnt]
+	set wLen [string length $w]
+
+	# the word $w doesn't fit into the present line
+	# case #1: we try to hyphenate
+
+	if {$Hyphenate && ($pos+$wLen >= $Length)} {
+	    # Hyphenation instructions
+	    set w2 [textutil::adjust::Hyphenation $w]
+
+	    set iMax [llength $w2]
+	    if {$iMax == 1 && [string length $w] > $Length} {
+		# word cannot be hyphenated and exceeds linesize
+
+		error "Word \"$w2\" can\'t be hyphenated\
+			and exceeds linesize $Length!"
+	    } else {
+		# hyphenating of $w was successfull, but we have to look
+		# that every sylable would fit into the line
+
+		foreach x $w2 {
+		    if {[string length $x] >= $Length} {
+			error "Word \"$w\" can\'t be hyphenated\
+				to fit into linesize $Length!"
+		    }
+		}
+	    }
+
+	    for {set i 0; set w3 ""} {$i < $iMax} {incr i} {
+		set syl [lindex $w2 $i]
+		if {($pos+[string length " $w3$syl-"]) > $Length} {break}
+		append w3 $syl
+	    }
+	    for {set w4 ""} {$i < $iMax} {incr i} {
+		set syl [lindex $w2 $i]
+		append w4 $syl
+	    }
+
+	    if {[string length $w3] && [string length $w4]} {
+		# hyphenation was successfull: redefine
+		# list of words w => {"$w3-" "$w4"}
+
+		set x [lreplace $words $cnt $cnt "$w4"]
+		set words [linsert $x $cnt "$w3-"]
+		set w [lindex $words $cnt]
+		set wLen [string length $w]
+		incr numWords
+	    }
+	}
+
+	# the word $w doesn't fit into the present line
+	# case #2: we try to cut the word into pieces
+
+	if {$StrictLength && ([string length $w] > $Length)} {
+	    # cut word into two pieces
+	    set w2 $w
+
+	    set over [expr {$pos+2+$wLen-$Length}]
+
+	    incr Length -1
+	    set w3   [string range $w2 0 $Length]
+	    incr Length
+	    set w4   [string range $w2 $Length end]
+
+	    set x [lreplace $words $cnt $cnt $w4]
+	    set words [linsert $x $cnt $w3 ]
+	    set w [lindex $words $cnt]
+	    set wLen [string length $w]
+	    incr numWords
+	}
+
+	# continuing with the normal procedure
+
+	if {($pos+$wLen < $Length)} {
+	    # append word to current line
+
+	    if {$pos} {append line " "; incr pos}
+	    append line $w
+	    incr pos $wLen
+	} else {
+	    # line full => write buffer and  begin a new line
+
+	    if {[string length $text]} {append text "\n"}
+	    append text [Justification $line [incr numline]]
+	    set line $w
+	    set pos $wLen
+	}
+    }
+
+    # write buffer and return!
+
+    if {[string length $text]} {append text "\n"}
+    append text [Justification $line end]
+    return $text
+}
+
+# ::textutil::adjust::Justification
+#
+# justify a given line
+#
+# Parameters:
+#      line    text for justification
+#      index   index for line in text
+#
+# Returns:
+#      the justified line
+#
+# Remarks:
+#      Only lines with size not exceeding the max. linesize provided
+#      for text formatting are justified!!!
+
+proc ::textutil::adjust::Justification { line index } {
+    variable Justify
+    variable Length
+    variable FullLine
+
+    set len [string length $line];               # length of current line
+
+    if { $Length <= $len } then {
+	# the length of current line ($len) is equal as or greater than
+	# the value provided for text formatting ($Length) => to avoid
+	# inifinite loops we leave $line unchanged and return!
+
+	return $line
+    }
+
+    # Special case:
+    # for the last line, and if the justification is set to 'plain'
+    # the real justification is 'left' if the length of the line
+    # is less than 90% (rounded) of the max length allowed. This is
+    # to avoid expansion of this line when it is too small: without
+    # it, the added spaces will 'unbeautify' the result.
+    #
+
+    set justify $Justify
+    if { ( "$index" == "end" ) && \
+	    ( "$Justify" == "plain" ) && \
+	    ( $len < round($Length * 0.90) ) } then {
+	set justify left
+    }
+
+    # For a left justification, nothing to do, but to
+    # add some spaces at the end of the line if requested
+
+    if { "$justify" == "left" } then {
+	set jus ""
+	if { $FullLine } then {
+	    set jus [strRepeat " " [ expr { $Length - $len } ]]
+	}
+	return "${line}${jus}"
+    }
+
+    # For a right justification, just add enough spaces
+    # at the beginning of the line
+
+    if { "$justify" == "right" } then {
+	set jus [strRepeat " " [ expr { $Length - $len } ]]
+	return "${jus}${line}"
+    }
+
+    # For a center justification, add half of the needed spaces
+    # at the beginning of the line, and the rest at the end
+    # only if needed.
+
+    if { "$justify" == "center" } then {
+	set mr [ expr { ( $Length - $len ) / 2 } ]
+	set ml [ expr { $Length - $len - $mr } ]
+	set jusl [strRepeat " " $ml]
+	set jusr [strRepeat " " $mr]
+	if { $FullLine } then {
+	    return "${jusl}${line}${jusr}"
+	} else {
+	    return "${jusl}${line}"
+	}
+    }
+
+    # For a plain justification, it's a little bit complex:
+    #
+    # if some spaces are missing, then
+    #
+    # 1) sort the list of words in the current line by decreasing size
+    # 2) foreach word, add one space before it, except if it's the
+    #    first word, until enough spaces are added
+    # 3) rebuild the line
+
+    if { "$justify" == "plain" } then {
+	set miss [ expr { $Length - [ string length $line ] } ]
+
+	# Bugfix tcllib-bugs-860753 (jhv)
+
+	set words [split $line]
+	set numWords [llength $words]
+
+	if {$numWords < 2} {
+	    # current line consists of less than two words - we can't
+	    # insert blanks to achieve a plain justification => leave
+	    # $line unchanged and return!
+
+	    return $line
+	}
+
+	for {set i 0; set totalLen 0} {$i < $numWords} {incr i} {
+	    set w($i) [lindex $words $i]
+	    if {$i > 0} {set w($i) " $w($i)"}
+	    set wLen($i) [string length $w($i)]
+	    set totalLen [expr {$totalLen+$wLen($i)}]
+	}
+
+	set miss [expr {$Length - $totalLen}]
+
+	# len walks through all lengths of words of the line under
+	# consideration
+
+	for {set len 1} {$miss > 0} {incr len} {
+	    for {set i 1} {($i < $numWords) && ($miss > 0)} {incr i} {
+		if {$wLen($i) == $len} {
+		    set w($i) " $w($i)"
+		    incr wLen($i)
+		    incr miss -1
+		}
+	    }
+	}
+
+	set line ""
+	for {set i 0} {$i < $numWords} {incr i} {
+	    set line "$line$w($i)"
+	}
+
+	# End of bugfix
+
+	return "${line}"
+    }
+
+    error "Illegal justification key \"$justify\""
+}
+
+proc ::textutil::adjust::SortList { list dir index } {
+
+    if { [ catch { lsort -integer -$dir -index $index $list } sl ] != 0 } then {
+        error "$sl"
+    }
+
+    return $sl
+}
+
+# Hyphenation utilities based on Knuth's algorithm
+#
+# Copyright (C) 2001-2003 by Dr.Johannes-Heinrich Vogeler (jhv)
+# These procedures may be used as part of the tcllib
+
+# textutil::adjust::Hyphenation
+#
+#      Hyphenate a string using Knuth's algorithm
+#
+# Parameters:
+#      str     string to be hyphenated
+#
+# Returns:
+#      the hyphenated string
+
+proc ::textutil::adjust::Hyphenation { str } {
+
+    # if there are manual set hyphenation marks e.g. "Recht\-schrei\-bung"
+    # use these for hyphenation and return
+
+    if {[regexp {[^\\-]*[\\-][.]*} $str]} {
+	regsub -all {(\\)(-)} $str {-} tmp
+	return [split $tmp -]
+    }
+
+    # Don't hyphenate very short words! Minimum length for hyphenation
+    # is set to 3 characters!
+
+    if { [string length $str] < 4 } then { return $str }
+
+    # otherwise follow Knuth's algorithm
+
+    variable HyphPatterns;                       # hyphenation patterns (TeX)
+
+    set w ".[string tolower $str].";             # transform to lower case
+    set wLen [string length $w];                 # and add delimiters
+
+    # Initialize hyphenation weights
+
+    set s {}
+    for {set i 0} {$i < $wLen} {incr i} {
+	lappend s 0
+    }
+
+    for {set i 0} {$i < $wLen} {incr i} {
+	set kmax [expr {$wLen-$i}]
+	for {set k 1} {$k < $kmax} {incr k} {
+	    set sw [string range $w $i [expr {$i+$k}]]
+	    if {[info exists HyphPatterns($sw)]} {
+		set hw $HyphPatterns($sw)
+		set hwLen [string length $hw]
+		for {set l1 0; set l2 0} {$l1 < $hwLen} {incr l1} {
+		    set c [string index $hw $l1]
+		    if {[string is digit $c]} {
+			set sPos [expr {$i+$l2}]
+			if {$c > [lindex $s $sPos]} {
+			    set s [lreplace $s $sPos $sPos $c]
+			}
+		    } else {
+			incr l2
+		    }
+		}
+	    }
+	}
+    }
+
+    # Replace all even hyphenation weigths by zero
+
+    for {set i 0} {$i < [llength $s]} {incr i} {
+	set c [lindex $s $i]
+	if {!($c%2)} { set s [lreplace $s $i $i 0] }
+    }
+
+    # Don't start with a hyphen! Take also care of words enclosed in quotes
+    # or that someone has forgotten to put a blank between a punctuation
+    # character and the following word etc.
+
+    for {set i 1} {$i < ($wLen-1)} {incr i} {
+	set c [string range $w $i end]
+	if {[regexp {^[:alpha:][.]*} $c]} {
+	    for {set k 1} {$k < ($i+1)} {incr k} {
+		set s [lreplace $s $k $k 0]
+	    }
+	    break
+	}
+    }
+
+    # Don't separate the last character of a word with a hyphen
+
+    set max [expr {[llength $s]-2}]
+    if {$max} {set s [lreplace $s $max end 0]}
+
+    # return the syllabels of the hyphenated word as a list!
+
+    set ret ""
+    set w ".$str."
+    for {set i 1} {$i < ($wLen-1)} {incr i} {
+	if {[lindex $s $i]} { append ret - }
+	append ret [string index $w $i]
+    }
+    return [split $ret -]
+}
+
+# textutil::adjust::listPredefined
+#
+#      Return the names of the hyphenation files coming with the package.
+#
+# Parameters:
+#      None.
+#
+# Result:
+#       List of filenames (without directory)
+
+proc ::textutil::adjust::listPredefined {} {
+    variable here
+    return [glob -type f -directory $here -tails *.tex]
+}
+
+# textutil::adjust::getPredefined
+#
+#      Retrieve the full path for a predefined hyphenation file
+#       coming with the package.
+#
+# Parameters:
+#      name     Name of the predefined file.
+#
+# Results:
+#       Full path to the file, or an error if it doesn't
+#       exist or is matching the pattern *.tex.
+
+proc ::textutil::adjust::getPredefined {name} {
+    variable here
+
+    if {![string match *.tex $name]} {
+        return -code error \
+                "Illegal hyphenation file \"$name\""
+    }
+    set path [file join $here $name]
+    if {![file exists $path]} {
+        return -code error \
+                "Unknown hyphenation file \"$path\""
+    }
+    return $path
+}
+
+# textutil::adjust::readPatterns
+#
+#      Read hyphenation patterns from a file and store them in an array
+#
+# Parameters:
+#      filNam  name of the file containing the patterns
+
+proc ::textutil::adjust::readPatterns { filNam } {
+
+    variable HyphPatterns;                       # hyphenation patterns (TeX)
+
+    # HyphPatterns(_LOADED_) is used as flag for having loaded
+    # hyphenation patterns from the respective file (TeX format)
+
+    if {[info exists HyphPatterns(_LOADED_)]} {
+	unset HyphPatterns(_LOADED_)
+    }
+
+    # the array xlat provides translation from TeX encoded characters
+    # to those of the ISO-8859-1 character set
+
+    set xlat(\"s) \337;  # 223 := sharp s    "
+    set xlat(\`a) \340;  # 224 := a, grave
+    set xlat(\'a) \341;  # 225 := a, acute
+    set xlat(\^a) \342;  # 226 := a, circumflex
+    set xlat(\"a) \344;  # 228 := a, diaeresis "
+    set xlat(\`e) \350;  # 232 := e, grave
+    set xlat(\'e) \351;  # 233 := e, acute
+    set xlat(\^e) \352;  # 234 := e, circumflex
+    set xlat(\`i) \354;  # 236 := i, grave
+    set xlat(\'i) \355;  # 237 := i, acute
+    set xlat(\^i) \356;  # 238 := i, circumflex
+    set xlat(\~n) \361;  # 241 := n, tilde
+    set xlat(\`o) \362;  # 242 := o, grave
+    set xlat(\'o) \363;  # 243 := o, acute
+    set xlat(\^o) \364;  # 244 := o, circumflex
+    set xlat(\"o) \366;  # 246 := o, diaeresis "
+    set xlat(\`u) \371;  # 249 := u, grave
+    set xlat(\'u) \372;  # 250 := u, acute
+    set xlat(\^u) \373;  # 251 := u, circumflex
+    set xlat(\"u) \374;  # 252 := u, diaeresis "
+
+    set fd [open $filNam RDONLY]
+    set status 0
+
+    while {[gets $fd line] >= 0} {
+
+	switch -exact $status {
+	    PATTERNS {
+		if {[regexp {^\}[.]*} $line]} {
+		    # End of patterns encountered: set status
+		    # and ignore that line
+		    set status 0
+		    continue
+		} else {
+		    # This seems to be pattern definition line; to process it
+		    # we have first to do some editing
+		    #
+		    # 1) eat comments in a pattern definition line
+		    # 2) eat braces and coded linefeeds
+
+		    set z [string first "%" $line]
+		    if {$z > 0} { set line [string range $line 0 [expr {$z-1}]] }
+
+		    regsub -all {(\\n|\{|\})} $line {} tmp
+		    set line $tmp
+
+		    # Now $line should consist only of hyphenation patterns
+		    # separated by white space
+
+		    # Translate TeX encoded characters to ISO-8859-1 characters
+		    # using the array xlat defined above
+
+		    foreach x [array names xlat] {
+			regsub -all {$x} $line $xlat($x) tmp
+			set line $tmp
+		    }
+
+		    # split the line and create a lookup array for
+		    # the repective hyphenation patterns
+
+		    foreach item [split $line] {
+			if {[string length $item]} {
+			    if {![string match {\\} $item]} {
+				# create index for hyphenation patterns
+
+				set var $item
+				regsub -all {[0-9]} $var {} idx
+				# store hyphenation patterns as elements of an array
+
+				set HyphPatterns($idx) $item
+			    }
+			}
+		    }
+		}
+	    }
+	    EXCEPTIONS {
+		if {[regexp {^\}[.]*} $line]} {
+		    # End of patterns encountered: set status
+		    # and ignore that line
+		    set status 0
+		    continue
+		} else {
+		    # to be done in the future
+		}
+	    }
+	    default {
+		if {[regexp {^\\endinput[.]*} $line]} {
+		    # end of data encountered, stop processing and
+		    # ignore all the following text ..
+		    break
+		} elseif {[regexp {^\\patterns[.]*} $line]} {
+		    # begin of patterns encountered: set status
+		    # and ignore that line
+		    set status PATTERNS
+		    continue
+		} elseif {[regexp {^\\hyphenation[.]*} $line]} {
+		    # some particular cases to be treated separately
+		    set status EXCEPTIONS
+		    continue
+		} else {
+		    set status 0
+		}
+	    }
+	}
+    }
+
+    close $fd
+    set HyphPatterns(_LOADED_) 1
+
+    return
+}
+
+#######################################################
+
+# @c The specified <a text>block is indented
+# @c by <a prefix>ing each line. The first
+# @c <a hang> lines ares skipped.
+#
+# @a text:   The paragraph to indent.
+# @a prefix: The string to use as prefix for each line
+# @a prefix: of <a text> with.
+# @a skip:   The number of lines at the beginning to leave untouched.
+#
+# @r Basically <a text>, but indented a certain amount.
+#
+# @i indent
+# @n This procedure is not checked by the testsuite.
+
+proc ::textutil::adjust::indent {text prefix {skip 0}} {
+    set text [string trimright $text]
+
+    set res [list]
+    foreach line [split $text \n] {
+	if {[string compare "" [string trim $line]] == 0} {
+	    lappend res {}
+	} else {
+	    set line [string trimright $line]
+	    if {$skip <= 0} {
+		lappend res $prefix$line
+	    } else {
+		lappend res $line
+	    }
+	}
+	if {$skip > 0} {incr skip -1}
+    }
+    return [join $res \n]
+}
+
+# Undent the block of text: Compute LCP (restricted to whitespace!)
+# and remove that from each line. Note that this preverses the
+# shaping of the paragraph (i.e. hanging indent are _not_ flattened)
+# We ignore empty lines !!
+
+proc ::textutil::adjust::undent {text} {
+
+    if {$text == {}} {return {}}
+
+    set lines [split $text \n]
+    set ne [list]
+    foreach l $lines {
+	if {[string length [string trim $l]] == 0} continue
+	lappend ne $l
+    }
+    set lcp [::textutil::string::longestCommonPrefixList $ne]
+
+    if {[string length $lcp] == 0} {return $text}
+
+    regexp "^(\[\t \]*)" $lcp -> lcp
+
+    if {[string length $lcp] == 0} {return $text}
+
+    set len [string length $lcp]
+
+    set res [list]
+    foreach l $lines {
+	if {[string length [string trim $l]] == 0} {
+	    lappend res {}
+	} else {
+	    lappend res [string range $l $len end]
+	}
+    }
+    return [join $res \n]
+}
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::adjust {
+    variable here [file dirname [info script]]
+
+    variable Justify      left
+    variable Length       72
+    variable FullLine     0
+    variable StrictLength 0
+    variable Hyphenate    0
+    variable HyphPatterns
+
+    namespace export adjust indent undent
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::adjust 0.7.3
+#---------------------------------------------------------------------
+# TITLE:
+#	expander.tcl
+#
+# AUTHOR:
+#	Will Duquette
+#
+# DESCRIPTION:
+#
+# An expander is an object that takes as input text with embedded
+# Tcl code and returns text with the embedded code expanded.  The
+# text can be provided all at once or incrementally.
+#
+# See  expander.[e]html for usage info.
+# Also expander.n
+#
+# LICENSE:
+#       Copyright (C) 2001 by William H. Duquette.  See expander_license.txt,
+#       distributed with this file, for license information.
+#
+# CHANGE LOG:
+#
+#       10/31/01: V0.9 code is complete.
+#       11/23/01: Added "evalcmd"; V1.0 code is complete.
+
+# Provide the package.
+
+# Create the package's namespace.
+
+namespace eval ::textutil {
+    namespace eval expander {
+	# All indices are prefixed by "$exp-".
+	#
+	# lb		    The left bracket sequence
+	# rb		    The right bracket sequence
+	# errmode	    How to handle macro errors: 
+	#		    nothing, macro, error, fail.
+        # evalcmd           The evaluation command.
+	# textcmd           The plain text processing command.
+	# level		    The context level
+	# output-$level     The accumulated text at this context level.
+	# name-$level       The tag name of this context level
+	# data-$level-$var  A variable of this context level     
+	
+	variable Info
+    
+	# In methods, the current object:
+	variable This ""
+	
+	# Export public commands
+	namespace export expander
+    }
+
+    #namespace import expander::*
+    namespace export expander
+
+    proc expander {name} {uplevel ::textutil::expander::expander [list $name]}
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	expander name
+#
+# INPUTS:
+#	name		A proc name for the new object.  If not
+#                       fully-qualified, it is assumed to be relative
+#                       to the caller's namespace.
+#
+# RETURNS:
+#	nothing
+#
+# DESCRIPTION:
+#	Creates a new expander object.
+
+proc ::textutil::expander::expander {name} {
+    variable Info
+
+    # FIRST, qualify the name.
+    if {![string match "::*" $name]} {
+        # Get caller's namespace; append :: if not global namespace.
+        set ns [uplevel 1 namespace current]
+        if {"::" != $ns} {
+            append ns "::"
+        }
+        
+        set name "$ns$name"
+    }
+
+    # NEXT, Check the name
+    if {"" != [info commands $name]} {
+        return -code error "command name \"$name\" already exists"
+    }
+
+    # NEXT, Create the object.
+    proc $name {method args} [format {
+        if {[catch {::textutil::expander::Methods %s $method $args} result]} {
+            return -code error $result
+        } else {
+            return $result
+        }
+    } $name]
+
+    # NEXT, Initialize the object
+    Op_reset $name
+    
+    return $name
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Methods name method argList
+#
+# INPUTS:
+#	name		The object's fully qualified procedure name.
+#			This argument is provided by the object command
+#			itself.
+#	method		The method to call.
+#	argList		Arguments for the specific method.
+#
+# RETURNS:
+#	Depends on the method
+#
+# DESCRIPTION:
+#	Handles all method dispatch for a expander object.
+#       The expander's object command merely passes its arguments to
+#	this function, which dispatches the arguments to the
+#	appropriate method procedure.  If the method raises an error,
+#	the method procedure's name in the error message is replaced
+#	by the object and method names.
+
+proc ::textutil::expander::Methods {name method argList} {
+    variable Info
+    variable This
+
+    switch -exact -- $method {
+        expand -
+        lb -
+        rb -
+        setbrackets -
+        errmode -
+        evalcmd -
+	textcmd -
+        cpush -
+	ctopandclear -
+        cis -
+        cname -
+        cset -
+        cget -
+        cvar -
+        cpop -
+        cappend -
+	where -
+        reset {
+            # FIRST, execute the method, first setting This to the object
+            # name; then, after the method has been called, restore the
+            # old object name.
+            set oldThis $This
+            set This $name
+
+            set retval [catch "Op_$method $name $argList" result]
+
+            set This $oldThis
+
+            # NEXT, handle the result based on the retval.
+            if {$retval} {
+                regsub -- "Op_$method" $result "$name $method" result
+                return -code error $result
+            } else {
+                return $result
+            }
+        }
+        default {
+            return -code error "\"$name $method\" is not defined"
+        }
+    }
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Get key
+#
+# INPUTS:
+#	key		A key into the Info array, excluding the
+#	                object name.  E.g., "lb"
+#
+# RETURNS:
+#	The value from the array
+#
+# DESCRIPTION:
+#	Gets the value of an entry from Info for This.
+
+proc ::textutil::expander::Get {key} {
+    variable Info
+    variable This
+
+    return $Info($This-$key)
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Set key value
+#
+# INPUTS:
+#	key		A key into the Info array, excluding the
+#	                object name.  E.g., "lb"
+#
+#	value		A Tcl value
+#
+# RETURNS:
+#	The value
+#
+# DESCRIPTION:
+#	Sets the value of an entry in Info for This.
+
+proc ::textutil::expander::Set {key value} {
+    variable Info
+    variable This
+
+    return [set Info($This-$key) $value]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Var key
+#
+# INPUTS:
+#	key		A key into the Info array, excluding the
+#	                object name.  E.g., "lb"
+#
+# RETURNS:
+#	The full variable name, suitable for setting or lappending
+
+proc ::textutil::expander::Var {key} {
+    variable Info
+    variable This
+
+    return ::textutil::expander::Info($This-$key)
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Contains list value
+#
+# INPUTS:
+#       list		any list
+#	value		any value
+#
+# RETURNS:
+#	TRUE if the list contains the value, and false otherwise.
+
+proc ::textutil::expander::Contains {list value} {
+    if {[lsearch -exact $list $value] == -1} {
+        return 0
+    } else {
+        return 1
+    }
+}
+
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_lb ?newbracket?
+#
+# INPUTS:
+#	newbracket		If given, the new bracket token.
+#
+# RETURNS:
+#	The current left bracket
+#
+# DESCRIPTION:
+#	Returns the current left bracket token.
+
+proc ::textutil::expander::Op_lb {name {newbracket ""}} {
+    if {[string length $newbracket] != 0} {
+        Set lb $newbracket
+    }
+    return [Get lb]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_rb ?newbracket?
+#
+# INPUTS:
+#	newbracket		If given, the new bracket token.
+#
+# RETURNS:
+#	The current left bracket
+#
+# DESCRIPTION:
+#	Returns the current left bracket token.
+
+proc ::textutil::expander::Op_rb {name {newbracket ""}} {
+    if {[string length $newbracket] != 0} {
+        Set rb $newbracket
+    }
+    return [Get rb]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_setbrackets lbrack rbrack
+#
+# INPUTS:
+#	lbrack		The new left bracket
+#	rbrack		The new right bracket
+#
+# RETURNS:
+#	nothing
+#
+# DESCRIPTION:
+#	Sets the brackets as a pair.
+
+proc ::textutil::expander::Op_setbrackets {name lbrack rbrack} {
+    Set lb $lbrack
+    Set rb $rbrack
+    return
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_errmode ?newErrmode?
+#
+# INPUTS:
+#	newErrmode		If given, the new error mode.
+#
+# RETURNS:
+#	The current error mode
+#
+# DESCRIPTION:
+#	Returns the current error mode.
+
+proc ::textutil::expander::Op_errmode {name {newErrmode ""}} {
+    if {[string length $newErrmode] != 0} {
+        if {![Contains "macro nothing error fail" $newErrmode]} {
+            error "$name errmode: Invalid error mode: $newErrmode"
+        }
+
+        Set errmode $newErrmode
+    }
+    return [Get errmode]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_evalcmd ?newEvalCmd?
+#
+# INPUTS:
+#	newEvalCmd		If given, the new eval command.
+#
+# RETURNS:
+#	The current eval command
+#
+# DESCRIPTION:
+#	Returns the current eval command.  This is the command used to
+#	evaluate macros; it defaults to "uplevel #0".
+
+proc ::textutil::expander::Op_evalcmd {name {newEvalCmd ""}} {
+    if {[string length $newEvalCmd] != 0} {
+        Set evalcmd $newEvalCmd
+    }
+    return [Get evalcmd]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_textcmd ?newTextCmd?
+#
+# INPUTS:
+#	newTextCmd		If given, the new text command.
+#
+# RETURNS:
+#	The current text command
+#
+# DESCRIPTION:
+#	Returns the current text command.  This is the command used to
+#	process plain text. It defaults to {}, meaning identity.
+
+proc ::textutil::expander::Op_textcmd {name args} {
+    switch -exact [llength $args] {
+	0 {}
+	1 {Set textcmd [lindex $args 0]}
+	default {
+	    return -code error "wrong#args for textcmd: name ?newTextcmd?"
+	}
+    }
+    return [Get textcmd]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_reset
+#
+# INPUTS:
+#	none
+#
+# RETURNS:
+#	nothing
+#
+# DESCRIPTION:
+#	Resets all object values, as though it were brand new.
+
+proc ::textutil::expander::Op_reset {name} {
+    variable Info 
+
+    if {[info exists Info($name-lb)]} {
+        foreach elt [array names Info "$name-*"] {
+            unset Info($elt)
+        }
+    }
+
+    set Info($name-lb) "\["
+    set Info($name-rb) "\]"
+    set Info($name-errmode) "fail"
+    set Info($name-evalcmd) "uplevel #0"
+    set Info($name-textcmd) ""
+    set Info($name-level) 0
+    set Info($name-output-0) ""
+    set Info($name-name-0) ":0"
+
+    return
+}
+
+#-------------------------------------------------------------------------
+# Context: Every expansion takes place in its own context; however, 
+# a macro can push a new context, causing the text it returns and all
+# subsequent text to be saved separately.  Later, a matching macro can
+# pop the context, acquiring all text saved since the first command,
+# and use that in its own output.
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cpush cname
+#
+# INPUTS:
+#	cname		The context name
+#
+# RETURNS:
+#	nothing
+#
+# DESCRIPTION:
+#       Pushes an empty macro context onto the stack.  All expanded text
+#       will be added to this context until it is popped.
+
+proc ::textutil::expander::Op_cpush {name cname} {
+    # FRINK: nocheck
+    incr [Var level]
+    # FRINK: nocheck
+    set [Var output-[Get level]] {}
+    # FRINK: nocheck
+    set [Var name-[Get level]] $cname
+
+    # The first level is init'd elsewhere (Op_expand)
+    if {[set [Var level]] < 2} return
+
+    # Initialize the location information, inherit from the outer
+    # context.
+
+    LocInit $cname
+    catch {LocSet $cname [LocGet $name]}
+    return    
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cis cname
+#
+# INPUTS:
+#	cname		A context name
+#
+# RETURNS:
+#	true or false
+#
+# DESCRIPTION:
+#       Returns true if the current context has the specified name, and
+#	false otherwise.
+
+proc ::textutil::expander::Op_cis {name cname} {
+    return [expr {[string compare $cname [Op_cname $name]] == 0}]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cname
+#
+# INPUTS:
+#	none
+#
+# RETURNS:
+#	The context name
+#
+# DESCRIPTION:
+#       Returns the name of the current context.
+
+proc ::textutil::expander::Op_cname {name} {
+    return [Get name-[Get level]]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cset varname value
+#
+# INPUTS:
+#	varname		The name of a context variable
+#	value		The new value for the context variable
+#
+# RETURNS:
+#	The value
+#
+# DESCRIPTION:
+#       Sets a variable in the current context.
+
+proc ::textutil::expander::Op_cset {name varname value} {
+    Set data-[Get level]-$varname $value
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cget varname
+#
+# INPUTS:
+#	varname		The name of a context variable
+#
+# RETURNS:
+#	The value
+#
+# DESCRIPTION:
+#       Returns the value of a context variable.  It's an error if
+#	the variable doesn't exist.
+
+proc ::textutil::expander::Op_cget {name varname} {
+    if {![info exists [Var data-[Get level]-$varname]]} {
+        error "$name cget: $varname doesn't exist in this context ([Get level])"
+    }
+    return [Get data-[Get level]-$varname]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cvar varname
+#
+# INPUTS:
+#	varname		The name of a context variable
+#
+# RETURNS:
+#	The index to the variable
+#
+# DESCRIPTION:
+#       Returns the index to a context variable, for use with set, 
+#	lappend, etc.
+
+proc ::textutil::expander::Op_cvar {name varname} {
+    if {![info exists [Var data-[Get level]-$varname]]} {
+        error "$name cvar: $varname doesn't exist in this context"
+    }
+
+    return [Var data-[Get level]-$varname]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cpop cname
+#
+# INPUTS:
+#	cname		The expected context name.
+#
+# RETURNS:
+#	The accumulated output in this context
+#
+# DESCRIPTION:
+#       Returns the accumulated output for the current context, first
+#	popping the context from the stack.  The expected context name
+#	must match the real name, or an error occurs.
+
+proc ::textutil::expander::Op_cpop {name cname} {
+    variable Info
+
+    if {[Get level] == 0} {
+        error "$name cpop underflow on '$cname'"
+    }
+
+    if {[string compare [Op_cname $name] $cname] != 0} {
+        error "$name cpop context mismatch: expected [Op_cname $name], got $cname"
+    }
+
+    set result [Get output-[Get level]]
+    # FRINK: nocheck
+    set [Var output-[Get level]] ""
+    # FRINK: nocheck
+    set [Var name-[Get level]] ""
+
+    foreach elt [array names "Info data-[Get level]-*"] {
+        unset Info($elt)
+    }
+
+    # FRINK: nocheck
+    incr [Var level] -1
+    return $result
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_ctopandclear
+#
+# INPUTS:
+#	None.
+#
+# RETURNS:
+#	The accumulated output in the topmost context, clears the context,
+#	but does not pop it.
+#
+# DESCRIPTION:
+#       Returns the accumulated output for the current context, first
+#	popping the context from the stack.  The expected context name
+#	must match the real name, or an error occurs.
+
+proc ::textutil::expander::Op_ctopandclear {name} {
+    variable Info
+
+    if {[Get level] == 0} {
+        error "$name cpop underflow on '[Op_cname $name]'"
+    }
+
+    set result [Get output-[Get level]]
+    Set output-[Get level] ""
+    return $result
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_cappend text
+#
+# INPUTS:
+#	text		Text to add to the output
+#
+# RETURNS:
+#	The accumulated output
+#
+# DESCRIPTION:
+#       Appends the text to the accumulated output in the current context.
+
+proc ::textutil::expander::Op_cappend {name text} {
+    # FRINK: nocheck
+    append [Var output-[Get level]] $text
+}
+
+#-------------------------------------------------------------------------
+# Macro-expansion:  The following code is the heart of the module.
+# Given a text string, and the current variable settings, this code
+# returns an expanded string, with all macros replaced.
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_expand inputString ?brackets?
+#
+# INPUTS:
+#	inputString		The text to expand.
+#	brackets		A list of two bracket tokens.
+#
+# RETURNS:
+#	The expanded text.
+#
+# DESCRIPTION:
+#	Finds all embedded macros in the input string, and expands them.
+#	If ?brackets? is given, it must be list of length 2, containing
+#	replacement left and right macro brackets; otherwise the default
+#	brackets are used.
+
+proc ::textutil::expander::Op_expand {name inputString {brackets ""}} {
+    # FIRST, push a new context onto the stack, and save the current
+    # brackets.
+
+    Op_cpush $name expand
+    Op_cset $name lb [Get lb]
+    Op_cset $name rb [Get rb]
+
+    # Keep position information in context variables as well.
+    # Line we are in, counting from 1; column we are at,
+    # counting from 0, and index of character we are at,
+    # counting from 0. Tabs counts as '1' when computing
+    # the column.
+
+    LocInit $name
+
+    # SF Tcllib Bug #530056.
+    set start_level [Get level] ; # remember this for check at end
+
+    # NEXT, use the user's brackets, if given.
+    if {[llength $brackets] == 2} {
+        Set lb [lindex $brackets 0]
+        Set rb [lindex $brackets 1]
+    }
+
+    # NEXT, loop over the string, finding and expanding macros.
+    while {[string length $inputString] > 0} {
+        set plainText [ExtractToToken inputString [Get lb] exclude]
+
+        # FIRST, If there was plain text, append it to the output, and 
+        # continue.
+        if {$plainText != ""} {
+	    set input $plainText
+	    set tc [Get textcmd]
+	    if {[string length $tc] > 0} {
+		lappend tc $plainText
+
+		if {![catch "[Get evalcmd] [list $tc]" result]} {
+		    set plainText $result
+		} else {
+		    HandleError $name {plain text} $tc $result
+		}
+	    }
+            Op_cappend $name $plainText
+	    LocUpdate  $name $input
+
+            if {[string length $inputString] == 0} {
+                break
+            }
+        }
+
+        # NEXT, A macro is the next thing; process it.
+        if {[catch {GetMacro inputString} macro]} {
+	    # SF tcllib bug 781973 ... Do not throw a regular
+	    # error. Use HandleError to give the user control of the
+	    # situation, via the defined error mode. The continue
+	    # intercepts if the user allows the expansion to run on,
+	    # yet we must not try to run the non-existing macro.
+
+	    HandleError $name {reading macro} $inputString $macro
+	    continue
+        }
+
+        # Expand the macro, and output the result, or
+        # handle an error.
+        if {![catch "[Get evalcmd] [list $macro]" result]} {
+            Op_cappend $name $result 
+
+	    # We have to advance the location by the length of the
+	    # macro, plus the two brackets. They were stripped by
+	    # GetMacro, so we have to add them here again to make
+	    # computation correct.
+
+	    LocUpdate $name [Get lb]${macro}[Get rb]
+            continue
+        } 
+
+	HandleError $name macro $macro $result
+    }
+
+    # SF Tcllib Bug #530056.
+    if {[Get level] > $start_level} {
+	# The user macros pushed additional contexts, but forgot to
+	# pop them all. The main work here is to place all the still
+	# open contexts into the error message, and to produce
+	# syntactically correct english.
+
+	set c [list]
+	set n [expr {[Get level] - $start_level}]
+	if {$n == 1} {
+	    set ctx  context
+	    set verb was
+	} else {
+	    set ctx  contexts
+	    set verb were
+	}
+	for {incr n -1} {$n >= 0} {incr n -1} {
+	    lappend c [Get name-[expr {[Get level]-$n}]]
+	}
+	return -code error \
+		"The following $ctx pushed by the macros $verb not popped: [join $c ,]."
+    } elseif {[Get level] < $start_level} {
+	set n [expr {$start_level - [Get level]}]
+	if {$n == 1} {
+	    set ctx  context
+	} else {
+	    set ctx  contexts
+	}
+	return -code error \
+		"The macros popped $n more $ctx than they had pushed."
+    }
+
+    Op_lb $name [Op_cget $name lb]
+    Op_rb $name [Op_cget $name rb]
+
+    return [Op_cpop $name expand]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	Op_where
+#
+# INPUTS:
+#	None.
+#
+# RETURNS:
+#	The current location in the input.
+#
+# DESCRIPTION:
+#	Retrieves the current location the expander
+#	is at during processing.
+
+proc ::textutil::expander::Op_where {name} {
+    return [LocGet $name]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION
+#	HandleError name title command errmsg
+#
+# INPUTS:
+#	name		The name of the expander object in question.
+#	title		A title text
+#	command		The command which caused the error.
+#	errmsg		The error message to report
+#
+# RETURNS:
+#	Nothing
+#
+# DESCRIPTIONS
+#	Is executed when an error in a macro or the plain text handler
+#	occurs. Generates an error message according to the current
+#	error mode.
+
+proc ::textutil::expander::HandleError {name title command errmsg} {
+    switch [Get errmode] {
+	nothing { }
+	macro {
+	    # The location is irrelevant here.
+	    Op_cappend $name "[Get lb]$command[Get rb]" 
+	}
+	error {
+	    foreach {ch line col} [LocGet $name] break
+	    set display [DisplayOf $command]
+
+	    Op_cappend $name "\n=================================\n"
+	    Op_cappend $name "*** Error in $title at line $line, column $col:\n"
+	    Op_cappend $name "*** [Get lb]$display[Get rb]\n--> $errmsg\n"
+	    Op_cappend $name "=================================\n"
+	}
+	fail   { 
+	    foreach {ch line col} [LocGet $name] break
+	    set display [DisplayOf $command]
+
+	    return -code error "Error in $title at line $line,\
+		    column $col:\n[Get lb]$display[Get rb]\n-->\
+		    $errmsg"
+	}
+	default {
+	    return -code error "Unknown error mode: [Get errmode]"
+	}
+    }
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	ExtractToToken string token mode
+#
+# INPUTS:
+#	string		The text to process.
+#	token		The token to look for
+#	mode		include or exclude
+#
+# RETURNS:
+#	The extracted text
+#
+# DESCRIPTION:
+# 	Extract text from a string, up to or including a particular
+# 	token.  Remove the extracted text from the string.
+# 	mode determines whether the found token is removed;
+# 	it should be "include" or "exclude".  The string is
+# 	modified in place, and the extracted text is returned.
+
+proc ::textutil::expander::ExtractToToken {string token mode} {
+    upvar $string theString
+
+    # First, determine the offset
+    switch $mode {
+        include { set offset [expr {[string length $token] - 1}] }
+        exclude { set offset -1 }
+        default { error "::expander::ExtractToToken: unknown mode $mode" }
+    }
+
+    # Next, find the first occurrence of the token.
+    set tokenPos [string first $token $theString]
+
+    # Next, return the entire string if it wasn't found, or just
+    # the part upto or including the character.
+    if {$tokenPos == -1} {
+        set theText $theString
+        set theString ""
+    } else {
+        set newEnd    [expr {$tokenPos + $offset}]
+        set newBegin  [expr {$newEnd + 1}]
+        set theText   [string range $theString 0 $newEnd]
+        set theString [string range $theString $newBegin end]
+    }
+
+    return $theText
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	GetMacro string
+#
+# INPUTS:
+#	string		The text to process.
+#
+# RETURNS:
+#	The macro, stripped of its brackets.
+#
+# DESCRIPTION:
+
+proc ::textutil::expander::GetMacro {string} {
+    upvar $string theString
+
+    # FIRST, it's an error if the string doesn't begin with a
+    # bracket.
+    if {[string first [Get lb] $theString] != 0} {
+        error "::expander::GetMacro: assertion failure, next text isn't a command! '$theString'"
+    }
+
+    # NEXT, extract a full macro
+    set macro [ExtractToToken theString [Get lb] include]
+    while {[string length $theString] > 0} {
+        append macro [ExtractToToken theString [Get rb] include]
+
+        # Verify that the command really ends with the [rb] characters,
+        # whatever they are.  If not, break because of unexpected
+        # end of file.
+        if {![IsBracketed $macro]} {
+            break;
+        }
+
+        set strippedMacro [StripBrackets $macro]
+
+        if {[info complete "puts \[$strippedMacro\]"]} {
+            return $strippedMacro
+        }
+    }
+
+    if {[string length $macro] > 40} {
+        set macro "[string range $macro 0 39]...\n"
+    }
+    error "Unexpected EOF in macro:\n$macro"
+}
+
+# Strip left and right bracket tokens from the ends of a macro,
+# provided that it's properly bracketed.
+proc ::textutil::expander::StripBrackets {macro} {
+    set llen [string length [Get lb]]
+    set rlen [string length [Get rb]]
+    set tlen [string length $macro]
+
+    return [string range $macro $llen [expr {$tlen - $rlen - 1}]]
+}
+
+# Return 1 if the macro is properly bracketed, and 0 otherwise.
+proc ::textutil::expander::IsBracketed {macro} {
+    set llen [string length [Get lb]]
+    set rlen [string length [Get rb]]
+    set tlen [string length $macro]
+
+    set leftEnd  [string range $macro 0       [expr {$llen - 1}]]
+    set rightEnd [string range $macro [expr {$tlen - $rlen}] end]
+
+    if {$leftEnd != [Get lb]} {
+        return 0
+    } elseif {$rightEnd != [Get rb]} {
+        return 0
+    } else {
+        return 1
+    }
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	LocInit name
+#
+# INPUTS:
+#	name		The expander object to use.
+#
+# RETURNS:
+#	No result.
+#
+# DESCRIPTION:
+#	A convenience wrapper around LocSet. Initializes the location
+#	to the start of the input (char 0, line 1, column 0).
+
+proc ::textutil::expander::LocInit {name} {
+    LocSet $name {0 1 0}
+    return
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	LocSet name loc
+#
+# INPUTS:
+#	name		The expander object to use.
+#	loc		Location, list containing character position,
+#			line number and column, in this order.
+#
+# RETURNS:
+#	No result.
+#
+# DESCRIPTION:
+#	Sets the current location in the expander to 'loc'.
+
+proc ::textutil::expander::LocSet {name loc} {
+    foreach {ch line col} $loc break
+    Op_cset  $name char $ch
+    Op_cset  $name line $line
+    Op_cset  $name col  $col
+    return
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	LocGet name
+#
+# INPUTS:
+#	name		The expander object to use.
+#
+# RETURNS:
+#	A list containing the current character position, line number
+#	and column, in this order.
+#
+# DESCRIPTION:
+#	Returns the current location as stored in the expander.
+
+proc ::textutil::expander::LocGet {name} {
+    list [Op_cget $name char] [Op_cget $name line] [Op_cget $name col]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	LocUpdate name text
+#
+# INPUTS:
+#	name		The expander object to use.
+#	text		The text to process.
+#
+# RETURNS:
+#	No result.
+#
+# DESCRIPTION:
+#	Takes the current location as stored in the expander, computes
+#	a new location based on the string (its length and contents
+#	(number of lines)), and makes that new location the current
+#	location.
+
+proc ::textutil::expander::LocUpdate {name text} {
+    foreach {ch line col} [LocGet $name] break
+    set numchars [string length $text]
+    #8.4+ set numlines [regexp -all "\n" $text]
+    set numlines [expr {[llength [split $text \n]]-1}]
+
+    incr ch   $numchars
+    incr line $numlines
+    if {$numlines} {
+	set col [expr {$numchars - [string last \n $text] - 1}]
+    } else {
+	incr col $numchars
+    }
+
+    LocSet $name [list $ch $line $col]
+    return
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	LocRange name text
+#
+# INPUTS:
+#	name		The expander object to use.
+#	text		The text to process.
+#
+# RETURNS:
+#	A text range description, compatible with the 'location' data
+#	used in the tcl debugger/checker.
+#
+# DESCRIPTION:
+#	Takes the current location as stored in the expander object
+#	and the length of the text to generate a character range.
+
+proc ::textutil::expander::LocRange {name text} {
+    # Note that the structure is compatible with
+    # the ranges uses by tcl debugger and checker.
+    # {line {charpos length}}
+
+    foreach {ch line col} [LocGet $name] break
+    return [list $line [list $ch [string length $text]]]
+}
+
+#---------------------------------------------------------------------
+# FUNCTION:
+# 	DisplayOf text
+#
+# INPUTS:
+#	text		The text to process.
+#
+# RETURNS:
+#	The text, cut down to at most 30 bytes.
+#
+# DESCRIPTION:
+#	Cuts the incoming text down to contain no more than 30
+#	characters of the input. Adds an ellipsis (...) if characters
+#	were actually removed from the input.
+
+proc ::textutil::expander::DisplayOf {text} {
+    set ellip ""
+    while {[string bytelength $text] > 30} {
+	set ellip ...
+	set text [string range $text 0 end-1]
+    }
+    set display $text$ellip
+}
+
+#---------------------------------------------------------------------
+# Provide the package only if the code above was read and executed
+# without error.
+
+package provide textutil::expander 1.3.1
+# split.tcl --
+#
+#	Various ways of splitting a string.
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2000      by Eric Melski <ericm@ajubasolutions.com>
+# Copyright (c) 2001      by Reinhard Max <max@suse.de>
+# Copyright (c) 2003      by Pat Thoyts <patthoyts@users.sourceforge.net>
+# Copyright (c) 2001-2006 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+# 
+# RCS: @(#) $Id: split.tcl,v 1.7 2006/04/21 04:42:28 andreas_kupries Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+
+namespace eval ::textutil::split {}
+
+########################################################################
+# This one was written by Bob Techentin (RWT in Tcl'ers Wiki):
+# http://www.techentin.net
+# mailto:techentin.robert@mayo.edu
+#
+# Later, he send me an email stated that I can use it anywhere, because
+# no copyright was added, so the code is defacto in the public domain.
+#
+# You can found it in the Tcl'ers Wiki here:
+# http://mini.net/cgi-bin/wikit/460.html
+#
+# Bob wrote:
+# If you need to split string into list using some more complicated rule
+# than builtin split command allows, use following function. It mimics
+# Perl split operator which allows regexp as element separator, but,
+# like builtin split, it expects string to split as first arg and regexp
+# as second (optional) By default, it splits by any amount of whitespace. 
+# Note that if you add parenthesis into regexp, parenthesed part of separator
+# would be added into list as additional element. Just like in Perl. -- cary 
+#
+# Speed improvement by Reinhard Max:
+# Instead of repeatedly copying around the not yet matched part of the
+# string, I use [regexp]'s -start option to restrict the match to that
+# part. This reduces the complexity from something like O(n^1.5) to
+# O(n). My test case for that was:
+# 
+# foreach i {1 10 100 1000 10000} {
+#     set s [string repeat x $i]
+#     puts [time {splitx $s .}]
+# }
+#
+
+if {[package vsatisfies [package provide Tcl] 8.3]} {
+
+    proc ::textutil::split::splitx {str {regexp {[\t \r\n]+}}} {
+        # Bugfix 476988
+        if {[string length $str] == 0} {
+            return {}
+        }
+        if {[string length $regexp] == 0} {
+            return [::split $str ""]
+        }
+	if {[regexp $regexp {}]} {
+	    return -code error \
+		"splitting on regexp \"$regexp\" would cause infinite loop"
+	}
+
+        set list  {}
+        set start 0
+        while {[regexp -start $start -indices -- $regexp $str match submatch]} {
+            foreach {subStart subEnd} $submatch break
+            foreach {matchStart matchEnd} $match break
+            incr matchStart -1
+            incr matchEnd
+            lappend list [string range $str $start $matchStart]
+            if {$subStart >= $start} {
+                lappend list [string range $str $subStart $subEnd]
+            }
+            set start $matchEnd
+        }
+        lappend list [string range $str $start end]
+        return $list
+    }
+
+} else {    
+    # For tcl <= 8.2 we do not have regexp -start...
+    proc ::textutil::split::splitx [list str [list regexp "\[\t \r\n\]+"]] {
+
+        if {[string length $str] == 0} {
+            return {}
+        }
+        if {[string length $regexp] == 0} {
+            return [::split $str {}]
+        }
+	if {[regexp $regexp {}]} {
+	    return -code error \
+		"splitting on regexp \"$regexp\" would cause infinite loop"
+	}
+
+        set list  {}
+        while {[regexp -indices -- $regexp $str match submatch]} {
+            lappend list [string range $str 0 [expr {[lindex $match 0] -1}]]
+            if {[lindex $submatch 0] >= 0} {
+                lappend list [string range $str [lindex $submatch 0] \
+                                  [lindex $submatch 1]]
+            }
+            set str [string range $str [expr {[lindex $match 1]+1}] end]
+        }
+        lappend list $str
+        return $list
+    }
+    
+}
+
+#
+# splitn --
+#
+# splitn splits the string $str into chunks of length $len.  These
+# chunks are returned as a list.
+#
+# If $str really contains a ByteArray object (as retrieved from binary
+# encoded channels) splitn must honor this by splitting the string
+# into chunks of $len bytes.
+#
+# It is an error to call splitn with a nonpositive $len.
+#
+# If splitn is called with an empty string, it returns the empty list.
+#
+# If the length of $str is not an entire multiple of the chunk length,
+# the last chunk in the generated list will be shorter than $len.
+#
+# The implementation presented here was given by Bryan Oakley, as
+# part of a ``contest'' I staged on c.l.t in July 2004.  I selected
+# this version, as it does not rely on runtime generated code, is
+# very fast for chunk size one, not too bad in all the other cases,
+# and uses [split] or [string range] which have been around for quite
+# some time.
+#
+# -- Robert Suetterlin (robert@mpe.mpg.de)
+#
+proc ::textutil::split::splitn {str {len 1}} {
+
+    if {$len <= 0} {
+        return -code error "len must be > 0"
+    }
+
+    if {$len == 1} {
+        return [split $str {}]
+    }
+
+    set result [list]
+    set max [string length $str]
+    set i 0
+    set j [expr {$len -1}]
+    while {$i < $max} {
+        lappend result [string range $str $i $j]
+        incr i $len
+        incr j $len
+    }
+
+    return $result
+}
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::split {
+    namespace export splitx splitn
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::split 0.8
+#
+# As the author of the procs 'tabify2' and 'untabify2' I suggest that the
+# comments explaining their behaviour be kept in this file.
+# 1) Beginners in any programming language (I am new to Tcl so I know what I
+#    am talking about) can profit enormously from studying 'correct' code.
+#    Of course comments will help a lot in this regard.
+# 2) Many problems newbies face can be solved by directing them towards
+#    available libraries - after all, libraries have been written to solve
+#    recurring problems. Then they can just use them, or have a closer look
+#    to see and to discover how things are done the 'Tcl way'.
+# 3) And if ever a proc from a library should be less than perfect, having
+#    comments explaining the behaviour of the code will surely help.
+#
+# This said, I will welcome any error reports or suggestions for improvements
+# (especially on the 'doing things the Tcl way' aspect).
+#
+# Use of these sources is licensed under the same conditions as is Tcl.
+#
+# June 2001, Helmut Giese (hgiese@ratiosoft.com)
+#
+# ----------------------------------------------------------------------------
+#
+# The original procs 'tabify' and 'untabify' each work with complete blocks
+# of $num spaces ('num' holding the tab size). While this is certainly useful
+# in some circumstances, it does not reflect the way an editor works:
+# 	Counting columns from 1, assuming a tab size of 8 and entering '12345'
+#   followed by a tab, you expect to advance to column 9. Your editor might
+#   put a tab into the file or 3 spaces, depending on its configuration.
+#	Now, on 'tabifying' you will expect to see those 3 spaces converted to a
+#	tab (and on the other hand expect the tab *at this position* to be
+#	converted to 3 spaces).
+#
+#	This behaviour is mimicked by the new procs 'tabify2' and 'untabify2'.
+#   Both have one feature in common: They accept multi-line strings (a whole
+#   file if you want to) but in order to make life simpler for the programmer,
+#   they split the incoming string into individual lines and hand each line to
+#   a proc that does the real work.
+#
+#   One design decision worth mentioning here:
+#      A single space is never converted to a tab even if its position would
+#      allow to do so.
+#   Single spaces occur very often, say in arithmetic expressions like
+#   [expr (($a + $b) * $c) < $d]. If we didn't follow the above rule we might
+#   need to replace one or more of them to tabs. However if the tab size gets
+#   changed, this expression would be formatted quite differently - which is
+#   probably not a good idea.
+#
+#   'untabifying' on the other hand might need to replace a tab with a single
+#   space: If the current position requires it, what else to do?
+#   As a consequence those two procs are unsymmetric in this aspect, but I
+#   couldn't think of a better solution. Could you?
+#
+# ----------------------------------------------------------------------------
+#
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+package require textutil::repeat
+
+namespace eval ::textutil::tabify {}
+
+# ### ### ### ######### ######### #########
+## API implementation
+
+namespace eval ::textutil::tabify {
+    namespace import -force ::textutil::repeat::strRepeat
+}
+
+proc ::textutil::tabify::tabify { string { num 8 } } {
+    return [string map [list [MakeTabStr $num] \t] $string]
+}
+
+proc ::textutil::tabify::untabify { string { num 8 } } {
+    return [string map [list \t [MakeTabStr $num]] $string]
+}
+
+proc ::textutil::tabify::MakeTabStr { num } {
+    variable TabStr
+    variable TabLen
+
+    if { $TabLen != $num } then {
+	set TabLen $num
+	set TabStr [strRepeat " " $num]
+    }
+
+    return $TabStr
+}
+
+# ----------------------------------------------------------------------------
+#
+# tabifyLine: Works on a single line of text, replacing 'spaces at correct
+# 		positions' with tabs. $num is the requested tab size.
+#		Returns the (possibly modified) line.
+#
+# 'spaces at correct positions': Only spaces which 'fill the space' between
+# an arbitrary position and the next tab stop can be replaced. 
+# Example: With tab size 8, spaces at positions 11 - 13 will *not* be replaced,
+#          because an expansion of a tab at position 11 will jump up to 16.
+# See also the comment at the beginning of this file why single spaces are
+# *never* replaced by a tab.
+#
+# The proc works backwards, from the end of the string up to the beginning:
+#	- Set the position to start the search from ('lastPos') to 'end'.
+#	- Find the last occurrence of ' ' in 'line' with respect to 'lastPos'
+#         ('currPos' below). This is a candidate for replacement.
+#       - Find to 'currPos' the following tab stop using the expression
+#           set nextTab [expr ($currPos + $num) - ($currPos % $num)]
+#         and get the previous tab stop as well (this will be the starting 
+#         point for the next iteration).
+#	- The ' ' at 'currPos' is only a candidate for replacement if
+#	  1) it is just one position before a tab stop *and*
+#	  2) there is at least one space at its left (see comment above on not
+#	     touching an isolated space).
+#	  Continue, if any of these conditions is not met.
+#	- Determine where to put the tab (that is: how many spaces to replace?)
+#	  by stepping up to the beginning until
+#		-- you hit a non-space or
+#		-- you are at the previous tab position
+#	- Do the replacement and continue.
+#
+# This algorithm only works, if $line does not contain tabs. Otherwise our 
+# interpretation of any position beyond the tab will be wrong. (Imagine you 
+# find a ' ' at position 4 in $line. If you got 3 leading tabs, your *real*
+# position might be 25 (tab size of 8). Since in real life some strings might 
+# already contain tabs, we test for it (and eventually call untabifyLine).
+#
+
+proc ::textutil::tabify::tabifyLine { line num } {
+    if { [string first \t $line] != -1 } { 		
+	# assure array 'Spaces' is set up 'comme il faut'
+	checkArr $num
+	# remove existing tabs
+	set line [untabifyLine $line $num]
+    }
+
+    set lastPos end
+
+    while { $lastPos > 0 } {
+	set currPos [string last " " $line $lastPos]
+	if { $currPos == -1 } {
+	    # no more spaces
+	    break;
+	}
+
+	set nextTab [expr {($currPos + $num) - ($currPos % $num)}]
+	set prevTab [expr {$nextTab - $num}]
+
+	# prepare for next round: continue at 'previous tab stop - 1'
+	set lastPos [expr {$prevTab - 1}]
+
+	if { ($currPos + 1) != $nextTab } {
+	    continue			;# crit. (1)
+	}
+
+	if { [string index $line [expr {$currPos - 1}]] != " " } {
+	    continue			;# crit. (2)
+	}
+
+	# now step backwards while there are spaces
+	for {set pos [expr {$currPos - 2}]} {$pos >= $prevTab} {incr pos -1} {
+	    if { [string index $line $pos] != " " } {
+		break;
+	    }
+	}
+
+	# ... and replace them
+	set line [string replace $line [expr {$pos + 1}] $currPos \t]
+    }
+    return $line
+}
+
+#
+# Helper proc for 'untabifyLine': Checks if all needed elements of array
+# 'Spaces' exist and creates the missing ones if needed.
+#
+
+proc ::textutil::tabify::checkArr { num } {
+    variable TabLen2
+    variable Spaces
+
+    if { $num > $TabLen2 } {
+	for { set i [expr {$TabLen2 + 1}] } { $i <= $num } { incr i } {
+	    set Spaces($i) [strRepeat " " $i]
+	}
+	set TabLen2 $num
+    }
+}
+
+
+# untabifyLine: Works on a single line of text, replacing tabs with enough
+#		spaces to get to the next tab position.
+#		Returns the (possibly modified) line.
+#
+# The procedure is straight forward:
+#	- Find the next tab.
+#	- Calculate the next tab position following it.
+#	- Delete the tab and insert as many spaces as needed to get there.
+#
+
+proc ::textutil::tabify::untabifyLine { line num } {
+    variable Spaces
+
+    set currPos 0
+    while { 1 } {
+	set currPos [string first \t $line $currPos]
+	if { $currPos == -1 } {
+	    # no more tabs
+	    break
+	}
+
+	# how far is the next tab position ?
+	set dist [expr {$num - ($currPos % $num)}]
+	# replace '\t' at $currPos with $dist spaces
+	set line [string replace $line $currPos $currPos $Spaces($dist)]
+
+	# set up for next round (not absolutely necessary but maybe a trifle
+	# more efficient)
+	incr currPos $dist
+    }
+    return $line
+}
+
+# tabify2: Replace all 'appropriate' spaces as discussed above with tabs.
+#	'string' might hold any number of lines, 'num' is the requested tab size.
+#	Returns (possibly modified) 'string'.
+#
+proc ::textutil::tabify::tabify2 { string { num 8 } } {
+
+    # split string into individual lines
+    set inLst [split $string \n]
+
+    # now work on each line
+    set outLst [list]
+    foreach line $inLst {
+	lappend outLst [tabifyLine $line $num]
+    }
+
+    # return all as one string
+    return [join $outLst \n]
+}
+
+
+# untabify2: Replace all tabs with the appropriate number of spaces.
+#	'string' might hold any number of lines, 'num' is the requested tab size.
+#	Returns (possibly modified) 'string'.
+#
+proc ::textutil::tabify::untabify2 { string { num 8 } } {
+
+    # assure array 'Spaces' is set up 'comme il faut'
+    checkArr $num
+
+    set inLst [split $string \n]
+
+    set outLst [list]
+    foreach line $inLst {
+	lappend outLst [untabifyLine $line $num]
+    }
+
+    return [join $outLst \n]
+}
+
+
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::tabify {
+    variable TabLen  8
+    variable TabStr  [strRepeat " " $TabLen]
+
+    namespace export tabify untabify tabify2 untabify2
+    
+    # The proc 'untabify2' uses the following variables for efficiency.
+    # Since a tab can be replaced by one up to 'tab size' spaces, it is handy
+    # to have the appropriate 'space strings' available. This is the use of
+    # the array 'Spaces', where 'Spaces(n)' contains just 'n' spaces.
+    # The variable 'TabLen2' remembers the biggest tab size used.
+
+    variable  TabLen2 0
+    variable  Spaces
+    array set Spaces {0 ""}
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::tabify 0.7
+# trim.tcl --
+#
+#	Various ways of trimming a string.
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2000      by Eric Melski <ericm@ajubasolutions.com>
+# Copyright (c) 2001-2006 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+# 
+# RCS: @(#) $Id: trim.tcl,v 1.5 2006/04/21 04:42:28 andreas_kupries Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+
+namespace eval ::textutil::trim {}
+
+# ### ### ### ######### ######### #########
+## API implementation
+
+proc ::textutil::trim::trimleft {text {trim "[ \t]+"}} {
+    regsub -line -all -- [MakeStr $trim left] $text {} text
+    return $text
+}
+
+proc ::textutil::trim::trimright {text {trim "[ \t]+"}} {
+    regsub -line -all -- [MakeStr $trim right] $text {} text
+    return $text
+}
+
+proc ::textutil::trim::trim {text {trim "[ \t]+"}} {
+    regsub -line -all -- [MakeStr $trim left]  $text {} text
+    regsub -line -all -- [MakeStr $trim right] $text {} text
+    return $text
+}
+
+
+
+# @c Strips <a prefix> from <a text>, if found at its start.
+#
+# @a text: The string to check for <a prefix>.
+# @a prefix: The string to remove from <a text>.
+#
+# @r The <a text>, but without <a prefix>.
+#
+# @i remove, prefix
+
+proc ::textutil::trim::trimPrefix {text prefix} {
+    if {[string first $prefix $text] == 0} {
+	return [string range $text [string length $prefix] end]
+    } else {
+	return $text
+    }
+}
+
+
+# @c Removes the Heading Empty Lines of <a text>.
+#
+# @a text: The text block to manipulate.
+#
+# @r The <a text>, but without heading empty lines.
+#
+# @i remove, empty lines
+
+proc ::textutil::trim::trimEmptyHeading {text} {
+    regsub -- "^(\[ \t\]*\n)*" $text {} text
+    return $text
+}
+
+# ### ### ### ######### ######### #########
+## Helper commands. Internal
+
+proc ::textutil::trim::MakeStr { string pos }  {
+    variable StrU
+    variable StrR
+    variable StrL
+
+    if { "$string" != "$StrU" } {
+        set StrU $string
+        set StrR "(${StrU})\$"
+        set StrL "^(${StrU})"
+    }
+    if { "$pos" == "left" } {
+        return $StrL
+    }
+    if { "$pos" == "right" } {
+        return $StrR
+    }
+
+    return -code error "Panic, illegal position key \"$pos\""
+}
+
+# ### ### ### ######### ######### #########
+## Data structures
+
+namespace eval ::textutil::trim {	    
+    variable StrU "\[ \t\]+"
+    variable StrR "(${StrU})\$"
+    variable StrL "^(${StrU})"
+
+    namespace export \
+	    trim trimright trimleft \
+	    trimPrefix trimEmptyHeading
+}
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil::trim 0.7
+# textutil.tcl --
+#
+#	Utilities for manipulating strings, words, single lines,
+#	paragraphs, ...
+#
+# Copyright (c) 2000      by Ajuba Solutions.
+# Copyright (c) 2000      by Eric Melski <ericm@ajubasolutions.com>
+# Copyright (c) 2002      by Joe English <jenglish@users.sourceforge.net>
+# Copyright (c) 2001-2006 by Andreas Kupries <andreas_kupries@users.sourceforge.net>
+#
+# See the file "license.terms" for information on usage and redistribution
+# of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+# 
+# RCS: @(#) $Id: textutil.tcl,v 1.17 2006/09/21 06:46:24 andreas_kupries Exp $
+
+# ### ### ### ######### ######### #########
+## Requirements
+
+package require Tcl 8.2
+
+namespace eval ::textutil {}
+
+# ### ### ### ######### ######### #########
+## API implementation
+## All through sub-packages imported here.
+
+package require textutil::string
+package require textutil::repeat
+package require textutil::adjust
+package require textutil::split
+package require textutil::tabify
+package require textutil::trim
+
+namespace eval ::textutil {
+    # Import the miscellaneous string command for public export
+
+    namespace import -force string::chop string::tail
+    namespace import -force string::cap string::uncap string::capEachWord
+    namespace import -force string::longestCommonPrefix
+    namespace import -force string::longestCommonPrefixList
+
+    # Import the repeat commands for public export
+
+    namespace import -force repeat::strRepeat repeat::blank
+
+    # Import the adjust commands for public export
+
+    namespace import -force adjust::adjust adjust::indent adjust::undent
+
+    # Import the split commands for public export
+
+    namespace import -force split::splitx split::splitn
+
+    # Import the trim commands for public export
+
+    namespace import -force trim::trim trim::trimleft trim::trimright
+    namespace import -force trim::trimPrefix trim::trimEmptyHeading
+
+    # Import the tabify commands for public export
+
+    namespace import -force tabify::tabify tabify::untabify
+    namespace import -force tabify::tabify2 tabify::untabify2
+
+    # Re-export all the imported commands
+
+    namespace export chop tail cap uncap capEachWord
+    namespace export longestCommonPrefix longestCommonPrefixList
+    namespace export strRepeat blank
+    namespace export adjust indent undent
+    namespace export splitx splitn
+    namespace export trim trimleft trimright trimPrefix trimEmptyHeading
+    namespace export tabify untabify tabify2 untabify2
+}
+
+
+# ### ### ### ######### ######### #########
+## Ready
+
+package provide textutil 0.8
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2014 Caius Project
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+
+package require textutil
+
+## \file
+# \brief Functions for converting markdown to HTML.
+
+##
+# \brief Functions for converting markdown to HTML.
+#
+namespace eval Markdown {
+
+    namespace export convert
+
+    ##
+    #
+    # Converts text written in markdown to HTML.
+    #
+    # @param markdown  currently takes as a single argument the text in markdown
+    #
+    # The output of this function is only a fragment, not a complete HTML
+    # document. The format of the output is generic XHTML.
+    #
+    proc convert {markdown} {
+        set markdown [regsub {\r\n?} $markdown {\n}]
+        set markdown [::textutil::untabify2 $markdown 4]
+        set markdown [string trimright $markdown]
+
+        # COLLECT REFERENCES
+        array unset ::Markdown::_references
+        array set ::Markdown::_references [collect_references markdown]
+
+        # PROCESS
+        return [apply_templates markdown]
+    }
+
+    #
+    # Register a language specific converter. This converter can be
+    # used for fenced code blocks to transform the code block into a
+    # prettified HTML.
+    #
+    proc register {lang_specifier converter} {
+	set ::Markdown::converter($lang_specifier) $converter
+    }
+
+    #
+    # Return a dict (attribute value pairs) of language specifiers and
+    # the number of occurrences as they were used in fenced code blocks.
+    #
+    proc get_lang_counter {} {
+	return [array get ::Markdown::lang_counter]
+    }
+
+    #
+    # Reset the language counters of fenced code blocks.
+    #
+    proc reset_lang_counter {} {
+	array unset ::Markdown::lang_counter
+    }
+
+    ## \private
+    proc collect_references {markdown_var} {
+        upvar $markdown_var markdown
+
+        set lines [split $markdown \n]
+        set no_lines [llength $lines]
+        set index 0
+
+        array set references {}
+
+        while {$index < $no_lines} {
+            set line [lindex $lines $index]
+
+            if {[regexp \
+                {^[ ]{0,3}\[((?:[^\]]|\[[^\]]*?\])+)\]:\s*(\S+)(?:\s+(([\"\']).*\4|\(.*\))\s*$)?} \
+                $line match ref link title]} \
+            {
+                set title [string trim [string range $title 1 end-1]]
+                if {$title eq {}} {
+                    set next_line [lindex $lines [expr $index + 1]]
+
+                    if {[regexp \
+                        {^(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)} \
+                        $next_line]} \
+                    {
+                        set title [string range [string trim $next_line] 1 end-1]
+                        incr index
+                    }
+                }
+                set ref [string tolower $ref]
+                set link [string trim $link {<>}]
+                set references($ref) [list $link $title]
+            }
+
+            incr index
+        }
+
+        return [array get references]
+    }
+
+    ## \private
+    proc apply_templates {markdown_var {parent {}}} {
+        upvar $markdown_var markdown
+
+        set lines    [split $markdown \n]
+        set no_lines [llength $lines]
+        set index    0
+        set result   {}
+
+        set ul_match {^[ ]{0,3}(?:\*(?!\s*\*\s*\*\s*$)|-(?!\s*-\s*-\s*$)|\+) }
+        set ol_match {^[ ]{0,3}\d+\. }
+
+        # PROCESS MARKDOWN
+        while {$index < $no_lines} {
+            set line [lindex $lines $index]
+
+            switch -regexp -matchvar matches -- $line {
+                {^\s*$} {
+                    # EMPTY LINES
+                    if {![regexp {^\s*$} [lindex $lines [expr $index - 1]]]} {
+                        append result "\n\n"
+                    }
+                    incr index
+                }
+                {^[ ]{0,3}\[(?:[^\]]|\[[^\]]*?\])+\]:\s*\S+(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)?} {
+                    # SKIP REFERENCES
+                    set next_line [lindex $lines [expr $index + 1]]
+
+                    if {[regexp \
+                        {^(?:\s+(?:([\"\']).*\1|\(.*\))\s*$)} \
+                        $next_line]} \
+                    {
+                        incr index
+                    }
+
+                    incr index
+                }
+                {^[ ]{0,3}-[ ]*-[ ]*-[- ]*$} -
+                {^[ ]{0,3}_[ ]*_[ ]*_[_ ]*$} -
+                {^[ ]{0,3}\*[ ]*\*[ ]*\*[\* ]*$} {
+                    # HORIZONTAL RULES
+                    append result "<hr/>"
+                    incr index
+                }
+                {^[ ]{0,3}#{1,6}} {
+                    # ATX STYLE HEADINGS
+                    set h_level 0
+                    set h_result {}
+
+                    while {$index < $no_lines && ![is_empty_line $line]} {
+                        incr index
+
+                        if {!$h_level} {
+                            regexp {^\s*#+} $line m
+                            set h_level [string length [string trim $m]]
+                        }
+
+                        lappend h_result $line
+
+                        set line [lindex $lines $index]
+                    }
+
+                    set h_result [\
+                        parse_inline [\
+                            regsub -all {^\s*#+\s*|\s*#+\s*$} [join $h_result \n] {} \
+                        ]\
+                    ]
+
+                    append result "<h$h_level>$h_result</h$h_level>"
+                }
+                {^[ ]{0,3}\>} {
+                    # BLOCK QUOTES
+                    set bq_result {}
+
+                    while {$index < $no_lines} {
+                        incr index
+
+                        lappend bq_result [regsub {^[ ]{0,3}\>[ ]?} $line {}]
+
+                        if {[is_empty_line [lindex $lines $index]]} {
+                            set eoq 0
+
+                            for {set peek $index} {$peek < $no_lines} {incr peek} {
+                                set line [lindex $lines $peek]
+
+                                if {![is_empty_line $line]} {
+                                    if {![regexp {^[ ]{0,3}\>} $line]} {
+                                        set eoq 1
+                                    }
+                                    break
+                                }
+                            }
+
+                            if {$eoq} { break }
+                        }
+
+                        set line [lindex $lines $index]
+                    }
+                    set bq_result [string trim [join $bq_result \n]]
+
+                    append result <blockquote>\n \
+                                    [apply_templates bq_result] \
+                                  \n</blockquote>
+                }
+                {^\s{4,}\S+} {
+                    # CODE BLOCKS
+                    set code_result {}
+
+                    while {$index < $no_lines} {
+                        incr index
+
+                        lappend code_result [html_escape [\
+                            regsub {^    } $line {}]\
+                        ]
+
+                        set eoc 0
+                        for {set peek $index} {$peek < $no_lines} {incr peek} {
+                            set line [lindex $lines $peek]
+
+                            if {![is_empty_line $line]} {
+                                if {![regexp {^\s{4,}} $line]} {
+                                    set eoc 1
+                                }
+                                break
+                            }
+                        }
+
+                        if {$eoc} { break }
+
+                        set line [lindex $lines $index]
+                    }
+                    set code_result [join $code_result \n]
+
+                    append result <pre><code> $code_result \n </code></pre>
+                }
+                {^(?:(?:`{3,})|(?:~{3,}))\{?(\S+)?\}?\s*$} {
+                    # FENCED CODE BLOCKS
+                    set code_result {}
+                    if {[string index $line 0] eq {`}} {
+                        set end_match {^`{3,}\s*$}
+                    } else {
+                        set end_match {^~{3,}\s*$}
+                    }
+		    #
+		    # A language specifier might be provided
+		    # immediately after the leading delimiters.
+		    #
+		    #     ```tcl
+		    #
+		    # The language specifier is used for two purposes:
+		    # a) As a CSS class name 
+		    #    (useful e.g. for highlight.js)
+		    # b) As a name for a source code to HTML converter.
+		    #    When such a converter is registered,
+		    #    the codeblock will be sent through this converter.
+		    #
+		    set lang_specifier [string tolower [lindex $matches end]]
+		    if {$lang_specifier ne ""} {
+			set code_CCS_class " class='$lang_specifier'"
+			incr ::Markdown::lang_counter($lang_specifier)
+		    } else {
+			set code_CCS_class ""
+		    }
+
+                    while {$index < $no_lines} {
+                        incr index
+
+                        set line [lindex $lines $index]
+
+                        if {[regexp $end_match $line]} {
+                            incr index
+                            break
+                        }
+
+                        lappend code_result $line
+                    }
+                    set code_result [join $code_result \n]
+
+		    #
+		    # If there is a converter registered, apply it on
+		    # the resulting snippet.
+		    #
+		    if {[info exists ::Markdown::converter($lang_specifier)]} {
+			set code_result [{*}$::Markdown::converter($lang_specifier) $code_result]
+		    } else {
+                        set code_result [html_escape $code_result]
+                }
+                    append result \
+			"<pre class='code'>" \
+			<code$code_CCS_class> \
+			$code_result \
+			</code></pre>
+                }
+		
+                {^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. } {
+                    # LISTS
+                    set list_result {}
+
+                    # continue matching same list type
+                    if {[regexp $ol_match $line]} {
+                        set list_type ol
+                        set list_match $ol_match
+                    } else {
+                        set list_type ul
+                        set list_match $ul_match
+                    }
+
+                    set last_line AAA
+
+                    while {$index < $no_lines} \
+                    {
+                        if {![regexp $list_match [lindex $lines $index]]} {
+                            break
+                        }
+
+                        set item_result {}
+                        set in_p 1
+                        set p_count 1
+
+                        if {[is_empty_line $last_line]} {
+                            incr p_count
+                        }
+
+                        set last_line $line
+                        set line [regsub "$list_match\\s*" $line {}]
+
+                        # prevent recursion on same line
+                        set line [regsub {\A(\d+)\.(\s+)}   $line {\1\\.\2}]
+                        set line [regsub {\A(\*|\+|-)(\s+)} $line {\\\1\2}]
+
+                        lappend item_result $line
+
+                        for {set peek [expr $index + 1]} {$peek < $no_lines} {incr peek} {
+                            set line [lindex $lines $peek]
+
+                            if {[is_empty_line $line]} {
+                                set in_p 0
+                            }\
+                            elseif {[regexp {^    } $line]} {
+                                if {!$in_p} {
+                                    incr p_count
+                                }
+                                set in_p 1
+                            }\
+                            elseif {[regexp $list_match $line]} {
+                                if {!$in_p} {
+                                    incr p_count
+                                }
+                                break
+                            }\
+                            elseif {!$in_p} {
+                                break
+                            }
+
+                            set last_line $line
+                            lappend item_result [regsub {^    } $line {}]
+                        }
+
+                        set item_result [join $item_result \n]
+
+                        if {$p_count > 1} {
+                            set item_result [apply_templates item_result li]
+                        } else {
+                            if {[regexp -lineanchor \
+                                {(\A.*?)((?:^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. ).*\Z)} \
+                                $item_result \
+                                match para rest]} \
+                            {
+                                set item_result [parse_inline $para]
+                                append item_result [apply_templates rest]
+                            } else {
+                                set item_result [parse_inline $item_result]
+                            }
+                        }
+
+                        lappend list_result "<li>$item_result</li>"
+                        set index $peek
+                    }
+
+                    append result <$list_type>\n \
+                                    [join $list_result \n] \
+                                </$list_type>\n\n
+                }
+                {^<(?:p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|script|noscript|form|fieldset|iframe|math|ins|del)} {
+                    # HTML BLOCKS
+                    set re_htmltag {<(/?)(\w+)(?:\s+\w+=(?:\"[^\"]+\"|'[^']+'))*\s*>}
+                    set buffer {}
+
+                    while {$index < $no_lines} \
+                    {
+                        while {$index < $no_lines} \
+                        {
+                            incr index
+
+                            append buffer $line \n
+
+                            if {[is_empty_line $line]} {
+                                break
+                            }
+
+                            set line [lindex $lines $index]
+                        }
+
+                        set tags [regexp -inline -all $re_htmltag  $buffer]
+                        set stack_count 0
+
+                        foreach {match type name} $tags {
+                            if {$type eq {}} {
+                                incr stack_count +1
+                            } else {
+                                incr stack_count -1
+                            }
+                        }
+
+                        if {$stack_count == 0} { break }
+                    }
+
+                    append result $buffer
+                }
+                {(?:^\s{0,3}|[^\\]+)\|} {
+                    # SIMPLE TABLES
+                    set cell_align {}
+                    set row_count 0
+
+                    while {$index < $no_lines} \
+                    {
+                        # insert a space between || to handle empty cells
+                        set row_cols [regexp -inline -all {(?:[^|]|\\\|)+} \
+                            [regsub -all {\|(?=\|)} [string trim $line] {| }] \
+                        ]
+
+                        if {$row_count == 0} \
+                        {
+                            set sep_cols [lindex $lines [expr $index + 1]]
+
+                            # check if we have a separator row
+                            if {[regexp {^\s{0,3}\|?(?:\s*:?-+:?(?:\s*$|\s*\|))+} $sep_cols]} \
+                            {
+                                set sep_cols [regexp -inline -all {(?:[^|]|\\\|)+} \
+                                    [string trim $sep_cols]]
+
+                                foreach {cell_data} $sep_cols \
+                                {
+                                    switch -regexp $cell_data {
+                                        {:-*:} {
+                                            lappend cell_align center
+                                        }
+                                        {:-+} {
+                                            lappend cell_align left
+                                        }
+                                        {-+:} {
+                                            lappend cell_align right
+                                        }
+                                        default {
+                                            lappend cell_align {}
+                                        }
+                                    }
+                                }
+
+                                incr index
+                            }
+
+                            append result "<table class=\"table\">\n"
+                            append result "<thead>\n"
+                            append result "  <tr>\n"
+
+                            if {$cell_align ne {}} {
+                                set num_cols [llength $cell_align]
+                            } else {
+                                set num_cols [llength $row_cols]
+                            }
+
+                            for {set i 0} {$i < $num_cols} {incr i} \
+                            {
+                                if {[set align [lindex $cell_align $i]] ne {}} {
+                                    append result "    <th style=\"text-align: $align\">"
+                                } else {
+                                    append result "    <th>"
+                                }
+
+                                append result [parse_inline [string trim \
+                                    [lindex $row_cols $i]]] </th> "\n"
+                            }
+
+                            append result "  </tr>\n"
+                            append result "</thead>\n"
+                        } else {
+                            if {$row_count == 1} {
+                                append result "<tbody>\n"
+                            }
+
+                            append result "  <tr>\n"
+
+                            if {$cell_align ne {}} {
+                                set num_cols [llength $cell_align]
+                            } else {
+                                set num_cols [llength $row_cols]
+                            }
+
+                            for {set i 0} {$i < $num_cols} {incr i} \
+                            {
+                                if {[set align [lindex $cell_align $i]] ne {}} {
+                                    append result "    <td style=\"text-align: $align\">"
+                                } else {
+                                    append result "    <td>"
+                                }
+
+                                append result [parse_inline [string trim \
+                                    [lindex $row_cols $i]]] </td> "\n"
+                            }
+
+                            append result "  </tr>\n"
+                        }
+
+                        incr row_count
+
+                        set line [lindex $lines [incr index]]
+
+                        if {![regexp {(?:^\s{0,3}|[^\\]+)\|} $line]} {
+                            switch $row_count {
+                                1 {
+                                    append result "</table>\n"
+                                }
+                                default {
+                                    append result "</tbody>\n"
+                                    append result "</table>\n"
+                                }
+                            }
+
+                            break
+                        }
+                    }
+                }
+                default {
+                    # PARAGRAPHS AND SETTEXT STYLE HEADERS
+                    set p_type p
+                    set p_result {}
+
+                    while {($index < $no_lines) && ![is_empty_line $line]} \
+                    {
+                        incr index
+
+                        switch -regexp $line {
+                            {^[ ]{0,3}=+$} {
+                                set p_type h1
+                                break
+                            }
+                            {^[ ]{0,3}-+$} {
+                                set p_type h2
+                                break
+                            }
+                            {^[ ]{0,3}(?:\*|-|\+) |^[ ]{0,3}\d+\. } {
+                                if {$parent eq {li}} {
+                                    incr index -1
+                                    break
+                                } else {
+                                    lappend p_result $line
+                                }
+                            }
+                            {^[ ]{0,3}-[ ]*-[ ]*-[- ]*$} -
+                            {^[ ]{0,3}_[ ]*_[ ]*_[_ ]*$} -
+                            {^[ ]{0,3}\*[ ]*\*[ ]*\*[\* ]*$} -
+                            {^[ ]{0,3}#{1,6}} \
+                            {
+                                incr index -1
+                                break
+                            }
+                            default {
+                                lappend p_result $line
+                            }
+                        }
+
+                        set line [lindex $lines $index]
+                    }
+
+                    set p_result [\
+                        parse_inline [\
+                            string trim [join $p_result \n]\
+                        ]\
+                    ]
+
+                    if {[is_empty_line [regsub -all {<!--.*?-->} $p_result {}]]} {
+                        # Do not make a new paragraph for just comments.
+                        append result $p_result
+                    } else {
+                        append result "<$p_type>$p_result</$p_type>"
+                    }
+                }
+            }
+        }
+
+        return $result
+    }
+
+    ## \private
+    proc parse_inline {text} {
+        set text [regsub -all -lineanchor {[ ]{2,}$} $text <br/>]
+
+        set index 0
+        set result {}
+
+        set re_backticks   {\A`+}
+        set re_whitespace  {\s}
+        set re_inlinelink  {\A\!?\[((?:[^\]]|\[[^\]]*?\])+)\]\s*\(\s*((?:[^\s\)]+|\([^\s\)]+\))+)?(\s+([\"'])(.*)?\4)?\s*\)}
+        set re_reflink     {\A\!?\[((?:[^\]]|\[[^\]]*?\])+)\](?:\s*\[((?:[^\]]|\[[^\]]*?\])*)\])?}
+        set re_htmltag     {\A</?\w+\s*>|\A<\w+(?:\s+\w+=(?:\"[^\"]+\"|\'[^\']+\'))*\s*/?>}
+        set re_autolink    {\A<(?:(\S+@\S+)|(\S+://\S+))>}
+        set re_comment     {\A<!--.*?-->}
+        set re_entity      {\A\&\S+;}
+
+        while {[set chr [string index $text $index]] ne {}} {
+            switch $chr {
+                "\\" {
+                    # ESCAPES
+                    set next_chr [string index $text [expr $index + 1]]
+
+                    if {[string first $next_chr {\`*_\{\}[]()#+-.!>|}] != -1} {
+                        set chr $next_chr
+                        incr index
+                    }
+                }
+                {_} -
+                {*} {
+                    # EMPHASIS
+                    if {[regexp $re_whitespace [string index $result end]] &&
+                        [regexp $re_whitespace [string index $text [expr $index + 1]]]} \
+                    {
+                        #do nothing
+                    } \
+                    elseif {[regexp -start $index \
+                        "\\A(\\$chr{1,3})((?:\[^\\$chr\\\\]|\\\\\\$chr)*)\\1" \
+                        $text m del sub]} \
+                    {
+                        switch [string length $del] {
+                            1 {
+                                append result "<em>[parse_inline $sub]</em>"
+                            }
+                            2 {
+                                append result "<strong>[parse_inline $sub]</strong>"
+                            }
+                            3 {
+                                append result "<strong><em>[parse_inline $sub]</em></strong>"
+                            }
+                        }
+
+                        incr index [string length $m]
+                        continue
+                    }
+                }
+                {`} {
+                    # CODE
+                    regexp -start $index $re_backticks $text m
+                    set start [expr $index + [string length $m]]
+
+                    if {[regexp -start $start -indices $m $text m]} {
+                        set stop [expr [lindex $m 0] - 1]
+
+                        set sub [string trim [string range $text $start $stop]]
+
+                        append result "<code>[html_escape $sub]</code>"
+                        set index [expr [lindex $m 1] + 1]
+                        continue
+                    }
+                }
+                {!} -
+                {[} {
+                    # LINKS AND IMAGES
+                    if {$chr eq {!}} {
+                        set ref_type img
+                    } else {
+                        set ref_type link
+                    }
+
+                    set match_found 0
+
+                    if {[regexp -start $index $re_inlinelink $text m txt url ign del title]} {
+                        # INLINE
+                        incr index [string length $m]
+
+                        set url [html_escape [string trim $url {<> }]]
+                        set txt [parse_inline $txt]
+                        set title [parse_inline $title]
+
+                        set match_found 1
+                    } elseif {[regexp -start $index $re_reflink $text m txt lbl]} {
+                        if {$lbl eq {}} {
+                            set lbl [regsub -all {\s+} $txt { }]
+                        }
+
+                        set lbl [string tolower $lbl]
+
+                        if {[info exists ::Markdown::_references($lbl)]} {
+                            lassign $::Markdown::_references($lbl) url title
+
+                            set url [html_escape [string trim $url {<> }]]
+                            set txt [parse_inline $txt]
+                            set title [parse_inline $title]
+
+                            # REFERENCED
+                            incr index [string length $m]
+                            set match_found 1
+                        }
+                    }
+
+                    # PRINT IMG, A TAG
+                    if {$match_found} {
+                        if {$ref_type eq {link}} {
+                            if {$title ne {}} {
+                                append result "<a href=\"$url\" title=\"$title\">$txt</a>"
+                            } else {
+                                append result "<a href=\"$url\">$txt</a>"
+                            }
+                        } else {
+                            if {$title ne {}} {
+                                append result "<img src=\"$url\" alt=\"$txt\" title=\"$title\"/>"
+                            } else {
+                                append result "<img src=\"$url\" alt=\"$txt\"/>"
+                            }
+                        }
+
+                        continue
+                    }
+                }
+                {<} {
+                    # HTML TAGS, COMMENTS AND AUTOLINKS
+                    if {[regexp -start $index $re_comment $text m]} {
+                        append result $m
+                        incr index [string length $m]
+                        continue
+                    } elseif {[regexp -start $index $re_autolink $text m email link]} {
+                        if {$link ne {}} {
+                            set link [html_escape $link]
+                            append result "<a href=\"$link\">$link</a>"
+                        } else {
+                            set mailto_prefix "mailto:"
+                            if {![regexp "^${mailto_prefix}(.*)" $email mailto email]} {
+                                # $email does not contain the prefix "mailto:".
+                                set mailto "mailto:$email"
+                            }
+                            append result "<a href=\"$mailto\">$email</a>"
+                        }
+                        incr index [string length $m]
+                        continue
+                    } elseif {[regexp -start $index $re_htmltag $text m]} {
+                        append result $m
+                        incr index [string length $m]
+                        continue
+                    }
+
+                    set chr [html_escape $chr]
+                }
+                {&} {
+                    # ENTITIES
+                    if {[regexp -start $index $re_entity $text m]} {
+                        append result $m
+                        incr index [string length $m]
+                        continue
+                    }
+
+                    set chr [html_escape $chr]
+                }
+                {>} -
+                {'} -
+                "\"" {
+                    # OTHER SPECIAL CHARACTERS
+                    set chr [html_escape $chr]
+                }
+                default {}
+            }
+
+            append result $chr
+            incr index
+        }
+
+        return $result
+    }
+
+    ## \private
+    proc is_empty_line {line} {
+        return [regexp {^\s*$} $line]
+    }
+
+    ## \private
+    proc html_escape {text} {
+        return [string map {& &amp; < &lt; > &gt; \" &quot;} $text]
+    }
+}
+
+package provide Markdown 1.1
+
+##############################################################################
+#
+#  Author        : Dr. Detlef Groth
+#  Created By    : Dr. Detlef Groth
+#  Created       : Sat Mar 7 22:17:34 2020
+#  Last Modified : <201109.1846>
+#
+#  Description	 : plugin für mkdoc to convert Roxygen2 documention
+#                  nach Markdown
+#
+#	
+##############################################################################
+#
+#  Copyright (c) 2020 Dr. Detlef Groth.
+# 
+#
+#  License: MIT 
+# 
+##############################################################################
+package provide mkdoc::rox2md 0.1
+
+namespace eval ::mkdoc {}
+
+proc ::mkdoc::rox2md {infile outfile} {
+    set pkgname [lindex [split [file dirname $infile] "/"] end-1]
+    set basename [file rootname [file tail [file tail $infile]]]
+    # converts an R roxgene2 format into markdown
+    # todo:
+    # - html mode
+    # - rox2html
+    # - name tag, multiple files from same R file
+    set filename $infile
+    set res ""
+    set nblock 0
+    set ddict [dict create] ;# all other parts
+    set fdict [dict create] ;# first title part
+    array set c [list title "" description "" details "" examples "" \
+                 section "" usage "" seealso "" references "" return "" \
+                 keywords "" param "" funcname "" alias "" args "" type ""]
+    if [catch {open $filename r} infh] {
+        puts stderr "Cannot open $filename: $infh"
+        exit
+    } else {
+        set region "START"
+        while {[gets $infh line] >= 0} {
+            if {[regexp {^\s*#'.+%}  $line]} {
+                set line [regsub -all {\\%} $line "%"]
+            }
+            if {[regexp {^\s*#'\s+@title (.+)} $line -> title]} {
+                incr nblock
+                if {$nblock == 2} {
+                    set dkey [regsub {\$} $c(funcname) "_"]
+                    foreach key [array names c] {
+                        dict set fdict $dkey $key $c($key)
+                        set c($key) ""
+                    }
+                } elseif {$nblock > 2} {
+                    set dkey [regsub {\$} $c(funcname) "_"]
+                    foreach key [array names c] {
+                        dict set ddict $dkey $key $c($key)
+                        set c($key) ""
+                    }
+                }
+                append c(title) "$title\n"
+                #puts $out "# $title"
+                set region TITLE
+            } elseif {[regexp {^\s*#'\s+@description (.+)} $line -> descr]} {
+                set region DESCRIPTION
+                #puts $out "\n## DESCRIPTION\n\n> $descr"
+                append c(description) "$descr\n"
+            } elseif {[regexp {^\s*#'\s+@section\s+Details:(.*)} $line -> det]} {
+                set region DETAILS
+                #puts $out "\n## DETAILS\n\n> $det"
+                append c(details) "$det\n"
+            } elseif {[regexp {^\s*#'\s+@details (.*)} $line -> det]} {
+                set region DETAILS
+                #puts $out "\n## DETAILS\n\n> $det"
+                append c(details) "$det\n"
+            } elseif {[regexp {^\s*#'\s+@section (.*):} $line -> section]} {
+                set region SECTION
+                #puts $out "\n## [string toupper $section]\n\n"
+                append c(section) "\n## [string toupper $section]\n\n"
+            } elseif {[regexp {^\s*#'\s+@usage (.+)} $line -> txt]} {
+                set region USAGE
+                #puts $out "\n## USAGE\n\n> $txt"
+                append c(usage)  " $txt\n"
+            } elseif {[regexp {^\s*#'\s+@(return|format) (.*)} $line -> flag text]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                }
+                set region RETURN
+                #puts $out "\n## VALUE\n\n> $txt"
+                append c(return) "- $text\n"
+                
+            } elseif {[regexp {^\s*#'\s+@references *(.*)} $line -> txt]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                }
+                set region REFERENCES
+                #puts $out "\n## REFERENCES\n\n> $txt"
+                append c(references)  "$txt\n"
+            } elseif {[regexp {^\s*#'\s+@seealso\s*(.*)} $line -> txt]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                }
+                set region SEEALSO
+                #puts $out "\n## SEE ALSO\n\n> $txt"
+                append c(seealso) "$txt\n"
+            } elseif {[regexp {^\s*#'\s+@keywords\s*(.*)} $line -> txt]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                }
+                set region KEYWORDS
+                #puts $out "\n## KEYWORDS\n\n> $txt"
+                append c(keywords) "\n## KEYWORDS\n\n> $txt\n"
+            } elseif {[regexp {^\s*#'\s+@examples\s*(.*)} $line -> txt]} {
+                set region EXAMPLES
+                #puts $out "\n## EXAMPLES\n\n```$txt"
+                append c(examples) "```$txt\n"
+            } elseif {[regexp {^\s*#'\s+@author\s*(.*)} $line -> txt]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                }
+                set region AUTHORS
+                #puts $out "\n## AUTHORS\n\n> $txt"
+                append c(author) "$txt\n"
+            } elseif {[regexp {^\s*#'\s+@param\s+([^\s]+)\s(.+)} $line -> param descr]} {
+                if {$region ne "PARAM"} {
+                    set region PARAM
+                    #puts $out "\n*ARGUMENTS*\n> "
+                }
+                #puts $out "- *$param*: $descr"
+                append c(param) "- *$param*: $descr\n"
+            } elseif {[regexp {\s*#'\s+@([a-z]+)} $line -> txt]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                    set region [string toupper $txt]
+                }
+                #  puts $out "$txt"
+            } elseif {[regexp {\s*#'\s+\\(describe|enumerate)} $line -> reg]} {
+                set iregion $reg
+                set sec [string tolower $region]
+                append c($sec) "\n"
+                continue
+            } elseif {[regexp {\s*#' \}\s*$} $line] || [regexp {\s*#'\s+\\dontrun} $line]} {
+                # skip dontrun finish regions etc
+                continue
+            } elseif {[regexp {\s*#'\s+\\item{(.+)}{(.+)}} $line -> item text]} {
+                set sec [string tolower $region]
+                if {$iregion eq "enumerate"} {
+                    #puts $out "1. *${item}* - $text"
+                    append c($sec) "1. ${item} - $text\n"
+                } else {
+                    #puts $out "- *${item}* - $text"
+                    append c($sec) "- ${item} - $text\n"
+                }
+            } elseif {[regexp {\s*#'\s+\\item\s+(.+)} $line -> text]} {
+                set sec [string tolower $region]
+                if {$region eq "enumerate"} {
+                    #puts $out "1. $text"
+                    append c($sec) "1. $text\n"
+                } else {
+                    #puts $out "- $text"
+                    append c($sec) "- $text\n"
+                }
+            } elseif {$region eq "DETAILS" && [regexp {\s*#'\s+([A-Za-z0-9]+.+)} $line -> text]} {
+                set sec [string tolower $region]
+                append c($sec) "$text\n"
+            } elseif {$region eq "DETAILS" && [regexp {\s*#'\s*$} $line]} {
+                set sec [string tolower $region]
+                append c($sec) "\n"
+            } elseif {[regexp {\s*#'\s*(.+)} $line -> text]} {
+                if {$region ne "IGNORE"} {
+                    set sec [string tolower $region]
+                    #puts $out "$text"
+                    set text [regsub -all {\\code\{([^\}]+)\}} $text "`\\1`"]
+                    append c($sec) "$text\n"
+                }
+            } elseif {![regexp {\s*#'} $line]} {
+                if {$region eq "EXAMPLES"} {
+                    #puts $out "```"
+                    append c(examples) "```\n"
+                    set region START
+                }
+                #  puts $out "$txt"
+            } 
+            if {$region ne "START"} {
+                if {[regexp {^([a-zA-Z][^- =<]+)\s*(=|<-)} $line -> funcname] || [regexp {^\s*(NULL)} $line -> funcname]} {
+                    if {[regexp function $line]} {
+                        set c(type) function
+                    } else {
+                        set c(type) object
+                    }
+                    if {[regexp {\((.*)\)\s*\{} $line -> args]} {
+                        if {$args eq ""} {
+                            append c(args) " "
+                        } else {
+                            append c(args) $args
+                        }
+                        set region START
+                    } elseif {[regexp {\((.+)} $line -> args]} {
+                        append c(args) $args
+                        set region ARGS
+                    } 
+                    set c(funcname) $funcname
+                } elseif {$region eq "ARGS" && [regexp {\s+(.+)\)\s*\{} $line -> args]} {
+                    append c(args) $args
+                    set region START
+                } elseif {$region eq "ARGS" && [regexp {\s+(.+)} $line -> args]} {
+                    append c(args) $args
+                }
+           }
+                      
+        }
+        close $infh
+        # last entry
+        set dkey [regsub {\$} $c(funcname) "_"]
+        if {$nblock == 0} {
+            puts stderr "Error: No documentation with roxygen2 tags found with $infile"
+            return
+        }
+        foreach key [array names c] {
+            if {$nblock == 1} {
+                dict set fdict $dkey $key $c($key)
+            } elseif {$nblock > 1}  {
+                dict set ddict $dkey $key $c($key)
+            }
+            set c($key) ""
+        }
+        set keys [list title funcname description] 
+        
+        set out [open $outfile w 0600]
+        set key [lindex [dict keys $fdict] 0]
+        if {[dict get [dict get $fdict $key] type] eq "function"} {
+            set mode S3
+            set top false
+            set ddict [dict merge $fdict $ddict]
+        } else {
+            set mode OOP
+            set top true
+            mkdoc::roxout $out $pkgname $basename [dict get $fdict $key] $top
+        }
+        set x 0
+        foreach key [lsort [dict keys $ddict]] {
+            if {[incr x] == 1 && $mode eq "OOP"} {
+                puts $out "\n\n## <a name='methods'>METHODS</a>\n\n"
+            }
+            mkdoc::roxout $out $pkgname $basename [dict get $ddict $key] false
+        }
+        
+        close $out         
+
+    }
+}
+proc ::mkdoc::roxlink { } {
+    uplevel 1 {
+        
+        if {[regexp {\\link\[([^\]]+?):([^\]]+?)(_.+)\]\{(.+?)\}} $line -> pkg bname link text]} {
+            if {$pkg eq $pkgname && $basename eq $bname} {
+                set line [regsub -all {\\link\[[^\]]+?:([^\]]+?)\]\{(.+?)\}} $line "\[\\2](#\\1)"]
+            } elseif {$pkg eq $pkgname} {
+                set line [regsub -all {\\link\[.+?:(.+)\]\{(.+?)\}} $line "\[\\2](${bname}.html#\\1)"]
+            } else {
+                set line [regsub -all {\\link\[.+?:(.+)\]\{(.+?)\}} $line "\[\\2](../../$pkg/${bname}.html#\\1)"]
+            }
+        } 
+        if {[regexp {\\link\[(.+):([^-]+)-class\]\{(.+?)\}} $line -> pkg bname link text]} {
+            if {$pkg eq $pkgname  && $basename eq $bname} {
+                #puts stderr true
+                set line [regsub -all {\\link\[.+?:([^-]+?)-class\]\{(.+?)\}} $line "\[\\2](#\\1)"]
+                #puts $line
+            } elseif {$pkg eq $pkgname} {
+                set line [regsub -all {\\link\[.+?:(.+)-class\]\{(.+?)\}} $line "\[\\2](${bname}.html)"]
+            } else {
+                set line [regsub -all {\\link\[.+?:(.+)\]\{(.+?)\}} $line "\[\\2](../../$pkg/${bname}.html#\\1)"]
+            } 
+        } 
+        set line [regsub -all {\\link\{(https?:.+?)\}} $line "\[\\1](\\1)"]
+        set line [regsub -all {\\link\[.+?:(.+)\]\{(.+?)\}} $line "\[\\2](#\\1)"]
+        set line [regsub -all {\\link\{(.+?)\}} $line "\[\\1\](\\1.html)"]
+        set line [regsub -all {\\code\{(.+?)\}} $line "`\\1`"]
+    }
+}
+
+proc ::mkdoc::roxtext { } {
+    uplevel 1 {
+        set item "> -"
+        foreach line [split $det "\n"] {
+            mkdoc::roxlink
+            if {!$top && [regexp {^\s*$} $line]} {
+                # new list items on empty line
+               set item "> -"
+           } elseif {!$top && $item eq "> -"} {
+               set line "$item $line"
+               set line [regsub {> - - } $line "> - "]
+               puts $out $line
+               set item ""
+           } else {
+               puts $out $line
+           }
+       }
+
+   }
+   
+}
+proc ::mkdoc::roxout {out pkgname basename cdict {top true}} {
+    if {$top} {
+        puts $out "# [dict get $cdict title]"
+        puts $out "## <a name=\"[dict get $cdict funcname]\">NAME</a>\n"
+        if {[dict get $cdict funcname] ne "NULL"} {
+            puts -nonewline $out "[dict get $cdict funcname] - "
+        }
+        puts $out "[dict get $cdict title]\n"
+    } else {
+        puts $out "\n## <a name=\"[regsub -all {_$} [regsub -all {__+} [regsub -all {[^.a-zA-Z0-9]} [regsub {%(.*?)>%} [dict get $cdict funcname] "\\1pipe"] "_"] _] {}]\">[dict get $cdict funcname]</a>\n"
+    }
+    if {[dict exists $cdict description]} {
+        if {$top} {
+            puts $out "## <a name=\"description\">DESCRIPTION</a>\n"
+        } else {
+            puts $out "> "
+        }
+        puts $out "[dict get $cdict description]\n"
+    }
+    if {!$top} {
+        puts -nonewline $out "> *Usage:* \n\n > - [dict get $cdict funcname]" 
+        if {[dict get $cdict args] ne ""} {
+            puts $out " ([dict get $cdict args])\n" 
+        } else {
+            puts $out "\n"
+        }
+    }
+    if {[dict exists $cdict param] && [dict get $cdict param] ne ""} {
+        if {$top} {
+            puts $out "## Arguments\n\n"
+        } else {
+            puts $out "\n> *Arguments:*\n> "
+        }
+        set par [dict get $cdict param] 
+        set par [regsub -all {\\dots} $par "..."]
+        puts $out $par
+    }
+    if {[dict exists $cdict return] && [dict get $cdict return] ne ""} {
+        if {$top} {
+            puts $out "## VALUE\n\n"
+        } else {
+            puts $out "\n> *Return value:*\n> "
+        }
+        set det [dict get $cdict return] 
+        mkdoc::roxtext 
+
+    }
+    if {[dict exists $cdict details] && [dict get $cdict details] ne ""} {
+        if {$top} {
+            puts $out "## <a name=\"details\">DETAILS</a>\n"
+        } 
+        set det [dict get $cdict details]
+        if {!$top} {
+            puts -nonewline $out "\n> *Details:*\n\n"
+        }
+        mkdoc::roxtext
+    }
+    foreach k [list references seealso] {
+        if {[dict exists $cdict $k] && [dict get $cdict $k] ne ""} {
+            set h [regsub "seealso" $k "See also"]
+            set h [regsub "references" $h "References"]
+            if {$top} {
+                puts $out "\n## <a name=\"$k\">[string toupper $h]</a>\n"
+            } else {
+                puts -nonewline $out "\n> *${h}:*\n\n> -"
+            }
+            set see [dict get $cdict $k]
+            set it ""
+            foreach line [split $see "\n"] {
+                if {[regexp {^\s*$} $line]} { continue }
+                if {!$top && [regexp {^\s*$} $line]} {
+                    set it "> - "
+                }
+                
+                mkdoc::roxlink
+                #set line [regsub -all {\\link\[.+?:(.+)\]\{(.+?)\}} $line "\[\\2\](#\\1)"]
+                #set line [regsub -all {\\link\{(.+?)\}} $line "\[\\1\](#\\1)"]
+                set line [regsub -all {\\code\{(.+)\}} $line "\\1"]
+                if {![regexp {^\s*$} $line]} {
+                    puts $out "$it $line"
+                } else {
+                    puts $out ""
+                }
+            }
+        }
+    }
+    if {[dict exists $cdict examples] && [dict get $cdict examples] ne ""} {
+        if {$top} {
+            puts $out "## EXAMPLES\n"
+            puts $out [dict get $cdict examples]
+        } else {
+            puts $out "\n> *Examples:*\n"
+            set ex [regsub -all {```} [dict get $cdict examples] {> ```}]
+            puts $out $ex
+        }
+    }
+    if {[dict exists $cdict author] && [dict get $cdict author] ne ""} {
+        if {$top} {
+            puts $out "## AUTHOR(S)\n"
+        } else {
+            puts $out "> *Author(s):*\n\n> "
+        }
+        set auths [dict get $cdict author]
+        foreach auth [split $auths "\n"] {
+            if {[regexp {[a-z]} $auth]} {
+                puts $out "- $auth"
+            }
+        }
+    }
+        
+}
+#!/bin/sh
+# A Tcl comment, whose contents don't matter \
+exec tclsh "$0" "$@"
+##############################################################################
+#  Author        : Dr. Detlef Groth
+#  Created       : Fri Nov 15 10:20:22 2019
+#  Last Modified : <201109.1919>
+#
+#  Description	 : Command line utility and package to extract Markdown documentation 
+#                  from programming code if embedded as after comment sequence #' 
+#                  manual pages and installation of Tcl files as Tcl modules.
+#                  Copy and adaptation of dgw/dgwutils.tcl
+#
+#  History       : 2019-11-08 version 0.1
+#                  2019-11-28 version 0.2
+#                  2020-02-26 version 0.3
+#	
+##############################################################################
+#
+# Copyright (c) 2019  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
+# 
+# This library is free software; you can use, modify, and redistribute it
+# for any purpose, provided that existing copyright notices are retained
+# in all copies and that this notice is included verbatim in any
+# distributions.
+# 
+# This software is distributed WITHOUT ANY WARRANTY; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+#'
+#' ---
+#' title: mkdoc::mkdoc __PKGVERSION__
+#' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' documentclass: scrartcl
+#' geometry:
+#' - top=20mm
+#' - right=20mm
+#' - left=20mm
+#' - bottom=30mm
+#' ---
+#'
+#' ## NAME
+#'
+#' **mkdoc::mkdoc**  - Tcl package and command line application to extract and format 
+#' embedded programming documentation from source code files written in Markdown and 
+#' optionally converts them into HTML.
+#'
+#' ## <a name='toc'></a>TABLE OF CONTENTS
+#' 
+#'  - [SYNOPSIS](#synopsis)
+#'  - [DESCRIPTION](#description)
+#'  - [COMMAND](#command)
+#'      - [mkdoc::mkdoc](#mkdoc)
+#'      - [mkdoc::run](#run)
+#'  - [EXAMPLE](#example)
+#'  - [BASIC FORMATTING](#format)
+#'  - [INSTALLATION](#install)
+#'  - [SEE ALSO](#see)
+#'  - [CHANGES](#changes)
+#'  - [TODO](#todo)
+#'  - [AUTHOR](#authors)
+#'  - [LICENSE AND COPYRIGHT](#license)
+#'
+#' ## <a name='synopsis'>SYNOPSIS</a>
+#' 
+#' Usage as package:
+#'
+#' ```
+#' package require mkdoc::mkdoc
+#' mkdoc::mkdoc inputfile outputfile ?-html|-md|-pandoc -css file.css?
+#' ```
+#'
+#' Usage as command line application for extraction of Markdown comments prefixed with `#'`:
+#'
+#' ```
+#' mkdoc inputfile outputfile ?--html|--md|--pandoc --css file.css?
+#' ```
+#'
+#' Usage as command line application for conversion of Markdown to HTML:
+#'
+#' ```
+#' mkdoc inputfile.md outputfile.html ?--css file.css?
+#' ```
+#'
+#' ## <a name='description'>DESCRIPTION</a>
+#' 
+#' **mkdoc::mkdoc**  extracts embedded Markdown documentation from source code files and  as well converts Markdown output to HTML if desired.
+#' The documentation inside the source code must be prefixed with the `#'` character sequence.
+#' The file extension of the output file determines the output format. File extensions can bei either `.md` for Markdown output or `.html` for html output. The latter requires the tcllib Markdown extension to be installed. If the file extension of the inputfile is *.md* and file extension of the output files is *.html* there will be simply a conversion from a Markdown to a HTML file.
+#'
+#' The file `mkdoc.tcl` can be as well directly used as a console application. An explanation on how to do this, is given in the section [Installation](#install).
+#'
+#' ## <a name='command'>COMMAND</a>
+#'
+#'  <a name="mkdoc" />
+#' **mkdoc::mkdoc** *infile outfile ?-mode -css file.css?*
+#' 
+#' > Extracts the documentation in Markdown format from *infile* and writes the documentation 
+#'    to *outfile* either in Markdown  or HTML format. 
+#' 
+#' >  - *-infile filename* - file with embedded markdown documentation
+#'   - *-outfile filename* -  name of output file extension
+#'   - *-html* - (mode) outfile should be a html file, not needed if the outfile extension is html
+#'   - *-md* - (mode) outfile should be a Markdown file, not needed if the outfile extension is md
+#'   - *-pandoc* - (mode) outfile should be a pandoc Markdown file with YAML header, needed even if the outfile extension is md
+#'   - *-css cssfile* if outfile mode is html uses the given *cssfile*
+#'     
+#' > If the *-mode* flag  (one of -html, -md, -pandoc) is not given, the output format is taken from the file extension of the output file, either *.html* for HTML or *.md* for Markdown format. This deduction from the filetype can be overwritten giving either `-html` or `-md` as command line flags. If as mode `-pandoc` is given, the Markdown markup code as well contains the YAML header.
+#'   If infile has the extension .md than conversion to html will be performed, outfile file extension
+#'   In this case must be .html. If output is html a *-css* flag can be given to use the given stylesheet file instead of the default style sheet embedded within the mkdoc code.
+#'  
+#' > Example:
+#'
+#' > ```
+#' package require mkdoc::mkdoc
+#' mkdoc::mkdoc mkdoc.tcl mkdoc.html
+#' mkdoc::mkdoc mkdoc.tcl mkdoc.rmd -md
+#' > ```
+
+package require Tcl 8.4
+if {[package provide Markdown] eq ""} {
+    package require Markdown
+}
+package provide mkdoc::mkdoc 0.4
+package provide mkdoc [package present mkdoc::mkdoc]
+namespace eval mkdoc {
+    variable mkdocfile [info script]
+    variable htmltemplate {
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="$document(title)">
+<meta name="author" content="$document(author)">
+<title>$document(title)</title>
+$document(style)
+</head>
+<body>
+}
+
+variable htmltitle {
+    <div class="title"><h1>$document(title)</h1></div>
+    <div class="author"><h3>$document(author)</h3></div>
+    <div class="date"><h3>$document(date)</h3></div>
+}
+variable mdheader {
+# $document(title)
+    
+### $document(author)
+    
+### $document(date)
+}
+
+variable style {
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+}
+} 
+
+proc mkdoc::pfirst {varname arglist} {
+    upvar $varname x
+    set varval $x
+    if {[regexp {^-} $varval]} {
+        set arglist [linsert $arglist 0 $varval]
+        set x [lindex $args end]
+        set arglist [lrange $arglist 0 end-1]
+    } else {
+        set x $varval
+    }
+    return $arglist
+}
+# argument parser for procedures
+# places all --options or -options in an array given with arrayname
+# recognises
+# -option2 value -flag1 -flag2 -option2 value
+proc mkdoc::pargs {arrayname defaults args} {
+    upvar $arrayname arga
+    array set arga $defaults
+    set args {*}$args
+    set kindex 0
+    set args [lmap i $args { regsub -- {^--} $i "-" }]
+    while {[llength $args] > 0} {
+        set a [lindex $args 0]
+        set args [lrange $args 1 end]
+        if {[regexp {^-{1,2}(.+)} $a -> opt]} {
+            if {[llength $args] == 0} {
+                # odd number - take first key
+                set key [lindex $defaults $kindex]
+                set arga($key) $opt
+            } elseif {([llength $args] > 0 && [regexp -- {^-} [lindex $args 0]]) || [llength $args] == 0} {
+                set arga($opt) true
+            } elseif {[regexp {^[^-].*} [lindex $args 0] value]} {
+                #set opt [lindex $defaults $kindex]
+                incr kindex 2
+                set arga($opt) $value
+                set args [lrange $args 1 end]
+            }
+        } 
+    }
+    
+}
+
+proc mkdoc::getPackageInformation {filename} {
+    set basename [file rootname [file tail $filename]]
+    if {[file extension $filename] in [list .tm .tcl]} {
+        if [catch {open $filename r} infh] {
+            puts stderr "Cannot open $filename: $infh"
+            exit
+        } else {
+            while {[gets $infh line] >= 0} {
+                # Process line
+                if {[regexp {^\s*package\s+provide\s+([^\s]+)\s+([.0-9a-z]+)} $line -> package version]} {
+                    return [list name $package version $version basename $basename]
+                }
+            }
+            close $infh
+        }
+    }
+    return [list name "" version "" basename $basename]
+}
+proc mkdoc::mkdoc {filename outfile args} {
+    variable mkdocfile
+    variable htmltemplate
+    variable mdheader
+    variable htmltitle
+    variable style
+    # prepare sorting methods and options
+    set dmeths [dict create]
+    set methods false
+    
+    array set pkg [getPackageInformation $filename]
+    if {[llength $args] == 1} {
+        set args {*}$args
+    }
+    ::mkdoc::pargs arg [list mode "" css ""] $args
+    set mode $arg(mode)
+    if {$mode ni [list "" html markdown man pandoc]} {
+        set file [file join [file dirname $mkdocfile] ${mode}.tcl]
+        lappend ::auto_path [file join [file dirname [info script]] ..]
+        catch { package require mkdoc::${mode} }
+        if {[lsearch [package names] mkdoc::${mode}] == -1} {
+            error "package mkdoc::${mode} for mode $mode does not exist"
+        } else {
+            mkdoc::$mode $filename $outfile
+        } 
+        return
+    }
+    if {[file extension $filename] eq [file extension $outfile]} {
+        error "Error: infile and outfile must have different file extensions"
+    }
+    if {[file extension $filename] eq ".md"} {
+        if {[file extension $outfile] ne ".html"} {
+            error "For converting Markdown files directly file extension of output file must be .html"
+        }
+        set mode "html"
+        set extract false
+    } else {
+        set extract true
+    }
+    if {$mode eq ""} {
+        if {[file extension $outfile] eq ".html"} {
+            set mode "html"
+        } elseif {[file extension $outfile] eq ".md"} {
+            set mode "markdown"
+        } else {
+            error "Unknown output file format, must be either .html or .md"
+        }
+    } else {
+        if {$mode ne "html" && $mode ne "markdown" && $mode ne "md" && $mode ne "pandoc"} {
+            error "Unknown mode, must be either -html, -md, -markdown or -pandoc"
+        } 
+    }
+    set markdown ""
+    if {$mode eq "html"} {
+        if {[package provide Markdown] eq ""} {
+            error "Error: For html mode you need package Markdown from tcllib. Download and install tcllib from http://core.tcl.tk"
+        } else {
+            package require Markdown   
+        }
+    }
+    if [catch {open $filename r} infh] {
+        puts stderr "Cannot open $filename: $infh"
+        exit
+    } else {
+        set flag false
+        while {[gets $infh line] >= 0} {
+            if {$extract} {
+                if {[regexp {^\s*#' +#include +"(.*)"} $line -> include]} {
+                    if [catch {open $include r} iinfh] {
+                        puts stderr "Cannot open $filename: $include"
+                        exit 0
+                    } else {
+                        #set ilines [read $iinfh]
+                        while {[gets $iinfh iline] >= 0} {
+                            # Process line
+                            append markdown "$iline\n"
+                        }
+                        close $iinfh
+                    }
+                } elseif {[regexp {^\s*#' ?(.*)} $line -> md]} {
+                    append markdown "$md\n"
+                }
+            } else {
+                # simple markdown to html converter
+                append markdown "$line\n"
+            }
+        }
+        close $infh
+        set titleflag false
+        array set document [list title "Documentation [file tail [file rootname $filename]]" author "NN" date  [clock format [clock seconds] -format "%Y-%m-%d"] style $style]
+        if {$arg(css) eq ""} {
+            set document(style) $style
+        } else {
+            set document(style) "<link rel='stylesheet' href='$arg(css)' type='text/css'>"
+        }
+        set mdhtml ""
+        set YAML ""
+        set indent ""
+        set header $htmltemplate
+        foreach line [split $markdown "\n"] {
+            # todo document pkgversion and pkgname
+            #set line [regsub {__PKGVERSION__} $line [package provide mkdoc::mkdoc]]
+            #set line [regsub -all {__PKGNAME__} $line mkdoc::mkdoc]
+            if {$titleflag && [regexp {^---} $line]} {
+                set titleflag false
+                set header [subst -nobackslashes -nocommands $header]
+                set htmltitle [subst -nobackslashes -nocommands $htmltitle]
+                set mdheader [subst -nobackslashes -nocommands $mdheader]
+                append YAML "$line\n"
+            } elseif {$titleflag} {
+                if {$pkg(name) ne ""} {
+                    set line [regsub -all {__PKGNAME__} $line $pkg(name)]
+                } 
+                if {$pkg(version) ne ""} {
+                    set line [regsub -all {__PKGVERSION__} $line $pkg(version)]
+                }
+                set line [regsub -all {__DATE__} $line [clock format [clock seconds] -format "%Y-%m-%d"]] 
+                set line [regsub -all {__BASENAME__} $line $pkg(basename)]
+                
+                append YAML "$line\n"
+                if {[regexp {^\s*([a-z]+): +(.+)} $line -> key value]} {
+                    if {$key eq "style"} {
+                        set document($key) "<link rel='stylesheet' href='$value' type='text/css'>"
+                        if {$arg(css) ne ""} {
+                            append document($key) "\n<link rel='stylesheet' href='$arg(css)' type='text/css'>"
+                        } 
+                    } elseif {$key in [list title date author]} {
+                        set document($key) $value
+                    }
+                }
+            } elseif {[regexp {^---} $line]} {
+                append YAML "$line\n"
+                set titleflag true
+            } elseif {[regexp {^```} $line] && $indent eq ""} {
+                append mdhtml "\n"
+                set indent "    "
+            } elseif {[regexp {^```} $line] && $indent eq "    "} {
+                set indent ""
+                append mdhtml "\n"
+            } else {
+                if {$pkg(name) ne ""} {
+                    set line [regsub -all {__PKGNAME__} $line $pkg(name)]
+                } 
+                if {$pkg(version) ne ""} {
+                    set line [regsub -all {__PKGVERSION__} $line $pkg(version)]
+                }
+                set line [regsub -all {__DATE__} $line [clock format [clock seconds] -format "%Y-%m-%d"]] 
+                set line [regsub -all {__BASENAME__} $line $pkg(basename)]
+                # sorting code start: collect and sort methods alphabetically
+                if {$methods && [regexp {^## <a\s+name} $line]} {
+                    set methods false
+                    foreach key [lsort [dict keys $dmeths]] {
+                        if {[dict get $dmeths $key] ne ""} {
+                            if {$mode eq "man"} {
+                                puts [dict get $dmeths $key]
+                            } else {
+                                append mdhtml [dict get $dmeths $key]
+                            }
+                        }
+                    }
+                    
+                }
+                if {[regexp {<a\s+name='(methods|options|commands)'>} $line]} {
+                    # clean up old keys, can't use dict unset for whatever reasons
+                    foreach key [lsort [dict keys $dmeths]] {
+                        dict set dmeths $key ""
+                    }
+                    set methods true
+                }
+                if {$methods && [regexp {[*_]{2}([-a-zA-Z0-9_]+?)[*_]{2}} $line -> meth]} {
+                    set dkey $meth
+                    dict set dmeths $dkey "$indent$line\n"
+                    continue
+                    
+                } elseif {$methods && [info exists dkey]} {
+                    set ometh [dict get $dmeths $dkey]
+                    dict set dmeths $dkey "$ometh$indent$line\n"
+                    continue
+                }
+                
+                append mdhtml "$indent$line\n"
+            }
+        }
+        if {$mode eq "html"} {
+            set htm [Markdown::convert $mdhtml]
+            set html ""
+            # synopsis fix as in tcllib with blue background
+            set synopsis false
+            foreach line [split $htm "\n"] {
+                if {[regexp {^<h2>} $line]} {
+                    set synopsis false
+                } 
+                if {[regexp -nocase {^<h2>.*Synopsis} $line]} {
+                    set synopsis true
+                }
+                if {$synopsis && [regexp {<pre>} $line]} {
+                    set line [regsub {<pre>} $line "<pre class='synopsis'>"]
+                }
+                append html "$line\n"
+            }
+            set out [open $outfile w 0644]
+            if {$extract} {
+                puts $out $header
+                puts $out $htmltitle
+            } else {
+                set header [subst -nobackslashes -nocommands $header]
+                puts $out $header
+            }
+            puts $out $html
+            puts $out "</body>\n</html>"
+            close $out
+            puts stderr "Success: file $outfile was written!"
+        } elseif {$mode eq "pandoc"} {
+            set out [open $outfile w 0644]
+            puts $out $YAML
+            puts $out $mdhtml
+            close $out
+            
+        } else {
+            set out [open $outfile w 0644]
+            puts $out $mdheader
+            puts $out $mdhtml
+            close $out
+        }
+    }
+}
+#' 
+#' <a name="run" />
+#' **mkdoc::run** *infile* 
+#' 
+#' > Source the code in infile and runs the examples in the documentation section
+#'    written with Markdown documentation. Below follows an example section which can be
+#'    run with `tclsh mkdoc.tcl mkdoc.tcl -run`
+#' 
+#' ## <a name="example">EXAMPLE</a>
+#' 
+#' ```
+#' puts "Hello mkdoc package"
+#' puts "I am in the example section"
+#' ```
+#' 
+proc mkdoc::run {argv} {
+    set filename [lindex $argv 0]
+    source $filename
+    set extext ""
+    set example false
+    set excode false
+    if [catch {open $filename r} infh] {
+        puts stderr "Cannot open $filename: $infh"
+        exit
+    } else {
+        while {[gets $infh line] >= 0} {
+            # Process line
+            if {$extext eq "" && [regexp -nocase \
+                             {^\s*#'\s+#{2,3}\s.+Example} $line]} {
+                set example true
+            } elseif {$extext ne "" && \
+                      [regexp -nocase "^\\s*#'.*\\s# demo: $extext" $line]} {
+                set excode true
+            } elseif {$example && [regexp {^\s*#'\s+>?\s*```} $line]} {
+                set example false
+                set excode true
+            } elseif {$excode && [regexp {^\s*#'\s+>?\s*```} $line]} {
+                namespace eval :: $code
+                break
+                # eval code
+            } elseif {$excode && [regexp {^\s*#'\s(.+)} $line -> c]} {
+                append code "$c\n"
+            }
+        }
+        close $infh
+        catch {
+            update idletasks
+            after 1000 
+            destroy .
+        }
+    }
+}
+if {[info exists argv0] && $argv0 eq [info script]} {
+    if {[lsearch $argv {--version}] > -1} {
+        puts "[package provide mkdoc::mkdoc]"
+        return
+    } elseif {[lsearch $argv {--license}] > -1} {
+        puts "MIT License - see manual page"
+        return
+    }
+    if {[llength $argv] < 2 || [lsearch $argv {--help}] > -1} {
+        puts "mkdoc - extract documentation in Markdown and convert it optionally into HTML"
+        puts "        Author/Copyright: @ Detlef Groth, Caputh, Germany, 2019-2020"
+        puts "        License: MIT"
+        puts "\nUsage:  [info script] inputfile outputfile ?--html|--md|--pandoc --version --run --css file.css?\n"
+        puts "     inputfile: the inputfile with embedded Markdown text after #' comments"
+        puts "     outputfile: should have either the extension html or md "
+        puts "        for automatic selection of the correct output format."  
+        puts "        Deduction of output format can be suppressed by given mode flags:"
+        puts "     --html, --md or --pandoc"
+        puts "        --html give HTML output even if outputfile extension is not html"
+        puts "        --md   give Markdown output event if outputfile extension is not md"
+        puts "        --pandoc command line argument will emmit as well the YAML header"
+        puts "          header which is a Markdown extension."
+        puts "     --css file.css: use the given stylesheet filename instead of the"
+        puts "           inbuild default on"
+        puts "     --help: shows this help page"        
+        puts "     --version: returns the package version"
+        puts "     --run: runs the example section in the inout file"        
+        puts "  Example: extract mkdoc's own embedded documentation as html:"
+        puts "       tclsh mkdoc.tcl mkdoc.tcl mkdoc.html" 
+        #        puts "        The -rox2md flag extracts roxygen2 R documentation from R script files"
+        #        puts "        and converts them into markdown"
+    } elseif {[llength $argv] == 2 && [lsearch $argv {--run}] == 1} {
+        mkdoc::run $argv 
+    } elseif {[llength $argv] == 2} {
+        mkdoc::mkdoc [lindex $argv 0] [lindex $argv 1]
+    } elseif {[llength $argv] > 2} {
+        mkdoc::mkdoc [lindex $argv 0] [lindex $argv 1] [lrange $argv 2 end]
+    }
+}
+
+#'
+#' ## <a name='format'>BASIC FORMATTING</a>
+#' 
+#' For a complete list of Markdown formatting commands consult the basic Markdown syntax at [https://daringfireball.net](https://daringfireball.net/projects/markdown/syntax). 
+#' Here just the most basic essentials  to create documentation are described.
+#' Please note, that formatting blocks in Markdown are separated by an empty line, and empty line in this documenting mode is a line prefixed with the `#'` and nothing thereafter. 
+#'
+#' **Title and Author**
+#' 
+#' Title and author can be set at the beginning of the documentation in a so called YAML header. 
+#' This header will be as well used by the document converter [pandoc](https://pandoc.org)  to handle various options for later processing if you extract not HTML but Markdown code from your documentation.
+#'
+#' A YAML header starts and ends with three hyphens. Here is the YAML header of this document:
+#' 
+#' ```
+#' #' ---
+#' #' title: mkdoc - Markdown extractor and formatter
+#' #' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' #' ---
+#' ```
+#' 
+#' Those four lines produce the two lines on top of this document. You can extend the header if you would like to process your document after extracting the Markdown with other tools, for instance with Pandoc.
+#' 
+#' You can as well specify an other style sheet, than the default by adding
+#' the following style information:
+#'
+#' ```
+#' #' ---
+#' #' title: mkdoc - Markdown extractor and formatter
+#' #' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' #' output:
+#' #'   html_document:
+#' #'     css: tufte.css
+#' #' ---
+#' ```
+#' 
+#' Please note, that the indentation is required and it is two spaces.
+#'
+#' **Headers**
+#'
+#' Headers are prefixed with the hash symbol, single hash stands for level 1 heading, double hashes for level 2 heading, etc.
+#' Please note, that the embedded style sheet centers level 1 and level 3 headers, there are intended to be used
+#' for the page title (h1), author (h3) and date information (h3) on top of the page.
+#' ```
+#' #' ## <a name="sectionname">Section title</a>
+#' #'
+#' #' Some free text that follows after the required empty 
+#' #' line above ...
+#' ```
+#'
+#' This produces a level 2 header. Please note, if you have a section name `synopsis` the code fragments thereafer will be hilighted different than the other code fragments. You should only use level 2 and 3 headers for the documentation. Level 1 header are reserved for the title.
+#' 
+#' **Lists**
+#'
+#' Lists can be given either using hyphens or stars at the beginning of a line.
+#'
+#' ```
+#' #' - item 1
+#' #' - item 2
+#' #' - item 3
+#' ```
+#' 
+#' Here the output:
+#'
+#' - item 1
+#' - item 2
+#' - item 3
+#' 
+#' A special list on top of the help page could be the table of contents list. Here is an example:
+#'
+#' ```
+#' #' ## Table of Contents
+#' #'
+#' #' - [Synopsis](#synopsis)
+#' #' - [Description](#description)
+#' #' - [Command](#command)
+#' #' - [Example](#example)
+#' #' - [Authors](#author)
+#' ```
+#'
+#' This will produce in HTML mode a clickable hyperlink list. You should however create
+#' the name targets using html code like so:
+#'
+#' ```
+#' ## <a name='synopsis'>Synopsis</a> 
+#' ```
+#' 
+#' **Hyperlinks**
+#'
+#' Hyperlinks are written with the following markup code:
+#'
+#' ```
+#' [Link text](URL)
+#' ```
+#' 
+#' Let's link to the Tcler's Wiki:
+#' ```
+#' [Tcler's Wiki](https://wiki.tcl-lang.org/)
+#' ```
+#' 
+#' produces: [Tcler's Wiki](https://wiki.tcl-lang.org/)
+#'
+#' **Indentations**
+#'
+#' Indentations are achieved using the greater sign:
+#' 
+#' ```
+#' #' Some text before
+#' #'
+#' #' > this will be indented
+#' #'
+#' #' This will be not indented again
+#' ```
+#' 
+#' Here the output:
+#'
+#' Some text before
+#' 
+#' > this will be indented
+#' 
+#' This will be not indented again
+#'
+#' Also lists can be indented:
+#' 
+#' ```
+#' > - item 1
+#'   - item 2
+#'   - item 3
+#' ```
+#'
+#' produces:
+#'
+#' > - item 1
+#'   - item 2
+#'   - item 3
+#'
+#' **Fontfaces**
+#' 
+#' Italic font face can be requested by using single stars or underlines at the beginning 
+#' and at the end of the text. Bold is achieved by dublicating those symbols:
+#' Monospace font appears within backticks.
+#' Here an example:
+#' 
+#' ```
+#' I am _italic_ and I am __bold__! But I am programming code: `ls -l`
+#' ```
+#'
+#' > I am _italic_ and I am __bold__! But I am programming code: `ls -l`
+#' 
+#' **Code blocks**
+#'
+#' Code blocks can be started using either three or more spaces after the #' sequence 
+#' or by embracing the code block with triple backticks on top and on bottom. Here an example:
+#' 
+#' ```
+#' #' ```
+#' #' puts "Hello World!"
+#' #' ```
+#' ```
+#'
+#' Here the output:
+#'
+#' ```
+#' puts "Hello World!"
+#' ```
+#'
+#' **Images**
+#'
+#' If you insist on images in your documentation, images can be embedded in Markdown with a syntax close to links.
+#' The links here however start with an exclamation mark:
+#' 
+#' ```
+#' ![image caption](filename.png)
+#' ```
+#' 
+#' The source code of mkdoc.tcl is a good example for usage of this source code 
+#' annotation tool. Don't overuse the possibilities of Markdown, sometimes less is more. 
+#' Write clear and concise, don't use fancy visual effects.
+#' 
+#' **Includes**
+#' 
+#' mkdoc in contrast to standard markdown as well support includes. Using the `#' #include "filename.md"` syntax 
+#' it is possible to include other markdown files. This might be useful for instance to include the same 
+#' header or a footer in a set of related files.
+#'
+#' ## <a name='install'>INSTALLATION</a>
+#' 
+#' The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the Markdown package from tcllib to be installed.
+#' 
+#' Installation as command line application can be done by copying the `mkdoc.tcl` as 
+#' `mkdoc` to a directory which is in your executable path. You should make this file executable using `chmod`. There exists as well a standalone script which does not need already installed tcllib package.  You can download this script named: `mkdoc-version.app` from the [chiselapp release page](https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases).
+#' 
+#' Installation as Tcl module is achieved by copying the file `mkdoc.tcl` to a place 
+#' which is your Tcl module path as `mkdoc/mkdoc-0.1.tm` for instance. See the [tm manual page](https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm)
+#'
+#' ## <a name='see'>SEE ALSO</a>
+#' 
+#' - [tcllib](https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md) for the Markdown and the textutil packages
+#' - [dgtools](https://chiselapp.com/user/dgroth/repository/tclcode) project for example help page
+#' - [pandoc](https://pandoc.org) - a universal document converter
+#' - [Ruff!](https://github.com/apnadkarni/ruff) Ruff! documentation generator for Tcl using Markdown syntax as well
+
+#' 
+#' ## <a name='changes'>CHANGES</a>
+#'
+#' - 2019-11-19 Relase 0.1
+#' - 2019-11-22 Adding direct conversion from Markdown files to HTML files.
+#' - 2019-11-27 Documentation fixes
+#' - 2019-11-28 Kit version
+#' - 2019-11-28 Release 0.2 to fossil
+#' - 2019-12-06 Partial R-Roxygen/Markdown support
+#' - 2020-01-05 Documentation fixes and version information
+#' - 2020-02-02 Adding include syntax
+#' - 2020-02-26 Adding stylesheet option --css 
+#' - 2020-02-26 Adding files pandoc.css and dgw.css
+#' - 2020-02-26 Making standalone file using pkgDeps and mk_tm
+#' - 2020-02-26 Release 0.3 to fossil
+#' - 2020-02-27 support for \_\_DATE\_\_, \_\_PKGNAME\_\_, \_\_PKGVERSION\_\_ macros  in Tcl code based on package provide line
+#' - 2020-09-01 Roxygen2 plugin
+#' - 2020-11-09 argument --run supprt
+#' - 2020-11-10 Release 0.4
+#' 
+#'
+#' ## <a name='todo'>TODO</a>
+#'
+#' - extract Roxygen2 documentation codes from R files (done)
+#' - standalone files using mk_tm module maker (done, just using cat ;)
+#' - support for \_\_PKGVERSION\_\_ and \_\_PKGNAME\_\_ replacements at least in Tcl files and via command line for other file types (done)
+#'
+#' ## <a name='authors'>AUTHOR(s)</a>
+#'
+#' The **mkdoc::mkdoc** package was written by Dr. Detlef Groth, Schwielowsee, Germany.
+#'
+#' ## <a name='license'>LICENSE AND COPYRIGHT</a>
+#'
+#' Markdown extractor and converter mkdoc::mkdoc, version __PKGVERSION__
+#'
+#' Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
+#' 
+#' This library is free software; you can use, modify, and redistribute it
+#' for any purpose, provided that existing copyright notices are retained
+#' in all copies and that this notice is included verbatim in any
+#' distributions.
+#' 
+#' This software is distributed WITHOUT ANY WARRANTY; without even the
+#' implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#'
+
+
