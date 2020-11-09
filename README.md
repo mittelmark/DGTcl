@@ -10,7 +10,10 @@ This repository contains the following tcl packages:
 ## Tcl Libraries / Applications    
 
 
-* tmdoc
+* tmdoc - embed and execute Tcl code in Markdown or LaTex documents
   * [tmdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tmdoc.html) - literate programming using Tcl for embedding Tcl code into Markdown and LaTeX documents.
   * [tmdoc Markdown based tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tutorial/tmd.html) - Tutorial about on how to use the package.
   * [tmdoc LaTeX based tutorial](https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/latex/tmdoc-template.pdf)
+
+* mkdoc - extract Markdown documentation from source code files and produce HTML files
+  * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
