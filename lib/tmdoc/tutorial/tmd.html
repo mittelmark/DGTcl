@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Detlef Groth, Caputh-Schwielowsee, Germany" />
+  <meta name="dcterms.date" content="2020-11-09" />
+  <title>tmdoc::tmdoc 0.4 - Tcl Markdown processor tutorial</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../dgw.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">tmdoc::tmdoc 0.4 - Tcl Markdown processor tutorial</h1>
+<p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<p class="date">2020-11-09</p>
+</header>
+<h2 id="abstract"><a name="abstract">Abstract</a></h2>
+<p>In the last years reproducible research has gained focus from the research community. It is a type of literate programming, introduced by Donald Knuth in 1984, where code of a programming language is embedded with standard text documents, like LaTeX or Markdown documents. The code is evaluated and adds or replaces it’s own code with teh code output. Alternatively the code chunks as well as the output result can be also hidden if needed. There exist several tools which allow this type of programming/documenting, for instance <a href="https://yihui.name/knitr">knitr</a> or <a href="https://en.wikipedia.org/wiki/Sweave">Sweave</a>. Knitr is an engine for dynamic report generation especially for the statistical language R but as well supports other programming languages such as for instance Python 3, Perl, Haskell, Ruby and more than 20 others with a few limitations. Embedding of Tcl in the knitr framework is somehow difficult as it has no command line option to evaluate Tcl code on the fly. There might be workarounds by creating a Tcl command line application which allows this. I thought however, that the Tcl programming as a mature highly dynamic scripting language invented by John Ousterhout in 1988, does not need a huge framework to support literate programming. Therefore I decided to implement a literate programming package for Tcl just based on standard Tcl which is called <em>tmdoc::tmdoc</em>, short just <em>tmdoc</em>. In its current state <em>tmdoc</em> supports standard code chunks with options to display and hide code and code output, to embed inside text code evaluations and image creation. This basic subset of a literate programming environment should be sufficient to create nice technical and statistical reports, tutorials about Tcl packages and other types of documentation.</p>
+<h2 id="table-of-contents"><a name="toc">Table of Contents</a></h2>
+<ul class="incremental">
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#stut">Short Tutorial</a></li>
+<li><a href="#block">Code Block</a></li>
+<li><a href="#puts">The puts Statement</a></li>
+<li><a href="#inline">Inline Code</a></li>
+<li><a href="#errors">Error Handling</a></li>
+<li><a href="#images">Writing Images</a>
+<ul class="incremental">
+<li><a href="#images">gdtcl</a></li>
+<li><a href="#screenshot">screenshot</a></li>
+<li><a href="#canvas">canvas</a></li>
+<li><a href="#ukaz">ukaz</a></li>
+</ul></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#install">Installation</a></li>
+<li><a href="#process">Processing Information</a></li>
+</ul>
+<h2 id="introduction"><a name="intro">Introduction</a></h2>
+<p>The Tcl package <code>tmdoc::tmdoc</code> which is both a standalone command line application and as well a Tcl package is a report generator and a literate programming tool for Tcl. It can capture the results and plots or images from data analysis and works well with other packages like Tk, or gdtcl. The current text is a short tutorial on how to do literate programming with Tcl using the package. Literate programming is a style of progamming where in a text document, shorter or longer code fragments of a programming language are embedded. The document is then “weaved”, the programming code is replaced with it’s output. The produced document can thereafter be further processed to other formats.The <code>tmdoc::tmdoc</code> package supports Markdown as documentation language. Using Markdown processors like <code>pandoc</code> or the Tcl package <code>Markdown</code> the output of the <code>tmdoc</code> processor can be converted finally to other document formats like pdf or html.</p>
+<p>To give an example, below is the pipleine which was used to create the HTML document you are currently viewing:</p>
+<pre class="std"><code>tclsh tmdoc.tcl tmdoc-example.tmd &gt; tmd.md
+pandoc -i tmd.md -s --highlight-style pygments -c dgw.css  -o tmd.html
+# example for a pdf generation
+pandoc -i tmd.md -s --highlight-style pygments -c -o tmd.pdf</code></pre>
+<p>So basically the pipeline is the following:</p>
+<pre class="std"><code>      tmdoc        pandoc
+TMD --------&gt; MD ----------&gt; HTML/PDF/DOCX</code></pre>
+<p>Now the mandatory “Hello World!” example. If you embed the following text into your Markdown document, <em>tmdoc</em> will produce, after converting the document from Markdown to HTML, the following input (without the leading four spaces, nessessary here to avoid interpretation by <em>tmdoc</em>)</p>
+<pre class="std"><code>    ```{tcl}
+    puts &quot;Hello World!&quot;
+    ```</code></pre>
+<p>will produce this output:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">puts</span> <span class="st">&quot;Hello World!&quot;</span></a></code></pre></div>
+<p>Code block and/or the output can be as well hidden using chunk arguments, that will be described later in more detail. Short code fragments can be directly embedded into the text. Here an example for this approach:</p>
+<pre class="std"><code>The curent date and time is: `tcl clock format [clock seconds] -format &quot;%Y-%m-%d %H:%M&quot;`</code></pre>
+<p>This is the output:</p>
+<p>The curent date and time is: 2020-11-09 06:38</p>
+<hr />
+<h2 id="short-tutorial"><a name="short">Short Tutorial</a></h2>
+<p>Now follows a short tutorial for the features of the <em>tmdoc</em> Markdown processor. For the code blocks the following color codes are used, grey is example Tcl code which is not evaluated by Tcl, it shows mainly how the code chunks looks in the Markdown document, in creme is Tcl code which is evaluated, in blue is the output of the creme tcl code before. Red code lines indicate code errors.</p>
+<p>So here again the color codes:</p>
+<pre class="std"><code>gray: code examples which are not evaluated within this document</code></pre>
+<pre class="tclcode"><code>creme: code examples which are evaluated by Tcl</code></pre>
+<pre class="tclout"><code>blue: result output of evaluated Tcl code</code></pre>
+<pre class="tclerr"><code>red: errors resulting from Tcl code evaluations</code></pre>
+<h2 id="standard-code-block"><a name="block">Standard Code Block</a></h2>
+<p>Standard code block are started with three tickmarts at the beginning of a line and in curly brace the string tcl. Separated by a space might follow several evaluation options which will be described later in more detail.</p>
+<p>Here the Tcl-Markdown input (without the leading four spaces):</p>
+<pre class="std"><code>    ```{tcl echo=true}
+    set x 1
+    set a 1
+    set a
+    set x
+    ```</code></pre>
+<p>Please note that the indentation is neccessary only for the example here, as tmdoc is processing tmdoc inside tmdoc. So in fact there should be no four spaces at the beginning in your code.</p>
+<p>And here the resulting output:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">set</span> <span class="ot">x</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="kw">set</span> a <span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">set</span> a</a>
+<a class="sourceLine" id="cb11-4" title="4"><span class="kw">set</span> <span class="ot">x</span></a></code></pre></div>
+<pre class="tclout"><code>==&gt; 1</code></pre>
+<p>Only the last statement is returned. The arrow indicates the return value of the current code block. You should use <em>puts</em> if you need to output more than the last statement.</p>
+<h2 id="the-puts-statement"><a name="puts">The puts Statement</a></h2>
+<p>You can have several puts statements in your code which are printed before the final return value. The channel stdout is displayed as well in the results part. Also the <em>-nonewline</em> option can be used:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">puts</span> <span class="st">&quot;Hello World 1&quot;</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">puts</span> <span class="st">&quot;Hello World 2&quot;</span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="kw">set</span> <span class="ot">x</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="kw">puts</span> <span class="st">&quot;Hello World </span><span class="dt">$</span><span class="st">x&quot;</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="kw">puts</span> stdout <span class="st">&quot;Hello World [incr x]&quot;</span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="kw">puts</span><span class="ot"> -nonewline</span> <span class="st">&quot;Hello&quot;</span></a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="kw">puts</span> <span class="st">&quot; World [incr x]&quot;</span></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="kw">puts</span><span class="ot"> -nonewline</span> stdout <span class="st">&quot;Hello&quot;</span></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="kw">puts</span> stdout <span class="st">&quot; World [incr x]&quot;</span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="co"># let&#39;s reset x to one</span></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="kw">set</span> <span class="ot">x</span> <span class="dv">1</span></a></code></pre></div>
+<pre class="tclout"><code>Hello World 1
+Hello World 2
+Hello World 3
+Hello World 4
+Hello World 5
+Hello World 6
+==&gt; 1</code></pre>
+<p>You can as well write into file channels as usually:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">set</span> out <span class="kw">[open</span> <span class="kw">file</span>.ext w <span class="dv">0600</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="kw">puts</span> <span class="dt">$out</span> <span class="st">&quot;Hello File World!&quot;</span></a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="kw">close</span> <span class="dt">$out</span></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="co"># now display the content</span></a>
+<a class="sourceLine" id="cb15-5" title="5"><span class="kw">set</span> filename <span class="kw">file</span>.ext</a>
+<a class="sourceLine" id="cb15-6" title="6"><span class="kw">if</span> <span class="kw">[catch</span> <span class="kw">{open</span> <span class="dt">$filename</span> r<span class="kw">}</span> infh<span class="kw">]</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb15-7" title="7">    <span class="kw">puts</span> stderr <span class="st">&quot;Cannot open </span><span class="dt">$</span><span class="st">filename: </span><span class="dt">$</span><span class="st">infh&quot;</span></a>
+<a class="sourceLine" id="cb15-8" title="8">    <span class="kw">exit</span></a>
+<a class="sourceLine" id="cb15-9" title="9"><span class="kw">}</span> <span class="kw">else</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb15-10" title="10">    <span class="kw">while</span> <span class="kw">{[gets</span> <span class="dt">$infh</span> line<span class="kw">]</span> &gt;= <span class="dv">0</span><span class="kw">}</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb15-11" title="11">        <span class="kw">puts</span> stdout <span class="st">&quot;file: </span><span class="dt">$</span><span class="st">line&quot;</span></a>
+<a class="sourceLine" id="cb15-12" title="12">    <span class="kw">}</span>   </a>
+<a class="sourceLine" id="cb15-13" title="13"><span class="kw">}</span></a></code></pre></div>
+<pre class="tclout"><code>file: Hello File World!</code></pre>
+<p>To supress any output, your last statment should return an empty string:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">set</span> a <span class="dv">5</span></a>
+<a class="sourceLine" id="cb17-2" title="2"><span class="kw">set</span> a <span class="st">&quot;&quot;</span></a></code></pre></div>
+<p>Alternatively you can supress the output at all by giving an option <code>results=hide</code> to the code chunk</p>
+<pre class="std"><code>    ```{tcl results=hide}
+    set a 1
+    ```</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">set</span> a <span class="dv">1</span></a></code></pre></div>
+<p>There is now no output with 1 here to see as we used chunk option <code>results=hide</code>.</p>
+<p>You can as well supress both showing the Tcl code and the output of the Tcl code by specifying <code>results=hide</code> and <code>echo=false</code> as shown in the following example:</p>
+<pre class="std"><code>    ```{tcl results=hide,echo=false}
+    set a 2
+    ```
+    
+   Our variable a has now a value of `tcl set a` although we don&#39;t know why as the programming code is hidden.</code></pre>
+<p>Our variable a has now a value of 2 although we don’t know why.</p>
+<p>This feature can be useful if you don’t want to show in a final version of a text document how the computation was done, but only the results of this computation within the text, for instance to display date and used Tcl packages as can be seen at the very end of this document.</p>
+<h2 id="inline-code"><a name="inline">Inline Code</a></h2>
+<pre class="std"><code>Let&#39;s look what is the value of x. The value of x is `tcl set x`. Is it one??</code></pre>
+<p>Let’s look what is the value of x. The value of x is 1. Is it one??</p>
+<p>Yes it is!</p>
+<p>Now let’s try two times inline code on one line:</p>
+<pre class="std"><code>The value of x is: `tcl incr x` and now `tcl incr x`!.</code></pre>
+<p>The value of x is: 2 and now 3!. So also this works. Don’t write too long Tcl statements directly in the text. You should perform your major computations in the code blocks. Please note as well, that the inline code chunks can’t wrap over multiple lines. So opening and closing backtick must be on the same line.</p>
+<h2 id="error-handling"><a name="errors">Error Handling</a></h2>
+<p>Let’s display errors of code blocks:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">set</span> <span class="ot">y</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb23-2" title="2"><span class="kw">set</span> z</a></code></pre></div>
+<pre class="tclerr"><code>can&#39;t read &quot;z&quot;: no such variable</code></pre>
+<p>Should given an error … It does!</p>
+<p>Now check for inline code errors in text:</p>
+<pre class="std"><code>This line contains an inline code error `tcl set z`!!</code></pre>
+<p>This line contains an inline code error <em>??can’t read “z”: no such variable??</em>!!</p>
+<h2 id="writing-images"><a name="images">Writing Images</a></h2>
+<p>Displaying images generated by Tcl code is as well possible. Here an example using the <em>tclgd</em> package which is available from the <a href="https://github.com/flightaware/tcl.gd">flightaware github page</a></p>
+<p>We compile and then try to load the package:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">lappend</span> <span class="kw">auto_path</span> ../../libs</a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="kw">package</span> <span class="ot">require</span> tclgd</a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="kw">package</span> <span class="ot">provide</span> tclgd</a></code></pre></div>
+<pre class="tclout"><code>==&gt; 1.2</code></pre>
+<p>Ok, this works on my machine, let’s now create an image using <em>gdtcl</em>:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb28-1" title="1">GD <span class="ot">create</span> gd <span class="dv">200</span> <span class="dv">200</span></a>
+<a class="sourceLine" id="cb28-2" title="2"><span class="kw">set</span> blue <span class="kw">[</span>gd allocate_color <span class="dv">50</span> <span class="dv">50</span> <span class="dv">100</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="kw">set</span> white <span class="kw">[</span>gd allocate_color <span class="dv">190</span> <span class="dv">190</span> <span class="dv">210</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb28-4" title="4">gd filled_rectangle <span class="dv">20</span> <span class="dv">20</span> <span class="dv">180</span> <span class="dv">180</span> <span class="dt">$blue</span></a>
+<a class="sourceLine" id="cb28-5" title="5">gd filled_rectangle <span class="dv">40</span> <span class="dv">40</span> <span class="dv">160</span> <span class="dv">160</span> <span class="dt">$white</span></a>
+<a class="sourceLine" id="cb28-6" title="6"><span class="kw">set</span> out <span class="kw">[open</span> out.png w <span class="dv">0600</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb28-7" title="7"><span class="kw">fconfigure</span> <span class="dt">$out</span><span class="ot"> -translation</span> <span class="kw">binary</span><span class="ot"> -encoding</span> <span class="kw">binary</span></a>
+<a class="sourceLine" id="cb28-8" title="8">gd write_png <span class="dt">$out</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb28-9" title="9"><span class="kw">close</span> <span class="dt">$out</span></a></code></pre></div>
+<p>After creating the image we can display it inline using standard Markdown syntax:</p>
+<pre class="std"><code>  ![](out.png)</code></pre>
+<p>Shows the image:</p>
+<p><img src="out.png" /></p>
+<p>The last lines in the Tcl code above are slightly tedious if you need to repeat them again. So there is an alternative. Obviously you can create a <code>figure</code> procedure which gets one argument, a filename which is the file where the image should be written in.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">proc</span> figure <span class="kw">{</span>filename<span class="kw">}</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb30-2" title="2">    <span class="kw">set</span> out <span class="kw">[open</span> <span class="dt">$filename</span> w <span class="dv">0600</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb30-3" title="3">    <span class="kw">fconfigure</span> <span class="dt">$out</span><span class="ot"> -translation</span> <span class="kw">binary</span><span class="ot"> -encoding</span> <span class="kw">binary</span></a>
+<a class="sourceLine" id="cb30-4" title="4">    gd write_png <span class="dt">$out</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb30-5" title="5">    <span class="kw">close</span> <span class="dt">$out</span></a>
+<a class="sourceLine" id="cb30-6" title="6"><span class="kw">}</span></a>
+<a class="sourceLine" id="cb30-7" title="7">gd filled_rectangle <span class="dv">60</span> <span class="dv">60</span> <span class="dv">140</span> <span class="dv">140</span> <span class="dt">$blue</span></a>
+<a class="sourceLine" id="cb30-8" title="8">figure out2.png</a></code></pre></div>
+<p><img src="out2.png" /></p>
+<p>That’s better, but you can even omit the figure call by specifiying <code>fig=true</code> as an additional code chunk option. Please note, that this still requires your implementation of the <code>figure</code> procedure with the <code>filename</code> argument. The following code block with automatically create the figure and embed it afterwards, the code itself (in the creme block) will be not shown as we specified <code>echo=false</code>:</p>
+<pre class="std"><code>    ```{tcl fig=true,echo=false}
+    gd filled_rectangle 80 80 120 120 $white
+    ```</code></pre>
+<p><img src="tmdoc-example-chunk-13.png" /></p>
+<p>Sometimes you don’t want this automatic embedding because you need to have more control over the placement of the image. To achieve this, you can specify the option <code>include=false</code> and include the image later. The problem is, that you are can’t be sure what the filename will be. Per default all code chunks and images will be named using a counter automatically for you. So your filename of the image which is derived from the code chunk name might later change if you add some code before of the current code. To fix this you have to add your own label to the code chunk as can be seen in the following example. This label will then be part of the image filename.</p>
+<pre class="std"><code>    ```{tcl label=myfig,fig=true,echo=false,include=false}
+    gd filled_rectangle 90 90 110 110 $blue
+    ```</code></pre>
+<p>We can now place the image where we like and we can place it also several times. The name of the file consists of the basename of the Markdown file and the label with the png extension. It is <code>basename-label.png</code>. So:</p>
+<pre class="std"><code>    ![](tmdoc-example-myfig.png) ![](tmdoc-example-myfig.png)</code></pre>
+<p>gives us:</p>
+<p><img src="tmdoc-example-myfig.png" /> <img src="tmdoc-example-myfig.png" /></p>
+<h2 id="tk-samples-with-screenshots"><a name="screenshort">Tk samples with screenshots</a></h2>
+<p>We can also use screenshot applications to make screenshots of running Tk applications. So for instance on Unix systems the following code might work.</p>
+<pre class="std"><code>    ```{tcl}
+    package require Tk
+    toplevel .top
+    wm title .top DGApp
+    pack [button .top.btn -text &quot;Canvas Demo 1a&quot; -command { exit 0 }] \
+       -padx 10 -pady 10 -fill x -expand false
+    pack [canvas .top.c -background beige] \
+       -padx 5 -pady 5 -side top -fill both -expand yes
+    .top.c create rectangle 50 50 100 80  -fill yellow
+    .top.c postscript -file canvas.ps
+    update idletasks
+    after 200
+    exec import -window DGApp -delay 200 screenshot-1.png
+    ```</code></pre>
+<p>And you get a screenshot.</p>
+<p>You can wrap the screenshot part as explained as well again in a <code>figure</code> procedure and use the approach with <code>fig=true</code> etc as chunk options.</p>
+<h2 id="canvas-images"><a name="canvas">Canvas Images</a></h2>
+<p>As this screenshot procedure is very platform specific, I prefer to demonstrate making figures with a canvas widget. Tcl will probably have a <code>canvas snap</code> or <code>tk snap</code> command in the new Tcl/Tk 8.7 release. In Tcl/Tk 8.6 we can use the <em>tklib</em> package canvas::snap for this purpose which needs again an installation of the <em>tkimg</em> package.</p>
+<pre class="std"><code>    ```{tcl}
+    package require canvas::snap
+    pack [canvas .c -background beige] \
+        -padx 5 -pady 5 -side top -fill both -expand yes
+    .c create rectangle 50 50 100 80  -fill yellow
+    set img [canvas::snap .c]
+    $img write canvas.png -format png
+    ```</code></pre>
+<p>produces:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb36-1" title="1"><span class="kw">package</span> <span class="ot">require</span> <span class="kw">canvas</span>::snap</a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="kw">pack</span> <span class="kw">[canvas</span> .c<span class="ot"> -background</span> beige<span class="kw">]</span> \</a>
+<a class="sourceLine" id="cb36-3" title="3">    -padx <span class="dv">5</span><span class="ot"> -pady</span> <span class="dv">5</span><span class="ot"> -side</span> top<span class="ot"> -fill</span> both<span class="ot"> -expand</span> yes</a>
+<a class="sourceLine" id="cb36-4" title="4">.c <span class="ot">create</span> rectangle <span class="dv">50</span> <span class="dv">50</span> <span class="dv">100</span> <span class="dv">80</span>  -fill yellow</a>
+<a class="sourceLine" id="cb36-5" title="5"><span class="kw">set</span> img <span class="kw">[canvas</span>::snap .c<span class="kw">]</span></a>
+<a class="sourceLine" id="cb36-6" title="6"><span class="dt">$img</span> write <span class="kw">canvas</span>.png<span class="ot"> -format</span> png</a></code></pre></div>
+<pre class="std"><code>    ![](canvas.png)</code></pre>
+<p>shows the figure:</p>
+<p><img src="canvas.png" /></p>
+<p>Ok, as this basically works let’s create as well a figure procedure which does the snap on the canvas.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb38-1" title="1"><span class="kw">proc</span> figure <span class="kw">{</span>filename<span class="kw">}</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb38-2" title="2">    <span class="kw">set</span> img <span class="kw">[canvas</span>::snap .c<span class="kw">]</span></a>
+<a class="sourceLine" id="cb38-3" title="3">    <span class="dt">$img</span> write <span class="dt">$filename</span><span class="ot"> -format</span> png</a>
+<a class="sourceLine" id="cb38-4" title="4"><span class="kw">}</span></a></code></pre></div>
+<p>Now our code chunk options for the figure setting should work on the canvas as well:</p>
+<pre class="std"><code>     ```{tcl,fig=true,results=hide}
+     .c create rectangle 60 60 90 70  -fill blue
+     ```</code></pre>
+<p>This produces with the figure placed automatically:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb40-1" title="1">.c <span class="ot">create</span> rectangle <span class="dv">60</span> <span class="dv">60</span> <span class="dv">90</span> <span class="dv">70</span>  -fill blue</a></code></pre></div>
+<p><img src="tmdoc-example-chunk-17.png" /></p>
+<p>We used <code>results=hide</code> to avoid showing the return value of the rectangle function.</p>
+<p>Let’s at last in this section test the <code>include=false</code> option:</p>
+<pre class="std"><code>    ```{tcl label=rect,fig=true,results=hide,include=false}
+    .c create rectangle 65 65 85 70  -fill red
+    ```
+
+    ![](tmdoc-example-rect.png) ![](tmdoc-example-rect.png)</code></pre>
+<p>produces:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb42-1" title="1">.c <span class="ot">create</span> rectangle <span class="dv">65</span> <span class="dv">65</span> <span class="dv">85</span> <span class="dv">70</span>  -fill red</a></code></pre></div>
+<p><img src="tmdoc-example-rect.png" /> <img src="tmdoc-example-rect.png" /></p>
+<h2 id="images-with-ukaz"><a name="ukaz">Images with ukaz</a></h2>
+<p>Let’s take an other example using the <em>ukaz</em> widget from Christian Gollwitzer available at: <a href="https://github.com/auriocus/ukaz">https://github.com/auriocus/ukaz</a>. Please note, that I had to add the following delegations to the graph widgetadaptor inside the source code of <code>ukaz.tcl</code> to get <code>canvas::snap</code> working:</p>
+<pre class="std"><code>delegate option * to hull
+delegate method * to hull</code></pre>
+<p>The project page has a readme, we now just convert a part of this readme to a Tcl Markdown document. Here the text from the Readme with some small modifications from my side:</p>
+<hr />
+<p>The simplest usage looks like this:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb44-1" title="1"><span class="kw">destroy</span> .c ;<span class="co"># destroy old image example</span></a>
+<a class="sourceLine" id="cb44-2" title="2"><span class="kw">package</span> <span class="ot">require</span> ukaz</a>
+<a class="sourceLine" id="cb44-3" title="3"><span class="kw">pack</span> <span class="kw">[</span>ukaz::graph .c<span class="ot"> -xrange</span> <span class="kw">{</span><span class="fl">0.8</span> <span class="fl">4.2</span><span class="kw">}</span><span class="ot"> -width</span> <span class="dv">300</span><span class="ot"> -height</span> <span class="dv">300</span><span class="kw">]</span><span class="ot"> -expand</span> yes<span class="ot"> -fill</span> both</a>
+<a class="sourceLine" id="cb44-4" title="4"><span class="kw">set</span> data <span class="kw">{</span><span class="dv">1</span> <span class="fl">4.5</span> <span class="dv">2</span> <span class="fl">7.3</span> <span class="dv">3</span> <span class="fl">1.8</span> <span class="dv">4</span> <span class="fl">6.5</span><span class="kw">}</span></a>
+<a class="sourceLine" id="cb44-5" title="5">.c plot <span class="dt">$data</span> </a></code></pre></div>
+<p><img src="tmdoc-example-ukaz1.png" /></p>
+<p>This displays a resizable plot of the data, which is expected as a list of alternating x-y coordinates. The range of the axis, the number and placement of the the tic marks and the plot style is automatically chosen. The data can be zoomed in by dragging the left mouse button over the canvas, and zoomed out by clicking the right mouse button.</p>
+<p>The style of the plot can be adjusted by passing more options to the plot command, and by setting global options using either gnuplot-style commands or Tcl-style configure commands:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb45-1" title="1"><span class="kw">destroy</span> .c</a>
+<a class="sourceLine" id="cb45-2" title="2"><span class="kw">pack</span> <span class="kw">[</span>ukaz::graph .c<span class="ot"> -xrange</span> <span class="kw">{</span><span class="fl">0.8</span> <span class="fl">4.2</span><span class="kw">}]</span><span class="ot"> -expand</span> yes<span class="ot"> -fill</span> both</a>
+<a class="sourceLine" id="cb45-3" title="3"><span class="kw">set</span> data <span class="kw">{</span><span class="dv">1</span> <span class="fl">4.5</span> <span class="dv">2</span> <span class="fl">7.3</span> <span class="dv">3</span> <span class="fl">1.8</span> <span class="dv">4</span> <span class="fl">6.5</span><span class="kw">}</span></a>
+<a class="sourceLine" id="cb45-4" title="4">.c plot <span class="dt">$data</span> with points pointtype filled-squares color <span class="st">&quot;#A0FFA0&quot;</span> </a>
+<a class="sourceLine" id="cb45-5" title="5">.c <span class="kw">set</span> log <span class="ot">y</span></a></code></pre></div>
+<p><img src="tmdoc-example-ukaz2.png" /></p>
+<p>This displays the same data with light-green squares on a logarithmic y-axis.</p>
+<hr />
+<p>End of the readme part of the <em>ukaz</em> package. This example should show how easy Tcl Markdown can be used to document functions and usage of Tcl packages.</p>
+<h2 id="summary"><a name="summary">Summary</a></h2>
+<p>The <code>tmdoc::tmdoc</code> package provides a literate programming proccessor which extracts and evaluates Tcl code within code chunks of a Markdown documents. The code chunks are evaluated by the <code>tmdoc</code> processor and replaced with their output. Tcl code and the output can be shown or hidden due to specific configuration options for the code chunk. There is as well the possibility to display images created by Tcl within the document and inline evaluation of short Tcl commands within backtick where the first backtick is followed by the character sequence like here: <code>‘tcl set x 1’</code> (replace single quotes with backticks).</p>
+<p>Code chunks start on lines with three backticks and the character sequence tcl after a curly brace. They end at the next line which has again three backticks.</p>
+<pre class="std"><code>    ```{tcl}
+    set x 1
+    ```</code></pre>
+<p>The following options for code chunks are currently available:</p>
+<ul class="incremental">
+<li>label: Chunk label, helps in debugging and file naming if graphics files are written. default: chunk-nn where nn is the current chunk.</li>
+<li>echo: Should the Tcl code be shown, either show or hide, default: true.</li>
+<li>results: Should the output of the Tcl code evaluation be shown, default: show.</li>
+<li>fig: Does the code chunk produces a graphic, default: false. If this feature is used there must be a <code>figure</code> procedure with a filename argument which writes the figure.</li>
+<li>include: Should the created figure automatically displayed, default: false. It is as well recommended to give the chunk a label, which will be used to create the image filename.</li>
+</ul>
+<h2 id="installation"><a name="install">Installation</a></h2>
+<p>There is currently no prepared zip file. Just go to the dgroth tclcode project releases site: <a href="https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases">https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases</a> and download the latest tmdoc zip file.</p>
+<p>Unzip this file into a folder which is in your Tcl <code>auto_path</code> variable. For installing <em>tmdoc</em> as standalone application just copy the file <code>tmdoc.tcl</code> as <code>tmdoc</code> in a directory which belongs to your executable <code>PATH</code> directory and make it executable, on Unix for instance using the command <code>chmod</code>.</p>
+<h2 id="processing-information"><a name="process">Processing Information</a></h2>
+<p>For generating the document the following Tcl version and Tcl packages were used:</p>
+<ul class="incremental">
+<li>Tcl/Tk 8.6.8</li>
+<li>tmdoc::tmdoc 0.4</li>
+<li>canvas::snap 1.0.1</li>
+<li>tclgd 1.2</li>
+<li>ukaz 2.1</li>
+</ul>
+<p>Document was processed at: 2020-11-09 06:38</p>
+<p>Document processing was done within: 951 milliseconds.</p>
+<p>Let’s destroy the Tk application at the end.</p>
+<p>TODO: Do this below automatically at the end !? Might be not good if it is loaded as package inside an application as this destroy probably as well the main application, not only the toplevel of the slave interpreter.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb47-1" title="1"><span class="kw">after</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb47-2" title="2"><span class="kw">destroy</span> .</a></code></pre></div>
+</body>
+</html>
