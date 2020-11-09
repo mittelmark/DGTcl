@@ -90,9 +90,9 @@ Markdown syntax at [https://daringfireball.net](https://daringfireball.net/proje
 Tcl code is embedded as chunks into the Markdown documents using backticks. Code blocks are started with triple backticks and indicated with the the string "tcl" within curly braces. See the following example.
 
 ```
- ```{tcl}
- set x 1
- ```
+    `` `{tcl}
+    set x 1
+    `` `
 ```
 
 This would show both the Tcl code as well the output of the last statement.
@@ -100,9 +100,9 @@ This would show both the Tcl code as well the output of the last statement.
 Within the curly braces a few chunk options can be placed in the form of *prop=value* like in the example below:
 
 ```
- ```{tcl label=mlabel,echo=false,results=hide}
+ `` `{tcl label=mlabel,echo=false,results=hide}
  set x 1
- ```
+ `` `
 ```
 
 - *label=mlabel* option gives the chunk a label, sometimes useful for 
@@ -127,7 +127,7 @@ Inside standard code chunks as well images with Tcl can be generated with normal
 To support the standard chunk properties *fig=true*, optionally with *include=false* however a Tcl procedure proc must be provided. Below is an example to use the tklib package *canvas::snap* to create images using the Tk canvas.
 
 ```
- ```{tcl}
+ `` `{tcl}
  package require Tk
  package require canvas::snap
  pack [canvas .c -background beige] \
@@ -136,25 +136,25 @@ To support the standard chunk properties *fig=true*, optionally with *include=fa
     set img [canvas::snap .c]
     $img write $outfile -format png
  }
- ```
+ `` `
 ```
 
 After preparing the canvas and the figure procedure the canvas can be used for 
 making images like in the example below:
 
 ```
- ```{tcl,fig=true,results=hide}
+ `` `{tcl,fig=true,results=hide}
  .c create rectangle 60 60 90 90  -fill blue
- ```
+ `` `
 ```
 The code above will create a canvas figure and embeds it automatically. 
 If you need more control on the figure placement you can 
 use the option *include=false*
 
 ```
- ```{tcl,label=mfig,fig=true,results=hide,include=false}
+ `` `{tcl,label=mfig,fig=true,results=hide,include=false}
  .c create rectangle 65 65 85 85  -fill blue
- ```
+ `` `
 ```
 You can now manually place the figure. The filename of the figure will 
 be automatically created, it is the basename of the tmd-file  and the label.
