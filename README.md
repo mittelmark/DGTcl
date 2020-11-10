@@ -1,6 +1,6 @@
 # DGTcl - Project
 
-This repository contains the following tcl packages:
+This repository contains the following Tcl packages:
 
 ## Tk Widgets
 
