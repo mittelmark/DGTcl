@@ -17,3 +17,12 @@ This repository contains the following tcl packages:
 
 * mkdoc - extract Markdown documentation from source code files and produce HTML files
   * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
+
+## Download
+
+Currently there is no individual download for the different packages. 
+You can download the entire project using the github project-zip feature at this link:
+
+* [https://github.com/mittelmark/DGTcl/archive/master.zip](https://github.com/mittelmark/DGTcl/archive/master.zip)
+
+If the project size starts exceeding 1MB I will create individual packages.
