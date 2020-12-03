@@ -18,15 +18,15 @@
  - [COMMAND](#command)
  - [WIDGET OPTIONS](#options)
  - [WIDGET COMMANDS](#commands)
-   - [arrow](#arrow) 
-   - [background](#background)
-   - [figure](#figure)
-   - [line](#line)
-   - [mv](#mv)
-   - [oval](#oval)
-   - [rect](#rect)
-   - [spline](#spline)
-   - [text](#text)
+     - [arrow](#arrow) 
+     - [background](#background)
+     - [figure](#figure)
+     - [line](#line)
+     - [mv](#mv)
+     - [oval](#oval)
+     - [rect](#rect)
+     - [spline](#spline)
+     - [text](#text)
  - [EXAMPLE](#example)
  - [CHANGES](#changes)
  - [TODO](#todo)
@@ -264,11 +264,13 @@ Example code for this package can  be executed by running this file using the fo
 - Nov 2nd 2020 - project started
 - Nov 8th 2020 - version 0.1 released
 - Nov 10th 2020 
-  - tags for rect fixed
+    - tags for rect fixed
 - Nov 11th 2020 
-  - option for rows and columns to change the coordinate system
-  - color option for line 
-  - adding spline (with three coordinates) 
+    - option for rows and columns to change the coordinate system
+    - color option for line 
+    - adding spline (with three coordinates) 
+    - adding  tutorial
+- Dec 3rd 2020 - version 0.2
 
 ## <a name='todo'>TODO</a>
 
@@ -280,7 +282,7 @@ The **chesschart** widget was written by Detlef Groth, Schwielowsee, Germany.
 
 ## <a name='license'>LICENSE</a>
 
-Chesschart - Tcl/Tk widget to display flowcharts, version 0.1.
+Chesschart - Tcl/Tk widget to display flowcharts, version 0.2.
 
 Copyright (c) 2020  Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 
