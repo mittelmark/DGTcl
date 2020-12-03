@@ -4,7 +4,7 @@ This repository contains the following Tcl packages:
 
 ## Tk Widgets
 
-* [chesschart](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/chesschart.html) - a pure Tcl/Tk widget to make flowcharts using the chess coordinate system. Here the link to the [chesschart tutorial]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/doc/intro.html).
+* [chesschart](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/chesschart.html) - a pure Tcl/Tk widget to make flowcharts using the chess coordinate system. Here the link to the [chesschart tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/doc/intro.html).
 * [shtmlview::shtmlview](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/shtmlview/shtmlview.html) - a pure Tcl/Tk widget to render a reasonable subset of html.
 
 ## Tcl Libraries / Applications    
