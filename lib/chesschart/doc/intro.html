@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Dr. Detlef Groth" />
+  <meta name="dcterms.date" content="2020-12-03" />
+  <title>Intro to the chesschart package</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="pandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Intro to the chesschart package</h1>
+<p class="author">Dr. Detlef Groth</p>
+<p class="date">2020-12-03</p>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#example-0---the-coordinate-system">Example 0 - The Coordinate System</a></li>
+<li><a href="#example-1---hello-world">Example 1 - Hello World</a></li>
+<li><a href="#example-2---changing-the-font">Example 2 - Changing the Font</a></li>
+<li><a href="#example-3---flowchart-shapes">Example 3 - Flowchart shapes</a></li>
+<li><a href="#example-4---lines-and-arrows">Example 4 - Lines and Arrows</a></li>
+<li><a href="#example-5---splines">Example 5 - Splines</a></li>
+<li><a href="#example-6---other-coordinate-system">Example 6 - Other Coordinate System</a></li>
+<li><a href="#example-7---canvassnap-with-constant-figure-sizes">Example 7 - canvas::snap with constant figure sizes</a></li>
+<li><a href="#future-ideas">Future ideas</a></li>
+<li><a href="#session-info">Session Info</a></li>
+<li><a href="#links">Links</a></li>
+<li><a href="#copyright">Copyright</a></li>
+</ul>
+</nav>
+<h2 id="introduction">Introduction</h2>
+<p>The chesschart package allows fast creation of flowcharts using the standard Tk canvas widget where commands are added using a snit widget wrapper to to add rectangles, ovals, circles as well as arrows and lines connecting them to the canvas using an easy to remember coordinates like the chessboard one. The developer can supply as well their own coordinate system for instance a Weekday:Hour like system to implement a timing schema. It is as well possible to embed flowcharts into standard documentations like Markdown based ones. For instance this tutorial here is written using the <code>tmdoc</code> and the <code>canvas::snap</code> packages where the flowcharts as saved as png files.</p>
+<h2 id="example-0---the-coordinate-system">Example 0 - The Coordinate System</h2>
+<p>Let’s in this initial example load the package and pack a chesschart widget into our main toplevel, thereafter we add code to show the coordinate system. Here the default chessboard coordinate system is used:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">package</span> <span class="ot">require</span> chesschart</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">pack</span> <span class="kw">[frame</span> .main<span class="ot"> -background</span> white<span class="kw">]</span><span class="ot"> -side</span> top<span class="ot"> -fill</span> both<span class="ot"> -expand</span> yes<span class="ot"> -padx</span> <span class="dv">5</span><span class="ot"> -pady</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">pack</span> <span class="kw">[</span>chesschart .c<span class="ot"> -background</span> white<span class="kw">]</span><span class="ot"> -side</span> top<span class="ot"> -fill</span> both<span class="ot"> -expand</span> true</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">set</span> chart .c</a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">set</span> cols <span class="kw">[join</span> <span class="kw">[join</span> <span class="kw">[lrepeat</span> <span class="dv">4</span> <span class="kw">[lrepeat</span> <span class="dv">4</span> <span class="kw">[list</span> burlywood3 beige<span class="kw">]]</span> \</a>
+<a class="sourceLine" id="cb1-6" title="6">    <span class="kw">[lrepeat</span> <span class="dv">4</span> <span class="kw">[list</span> beige burlywood3<span class="kw">]]]]]</span></a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="kw">set</span> <span class="ot">x -1</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">foreach</span> row <span class="kw">[list</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span> <span class="dv">7</span> <span class="dv">8</span><span class="kw">]</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb1-9" title="9">        <span class="kw">foreach</span> col <span class="kw">[list</span> A B C D E F G H<span class="kw">]</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb1-10" title="10">       <span class="dt">$chart</span> rect <span class="dt">$col$row</span><span class="ot"> -width</span> <span class="dv">98</span><span class="ot"> -height</span> <span class="dv">80</span><span class="ot"> -text</span> <span class="dt">$col$row</span> \</a>
+<a class="sourceLine" id="cb1-11" title="11">        -color <span class="kw">[lindex</span> <span class="dt">$cols</span> <span class="kw">[incr</span> <span class="ot">x</span><span class="kw">]]</span></a>
+<a class="sourceLine" id="cb1-12" title="12">    <span class="kw">}</span></a>
+<a class="sourceLine" id="cb1-13" title="13"><span class="kw">}</span></a></code></pre></div>
+<p><img src="intro-chessboard.png" /></p>
+<p>Please note, that each rectangle has the tags <em>rect</em> and the coordinate like <em>E4</em>, the text on the rectangle has the tags <em>text</em> and as well the coordinate where it is placed. using the tags all standard canvas commands can be applied on the items tagged with those tags. BTW, if you would like to draw a real chessboard, you would have to modify the widget options for <em>-xincr</em> (default: 100) and <em>-yincr</em> (default: 80) so that they have the same value. Then obviously as well the the rectangle has to be a square and not a rectangle with different values for lenght and width.</p>
+<h2 id="example-1---hello-world">Example 1 - Hello World</h2>
+<p>Let’s start with the typical “Hello World example”. Before however, we just delete our items which were placed in the example above on the widget to demonstrate the coordinate system.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb2-1" title="1"><span class="dt">$chart</span> <span class="ot">delete</span> all</a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="dt">$chart</span> rect A7<span class="ot"> -text</span> <span class="st">&quot;Hello&quot;</span></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="dt">$chart</span> rect B7<span class="ot"> -text</span> <span class="st">&quot;World!&quot;</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="dt">$chart</span> line A7 B7</a></code></pre></div>
+<p><img src="intro-hello.png" /></p>
+<p>Note, that a line hast the canvas tags <em>line</em> and the coordinates <em>fromto</em> here <em>A7B7</em>. Again, you can use those tags to move, modify or erase those elements using standard canvas commands.</p>
+<h2 id="example-2---changing-the-font">Example 2 - Changing the Font</h2>
+<p>As Tk and the canvas widget supports truetype and opentype fonts, we can as well easily change the default font. I downloaded and installed here the free font <em>HVD Comic Serif Pro</em> from the dafont website: <a href="https://www.dafont.com/hvd-comic-serif.font">https://www.dafont.com/hvd-comic-serif.font</a> and installed it into my system. This is an OTF-font but truetype fonts would work as well, You can take however any font which is already on your system. Below you find code to modify existing text items using the canvas <em>itemconfigure</em> command or all newly created text items using the <em>configure</em> command of the <em>chesschart</em> widget.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">foreach</span> <span class="ot">size</span> <span class="kw">[list</span> <span class="dv">8</span> <span class="dv">10</span> <span class="dv">12</span> <span class="dv">14</span> <span class="dv">16</span> <span class="dv">18</span> <span class="dv">20</span> <span class="dv">24</span> <span class="dv">28</span><span class="kw">]</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb3-2" title="2">       <span class="kw">font</span> <span class="ot">create</span> hvd<span class="dt">$size</span><span class="ot"> -family</span> <span class="st">&quot;HVD Comic Serif Pro&quot;</span><span class="ot"> -size</span> <span class="dt">$size</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">}</span></a>
+<a class="sourceLine" id="cb3-4" title="4"> <span class="co"># configure the existing items</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="dt">$chart</span> <span class="ot">itemconfigure</span> <span class="kw">text</span><span class="ot"> -font</span> hvd14</a>
+<a class="sourceLine" id="cb3-6" title="6"></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="dt">$chart</span> <span class="ot">delete</span> all</a>
+<a class="sourceLine" id="cb3-8" title="8"> <span class="co"># configure new items</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="dt">$chart</span> <span class="ot">configure -font</span> hvd12</a>
+<a class="sourceLine" id="cb3-10" title="10"> <span class="co"># We now add two additional item with </span></a>
+<a class="sourceLine" id="cb3-11" title="11"> <span class="co"># -width 100 this is the principial grid width.</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="dt">$chart</span> rect A6<span class="ot"> -text</span> Goodbye<span class="ot"> -width</span> <span class="dv">100</span><span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span> </a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="dt">$chart</span> rect B6<span class="ot"> -text</span> World!<span class="ot"> -width</span> <span class="dv">100</span><span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span> </a></code></pre></div>
+<p><img src="intro-font.png" /></p>
+<h2 id="example-3---flowchart-shapes">Example 3 - Flowchart shapes</h2>
+<p>There are as well other shapes available. We can give to the rectangle a flag <code>-round true</code> to create rounded rectangle.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb4-1" title="1"><span class="dt">$chart</span> <span class="ot">configure -font</span> hvd8</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="dt">$chart</span> rect C7<span class="ot"> -text</span> <span class="st">&quot;rect round&quot;</span><span class="ot"> -width</span> <span class="dv">90</span><span class="ot"> -color</span> beige<span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="dt">$chart</span> rect C6<span class="ot"> -text</span> <span class="st">&quot;rect round&quot;</span><span class="ot"> -width</span> <span class="dv">90</span><span class="ot"> -color</span> beige<span class="ot"> -round</span> true<span class="ot"> -radius</span> <span class="dv">20</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="dt">$chart</span> oval D7<span class="ot"> -text</span> <span class="st">&quot;circle&quot;</span><span class="ot"> -width</span> <span class="dv">80</span><span class="ot"> -height</span> <span class="dv">80</span><span class="ot"> -color</span> beige </a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="dt">$chart</span> oval D6<span class="ot"> -text</span> <span class="st">&quot;oval&quot;</span><span class="ot"> -width</span> <span class="dv">80</span><span class="ot"> -height</span> <span class="dv">60</span><span class="ot"> -color</span> beige </a></code></pre></div>
+<p><img src="intro-shapes.png" /></p>
+<h2 id="example-4---lines-and-arrows">Example 4 - Lines and Arrows</h2>
+<p>Let’s again clean up the canvas, then we create a flow chart from left to right, Arrows are made using the arrow command with two coordinates, the starting coordinate and the end coordinate:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb5-1" title="1"><span class="dt">$chart</span> <span class="ot">delete</span> all</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="dt">$chart</span> rect A7<span class="ot"> -round</span> true<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="dt">$chart</span> rect C7<span class="ot"> -round</span> true<span class="ot"> -color</span> beige</a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="dt">$chart</span> rect E7<span class="ot"> -round</span> true<span class="ot"> -color</span> beige</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="dt">$chart</span> rect G7<span class="ot"> -round</span> true<span class="ot"> -color</span> salmon</a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="dt">$chart</span> arrow A7 C7<span class="ot"> -width</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="dt">$chart</span> arrow C7 E7<span class="ot"> -width</span> <span class="dv">8</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="dt">$chart</span> arrow E7 G7<span class="ot"> -width</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="dt">$chart</span> rect A6<span class="ot"> -round</span> true<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="dt">$chart</span> rect C6<span class="ot"> -round</span> true<span class="ot"> -color</span> beige</a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="dt">$chart</span> rect E6<span class="ot"> -round</span> true<span class="ot"> -color</span> beige</a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="dt">$chart</span> rect G6<span class="ot"> -round</span> true<span class="ot"> -color</span> salmon</a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="dt">$chart</span> line A6 C6<span class="ot"> -width</span> <span class="dv">6</span></a>
+<a class="sourceLine" id="cb5-14" title="14"><span class="dt">$chart</span> line C6 E6<span class="ot"> -width</span> <span class="dv">8</span></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="dt">$chart</span> line E6 G6<span class="ot"> -width</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="kw">puts</span> <span class="kw">[</span><span class="dt">$chart</span> <span class="ot">bbox</span> all<span class="kw">]</span></a></code></pre></div>
+<p><img src="intro-arrows.png" /></p>
+<h2 id="example-5---splines">Example 5 - Splines</h2>
+<p>We can as well add splines, currently arrow for splines are not supported. You have to add three coordinates for the spline.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb6-1" title="1"><span class="dt">$chart</span> spline A6 B4 C6<span class="ot"> -color</span> <span class="st">&quot;grey50&quot;</span><span class="ot"> -width</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="dt">$chart</span> spline C6 D4 E6<span class="ot"> -color</span> <span class="st">&quot;grey50&quot;</span><span class="ot"> -width</span> <span class="dv">8</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="dt">$chart</span> spline E6 F4 G6<span class="ot"> -color</span> <span class="st">&quot;grey50&quot;</span><span class="ot"> -width</span> <span class="dv">10</span></a></code></pre></div>
+<p><img src="intro-spline.png" /></p>
+<h2 id="example-6---other-coordinate-system">Example 6 - Other Coordinate System</h2>
+<p>For some situations it might be not appropiate to use a chessboard coordinate system. Here we modify our coordinate system to create a weekly planer. We further use the true type font Purisa which can be downloaded for free from <a href="https://www.onlinewebfonts.com/fonts/purisa">https://www.onlinewebfonts.com/fonts/purisa</a>. As this font fits nicely with flowcharts the font sizes are already defined if this font is available on your system. If you know an other nice font which has a MIT-like license and could be included directly within the package, let me know. The contact address you find below.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb7-1" title="1"><span class="dt">$chart</span> <span class="ot">delete</span> all</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="dt">$chart</span> <span class="ot">configure -rows</span> <span class="kw">[list</span> <span class="dv">06</span> <span class="dv">08</span> <span class="dv">10</span> <span class="dv">12</span> <span class="dv">14</span><span class="kw">]</span> \</a>
+<a class="sourceLine" id="cb7-3" title="3">    -columns <span class="kw">[list</span> NN Mo Tu We Th Fr Sa So<span class="kw">]</span> \</a>
+<a class="sourceLine" id="cb7-4" title="4">    -<span class="kw">font</span> purisa14</a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="dt">$chart</span> <span class="ot">configure -rectwidth</span> <span class="dv">130</span><span class="ot"> -rectheight</span> <span class="dv">70</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="dt">$chart</span> <span class="ot">configure -xincr</span> <span class="dv">150</span><span class="ot"> -yincr</span> <span class="dv">90</span></a>
+<a class="sourceLine" id="cb7-7" title="7">;<span class="co"># now we setup rows and columns</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="dt">$chart</span> <span class="kw">text</span> NN08 <span class="dv">08</span>:<span class="dv">00</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="dt">$chart</span> <span class="kw">text</span> NN10 <span class="dv">10</span>:<span class="dv">00</span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="dt">$chart</span> <span class="kw">text</span> NN12 <span class="dv">12</span>:<span class="dv">00</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="dt">$chart</span> <span class="kw">text</span> NN14 <span class="dv">14</span>:<span class="dv">00</span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="dt">$chart</span> <span class="kw">text</span> Mo06 Mon </a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="dt">$chart</span> <span class="kw">text</span> Tu06 Tue</a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="dt">$chart</span> <span class="kw">text</span> We06 Wed</a>
+<a class="sourceLine" id="cb7-15" title="15"><span class="dt">$chart</span> <span class="kw">text</span> Th06 Thu</a>
+<a class="sourceLine" id="cb7-16" title="16">;<span class="co"># next we can fill the canvas with our weekly events</span></a>
+<a class="sourceLine" id="cb7-17" title="17"><span class="dt">$chart</span> rect Mo10<span class="ot"> -text</span> AMBI(L)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="dt">$chart</span> rect Mo12<span class="ot"> -text</span> AMBI(S)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-19" title="19"></a>
+<a class="sourceLine" id="cb7-20" title="20"><span class="dt">$chart</span> rect Tu08<span class="ot"> -text</span> DBP(L)  -color <span class="st">&quot;beige&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-21" title="21"><span class="dt">$chart</span> rect Tu10<span class="ot"> -text</span> DBP(S)  -color <span class="st">&quot;salmon&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-22" title="22"><span class="dt">$chart</span> rect Tu12<span class="ot"> -text</span> DBP(Ex)<span class="ot"> -color</span> <span class="st">&quot;salmon&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="dt">$chart</span> rect Tu14<span class="ot"> -text</span> CMCN(L)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-24" title="24"></a>
+<a class="sourceLine" id="cb7-25" title="25"><span class="dt">$chart</span> rect We08<span class="ot"> -text</span> SBI(L)  -color <span class="st">&quot;beige&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-26" title="26"><span class="dt">$chart</span> rect We10<span class="ot"> -text</span> SBI(S)  -color <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-27" title="27"><span class="dt">$chart</span> rect We12<span class="ot"> -text</span> SBI(Ex)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-28" title="28"><span class="dt">$chart</span> rect Th08<span class="ot"> -text</span> SEQ(L)  -color <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-29" title="29"><span class="dt">$chart</span> rect Th10<span class="ot"> -text</span> SEQ(Ex)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a>
+<a class="sourceLine" id="cb7-30" title="30"><span class="dt">$chart</span> rect Th12<span class="ot"> -text</span> CMCN(Ex)<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span><span class="ot"> -round</span> true</a></code></pre></div>
+<p><img src="intro-coord.png" /></p>
+<h2 id="example-7---canvassnap-with-constant-figure-sizes">Example 7 - canvas::snap with constant figure sizes</h2>
+<p>The graphics here are generated using the <em>canvas::snap</em> package which selects the snap area based on the bounding box for all items on the canvas. To avoid different sizes for your canvas snaps you can start with a background. Let’s set back our coordinate system to a chessboard one:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb8-1" title="1"><span class="dt">$chart</span> <span class="ot">delete</span> all</a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="dt">$chart</span> <span class="ot">configure -rows</span> <span class="kw">[list</span> B C D E F<span class="kw">]</span> \</a>
+<a class="sourceLine" id="cb8-3" title="3">    -columns <span class="kw">[list</span> <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span> <span class="dv">6</span><span class="kw">]</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="dt">$chart</span> background B7 F2<span class="ot"> -color</span> grey80</a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="dt">$chart</span> <span class="kw">text</span> D7 <span class="st">&quot;Flowchart Example&quot;</span></a>
+<a class="sourceLine" id="cb8-6" title="6"></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="dt">$chart</span> oval D4<span class="ot"> -width</span> <span class="dv">100</span><span class="ot"> -height</span> <span class="dv">100</span><span class="ot"> -text</span> Dn<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="dt">$chart</span> oval E5<span class="ot"> -width</span> <span class="dv">80</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> Cn</a></code></pre></div>
+<pre class="tclout"><code>169 121 867 537</code></pre>
+<p><img src="intro-background.png" /></p>
+<p>Therafter we can add again our elements.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb10-1" title="1"><span class="dt">$chart</span> oval F6<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L1<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="dt">$chart</span> oval D6<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L2<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="dt">$chart</span> <span class="ot">configure -font</span> purisa18</a>
+<a class="sourceLine" id="cb10-4" title="4"><span class="dt">$chart</span> oval F5<span class="ot"> -width</span> <span class="dv">30</span><span class="ot"> -height</span> <span class="dv">30</span><span class="ot"> -text</span> M<span class="ot"> -color</span> <span class="st">&quot;grey50&quot;</span></a>
+<a class="sourceLine" id="cb10-5" title="5"><span class="dt">$chart</span> <span class="ot">configure -font</span> purisa14</a>
+<a class="sourceLine" id="cb10-6" title="6"><span class="dt">$chart</span> oval F4<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L3<span class="ot"> -color</span> <span class="st">&quot;salmon&quot;</span></a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="dt">$chart</span> oval F2<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L6<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="dt">$chart</span> oval E2<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L4<span class="ot"> -color</span> <span class="st">&quot;light blue&quot;</span></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="dt">$chart</span> oval D2<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> L5<span class="ot"> -color</span> <span class="st">&quot;salmon&quot;</span></a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="dt">$chart</span> oval C3<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> Uni<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="dt">$chart</span> oval C5<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> Tcl<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="dt">$chart</span> oval B4<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> R<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="dt">$chart</span> oval B2<span class="ot"> -width</span> <span class="dv">70</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> Py3<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="dt">$chart</span> <span class="ot">configure -font</span> purisa14</a>
+<a class="sourceLine" id="cb10-15" title="15"><span class="dt">$chart</span> oval C6<span class="ot"> -width</span> <span class="dv">90</span><span class="ot"> -height</span> <span class="dv">50</span><span class="ot"> -text</span> mkdoc<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-16" title="16"><span class="dt">$chart</span> oval B6<span class="ot"> -width</span> <span class="dv">90</span><span class="ot"> -height</span> <span class="dv">50</span><span class="ot"> -text</span> tmdoc<span class="ot"> -color</span> <span class="st">&quot;beige&quot;</span></a>
+<a class="sourceLine" id="cb10-17" title="17"><span class="dt">$chart</span> oval C2<span class="ot"> -width</span> <span class="dv">90</span><span class="ot"> -height</span> <span class="dv">70</span><span class="ot"> -text</span> Mensa<span class="ot"> -color</span> <span class="st">&quot;grey80&quot;</span></a>
+<a class="sourceLine" id="cb10-18" title="18"><span class="kw">foreach</span> <span class="kw">{</span>f t<span class="kw">}</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb10-19" title="19">    D4 E5 D4 F2 D4 E2 D4 D2 D4 C3 D4 B4 D4 C5  </a>
+<a class="sourceLine" id="cb10-20" title="20">    E5 F6 E5 F5 E5 D6 E5 F4 </a>
+<a class="sourceLine" id="cb10-21" title="21">    C5 B4 C5 B6 C5 C6</a>
+<a class="sourceLine" id="cb10-22" title="22">    C3 B2 C3 B4 C3 C2<span class="kw">}</span> <span class="kw">{</span></a>
+<a class="sourceLine" id="cb10-23" title="23">    <span class="dt">$chart</span> line <span class="dt">$f</span> <span class="dt">$t</span>   </a>
+<a class="sourceLine" id="cb10-24" title="24"><span class="kw">}</span></a></code></pre></div>
+<p><img src="intro-background2.png" /></p>
+<p>As the chesschart widget is inheriting from the canvas widget, we can configure all canvas items using standard canvas commands.</p>
+<p>Let’s now change the background to white using a standard canvas command:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode tcl"><code class="sourceCode tcl"><a class="sourceLine" id="cb11-1" title="1"><span class="dt">$chart</span> <span class="ot">itemconfigure</span> background<span class="ot"> -fill</span> white<span class="ot"> -outline</span> white</a></code></pre></div>
+<p><img src="intro-background3.png" /></p>
+<p>Voila!</p>
+<h2 id="future-ideas">Future ideas</h2>
+<ul>
+<li>arrows and lines which can have specific shapes, like below the B3B7 line</li>
+</ul>
+<pre><code>    B7 -+
+        |
+    B5  |
+    |   |
+    B3 -+ 
+</code></pre>
+<ul>
+<li>arrows which end at the next node, not in the middle</li>
+<li>more tests on vertical text which is available in Tk 8.6</li>
+</ul>
+<h2 id="session-info">Session Info</h2>
+<p>This document was generated using Tcl/Tk 8.6.8 on Linux, 5.8.18-100.fc31.x86_64 with tmdoc:tmdoc 0.4.</p>
+<h2 id="links">Links</h2>
+<ul>
+<li>project homepage <a href="https://github.com/mittelmark/DGTcl">https://github.com/mittelmark/DGTcl</a></li>
+<li>wiki page <a href="https://wiki.tcl-lang.org/page/chesschart">https://wiki.tcl-lang.org/page/chesschart</a></li>
+<li>video tutorial with some background <a href="https://www.youtube.com/watch?v=lfIPM5eyuVA">https://www.youtube.com/watch?v=lfIPM5eyuVA</a></li>
+</ul>
+<h2 id="copyright">Copyright</h2>
+<p>Copyright @ 2020 Detlef Groth, Germany (detlef - {at} - dgroth - {dot} - de)</p>
+</body>
+</html>

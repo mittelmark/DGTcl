@@ -1,15 +1,10 @@
----
-title: chesschart 0.1 
-author: Dr. Detlef Groth, Schwielowsee, Germany
-documentclass: scrartcl
-geometry:
-- top=20mm
-- right=20mm
-- left=20mm
-- bottom=30mm
-output: 
-  css: "dgw.css"
----
+
+# chesschart 0.2 
+    
+### Dr. Detlef Groth, Schwielowsee, Germany
+    
+### 2020-12-03
+
 
 ## <a>NAME</a>
 
@@ -24,11 +19,13 @@ output:
  - [WIDGET OPTIONS](#options)
  - [WIDGET COMMANDS](#commands)
    - [arrow](#arrow) 
+   - [background](#background)
    - [figure](#figure)
    - [line](#line)
    - [mv](#mv)
    - [oval](#oval)
    - [rect](#rect)
+   - [spline](#spline)
    - [text](#text)
  - [EXAMPLE](#example)
  - [CHANGES](#changes)
@@ -38,10 +35,10 @@ output:
 
 ## <a name='synopsis'>SYNOPSIS</a>
 
-```
-package require chesschart
-chesschart pathName ?canvasoptions chesschartoption?
-```
+
+    package require chesschart
+    chesschart pathName ?canvasoptions chesschartoption?
+
 
 ## <a name='description'>DESCRIPTION</a>
 
@@ -59,12 +56,6 @@ and methods of the widget are support. See below for additional options and meth
  
 ## <a name='options'>WIDGET OPTIONS</a>
 
-The **chesschart** widget is Tk widget based on the standard Tk canvas widget.
-It therefore supports the standard options and commands of the canvas widget.
-
-The **chesschart** widgets modifies a few default options of the canvas widget and
-adds the following options in addition to the options available for the canvas widget:
-
   __-bg__ _color_ 
 
  > Default background for the canvas widget, here changed to white.
@@ -72,6 +63,12 @@ adds the following options in addition to the options available for the canvas w
   __-color__ _color_ 
 
  > Default color for oval and rect items, default: salmon
+
+  __-columns__ _colnames_ 
+
+ > Default column names for the coordinate system, starting from left to 
+   right, default: letters [list A B C D E F G H], which mimic a chessboard.
+   There are other coordinate systems possible for instance [list Mo Tu We Th Fr Sa Su] to create a weekly schedule, 
 
   __-font__ _fontname_ 
 
@@ -99,12 +96,28 @@ adds the following options in addition to the options available for the canvas w
 
  > Default width of rect items, default: 80.
 
+  __-rows__ _rows_ 
+
+ > Default row names for the coordinate system, starting from top to 
+   bottom, default: numbers 8 to 1: [list 8 8 6 5 4 3 2 1], which mimic 
+   together with the columns A:H chessboard.
+   There are other coordinate systems possible for instance 
+   [list 08 10 12 16 18 20] together with the weekdays can create
+   a time scheduler for the week.
+
+  __-xincr__ _100_ 
+
+ > Default incr in pixel per coordinate system in x-direction
+
+  __-yincr__ _100_ 
+
+ > Default incr in pixel per coordinate system in y-direction.
+
+
+The **chesschart** widgets modifies a few default options of the canvas widget and
+adds the following options in addition to the options available for the canvas widget:
 
 ## <a name='commands'>WIDGET COMMANDS</a>
-
-Each **chesschart** widgets supports all the Tk canvas commands. 
-Further additional methods are implmented which should be the major
-methods used by the chesschart user to create flow charts.
 
 <a name='arrow'>*pathName* **arrow** *pos1 pos2 args*</a>
 
@@ -115,7 +128,25 @@ methods used by the chesschart user to create flow charts.
 
 > - _-width px_ - the strength of the arrow, default: 3
   - _-cut 0.0..1.0_ - the position of the arrow head, default: 0.6 
+  - _color_ col - the color of the arrow, default: black
 
+<a name='background'>*pathName* **background** *-color white*</a>
+
+> Draw and background over the current coordinate system.
+  This will instruct snap tools like the *canvas::snap* package from
+  tklib to snap the complete coordinate system regardless if their are
+  already items or not.
+
+>  The following argument to modify the background is available:
+
+> - _-color white_ - the strength of the arrow, default: 3
+
+> An item with the tag *background* is created.
+
+
+Each **chesschart** widgets supports all the Tk canvas commands. 
+Further additional methods are implmented which should be the major
+methods used by the chesschart user to create flow charts.
 
 <a name='figure'>*pathName* **figure** *filename.png*</a>
 
@@ -123,18 +154,21 @@ methods used by the chesschart user to create flow charts.
   This functionality currently with Tcl/Tk 8.6 requires the additional package 
   *canvas::snap* from the *tklib* library.
 
-<a name='line'>*pathName* **line** *pos1 pos2 args*</a>
+<a name='line'>*pathName* **line** *from to args*</a>
 
-> Draw an line from pos1 to pos2. The resulting line gets the tags *line* and *pos1pos2*.
-  Positions can be currently only given using chessboard coordinates like A1, C7, etc.
+> Draw an line *from* position 1 *to* position 2. 
+  The resulting line gets the tags *line* and *pos1pos2*.
+  Positions can be currently only given using chessboard 
+  coordinates like A1, C7, etc.
 
 > The following additional argument to modify the line item is available:
 
 > - _-width px_ - the strength of the arrow, default: 3
+  - _-color_ color - the color for the line
 
-<a name='mv'>*pathName* **mv** *pos1 pos2*</a>
+<a name='mv'>*pathName* **mv** *from to*</a>
 
-> Moves the items at pos1 to pos2. To gradually shift items you should use the canvas move command (not really recommended).
+> Moves the items at pos from to pos to. To gradually shift items you should use the canvas move command (not really recommended).
   Items at a certain coordinates have the position as an added tag.
   Positions can be currently only given using chessboard coordinates like A1, C7, etc. The position tag will be updated automatically.
 
@@ -167,6 +201,20 @@ methods used by the chesschart user to create flow charts.
   - _-width px_ -  width of the rectangle, default: widget -rectwidth option
   - _-text text_ - display text in the rectangle, default the given position, to display nothing give an empty string as argument
 
+<a name='spline'>*pathName* **spline** *from over to args*</a>
+
+> Draw an smoothed line from pos *from* to pos *to* using *over* as the 
+  spline anker. The resulting spline gets the tags *line* and *fromoverto*.
+  Positions can be currently given using chessboard coordinates like A1, C7, 
+  or using a coordinate system created using the widgets options 
+  *-rows* and *-columns*.
+
+> The following additional argument to modify the line item is available:
+
+> - _-width px_ - the strength of the arrow, default: 3
+  - _-color_ color - the color for the spline
+  - _splinesteps_ - number of smothing
+
 <a name="test">*pathName* **text** *pos text*</a>
 
 > At the coordinate given with pos place the given text,
@@ -175,27 +223,31 @@ methods used by the chesschart user to create flow charts.
 
 
 ## <a name='example'>EXAMPLE</a>
-```
- package require chesschart
- 
- set chart [chesschart .chart -rectwidth 100 -rectheight 50]
- pack $chart -side top -fill both -expand true
- $chart rect A8 -text Tcl/Tk
- $chart rect C8
- $chart oval C6 -text chesschart -width 120
- $chart line A8 C6
- $chart oval B10 -text tmdoc -width 120
- $chart oval B9 -text del -color "light blue"
- $chart arrow A8 B10 -cut 0.7
- # canvas commands still work
- $chart move all -10 -40
- $chart itemconfigure oval -fill "light blue"
- $chart delete B9
- catch {
-   # requires canvas::snap from tklib
-   $chart figure chesschart-example.png
- }
-```
+
+
+     package require chesschart
+     
+     set chart [chesschart .chart -rectwidth 100 -rectheight 50 \
+       -rows [list 10 9 8 7 6] -columns [list A B C D]] 
+     pack $chart -side top -fill both -expand true
+     $chart rect A8 -text Tcl/Tk
+     $chart rect C8
+     $chart oval C6 -text chesschart -width 120
+     $chart line A8 C6
+     $chart oval B10 -text tmdoc -width 120
+     $chart oval B9 -text del -color "light blue"
+     $chart arrow A8 B10 -cut 0.7
+     $chart spline A8 B7 C8 -color red -width 5
+     # canvas commands still work
+     $chart itemconfigure oval -fill "light blue"
+     $chart delete B9
+     $chart move all +10 +80
+    
+     catch {
+       # requires canvas::snap from tklib
+       $chart figure chesschart-example.png
+     }
+
 
 ![chesschart example](chesschart-example.png "chesschart example")
 
@@ -203,14 +255,20 @@ methods used by the chesschart user to create flow charts.
 
 Example code for this package can  be executed by running this file using the following command line:
 
-```
-$ wish chesschart.tcl --demo
-```
+
+    $ wish chesschart.tcl --demo
+
 
 ## <a name='changes'>CHANGES</a>
 
 - Nov 2nd 2020 - project started
 - Nov 8th 2020 - version 0.1 released
+- Nov 10th 2020 
+  - tags for rect fixed
+- Nov 11th 2020 
+  - option for rows and columns to change the coordinate system
+  - color option for line 
+  - adding spline (with three coordinates) 
 
 ## <a name='todo'>TODO</a>
 
@@ -233,4 +291,6 @@ distributions.
 
 This software is distributed WITHOUT ANY WARRANTY; without even the
 implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
 

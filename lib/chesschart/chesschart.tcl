@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Mon Nov 2 20:24:20 2020
-#  Last Modified : <201108.0941>
+#  Last Modified : <201201.0728>
 #
 #  Description	 : creating flow charts using natural coordinate systems like 
 #                  chessboard coordinates  
@@ -19,7 +19,7 @@
 ##############################################################################
 
 #' ---
-#' title: chesschart 0.1 
+#' title: chesschart 0.2 
 #' author: Dr. Detlef Groth, Schwielowsee, Germany
 #' documentclass: scrartcl
 #' geometry:
@@ -44,11 +44,13 @@
 #'  - [WIDGET OPTIONS](#options)
 #'  - [WIDGET COMMANDS](#commands)
 #'    - [arrow](#arrow) 
+#'    - [background](#background)
 #'    - [figure](#figure)
 #'    - [line](#line)
 #'    - [mv](#mv)
 #'    - [oval](#oval)
 #'    - [rect](#rect)
+#'    - [spline](#spline)
 #'    - [text](#text)
 #'  - [EXAMPLE](#example)
 #'  - [CHANGES](#changes)
@@ -70,14 +72,20 @@
 #' such as chess coordinates. As the **chesschart** widget is based on the Tk canvas widget, all options 
 #' and methods of the widget are support. See below for additional options and methods.
 #' 
-lappend auto_path [file join [file dirname [info script]] .. libs]
+
 
 package require Tk
 package require snit
 catch {
     package require canvas::snap
 }
-package provide chesschart 0.1
+
+# TODO: splines with arrows using libtclspline
+# load ../libs/tclspline/libtclspline1.1.so
+# package require tclspline
+# rename ::spline ::tspline
+
+package provide chesschart 0.2
 
 #'
 #' ## <a name='command'>COMMAND</a>
@@ -94,7 +102,7 @@ package provide chesschart 0.1
 #' The **chesschart** widgets modifies a few default options of the canvas widget and
 #' adds the following options in addition to the options available for the canvas widget:
 
-snit::widget chesschart {
+snit::widget ::chesschart {
     #' 
     
     #'   __-bg__ _color_ 
@@ -109,6 +117,14 @@ snit::widget chesschart {
     #' 
     option -color salmon
     
+    #'   __-columns__ _colnames_ 
+    #' 
+    #'  > Default column names for the coordinate system, starting from left to 
+    #'    right, default: letters [list A B C D E F G H], which mimic a chessboard.
+    #'    There are other coordinate systems possible for instance [list Mo Tu We Th Fr Sa Su] to create a weekly schedule, 
+    #' 
+    option -columns [list A B C D E F G H]
+
     #'   __-font__ _fontname_ 
     #' 
     #'  > Default font for the text items on the widget, defaults to times16, there are as well 
@@ -116,6 +132,7 @@ snit::widget chesschart {
     #'    During construction the widget as well tries to initialize nice the true type font Purisa
     #'    which must be downloaded from the internet: [https://www.onlinewebfonts.com/fonts/purisa](https://www.onlinewebfonts.com/fonts/purisa) to use it. It is then available as well in the sizes purisa10 ... purisa28.
     #' 
+    
     option -font -default times16
     
     #'   __-ovalheight__ _px_ 
@@ -145,14 +162,41 @@ snit::widget chesschart {
     #' 
     option -rectwidth  80
     
+    #'   __-rows__ _rows_ 
+    #' 
+    #'  > Default row names for the coordinate system, starting from top to 
+    #'    bottom, default: numbers 8 to 1: [list 8 8 6 5 4 3 2 1], which mimic 
+    #'    together with the columns A:H chessboard.
+    #'    There are other coordinate systems possible for instance 
+    #'    [list 08 10 12 16 18 20] together with the weekdays can create
+    #'    a time scheduler for the week.
+    #' 
+    option -rows [list 8 7 6 5 4 3 2 1]
+    
+    #'   __-xincr__ _100_ 
+    #' 
+    #'  > Default incr in pixel per coordinate system in x-direction
+    #' 
+    option -xincr 100
+    
+    #'   __-yincr__ _100_ 
+    #' 
+    #'  > Default incr in pixel per coordinate system in y-direction.
+    #' 
+    option -yincr 80
+
     variable can
     delegate option * to can
     delegate method * to can
     variable apos
+    variable TopX
+    variable TopY
+    variable BotX
+    variable BotY
     constructor {args} {
         install can using canvas $win.c -width 820 -height 660 
         $self configurelist $args
-        pack $can -padx  5 -pady 5 -side top -fill both \
+        pack $can -padx  0 -pady 0 -side top -fill both \
               -expand yes
         array set apos [$self getCoords]
         
@@ -186,9 +230,10 @@ snit::widget chesschart {
     #' 
     #' > - _-width px_ - the strength of the arrow, default: 3
     #'   - _-cut 0.0..1.0_ - the position of the arrow head, default: 0.6 
+    #'   - _color_ col - the color of the arrow, default: black
     #'
     method arrow {from to args} {
-        array set arg [list -width 3 -cut 0.6]
+        array set arg [list -width 3 -cut 0.6 -color black]
         array set arg $args
         set fromx [lindex $apos($from) 0]
         set fromy [lindex $apos($from) 1]
@@ -198,11 +243,41 @@ snit::widget chesschart {
         set arry [expr {($fromy+$toy)/2}]
         set arrx [expr {(1 - $arg(-cut)) * $fromx + $arg(-cut) * $tox}]
         set arry [expr {(1 - $arg(-cut)) * $fromy + $arg(-cut) * $toy}]        
-        $win.c create line $fromx $fromy $arrx $arry -arrow last -width $arg(-width) -tag [list arrow $from$to] -smooth true -arrowshape [list 20 20 5]
-        $win.c create line $fromx $fromy $tox $toy -arrow last -width $arg(-width) -tag [list arrow $from$to] -smooth true
+        $win.c create line $fromx $fromy $arrx $arry -arrow last -width $arg(-width) -tag [list arrow $from$to] -smooth true -arrowshape [list 20 20 5] -fill $arg(-color)
+        $win.c create line $fromx $fromy $tox $toy -arrow last -width $arg(-width) -tag [list arrow $from$to] -smooth true -fill $arg(-color)
         $win.c lower arrow
+        if {[$win.c type background] ne ""} {
+            $win.c raise arrow background
+        }
+
         return ""
     }
+    #' <a name='background'>*pathName* **background** *-color white*</a>
+    #' 
+    #' > Draw and background over the current coordinate system.
+    #'   This will instruct snap tools like the *canvas::snap* package from
+    #'   tklib to snap the complete coordinate system regardless if their are
+    #'   already items or not.
+    #'
+    #' >  The following argument to modify the background is available:
+    #' 
+    #' > - _-color white_ - the strength of the arrow, default: 3
+    #' 
+    #' > An item with the tag *background* is created.
+    #'
+    method background {top bottom args} {
+        array set arg [list -color white]
+        array set arg $args
+        $self getCoords
+        $can create rectangle \
+              [expr {[lindex $apos($top) 0]-$options(-xincr)*0.5}] \
+              [expr {[lindex $apos($top) 1]-$options(-yincr)*0.5}] \
+              [expr {[lindex $apos($bottom) 0]+$options(-xincr)*0.5}] \
+              [expr {[lindex $apos($bottom) 1]+$options(-yincr)*0.5}] \
+              -fill $arg(-color) -outline $arg(-color) -tag [list background]
+        
+    }
+
     #'
     #' <a name='figure'>*pathName* **figure** *filename.png*</a>
     #' 
@@ -215,21 +290,45 @@ snit::widget chesschart {
             set image [canvas::snap $win.c]
             $image write $filename -format png
         } else {
-            error "Package cnavas::snap not available for creating png images"
+            error "Package canvas::snap not available for creating png images"
         }
     }    
     # private
+    onconfigure -columns cols {
+        set options(-columns) $cols
+        $self getCoords
+    }
+    onconfigure -rows rows {
+        set options(-rows) $rows
+        $self getCoords
+    }
+    onconfigure -xincr val {
+        set options(-xincr) $val
+        $self getCoords
+    }
+    onconfigure -yincr val {
+        set options(-yincr) $val
+        $self getCoords
+    }
     method getCoords {} {
+        #array unset apos
         array set apos [list]
         set x 50
-        foreach col [list A B C D E F G H I J K L] {
-            incr x 100
-            set y 40
-            foreach row [list 10 9 8 7 6 5 4 3 2 1 ] {
-                incr y 80   
+        set TopX $x
+        set BotX $x
+        foreach col $options(-columns) {
+            incr x $options(-xincr)
+            set BotX $x 
+            set y 50
+            set TopY $y
+            foreach row $options(-rows) {
+                incr y $options(-yincr)
                 set apos($col$row) [list $x $y]
             }
+            set BotY $y
         }
+        incr BotX $options(-xincr)
+        incr BotY $options(-yincr)
         return [array get apos]
     }
     # private
@@ -271,29 +370,83 @@ snit::widget chesschart {
         lappend cmd -smooth 1
         return [eval $cmd $args]
     }
-    #' <a name='line'>*pathName* **line** *pos1 pos2 args*</a>
+    #' <a name='line'>*pathName* **line** *from to args*</a>
     #' 
-    #' > Draw an line from pos1 to pos2. The resulting line gets the tags *line* and *pos1pos2*.
-    #'   Positions can be currently only given using chessboard coordinates like A1, C7, etc.
+    #' > Draw an line *from* position 1 *to* position 2. 
+    #'   The resulting line gets the tags *line* and *pos1pos2*.
+    #'   Positions can be currently only given using chessboard 
+    #'   coordinates like A1, C7, etc.
     #'
     #' > The following additional argument to modify the line item is available:
     #' 
     #' > - _-width px_ - the strength of the arrow, default: 3
+    #'   - _-color_ color - the color for the line
     #'
     method line {from to args} {
-        array set arg [list -width 3]
+        array set arg [list -width 3 -color black]
         array set arg $args
         set fromx [lindex $apos($from) 0]
         set fromy [lindex $apos($from) 1]
         set tox   [lindex $apos($to) 0]
         set toy   [lindex $apos($to) 1]
-        $win.c create line $fromx $fromy $tox $toy -width $arg(-width) -tag [list line $from$to]
+        $win.c create line $fromx $fromy $tox $toy -width $arg(-width) \
+              -fill $arg(-color) -tag [list line $from$to]
         $win.c lower line
+        if {[$win.c type background] ne ""} {
+            $win.c raise line background
+        }
         return ""
     }
-    #' <a name='mv'>*pathName* **mv** *pos1 pos2*</a>
+    #' <a name='spline'>*pathName* **spline** *from over to args*</a>
     #' 
-    #' > Moves the items at pos1 to pos2. To gradually shift items you should use the canvas move command (not really recommended).
+    #' > Draw an smoothed line from pos *from* to pos *to* using *over* as the 
+    #'   spline anker. The resulting spline gets the tags *line* and *fromoverto*.
+    #'   Positions can be currently given using chessboard coordinates like A1, C7, 
+    #'   or using a coordinate system created using the widgets options 
+    #'   *-rows* and *-columns*.
+    #'
+    #' > The following additional argument to modify the line item is available:
+    #' 
+    #' > - _-width px_ - the strength of the arrow, default: 3
+    #'   - _-color_ color - the color for the spline
+    #'   - _splinesteps_ - number of smothing
+    #'
+    method spline {from over to args} {
+        array set arg [list -width 3 -color black -splinesteps 10]
+        array set arg $args
+        set fromx [lindex $apos($from) 0]
+        set fromy [lindex $apos($from) 1]
+        set overx [lindex $apos($over) 0]
+        set overy [lindex $apos($over) 1]
+        set tox   [lindex $apos($to) 0]
+        set toy   [lindex $apos($to) 1]
+        if {[info commands ::tspline] eq "::tspline"} {
+            # arrows did not look good
+            set coords [tspline $arg(-splinesteps) [list $fromx $fromy $overx $overy $tox $toy]]
+            set l [llength $coords]
+            set i [expr {$l/2+2}]
+            $win.c create line {*}$coords \
+              -width $arg(-width) -fill black -tag [list spline $from$over$to] \
+              -smooth true
+            $win.c create line {*}[lrange $coords 0 $i]\
+              -width $arg(-width) -fill black -tag [list spline $from$over$to] \
+              -smooth true -arrow last
+
+        } else {
+            $win.c create line $fromx $fromy $overx $overy $tox $toy \
+                  -width $arg(-width) -fill $arg(-color) -tag [list spline $from$over$to] \
+                  -smooth true -splinesteps $arg(-splinesteps)
+        }
+        $win.c lower spline
+        if {[$win.c type background] ne ""} {
+            $win.c raise spline background
+        }
+        return ""
+    }
+    
+    #' <a name='mv'>*pathName* **mv** *from to*</a>
+    #' 
+    #' > Moves the items at pos from to pos to. To gradually shift items you should use the canvas move command (not really recommended).
     #'   Items at a certain coordinates have the position as an added tag.
     #'   Positions can be currently only given using chessboard coordinates like A1, C7, etc. The position tag will be updated automatically.
     #'
@@ -333,7 +486,8 @@ snit::widget chesschart {
         $win.c create oval  $x1 $y1 $x2 $y2 \
               -fill $arg(-color) -tag [list oval $pos]
         if {$arg(-text) ne ""} {
-            $win.c create text  [lindex $xy 0] [lindex $xy 1] -fill black -text $arg(-text) -font $options(-font) -tag [list text $pos]
+            $win.c create text  [lindex $xy 0] [expr {[lindex $xy 1]+4}] -fill black -text $arg(-text) -font $options(-font) \
+                  -tag [list text $pos]
         }
         return ""
 
@@ -365,13 +519,13 @@ snit::widget chesschart {
         set y2 [expr {$y1 + $arg(-height)}]
         if {$arg(-round)} {
             $self rrect $x1 $y1 $x2 $y2 $arg(-radius) \
-                  -fill $arg(-color) -outline black
+                  -fill $arg(-color) -outline black -tag [list rect $pos]
         } else {
             $can create rectangle  $x1 $y1 $x2 $y2 \
-                  -fill $arg(-color) -outline black 
+                  -fill $arg(-color) -outline black -tag [list rect $pos]
         }
         if {$arg(-text) ne ""} {
-            $win.c create text  [lindex $xy 0] [lindex $xy 1] -fill black -text $arg(-text) -font $options(-font)
+            $win.c create text  [lindex $xy 0] [expr {[lindex $xy 1]+4}] -fill black -text $arg(-text) -font $options(-font) -tag [list text $pos]
         }
         return ""
         
@@ -406,10 +560,12 @@ snit::widget chesschart {
 
 #' 
 #' ## <a name='example'>EXAMPLE</a>
+#'
 #' ```
 #'  package require chesschart
 #'  
-#'  set chart [chesschart .chart -rectwidth 100 -rectheight 50]
+#'  set chart [chesschart .chart -rectwidth 100 -rectheight 50 \
+#'    -rows [list 10 9 8 7 6] -columns [list A B C D]] 
 #'  pack $chart -side top -fill both -expand true
 #'  $chart rect A8 -text Tcl/Tk
 #'  $chart rect C8
@@ -418,10 +574,12 @@ snit::widget chesschart {
 #'  $chart oval B10 -text tmdoc -width 120
 #'  $chart oval B9 -text del -color "light blue"
 #'  $chart arrow A8 B10 -cut 0.7
+#'  $chart spline A8 B7 C8 -color red -width 5
 #'  # canvas commands still work
-#'  $chart move all -10 -40
 #'  $chart itemconfigure oval -fill "light blue"
 #'  $chart delete B9
+#'  $chart move all +10 +80
+#'
 #'  catch {
 #'    # requires canvas::snap from tklib
 #'    $chart figure chesschart-example.png
@@ -442,6 +600,12 @@ snit::widget chesschart {
 #'
 #' - Nov 2nd 2020 - project started
 #' - Nov 8th 2020 - version 0.1 released
+#' - Nov 10th 2020 
+#'   - tags for rect fixed
+#' - Nov 11th 2020 
+#'   - option for rows and columns to change the coordinate system
+#'   - color option for line 
+#'   - adding spline (with three coordinates) 
 #'
 #' ## <a name='todo'>TODO</a>
 #'
