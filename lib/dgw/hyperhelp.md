@@ -1,6 +1,6 @@
+[dgw](dgw.html) - 
 [basegui](basegui.html) - 
 [combobox](combobox.html) - 
-[dgw](dgw.html) - 
 [drawcanvas](drawcanvas.html) - 
 [hyperhelp](hyperhelp.html) - 
 [sbuttonbar](sbuttonbar.html) - 

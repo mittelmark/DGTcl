@@ -106,10 +106,10 @@ Creates and configures the *dgw::txfold*  widget using the Tk window id _pathNam
 
 The following options are available:
 
-> - *-foldkey* *F2*  - the key to fold or unfold regions where the insert cursor is within
-  - *-foldallkey* *F3* - the key to fold/unfold the complete text
-  - *-foldstart* *^#* - the start folding marker, default is Markdown header folding
-  - *-foldend* "^#* - the end fold marker, where the folding ends, if the end marker is the same as the start marker folding is ended in the line before the end line, otherwise on the end line
+> - *-foldkey* *F2*  - the key to fold or unfold regions where the insert cursor is within, default: F2
+  - *-foldallkey* *F3* - the key to fold/unfold the complete text, default: F3
+  - *-foldstart* *^#* - the start folding marker, default is Markdown header folding using the '#' at the beginning
+  - *-foldend* "*#* - the end fold marker, where the folding ends, if the end marker is the same as the start marker folding is ended in the line before the end line, otherwise on the end line
 
 The following widget tags are created and can be modified at runtime:
 
