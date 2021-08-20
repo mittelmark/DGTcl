@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation hyperhelp">
+<meta name="author" content="NN">
+<title>Documentation hyperhelp</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::hyperhelp 0.8.2</h1>
+
+<h3>Dr. Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::hyperhelp</strong>   help system with hypertext facilitites and table of contents outline</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#methods">METHODS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#formatting">MARKUP LANGUAGE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE AND COPYRIGHT</a>
+
+</li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<p>Usage as package:</p>
+
+<pre class='synopsis'><code>package require dgw::hyperhelp
+dgw::hyperhelp pathName -helpfile filename ?-option value ...?
+pathName help topic
+</code></pre>
+
+<p>Usage as command line application:</p>
+
+<pre class='synopsis'><code>tclsh hyperhelp.tcl filename ?--commandsubst true?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>dgw::hyperhelp</strong> package is hypertext help system which can be easily embedded into Tk applications. It is based on code
+of the Tclers Wiki mainly be Keith Vetter see the <a href="https://wiki.tcl-lang.org/page/A+Hypertext+Help+System">Tclers-Wiki</a>
+The difference of this package to the wiki code is, that it works on external files, provides some <code>subst</code> support for variables 
+and commands as well as a browser like toolbar. It can be as well used as standalone applications for browsing the help files.
+Markup syntax was modified towards Markdown to simplify writing help pages as this is a common documentation language. 
+In practice you can create a document which is a valid Markdown document and at the same time an usable help file. 
+The file <a href="hyperhelp-markdown-sample.md">hyperhelp-markdown-sample.md</a> gives an example for such a file.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::hyperhelp</strong> <em>pathName -helpfile fileName ?-option value ...?</em></p>
+
+<blockquote>
+<p>creates a new <em>hyperhelp</em> widget using the given widget <em>pathName</em> and with the given <em>fileName</em>.</p>
+</blockquote>
+
+<h2><a name='options'>OPTIONS</a></h2>
+
+<p>The <strong>dgw::hyperhelp</strong> snit widget supports the following options which 
+should be set only at widget creation:</p>
+
+<p><strong>-bottomnavigation</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Configures the hyperhelp widget if at the bottom of each help page a textual navigation line should be displayed. Default <em>false</em>.</p>
+</blockquote>
+
+<p><strong>-commandsubst</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Configures the hyperhelp widget to do substitutions using Tcl commands within the text.
+   This might give some security issues if you load help files from dubious sources, 
+ although for this most critical commands like file, exec and socket are disaable even if this option is set to true.
+ Default: false</p>
+</blockquote>
+
+<p><strong>-dismissbutton</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Configures the hyperhelp widget to display at the button a &quot;Dismiss&quot; button. Useful if the help page is direct parent in a toplevel to destroy this toplevel. Default: <em>false</em>.</p>
+</blockquote>
+
+<p><strong>-font</strong> <em>fontname</em></p>
+
+<blockquote>
+<p>Configures the hyperhelp widget to use the given font. 
+Fontnames should be given as <code>[list fontname size]</code> such as for example 
+<code>\[list {Linux Libertine} 12\]</code>. If no fontname is given the hyperhelp widget 
+tries out a few standard font names on Linux and Windows System. 
+If none of those fonts is found, it falls back to &quot;Times New Roman&quot; which should be available on all platforms.</p>
+</blockquote>
+
+<p><strong>-helpfile</strong> <em>fileName</em></p>
+
+<blockquote>
+<p>Configures the hyperhelp widget with the given helpfile 
+   option to be displayed within the widget.</p>
+</blockquote>
+
+<p><strong>-toctree</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Should the toc tree widget on the left be displayed. 
+   For simple help pages, consisting only of one, two, three pages the 
+   treeview widget might be overkill. Please note, that this widget is also 
+   not shown if there is no table of contents page, regardless of the <em>-toctree</em> option.
+   Must be set at creation time currently.
+   Default: <em>true</em></p>
+</blockquote>
+
+<p><strong>-toolbar</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Should the toolbar on top be displayed. For simple help pages, 
+   consisting only of one, two pages the toolbar might be overkill. 
+   Must be set at creation time currently.
+   Default: <em>true</em></p>
+</blockquote>
+
+<h2><a name='methods'>METHODS</a></h2>
+
+<p>The <em>hyperhelp</em> widget provides the following methods:</p>
+
+<p><em>pathName</em> <strong>getPages</strong></p>
+
+<blockquote>
+<p>Returns the page names for the current help file.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>getTitle</strong></p>
+
+<blockquote>
+<p>Returns the current topic shown in the hyperhelp browser.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>help</strong> <em>topic</em></p>
+
+<blockquote>
+<p>Displays the given topic within widget. If the page does not exists an error page is shown.</p>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code>package require dgw::hyperhelp
+set helpfile [file join [file dirname [info script]] hyperhelp-docu.txt]
+set hhelp [dgw::hyperhelp .help -helpfile $helpfile]
+pack $hhelp -side top -fill both -expand true
+$hhelp help overview
+</code></pre>
+
+<h2><a name='formatting'>MARKUP LANGUAGE</a></h2>
+
+<p>The Markup language of the hyperhelp widget is similar to Tclers Wiki and Markdown markup.
+Here are the most important markup commands. For a detailed description have a look at the 
+file <code>hyperhelp-docu.txt</code> which contains the hyperhelp documentation with detailed markup rules.</p>
+
+<p><em>Page structure:</em></p>
+
+<p>A help page in the help file is basically started with the title tag at the beginning of a line and adds with 6 dashes. See here an example for three help pages. 
+To shorten links in the document later as well an <code>alias</code> can be given afterwards. There is also support for Markdown headers as the last page shows.</p>
+
+<pre><code>title: Hyperhelp Title Page
+alias: main
+
+Free text can be written here with standard *Markdown* 
+or ''Wiki'' syntax markup.
+
+------
+title: Other Page title
+alias: other
+icon: acthelp16
+
+Follows more text for the second help page. You can link
+to the [main] page here also.
+------
+
+## &lt;a name=&quot;aliasname&quot;&gt;Page title&lt;/a&gt;
+
+Text for the next page after this Markdown like header, the anchor is now an alis 
+which can be used for links like here [aliasname], the link [Page title] points to the same page.
+</code></pre>
+
+<p>For the second page an other icon than the standard file icon was given for the help page. This icon is
+used for the treeview widget on the left displayed left of the page title.
+The following icons are currently available: acthelp16, bookmark, idea, navhome16, help, sheet, folder, textfile.</p>
+
+<p><em>&quot;Table of Contents&quot; page:</em></p>
+
+<p>There is a special page called &quot;Table of Contents&quot;. The unnumbered list, probably nested, of this page will be used
+for the navigation outline tree on the left. Below is the example for the contents page which
+comes with the hyperhelp help file &quot;hyperhelp-docu.txt&quot;. The &quot;Table of Contents&quot; page should be the first page
+in your documentation. Please indent only with standard Markdown syntax compatible, so two spaces 
+for first level and four spaces for second level.</p>
+
+<pre><code>title: Table of Contents 
+alias: TOC
+  - [Welcome to the Help System]
+  - [What's New]
+  - Formatting
+    - [Basic Formatting]
+    - [Aliases]
+    - [Lists]
+    - [Substitutions]
+    - [Images]
+    - [Code Blocks]
+    - [Indentation]
+  - [Creating the TOC]
+  - [Key Bindings]
+  - [To Do]
+
+-------
+</code></pre>
+
+<p><em>Font styles:</em></p>
+
+<blockquote>
+<ul>
+<li>'''bold''' - <strong>bold</strong> (Wiki syntax), **bold** - <strong>bold</strong> (Markdown syntax)</li>
+<li>''italic'' - <em>italic</em> (Wiki syntax), *italic* - <em>italic</em> (Markdown syntax)</li>
+<li>`code`  - <code>code</code></li></ul>
+
+
+</blockquote>
+
+<p><em>Links:</em></p>
+
+<blockquote>
+<ul>
+<li>hyperlinks to other help pages within the same document are created using brackets: <code>[overview]</code> -&gt; <a href="#overview">overview</a></li>
+<li>image links, where images will be embedded and shown <code>[image.png]</code></li>
+<li>also image display and hyperlinks in Markdown format are supported. Therefore <code>![](image.png)</code> displays an image and 
+<code>[Page title](#alias)</code>  creates a link to the page &quot;Page title&quot;</li></ul>
+
+
+</blockquote>
+
+<p><em>Code blocks:</em></p>
+
+<blockquote>
+<ul>
+<li>code blocks are started by indenting a line with three spaces</li>
+<li>the block continues until less than three leading whitespace character are found on the text</li></ul>
+
+
+</blockquote>
+
+<p><em>Indentation:</em></p>
+
+<blockquote>
+<ul>
+<li>indented blocks are done by using the pipe symbol <code>|</code> or the greater symbol  as in Markdown syntax</li>
+<li>indenting ends on lines without whitespaces as can be seen the following example</li></ul>
+
+
+</blockquote>
+
+<pre><code> &gt; * indented one with `code text`
+   * indented two with **bold text**
+   * indented three with *italic text*
+
+ this text is again unindented
+</code></pre>
+
+<p><em>Substitutions:</em></p>
+
+<blockquote>
+<ul>
+<li>you can substitute variables and commands within the help page</li>
+<li>command substition is done using double brackets like in <code>[[package require dgw::hyperhelp]]</code> would embed the package version of the hyperhelp package</li>
+<li>variable substitution is done using the Dollar variable prefix, for instance <code>$::tcl_patchLevel</code> would embed the actual Tcl version</li>
+<li>caution: be sure to not load files from unknown sources, command substitution should not work with commands like <code>file</code>, <code>exec</code> or <code>socket</code>. 
+But anyway only use your own help files</li></ul>
+
+
+</blockquote>
+
+<p><em>Lists:</em></p>
+
+<blockquote>
+<ul>
+<li>support for list and nested lists using the standard <code>* item</code> and <code>** subitem</code>` syntax</li>
+<li>numbered lists can be done with starting a line with <code>1.</code> followed by a white space such as in <code>1. item</code> and <code>11. subitem</code></li>
+<li>dashed lists can be done with single and double dashes</li></ul>
+
+
+</blockquote>
+
+<p><em>Key bindings:</em></p>
+
+<blockquote>
+<p>The  hyperhelp  window  provides  some  standard  key bindings to navigate the content:</p>
+
+<ul>
+<li>space, next: scroll down</li>
+<li>backspace, prior: scroll up</li>
+<li>Ctrl-k, Ctrl-j: scroll in half page steps up and down</li>
+<li>Ctrl-space, Ctrl-b: scroll down or up</li>
+<li>Ctrl-h, Alt-Left, b: browse back history if possible</li>
+<li>Ctrl-l, Alt-Right: browse forward in history if possible</li>
+<li>n, p: browse forward or backward in page order</li>
+<li>Control-Plus, Control-Minus changes in font-size</li>
+<li>Up, Down, Left, Right etc are used for navigation in the treeview widget</li></ul>
+
+
+</blockquote>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can install and use the <strong>dgw::hyperhelp</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a></li>
+<li>the dgtools::shistory package which can be found at the same side as the dgw::hyperhelp package
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> and the <em>dgtools</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgw/hyperhelp-0.8.2.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of hyperhelp.tcl. 
+Try &quot;tclsh hyperhelp.tcl --install&quot; for this purpose. Please note, that in the latter case you must redo this 
+for the <code>dgtools::shistory</code> package.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish hyperhelp.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ wish hyperhelp.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. 
+To extract the documentation you need that the dgwutils.tcl file is in 
+the same directory with the file <code>hyperhelp.tcl</code>. 
+Then you can use the following command lines:</p>
+
+<pre><code>$ tclsh hyperhelp.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh hyperhelp.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>hyperhelp.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh hyperhelp.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+html or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../hyperhelp.tcl --man &gt; hyperhelp.md
+pandoc -i hyperhelp.md -s -o hyperhelp.html
+pandoc -i hyperhelp.md -s -o hyperhelp.tex
+pdflatex hyperhelp.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package</a></li>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">shtmlview - package</a>
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>some more template files (done)</li>
+<li>tests (done, could be more)</li>
+<li>github url</li>
+<li>fix for broken TOC with four indents needed (done (?))
+</li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-02-01 Release 0.5 - first published version</li>
+<li>2020-02-05 Release 0.6 - catching errors for missing images and wrong Tcl code inside substitutions</li>
+<li>2020-02-07 Release 0.7 
+<ul>
+<li>options <em>-toolbar</em>, <em>-toctree</em> for switchable display</li>
+<li>single page, automatic hiding of toctree and toolbar</li>
+<li>outline widget only shown if TOC exists</li>
+<li>adding Control-Plus, Control-Minus for font changes</li>
+<li>fix indentation and italic within indentation is now possible</li>
+<li>basic Markdown support </li></ul>
+
+</li>
+<li>2020-02-16 Release 0.8.0
+<ul>
+<li>fix for Ctrl.j, Ctrk-k keys</li>
+<li>disabled default command substitutions</li></ul>
+
+</li>
+<li>2020-02-19 Release 0.8.1
+<ul>
+<li>removed bug in the within page search</li>
+<li>insertion cursors for search remains in the widget</li>
+<li>fixed bug in help page </li></ul>
+
+</li>
+<li>2020-03-02
+<ul>
+<li>adding hyperhelp-minimal example to the code</li>
+<li>adding --sample option to print this to the terminal
+</li></ul>
+
+</li></ul>
+
+<h2><a name='authors'>AUTHOR(s)</a></h2>
+
+<p>The <em>dgw::hyperhelp</em> package was written by Dr. Detlef Groth, Schwielowsee, Germany using Keith Vetters code from the Tclers Wiki as starting point.</p>
+
+<h2><a name='license'>LICENSE AND COPYRIGHT</a></h2>
+
+<p>The dgw::hyperhelp package version 0.8.2</p>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: &lt;detlef(at)dgroth(dot)de&gt;
+This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

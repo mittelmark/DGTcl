@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation statusbar">
+<meta name="author" content="NN">
+<title>Documentation statusbar</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::statusbar 0.2</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::statusbar</strong> - statusbar widget for Tk applications based on a ttk::label and a ttk::progressbar widget</p>
+
+<h2><a name='toc'></a>Table of Contents</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require dgw::statusbar
+dgw::statusbar pathName options
+pathName configure -textvariable varname
+pathName configure -variable varname
+pathName clear 
+pathname progress value
+pathName set message ?value?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>dgw::statusbar</strong> - is a composite widget consisiting of a ttk::label and a ttk::progressbar widget. 
+It should be normally packaged at the bottom of an appöication.
+The text and the numerical progress value can be displayed either directly 
+using the widget commands or via the <em>-textvariable</em> and <em>-variable</em> options which  will be given at initialization time, 
+but these options can be also redifined at a later point.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::statusbar</strong> <em>pathName ?options?</em></p>
+
+<blockquote>
+<p>Creates and configures a new dgw::statusbar widget  using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p>The <strong>dgw::statusbar</strong> widget is a composite widget where the options 
+are delegated to the original widgets.</p>
+
+<p><strong>-maximum</strong> <em>value</em></p>
+
+<blockquote>
+<p>A floating point number specifying the maximum -value. Defaults to 100.</p>
+</blockquote>
+
+<p><strong>-textvariable</strong> <em>varname</em></p>
+
+<blockquote>
+<p>Delegates the variable <em>varname</em> to the ttk::label as such.</p>
+</blockquote>
+
+<p><strong>-variable</strong> <em>varname</em></p>
+
+<blockquote>
+<p>Delegates the variable <em>varname</em> to the ttk::progressbar. Note that the maximum value is 100. 
+   So you have to calculate the</p>
+</blockquote>
+
+<h2><a name='commands'>WIDGET COMMANDS</a></h2>
+
+<p>Each <strong>dgw::combobox</strong> widgets supports its own as well via the <em>pathName label cmd</em> and <em>pathName progressbar cmd</em> syntax all the commands of its component widgets.</p>
+
+<p><em>pathName</em> <strong>clear</strong> <em>message ?value?</em></p>
+
+<blockquote>
+<p>Removes the message from the label and sets to progressbar to zero.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>label</strong> <em>cmd ?option value ...?</em></p>
+
+<blockquote>
+<p>Allows access to the commands of the embedded ttk::label widget. 
+  Via configure and cget you can as well configure this internal widget. 
+  For details on the available methods and options have a look at the 
+  ttk::label manual page.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>progress</strong> <em>value</em></p>
+
+<blockquote>
+<p>Sets the progressbar to the given value.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>progressbar</strong> <em>cmd ?option value ...?</em></p>
+
+<blockquote>
+<p>Allows access to the commands of the embedded ttk::progessbar widget. 
+  Via configure and cget you can as well configure this internal widget. 
+  For details on the available methods and options have a look at the 
+  ttk::progressbar manual page.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>set</strong> <em>message ?value?</em></p>
+
+<blockquote>
+<p>Displays the given message and value. If the value is not given it is set to zero.</p>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code>package require dgw::progressbar
+namespace import ::dgw::tlistbox
+wm title . DGApp
+pack [text .txt] -side top -fill both -expand yes
+set stb [dgw::statusbar .stb]
+pack $stb -side top -expand false -fill x
+$stb progress 50
+$stb set Connecting....
+after 1000
+$stb set &quot;Connected, logging in...&quot;
+$stb progress 50
+after 1000
+$stb set &quot;Login accepted...&quot; 
+$stb progress 75
+after 1000
+$stb set &quot;Login done!&quot; 90
+after 1000
+$stb set &quot;Cleaning!&quot; 95
+after 1000
+$stb set &quot;&quot; 100
+set msg Sompleted
+set val 90
+$stb configure -textvariable msg
+$stb configure -variable val
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can easily install and use this <strong> dgw::statusbar</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file <code>dgw/statusbar-0.2.tm</code> in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of statusbar.tcl. 
+Try &quot;tclsh statusbar.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish statusbar.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ wish statusbar.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh statusbar.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh statusbar.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>statusbar.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh statusbar.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+man page, a html or a pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code># man page
+tclsh statusbar.tcl --man | pandoc -s -f markdown -t man - &gt; statusbar.n
+# html page
+tclsh ../statusbar.tcl --man &gt; statusbar.md
+pandoc -i statusbar.md -s -o statusbar.html
+# pdf
+pandoc -i statusbar.md -s -o statusbar.tex
+pdflatex statusbar.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package homepage: http://chiselapp.com/user/dgroth/repository/tclcode/index</a>
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>probably as usually more documentation</li>
+<li>more, real, tests</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The <strong>statusbar</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::statusbar package, version 0.2.</p>
+
+<p>Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

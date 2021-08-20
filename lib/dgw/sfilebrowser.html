@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation sfilebrowser">
+<meta name="author" content="NN">
+<title>Documentation sfilebrowser</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::sfilebrowser</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<blockquote>
+<p><strong>dgw::sfilebrowser</strong> - snit file browser widget</p>
+</blockquote>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#bindings">WIDGET BINDINGS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require dgw::sfilebrowser
+namespace import ::dgw::sfilebrowser
+sfilebrowser pathName options
+pathName configure -treemode true
+pathName configure -initialpath .
+pathName configure -viewcmd procName
+pathName configure -fileimage imgName
+pathName browse dirName
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>sfilebrowser</strong> - tablelist based file browser widget to explore 
+the file system and to execute certain actions on the currently selected file, 
+such as opening it in an editor.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>sfilebrowser</strong> <em>pathName ?options?</em></p>
+
+<blockquote>
+<p>Creates and configures the <em>sfilebrowser</em> widget using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p><strong>-fileimage</strong> <em>imgName</em></p>
+
+<blockquote>
+<p>The image to be displayed left of filenames. Defaults to the embedded image for files.</p>
+</blockquote>
+
+<p><strong>-initialpath</strong> <em>dirName</em></p>
+
+<blockquote>
+<p>The directory from which the files and folders should be shown in the sfilebrowser widget. Defaults to the current working directory.</p>
+</blockquote>
+
+<p><strong>-treemode</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Should the browser be opened in tree mode or in listbox mode? Default is <em>true</em>, which is tree mode.</p>
+</blockquote>
+
+<p><strong>-viewcmd</strong> <em>procName</em></p>
+
+<blockquote>
+<p>The command to be executed id the user double clicks the entry. Default to empty string, i.e. no action is performed.</p>
+</blockquote>
+
+<p>The <strong>sfilebrowser</strong> widget inherits all options and methods of its parent widget, 
+the tablelist widget. See the manual for tablelist for thowse options and methods. 
+Further it adds the following options in additional to tablelists options:</p>
+
+<p><em>pathName</em> <strong>browse</strong> <em>dirname</em></p>
+
+<blockquote>
+<p>Opens the given directory name in the widget and displays its files and directories.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>getDirectory</strong></p>
+
+<blockquote>
+<p>Returns the path for the current opened directory.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>setDirectory</strong> <em>dirname</em></p>
+
+<blockquote>
+<p>Opens the given directory name in the widget and displays its files and directories. Alias for the <em>browse</em> command.</p>
+</blockquote>
+
+<p>Each <strong>sfilebrowser</strong> widget has all the standard widget commands ond options of a tablelist widget as well as the following commands:</p>
+
+<h2><a name='bindings'>WIDGET BINDINGS</a></h2>
+
+<p>The <em>dgw::sfilebrowser</em> widget provides a few useful key bindings to browse the current directory. Such as Up and Down keys to walk one entry up and down, 
+Backspace, to switch to the parent directory, 
+Ctrl-Start to go the the first and Ctrl-End to go to the last directory entry. 
+Further if you type alphanumeric characters the selection moves to the entry starting with these characters.</p>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code>   wm title . DGApp
+   option add *Tablelist.stripeBackground   #c4e8ff
+   option add *Tablelist.setGrid        yes
+   pack [dgw::sfilebrowser .fb] -side top -fill both -expand yes
+   option add *Tablelist.stripeBackground   white
+   option add *Tablelist.setGrid        no
+   pack [text .text] -side top -fill both -expand yes
+   pack [dgw::sfilebrowser .fb2 -treemode false] -side top -fill both -expand yes
+   proc viewCmd {filename} {
+       if {[regexp {(txt|tcl|html)$} $filename]} {
+           if [catch {open $filename r} infh] {
+               puts stderr &quot;Cannot open $filename: $infh&quot;
+               exit
+           } else {
+               .text delete 1.0 end
+               while {[gets $infh line] &gt;= 0} {
+                   .text insert end &quot;$line\n&quot;
+               }
+               close $infh
+           }
+       }
+   }
+   .fb2 configure -viewcmd viewCmd
+   .fb2 browse /home/groth/workspace/detlef
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can install and use the <strong>dgw::sfilebrowser</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgw/sfilebrowser-0.2.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of sfilebrowser.tcl. 
+Try &quot;tclsh sfilebrowser.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish sfilebrowser.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ wish sfilebrowser.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh sfilebrowser.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh sfilebrowser.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>sfilebrowser.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh sfilebrowser.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+man page, html or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code># man page
+tclsh sfilebrowser.tcl --man | pandoc -s -f markdown -t man - &gt; sfilebrowser.n
+# html page
+tclsh ../sfilebrowser.tcl --man &gt; sfilebrowser.md
+pandoc -i sfilebrowser.md -s -o sfilebrowser.html
+# pdf
+pandoc -i sfilebrowser.md -s -o sfilebrowser.tex
+pdflatex sfilebrowser.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package homepage: http://chiselapp.com/user/dgroth/repository/tclcode/index</a></li>
+<li><a href="https://www.nemethi.de/tablelist/tablelist.html">tablelist tutorial</a> of Csaba Nemethi which formed the code basis for this widget
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>sorting folders first, then filenames</li>
+<li>more, real, tests</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The <strong>sfilebrowser</strong> widget was written by Detlef Groth, Schwielowsee, Germany. The code is mainly based on Csaba Nemethi's demo code for his tablelist widget.</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>The widget dgw::sfilebrowser, version 0.2.</p>
+
+<p>Copyright (c)</p>
+
+<ul>
+<li>2019  Dr. Detlef Groth, &lt;detlef (at) dgroth(dot)de&gt;
+</li></ul>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

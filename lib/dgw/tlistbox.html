@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation tlistbox">
+<meta name="author" content="NN">
+<title>Documentation tlistbox</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::tlistbox 0.2</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2019-10-21</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::tlistbox</strong> - a tablelist based listbox with multiline text support and a search entry.</p>
+
+<h2><a name='toc'></A>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require dgw::tlistbox
+namespace import ::dgw::tlistbox
+tlistbox pathName options
+pathName configure -searchentry boolean
+pathName configure -browsecmd script
+pathName itemconfigure index -option value
+pathName itemcget index -option
+pathName iteminsert index string
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>tlistbox</strong> - a listbox widget based on the Csaba Nemethis tablelist widget with support for multiline text which can be wrapped.
+As <strong>tlistbox</strong> is based on the tablelist widget, it suppports the standard options and commands of tablelist.
+The <strong>tlistbox</strong> widget is a two column tablelist widget where the second column is hidden to allow invisible 
+storage of data belonging to a <strong>tlistbox</strong> item or a cell in tablelist terms.</p>
+
+<p>For convinience, and to make the widget more <strong>listbox</strong> like, a few options and methods were added in addition to the tablelist options. 
+Beside of standard listbox functionality the user of this widget can display on top of the <strong>tlistbox</strong> a search entry widget in order to 
+dynamically search the <strong>tlistbox</strong>.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>tlistbox</strong> <em>pathName ?options?</em></p>
+
+<blockquote>
+<p>Creates and configures a new tlistbox widget  using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p><strong>-browsecmd</strong> <em>script</em></p>
+
+<blockquote>
+<p>Set a command if the user double clicks an entry in the listbox or presses the <code>Return</code> key if the widget has the focus.
+   The widget path and the index of the item getting the event are appended to the script call as function arguments. 
+   So the implementation of the script should have two arguments in the parameter list as shown in the following example:</p>
+</blockquote>
+
+<pre><code>   proc click {tbl idx} {
+      puts [$tbl itemcget $idx -text]
+   }
+   tlistbox .tl -browsecmd click
+</code></pre><p>Please note that the tablelist options <strong>-listvariable</strong> should be here a nested list, 
+where each sublist should have at maximum only two values, the first value will be in the first visible cell, the second list value
+will be placed in the invisible cell. The latter can be retrieved via <em>pathName itemconfigure index -data</em>.</p>
+
+<p><strong>-searchentry</strong> <em>boolean</em></p>
+
+<p>this also in agreement with the manual pages of the standard listbox widget also an <strong>item</strong>.</p>
+
+<blockquote>
+<p>The user can enter text in the search widget for searching the <strong>tlistbox</strong> widget, pressing <code>Return</code> in the <em>entry</em> widget 
+ invokes the script supplied with the <em>-browsecmd</em> option.</p>
+
+<p>Configure the <strong>item</strong> (first cell of the row) indicated by <em>index</em> with the given value. 
+All options mentioned in <em>cellconfigure</em> of the tablelist manual can be used, such as <em>-text</em>, <em>-foreground</em>, <em>-background</em>.
+<em>pathName</em> <strong>itemcget</strong> <em>index option</em></p>
+
+<p>Retrieves the given option for the item (first cell of the row). See <em>itemconfigure</em> for an explanation of the options.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>itemconfigure</strong> <em>index option value ?option value ...?</em></p>
+
+<p><em>pathName</em> <strong>iteminsert</strong> <em>index string</em></p>
+
+<p>Further two listbox like methods are implemented for convinience to configure individual cells, in listbox terms also called <strong>items</strong>. 
+Please note, that you can also use in a similar way the <em>cellconfigure</em> and <em>cellcget</em> functions of the tablelist widget.</p>
+
+<blockquote>
+<p>Insert the given string at position index into the <strong>tlistbox</strong> value. 
+This is just a convinience function which does the same as <em>tablelist insert index {&quot;string&quot;}</em>
+But here you don't need to add add extra braces. Note, that you can not insert data text into the hidden column with this method and you can only add one element per function call.
+Example:</p>
+</blockquote>
+
+<pre><code>     tlistbox .tl
+     .tl insert end {&quot;Hello Text 1&quot;}       ;# inserts all
+     .tl insert end &quot;Hello Text 2&quot;         ;# only inserts Hello
+     .tl iteminsert end &quot;Hello Text 3&quot;     ;# inserts all 
+</code></pre>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code> package require dgw::tlistbox
+ namespace import ::dgw::tlistbox
+ 
+ set data { {&quot;B. Gates:\nThe Windows Operating System&quot; &quot;Hidden Data&quot;} 
+       {&quot;L. Thorwalds: The Linux Operating System&quot;} 
+       {&quot;C. Nemethi's: Tablelist Programmers Guide&quot;}
+       {&quot;J. Ousterhout: The Tcl/Tk Programming Language&quot;}
+ }
+ proc click {tbl idx} {
+     puts [$tbl itemcget $idx -text]
+ }
+ tlistbox .tl -listvariable data -browsecmd click -searchentry true
+ lappend data {&quot;A. Anonymous: Some thing else matters&quot;}
+ .tl insert end {&quot;L. Wall: The Perl Programming Language&quot; &quot;1987&quot;}
+ pack .tl -side top -fill both -expand yes
+ .tl itemconfigure end -foreground red
+ .tl itemconfigure end -data Hello
+ puts &quot;Hello? [.tl itemcget end -data] - yes!&quot;
+</code></pre>
+
+<p><img src="../img/tlistbox-01.png" alt="tlistbox example" title="dgw::tlistbox example"/></p>
+
+<p><img src="../img/tlistbox-02.png" alt="tlistbox search" title="dgw::tlistbox search example"/></p>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can easily install and use this <strong>tlistbox</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a></li>
+<li>the tablelist package which can be found on <a href="http://www.nemethi.de/tablelist/">C. Nemethi's webpage</a>
+</li></ul>
+
+<p>If you have those Tcl packages installed, you can either use the tlistbox package by sourcing it with: 
+<code>source /path/to/tlistbox.tcl</code>, by copying the folder <code>dgw</code> to a path belonging to your Tcl <code>$auto_path</code> variable or by installing it as an Tcl-module. 
+To do this, make a copy of <code>tlistbox.tcl</code> to a file like <code>tlistbox-0.1.tm</code> and put this file into a folder named <code>dgw</code> where the parent folder belongs to your module path.
+You must now adapt eventually your Tcl-module path by using in your Tcl code the command: 
+<code>tcl::tm::path add /parent/dir/</code> of the <code>dgw</code> directory. 
+For details of the latter consult see the <a href="https://www.tcl.tk/man/tcl/TclCmd/tm.htm">manual page of tcl::tm</a>.</p>
+
+<p>Alternatively there is an install option you can use as well. 
+Try <code>tclsh tlistbox.tcl --install</code> which should perform the procedure described above automatically. 
+This requires eventually the setting of an environment variables like if you have no write access to all 
+your module paths. For instance on my computer I have the following entry in my <code>.bashrc</code></p>
+
+<pre><code>export TCL8_6_TM_PATH=/home/groth/.local/lib/tcl8.6
+</code></pre>
+
+<p>If I execute <code>tclsh tlistbox.tcl --install</code> the file <code>tlistbox.tcl</code> will be copied to <br/>
+<code>/home/groth/.local/lib/tcl8.6/dgw/tlistbox-0.1.tm</code> and is thereafter available for a<br/> <code>package require dgw::tlistbox</code>.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish tlistbox.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ wish tlistbox.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh tlistbox.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh tlistbox.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>tlistbox.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh tlistbox.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown document for conversion into a markdown 
+processor for instance to convert it into a man page a html or a pdf document you could execute the following commands:</p>
+
+<pre><code># man page
+tclsh tlistbox.tcl --man | pandoc -s -f markdown -t man - &gt; tlistbox.n
+# html page
+tclsh ../tlistbox.tcl --man &gt; tlistbox.md
+pandoc -i tlistbox.md -s -o tlistbox.html
+# pdf
+pandoc -i tlistbox.md -s -o tlistbox.tex
+pdflatex tlistbox.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://www.nemethi.de/tablelist/tablelistWidget.html">tablelist man page: http://www.nemethi.de/tablelist/tablelistWidget.html</a>
+
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>probably as usually more documentation</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='authors'>AUTHORS</a></h2>
+
+<p>The <strong>tlistbox</strong> widget is based on Csaba Nemethi's great tablelist widget.</p>
+
+<p>The <strong>tlistbox</strong> widget was written with his help by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2019  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>Single-column listbox widget with multiline text and search entry,  dgw::tlistbox widget, version 0.2.</p>
+
+<p>Copyright (c) 2019  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

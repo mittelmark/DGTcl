@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation drawcanvas">
+<meta name="author" content="NN">
+<title>Documentation drawcanvas</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::drawcanvas 0.1</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::drawcanvas</strong> - simple drawing tool to sketch some text, lines, rectangles ovals on the fly.</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#bindings">KEY BINDINGS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHORS</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require Tk
+package require snit
+package require dgw::drawcanvas
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The widget <strong>dgw::drawcanvas</strong> provides a simple drawing surface to place, lines, rextangles, ovales and text
+in different in a fast manner on a canvas. It is based on code in the Tclers Wiki:</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::drawcanvas</strong> <em>pathName ?-option value ...?</em></p>
+
+<blockquote>
+<p>Creates and configures the <strong>dgw::drawcanvas</strong>  widget using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p>As the <strong>dgw::drawcanvas</strong> is an extension of the standard Tk canvas widget 
+it supports all method and options of this widget. 
+The following option(s) are added by the <em>dgw::drawcanvas</em> widget:</p>
+
+<p><strong>-colors</strong> <em>colorList</em></p>
+
+<blockquote>
+<p>List of colors which can be used to fill ovals and rectangles. Those colors are a set of pastel like colors.</p>
+</blockquote>
+
+<h2><a name='commands'>WIDGET COMMANDS</a></h2>
+
+<p>Each <strong>dgw::drawcanvas</strong> widget supports all usual methods of the Tk canvas widget and it adds the follwing method(s):</p>
+
+<p><em>pathName</em> <strong>eraseAll</strong> <em>?ask?</em></p>
+
+<blockquote>
+<p>Deletes all items in the widget, if ask is true (default), then the user will get a message box to agree on deleting all items.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>saveCanvas</strong> <em>?fileName?</em></p>
+
+<blockquote>
+<p>Saves the content of the canvas either as ps or if the ghostscript 
+interpreter is available as well as pdf file using the given filename. If the filename is not given
+ the user will be asked for one.</p>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>In the example below we create a Markdown markup aware text editor.</p>
+
+<pre><code>package require dgw::drawcanvas
+dgw::drawcanvas .dc
+pack .dc -side top -fill both -expand true
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can install and use the <strong>dgw::drawcanvas</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgw/drawcanvas-0.1.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of drawcanvas.tcl. 
+Try &quot;tclsh drawcanvas.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish drawcanvas.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ tclsh drawcanvas.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh drawcanvas.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh drawcanvas.tcl --html
+</code></pre>
+
+<p>If the tcllib Markdown package is installed, this will directly create a HTML page <code>drawcanvas.html</code> 
+which contains the formatted documentation.</p>
+
+<p>Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh drawcanvas.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a Markdown processor for conversion into a 
+html, docx or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../drawcanvas.tcl --man &gt; drawcanvas.md
+pandoc -i drawcanvas.md -s -o drawcanvas.html
+pandoc -i drawcanvas.md -s -o drawcanvas.tex
+pdflatex drawcanvas.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="https://chiselapp.com/user/dgroth/repository/tclcode/index">dgw package homepage</a> - various useful widgets
+
+ </li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-03-27 - version 0.1 started
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>github url
+</li></ul>
+
+<h2><a name='authors'>AUTHORS</a></h2>
+
+<p>The dgw::<strong>dgw::drawcanvas</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>Copyright</a></h2>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::drawcanvas package, version 0.1.</p>
+
+<p>Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

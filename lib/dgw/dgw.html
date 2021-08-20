@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation dgw">
+<meta name="author" content="NN">
+<title>Documentation dgw</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::dgw 0.6</h1>
+
+<h3>Dr. Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::dgw</strong>  - Detlef Groth's Tk Widgets</p>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require Tk 8.6
+package require snit
+package require dgw::dgw
+dgw::basegui app
+dgw::combobox pathname
+dgw::sbuttonbar pathname
+dgw::seditor pathname
+dgw::statusbar pathname
+package require tablelist::tablelist
+dgw::sfilebrowser pathname
+dgw::tablelist pathname
+dgw::tlistbox pathname
+</code></pre>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>package::require dgw::dgw</strong></p>
+
+<blockquote>
+<p>The <em>dgw::dgw</em> package is just a wrapper package to load all the dgw widgets with one package call.
+The following packages are loaded via the <em>package require dgw::dgw</em> call.</p>
+
+<ul>
+<li><a href="basegui.html">dgw::basegui</a> - framework to build up Tk application, contains as well a few standalone widgets which can be used inside existing Tk applications:
+<ul>
+<li><a href="basegui.html#autoscroll">autoscroll</a> - add scrollbars to Tk widgets which appear only when needed.</li>
+<li><a href="basegui.html#balloon">balloon</a> - add tooltips to Tk widgets</li>
+<li><a href="basegui.html#cballoon">cballoon</a> - add tooltips to canvas tags</li>
+<li><a href="basegui.html#center">center</a> - center toplevel widgets</li>
+<li><a href="basegui.html#console">console</a> - embedded Tcl console for debugging</li>
+<li><a href="basegui.html#dlabel">dlabel</a> - label widget with dynamic fontsize fitting the widget size</li>
+<li><a href="basegui.html#labentry">labentry</a> - composite widget of label and entry</li>
+<li><a href="basegui.html#notebook">notebook</a> - ttk::notebook with interactive tab management faciltities</li>
+<li><a href="basegui.html#rotext">rotext</a> - read only text widget</li>
+<li><a href="basegui.html#splash">splash</a> - splash window with image and message faciltites</li>
+<li><a href="basegui.html#timer">timer</a> - simple timer to measure execution times</li>
+<li><a href="basegui.html#treeview">treeview</a> - ttk::treeview widget with sorting facilities</li></ul>
+
+</li>
+<li><a href="combobox.html">dgw::combobox</a> - ttk::combobox with added dropdown list and filtering</li>
+<li><a href="sbuttonbar.html">dgw::sbuttonbar</a> - buttonbar with round image buttons and text labels</li>
+<li><a href="seditor.html">dgw::seditor</a> - extended text editor widget with toolbar and syntax hilighting </li>
+<li><a href="sfinddialog.html">dgw::sfinddialog</a> - find and search dialog for instance for text widgets</li>
+<li><a href="statusbar.html">dgw::statusbar</a> - statusbar widget with label for text messages and ttk::progressbar</li>
+<li><a href="tvmixins.html">dgw::tvmixins</a> - treeview widget adaptors usable as mixins for the ttk::treeview widget.</li>
+<li><a href="txmixins.html">dgw::txmixins</a> - text widget adaptors usable as mixins for the tk::text widget.
+</li></ul>
+
+<p>The following widgets must be loaded separately using <code>package dgw::widgetname</code> as they depend on other non-standard packages such as <code>tablelist::tablelist</code>, <code>tdbc::sqlite3</code> or <code>dgtools::shistory</code></p>
+
+<ul>
+<li><a href="hyperhelp.html">dgw::hyperhelp</a> - help system with hypertext facilitites and table of contents outline (requires dgtools package)</li>
+<li><a href="sfilebrowser.html">dgw::sfilebrowser</a> - snit file browser widget (requires tablelist package)</li>
+<li><a href="sqlview.html">dgw::sqlview</a> - SQLite database browser widget (requires tdbc::sqlite3 package)</li>
+<li><a href="tablelist.html">dgw::tablelist</a> - tablelist widget with a few icons and implemention of icon changes if tree nodes are opened (requires tablelist package)</li>
+<li><a href="tlistbox.html">dgw::tlistbox</a> - listbox widget based on tablelist with wrap facilities for multiline text and filtering (requires tablelist package)</li></ul>
+
+
+</blockquote>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can easily install and use this <strong> dgw</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.</p>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. 
+To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh dgw.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. 
+You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh dgw.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>dgw.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh dgw.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+html or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../dgw.tcl --man &gt; dgw.md
+pandoc -i dgw.md -s -o dgw.html
+pandoc -i dgw.md -s -o dgw.tex
+pdflatex dgw.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package homepage: http://chiselapp.com/user/dgroth/repository/tclcode/index</a>
+
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The <strong>dgw</strong> command was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw package, version 0.6.</p>
+
+<p>Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

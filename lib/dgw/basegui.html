@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation basegui">
+<meta name="author" content="NN">
+<title>Documentation basegui</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::basegui 0.2</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<blockquote>
+<p><strong>dgw::basegui</strong> - starting point framework for writing Tk applications</p>
+</blockquote>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">TYPE OPTIONS</a></li>
+<li><a href="#commands">TYPE COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#inheritance">INHERITANCE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require dgw::basegui
+dgw::basegui cmdName
+cmdName addStatusBar
+cmdName autoscroll pathname
+cmdName balloon pathname message
+cmdName cballon canvasname tag message
+cmdName center window
+cmdName console ?pathname?
+cmdName dlabel pathname
+cmdName getFrame
+cmdName getMenu
+cmdName labentry pathname
+cmdName message msg
+cmdName notebook pathname
+cmdName progress value
+cmdName rotext pathname
+cmdName splash imgfile ?-delay milliseconds -message textmessage?
+cmdName status msg ?value?
+cmdName subwidget widgetName
+cmdName timer mode
+cmdName treeview pathname
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>dgw::basegui</strong> application framework serves as building block for writing  Tk applications. 
+It can be used for new applications as starting point providing useful widgets such as a ready to use menubar, a mainframe and
+a statusbar etc and various utility methods, for instance to add scrollbars, centering a window on the screen. It can be however as well added to existing applications as it provides a few 
+useful small widgets required in standard applications, such as a tooltip/balloon, a sortable table widget (based on ttk::treeview), 
+a splash toplevel, a notebook with reorganizing facilities and popumenu for renaming tabs, a labentry and so on. 
+Those widgets in many cases just add small functionalities with one or two new methods or options to existing widgets, 
+not worth to put them into extra widget manual pages or even packages. These widgets are therefore documented in this manual page.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::basegui</strong> <em>cmdName ?options?</em></p>
+
+<blockquote>
+<p>Creates and configures a new dgw::basegui application  using the main Tk window id <em>.</em> and the given <em>options</em>. 
+  If the functionalties in this package should be added to existing applications the option <em>-start</em> should be set to <em>false</em>. See the <em>start</em> option below for a more detailed explanation.</p>
+</blockquote>
+
+<h2><a name='options'>TYPE OPTIONS</a></h2>
+
+<p>The <strong>dgw::basegui</strong> snit type supports the following options:</p>
+
+<p><strong>-start</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Should the application in the toplevel be started automatically. Default to <em>true</em>. 
+In cases where you like to add just a few of the small widgets or utility methods of the <em>dgw::basegui</em> package such as 
+<em>balloon</em>, <em>notebook</em>, <em>rotext</em>, <em>labentry</em> or some others to an existing application you should set 
+this as <em>false</em> at object creation.</p>
+
+<p>The following methods can be used inside existing applications if the option <em>-start</em> was set to false:</p>
+
+<ul>
+<li><a href="#autoscroll">autoscroll</a></li>
+<li><a href="#balloon">balloon</a></li>
+<li><a href="#cballoon">cballoon</a></li>
+<li><a href="#center">center</a></li>
+<li><a href="#console">console</a></li>
+<li><a href="#dlabel">dlabel</a></li>
+<li><a href="#notebook">notebook</a></li>
+<li><a href="#rotext">rotext</a></li>
+<li><a href="#splash">splash</a></li>
+<li><a href="#timer">timer</a></li>
+<li><a href="#treeview">treeview</a></li></ul>
+
+
+</blockquote>
+
+<p><strong>-style</strong> <em>styleName</em></p>
+
+<blockquote>
+<p>Configures the ttk style for all widgets within the application. 'clam' and 'default# should be supported on all platforms. 
+   Use <code>ttk::style theme names</code> within an interactive wish session to find out which themes are available on your machine.</p>
+</blockquote>
+
+<h2><a name='commands'>TYPE COMMANDS</a></h2>
+
+<p>Each <strong>dgw::basegui</strong> command supports the following public methods to be used within inheriting applications to extend the basic application.
+Alternatively widgets can be added to existing applications as well.</p>
+
+<p><em>cmdName</em> <strong>addStatusBar</strong></p>
+
+<blockquote>
+<p>Packs and displays the statusbar widget at the bottom of the application. 
+If not called the statusbar will be invisible.</p>
+</blockquote>
+
+<p><a name="autoscroll"><em>cmdName</em> <strong>autoscroll</strong>  <em>pathname</em></a></p>
+
+<blockquote>
+<p>For the widget belonging to <em>pathname</em> add horizontal and vertical scrollbars, shown only when needed.
+  Please note, that the widget in <em>pathname</em> must be the only child of a <code>tk::frame</code> or a <code>ttk::frame</code> widget created already.
+   The widget <em>pathname</em> is then managed by grid, don't pack or grid the widget in <em>pathname</em> yourself. Handle it's geometry
+  via its parent frame. See the following example:</p>
+
+<pre class='code'><code>package require dgw::basegui
+::dgw::basegui app -style clam
+set f [app getFrame]
+set tf [ttk::frame $f.tframe]
+set t [text $tf.text -wrap none]
+app autoscroll $t
+for {set i 0} {$i &lt; 30} {incr i} {
+    $t insert end &quot;Lorem ipsum dolor sit amet, ....\n\n&quot;
+}
+pack $tf -side top -fill both -expand yes</code></pre>
+</blockquote>
+
+<p><a name="balloon"><em>cmdName</em> <strong>balloon</strong>  <em>pathname message ?display?</em> </a></p>
+
+<blockquote>
+<p>For the widget belonging to <em>pathname</em> displays for around three seconds a small tooltip 
+  using the given <em>message</em>. The boolean variable <em>display</em> can be used to unregister the tooltip 
+  at a later point. See as well <a href="#cballoon">cballoon</a> for tooltip on canvas tags.</p>
+</blockquote>
+
+<p><a name="cballoon"><em>cmdName</em> <strong>cballoon</strong>  <em>pathname tag message</em></a></p>
+
+<blockquote>
+<p>For the widget belonging to <em>pathname</em> display for the canvas items labeled with <em>tag</em> the 
+  given message. See as well <a href="#balloon">balloon</a> for standard tooltips for widgets.</p>
+</blockquote>
+
+<p><a name="center"><em>cmdName</em> <strong>center</strong> <em>window</em></a></p>
+
+<blockquote>
+<p>Centers a toplevel window on the screen.</p>
+</blockquote>
+
+<p><a name="console"><em>cmdName</em> <strong>console</strong> <em>?pathname?</em></a></p>
+
+<blockquote>
+<p>Displays a simple console in a toplevel if the target <em>pathname</em> is not given, or within the application if the given <em>pathname</em>
+ is a valid widget path within an existing toplevel. This console can be used to debug applications and
+  to inspect variables, commands etc. Based on wiki code in <a href="https://wiki.tcl-lang.org/page/A+minimal+console">A minimal console</a>. The <em>puts</em> commands entered within the <em>console</em> widget are displayed within the widget.</p>
+</blockquote>
+
+<p><a name="dlabel"><em>cmdName</em> <strong>dlabel</strong> <em>window</em></a></p>
+
+<blockquote>
+<p>Creates a ttk::label where the font size is dynamically adjusted to the widget size. Here an example:</p>
+
+<pre class='code'><code>dgw::basegui app -start false
+font create title -family Helvetica -size 10
+toplevel .test
+set txt &quot; Some Title &quot;
+app dlabel .test.l -text $txt -font title
+pack  .test.l -expand 1 -fill both
+wm geometry .test 400x300+0+0</code></pre>
+</blockquote>
+
+<p><em>cmdName</em> <strong>getFrame</strong></p>
+
+<blockquote>
+<p>Returns the mainframe of the application.
+  This function allows adding more widgets to the interior of the application in inheriting applications or at a later point.</p>
+</blockquote>
+
+<p><em>cmdName</em> <strong>getMenu</strong> <em>menuName ?option value ...?</em></p>
+
+<blockquote>
+<p>Returns the menu entry belonging to the given <em>menuName</em> or creates a new cascade with this <em>menuName</em> 
+  in the application menubar. 
+  This function allows adding more menu points in inheriting applications or at a later point to the application.
+  At creation time or therafter additional configuration options can be given such as <em>-underline 0</em> for instance. Here an example for inserting new menu points</p>
+
+<pre class='code'><code>::dgw::basegui app -style clam
+set fmenu [app getMenu &quot;File&quot;]
+$fmenu insert 0 command -label Open -underline 0 -command { puts Opening }</code></pre>
+</blockquote>
+
+<p><a name="labentry"><em>cmdName</em> <strong>labentry</strong>  <em>pathname ?-option value ...?</em></a></p>
+
+<blockquote>
+<p>Creates a simple <em>labentry</em> widget where the main widget is the entry widget. 
+The label is set with the <em>-label</em> option. All other options and methods are delegated to the entry widget. 
+The widget provides two additional methods:</p>
+
+<ul>
+<li><em>pathname entry</em> to access directly the internal entry widget</li>
+<li><em>pathname label</em> to access directly the internal label widget</li></ul>
+
+
+</blockquote>
+
+<p><em>cmdName</em> <strong>message</strong>  <em>msg</em></p>
+
+<blockquote>
+<p>Displays the text of <em>msg</em> in the statusbar. 
+   Only useful if statusbar is displayed using the <em>addStatusBar</em> command.</p>
+</blockquote>
+
+<p><a name="notebook"><em>cmdName</em> <strong>notebook</strong>  <em>pathname ?-option value?</em></a></p>
+
+<blockquote>
+<p>Creates a standard <em>ttk::notebook</em> with some additional features, like right click popup for adding new tabs, rename existing tabs and changing tab order. There is further one additional option available:</p>
+
+<ul>
+<li><em>-createcmd command</em> invokes the given <em>command</em> if a new page is created. The <em>pathname</em> of the notebook and the page <em>index</em> are added as arguments to the script call.
+</li></ul>
+
+<p>The widget further adds the following bindings to the standard <em>ttk::notebook</em> widget:</p>
+
+<ul>
+<li><em>F2</em> - popup for moving and renaming tabs</li>
+<li><em>Button-3</em> - popup for moving and renaming tabs</li>
+<li><em>Ctrl-Shift-Left</em> - move current tab to the left</li>
+<li><em>Ctrl-Shift-Right</em> - move current tab to the right</li>
+<li><em>Ctrl-w</em> - close current tab</li>
+<li><em>Ctrl-t</em> - create new tab</li></ul>
+
+
+</blockquote>
+
+<p><em>cmdName</em> <strong>progress</strong>  <em>value</em></p>
+
+<blockquote>
+<p>Displays the given <em>value</em> within the progressbar in the statusbar widget. 
+   Only useful if statusbar is displayed using the <em>addStatusBar</em> command.</p>
+</blockquote>
+
+<p><a name="rotext"><em>cmdName</em> <strong>rotext</strong>  <em>pathname</em> <em>?-option value ...?</em></a></p>
+
+<blockquote>
+<p>Creates a readonly <em>text</em> widget. All options are delegated to the standard textwidget, except for <em>-insertwidth</em>.
+  The standard commands for the text widget work but not <em>insert</em> and <em>delete</em>. They are replaced with the <em>ins</em> and <em>del</em> subcommands. Useful fot displaying text to the user which should not be changed. See the following example on how to handle inserts into the <em>rotext</em> widget:</p>
+
+<pre class='code'><code>package require dgw::basegui
+dgw::basegui app
+# main application frame
+set f [app getFrame]
+# it is best to place it in a single frame if you need scrollbars
+set roframe [ttk::frame $f.rf]
+set rotext [app rotext $roframe.rotext -background salmon]
+app autoscroll $rotext
+# scrollbar free rotext can be placed directly into the main frame
+set rotext2 [app rotext $f.rotext -autoscroll false]
+for {set i 0} {$i &lt; 100} {incr i 1} {
+   $rotext ins end &quot;Sample text line $i\n&quot;
+   $rotext2 ins end &quot;Sample text line $i\n&quot;
+}
+pack $roframe -side top -fill both -expand true
+pack $rotext2 -side top -fill both -expand true</code></pre>
+</blockquote>
+
+<p><a name="splash"><em>cmdName</em> <strong>splash</strong>  <em>imgfile ?-delay milliseconds -message textmessage?</em> </a></p>
+
+<blockquote>
+<p>Hides the main application and shows the given image in <em>imgfile</em> as well as some 
+  textmessage given with the option -message. The splash screen destroys itself after the given delay, default 2500. 
+  If delay is given as zero (0), the splash widget is not destroyed. If the <em>imgfile</em> variable is given as <code>update</code> 
+  then additional messages can be given to the splash widget. To destroy the splash method should be called with the
+  imgfile argument <code>destroy</code>. See below for an example. 
+  The pathname of the splash toplevel is <code>.splash</code>.</p>
+
+<p>Example with a simple single message splash:</p>
+
+<pre class='code'><code>app splash splash.png -delay 2000 -message &quot;Loading editor application ...&quot;</code></pre>
+
+<p>Example with multiple messages:</p>
+
+<pre class='code'><code>app splash splash.png -delay 0 -message &quot;Loading editor application ...&quot;
+after 2000 { app splash update -message &quot;Loading data for editor application ...&quot; }
+after 4000 { app splash destroy }</code></pre>
+</blockquote>
+
+<p><em>cmdName</em> <strong>status</strong>  <em>msg ?value?</em></p>
+
+<blockquote>
+<p>Displays the text of <em>msg</em> as message and the optional value within the progressbar in the statusbar widget. 
+   Only useful if statusbar is displayed using the <em>addStatusBar</em> command.</p>
+</blockquote>
+
+<p><em>cmdName</em> <strong>subwidget</strong>  <em>widgetName</em></p>
+
+<blockquote>
+<p>Returns the widget belonging to the given <em>widgetName</em>.
+  <em>widgetName</em> can be either <em>statusbar</em> or <em>frame</em>. This function allows access to internal widgets at a later point.</p>
+</blockquote>
+
+<p><a name="timer"><em>cmdName</em> <strong>timer</strong>  <em>mode</em></a></p>
+
+<blockquote>
+<p>Simple timer procedure to measure execution time in the GUI. 
+The two modes are <em>reset</em> and <em>time</em>, the first measured time is initialized at <em>dgw::basegui</em> initialization:</p>
+
+<ul>
+<li><em>reset</em> - resets the time to the current time</li>
+<li><em>time</em>  - gets the execution time after the last reset, this is the default.
+</li></ul>
+
+<pre class='code'><code>  dgw::basegui app
+  puts &quot;Startup in [app timer time] seconds!&quot;
+  app timer reset
+  after 1500
+  puts &quot;After time [app timer time] seconds!&quot;</code></pre>
+</blockquote>
+
+<p><a name="treeview"><em>cmdName</em> <strong>treeview</strong>  <em>pathname ?-option value ...?</em> </a></p>
+
+<blockquote>
+<p>Creates a standard <em>ttk::treeview</em> widget with additional sorting feature for the columns and banding stripes for the rows.
+  It has as well a <em>loadData</em> method to load nested lists. See the following example.</p>
+
+<pre class='code'><code>  dgw::basegui app
+  set f [app getFrame]
+  set tv [app treeview $f.tv]
+  set headers {country capital currency unit}
+  set data {
+   {Argentina          &quot;Buenos Aires&quot;          ARS 0.12}
+   {Australia          Canberra                AUD 0.11}
+   {Brazil             Brazilia                BRL 0.33}
+   {Canada             Ottawa                  CAD 0.56}
+   {China              Beijing                 CNY 0.88}
+   {France             Paris                   EUR 1.23}
+   {Germany            Berlin                  EUR 0.124}
+   {India              &quot;New Delhi&quot;             INR 0.12345}
+   {Italy              Rome                    EUR 1.2345}
+ }
+ pack $tv  -side left -expand yes -fill both
+ $tv loadData $headers $data</code></pre>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>The following example demonstrates a few features for creating new standalone applications using the faciltities of 
+of the <em>dgw::basegui</em> snit type. The code can be executed directly using the <em>--demo</em> commandline switch.</p>
+
+<pre><code>::dgw::basegui app -style clam
+puts &quot;Startup in [app timer time] seconds!&quot;
+app timer reset
+after 1500
+puts &quot;After time [app timer time] seconds!&quot;
+set fmenu [app getMenu &quot;File&quot;]
+$fmenu insert 0 command -label Open -underline 0 -command { puts Opening }
+app addStatusBar
+set stb [app subwidget statusbar]
+$stb progress 100
+$stb set &quot;starting ...&quot;
+after 100
+app status progressing... 50
+after 1000
+app status finished 100
+set f [app getFrame]
+set btn [ttk::button $f.btn -text &quot;Hover me!&quot;]
+app balloon $btn &quot;This is the hover message!\nNice ?&quot;
+pack $btn -side top
+set tf [ttk::frame $f.tframe]
+set t [text $tf.text -wrap none]
+app autoscroll $t
+for {set i 0} {$i &lt; 30} {incr i} {
+    $t insert end &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+  sed do eiusmod tempor 
+     incididunt ut labore et dolore magna aliqua. 
+   Ut enim ad minim veniam, quis nostrud exercitation 
+     ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n&quot;
+}
+pack $tf -side top -fill both -expand yes
+pack [canvas $f.c] -side top -fill both -expand true
+set id [$f.c create oval 10 10 110 110 -fill red]
+app cballoon $f.c $id &quot;This is a red oval&quot;
+$f.c create rect 130 30 190 90 -fill blue -tag rect
+app cballoon $f.c rect &quot;This is\na blue square&quot;
+set nb [app notebook $f.nb]
+set bframe [ttk::frame $nb.bf]
+$nb add $bframe -text &quot;rotext&quot;
+set rotext [app rotext $bframe.rotext]
+app autoscroll $rotext
+for {set i 0} {$i &lt; 50} {incr i 1} {
+   $rotext ins end &quot;Hello rotext ...\n&quot;
+}
+set evar &quot;entries text&quot;
+app labentry $nb.len -label &quot;The label&quot; -textvariable evar
+$nb add $nb.len -text &quot;labentry&quot;
+pack $nb -side top -fill both -expand true
+</code></pre>
+
+<h2><a name='inheritance'>INHERITANCE</a></h2>
+
+<p>This snit type can be used to build up other more specialized applications. Here is an example, 
+where we create a generic Editor class which adds additional menu points and embeds 
+a scrolled text widget.</p>
+
+<p>The most basic inheritance example would be just copying the functionality without the text widget.</p>
+
+<pre><code>package require dgw::basegui
+snit::type EditorApp {
+   component basegui
+   # inheritance
+   delegate method * to basegui
+   delegate option * to basegui
+   # variable addon to extend basegui
+   variable textw
+   constructor {args} {
+        install basegui using dgw::basegui %AUTO%
+        $self configurelist $args    
+        # added functionality
+        set f [$basegui getFrame]
+        set textw [text $f.t -wrap none]
+        $self autoscroll $textw
+   }
+   # added functionality
+   # access functionality of the text widget
+   # like: % app text insert end &quot;hello basegui world&quot;
+   method text {args} {
+      $textw {*}$args
+   }
+}
+if {[info exists argv0] &amp;&amp; $argv0 eq [info script]} {
+   #start editor
+   EditorApp app
+   app text insert end &quot;Hello EditorApp!!&quot;
+}
+</code></pre>
+
+<p>This simple example should show how to extend the functionality of the basegui toplevel.
+Before you start to write specialized applications you should create a simple proxy class which 
+does nothing more than inheriting from <code>dgw::basegui</code> first. This is the code above without the text widget parts. 
+You can then extend this base class and your specialized applications inherit from your baseclass. 
+This allows you to extend all your specialized classes using your baseclass. So your setup should be:</p>
+
+<pre><code>                                 -- your::editor
+dgw::basegui -- your::basegui ---+
+                                 -- your::databasebrowser
+</code></pre>
+
+<p>This is in the long term better than inheriting from <code>dgw::basegui</code> directly. You don't like to change the code of 
+this class, but you can change <code>your::basegui</code> for instance to give better help facilities in the Help menu, or other features you need in your applications most of the time.
+If you do this both application <code>your::editor</code> and <code>your::databasebrowser</code> will have this functionality at the same time 
+after implementing it in <code>your::basegui</code> type. If you follow this approach you can easily update the <em>dgw::basegui</em> package without loosing your new functionalities.</p>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can easily install and use this <strong> dgw::basegui</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file <code>dgw/basegui-0.2.tm</code> in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of basegui.tcl. 
+Try &quot;tclsh basegui.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish basegui.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ tclsh basegui.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh basegui.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. 
+You can as well use this markdown output directly to create html pages for 
+the documentation by using the <em>--html</em> flag if the Markdown library of 
+tcllib is installed on your machine.</p>
+
+<pre><code>$ tclsh basegui.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>basegui.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh basegui.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+html or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../basegui.tcl --man &gt; basegui.md
+pandoc -i basegui.md -s -o basegui.html
+pandoc -i basegui.md -s -o basegui.tex
+pdflatex basegui.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package homepage: https://chiselapp.com/user/dgroth/repository/tclcode/index</a>
+</li></ul>
+
+<h2><a name='todo'>TODOS</a></h2>
+
+<ul>
+<li>socket check for starting the application twice</li>
+<li>tooltip embedded (done)</li>
+<li>auto scrolled command embedded for x and y scrollbars (done)
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The <strong>basegui</strong> command was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::basegui command, version 0.2.</p>
+
+<p>Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

@@ -1,0 +1,459 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation sqlview">
+<meta name="author" content="NN">
+<title>Documentation sqlview</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::sqlview 0.6</h1>
+
+<h3>Dr. Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::sqlview</strong>  - database browser widget and standalone application</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#methods">METHODS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#formatting">MARKUP LANGUAGE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE AND COPYRIGHT</a>
+
+</li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<p>Usage as package:</p>
+
+<pre class='synopsis'><code>package require Tk
+package require snit
+package require tdbc::sqlite3 
+package require dgw::seditor 
+package require dgw::hyperhelp
+package require dgw::basegui
+package require dgw::sqlview
+dgw::sqlview pathName -database filename ?-funcfile sqlfunc.tcl?
+dgw::sqlview tedit insert &quot;sql statement&quot;
+dgw::sqlview tedit doHilights sql
+</code></pre>
+
+<p>Usage as command line application:</p>
+
+<pre class='synopsis'><code>tclsh sqlview.tcl databasename
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>dgw::sqlview</strong> package provides a SQL database browser widget as well 
+as a standalone application. It main parts a treeview database structure viewer, 
+a text editor with SQL syntax hilighting, and a tableview widget for viewing the
+results of the entered SQL statements. The editor widget provides shortcuts to execute either the current selection, the current line or the complete
+text entered in the text widget.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::sqlview</strong> <em>pathName -database fileName ?-option value ...?</em></p>
+
+<blockquote>
+<p>creates a new <em>sqlview</em> widget using the given widget <em>pathName</em> and with the given <em>-database fileName</em>. 
+Please note, that the filename must be currently a sqlite3 database. Support for other database types can be added on request.</p>
+</blockquote>
+
+<h2><a name='options'>OPTIONS</a></h2>
+
+<p>The <em>dgw::sqlview</em> snit widget supports the following options:</p>
+
+<p><strong>-database</strong> <em>filename</em></p>
+
+<blockquote>
+<p>Configures the database used within the widget. Should be set already at
+   widget initialization.</p>
+</blockquote>
+
+<p><strong>-funcfile</strong> <em>filename(s)</em></p>
+
+<blockquote>
+<p>Load SQL functions from the file given with the <em>-funcfile</em> option. 
+Please note, that all SQL functions written in Tcl must be created 
+within the <em>sqlfunc</em> namespace.  If the <em>filenames</em> are a list, every file of this list  will be loaded.
+See the following example for the beginning of such a <code>funcfile.tcl</code>:</p>
+
+<pre class='code'><code>namespace eval ::sqlfunc {}
+# replace all A's with B's
+proc ::sqlfunc::mmap args {
+  return [string map {A B} [lindex $args 0]]
+}
+# support for regexp: rgx('^AB',colname)
+proc ::sqlfunc::rgx {args} {
+    return [regexp [lindex $args 0] [lindex $args 1]]
+}
+# support for replacements: rsub('^AB',colname,'')
+proc ::sqlfunc::rsub {args} {
+    return [regsub [lindex $args 0] [lindex $args 1] [lindex $args 2]]
+}</code></pre>
+</blockquote>
+
+<p><strong>-log</strong> <em>boolean</em></p>
+
+<blockquote>
+<p>Should all executed statements written into the logfile. Default true.</p>
+</blockquote>
+
+<p><strong>-logfile</strong> <em>filename</em></p>
+
+<blockquote>
+<p>The file where all executed statements of the sqlview editor widget are written into.
+   If not given, defaults to an the file sqlview.log in the users home directory.</p>
+</blockquote>
+
+<p><strong>-type</strong> <em>sqlite3</em></p>
+
+<blockquote>
+<p>Configures the database type, currently only the type sqlite3 is supported. 
+   Other types can be added on request. Should be set only at
+   widget initialisation.</p>
+</blockquote>
+
+<h2><a name='methods'>METHODS</a></h2>
+
+<p>The <em>dgw::sqlview</em> widget provides the following methods:</p>
+
+<p><em>pathName</em> <strong>changeFontSize</strong> <em>integer</em></p>
+
+<blockquote>
+<p>Increase (positive integer values) or decrease widget (negative integer values) font size of all text and ttk::treeview widgets.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>closeSQLview</strong></p>
+
+<blockquote>
+<p>Destroys the sqlview widget. A message box will be shown to verify that the 
+  widget should be really destroyed. This as well disconnects the database cleanly.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>dbConnect</strong></p>
+
+<blockquote>
+<p>Connect to the actual database. Currently only SQLite 3 is supported.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>dbDisconnect</strong></p>
+
+<blockquote>
+<p>Disconnect the actual database. Currently only SQLite 3 is supported.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>dbSelect</strong> <em>statement</em></p>
+
+<blockquote>
+<p>Execute the given statement against the database and insert the result
+  into the tableview widget at the bottom.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>executeSQL</strong> <em>mode</em></p>
+
+<blockquote>
+<p>Execute a SQL statement against the current database. 
+If mode is 'all' (default) the complete text entered in the text editor
+widget will be used as statement. The <em>mode</em> can be as well 'line' where only the current line is executed, 
+or 'selection' where only the currently selected text is send to the database.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>getDBVersion</strong></p>
+
+<blockquote>
+<p>Returns the SQLite 3 version of the current database implementation.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>openDatabase</strong> <em>?filename?</em></p>
+
+<blockquote>
+<p>Open the database using the given <em>filename</em> is given. 
+  If not <em>filename</em> is given opens the open file dialog.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>refreshDatabase</strong></p>
+
+<blockquote>
+<p>Refresh the treeview widget which shows the database structure. Useful if the database was updated.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>showHistory</strong> <em>toplevel</em></p>
+
+<blockquote>
+<p>Displays the SQL statement history in the given toplevel path. Default: <code>.history</code></p>
+</blockquote>
+
+<p><em>pathName</em> <strong>tedit</strong> <em>arguments</em></p>
+
+<blockquote>
+<p>Expose the interface of the <em>dgw::seditor</em> text widget, so you can use all of its methods 
+  and the methods of the standard text editor widget. For example:</p>
+
+<p><code>pathName tedit insert end &quot;select * from students&quot;</code></p>
+</blockquote>
+
+<h2><a name='binding'>KEY BINDINGS</a></h2>
+
+<h4>Editor widget</h4>
+
+<p>In addition to the standard bindings of the Tk text editor widget, the SQL editor 
+widget, <em>dgw::seditor</em>, in the upper right, provides the following key and mouse bindings:</p>
+
+<ul>
+<li><code>mouse right click</code> : editor popup with cut, paste etc.</li>
+<li><code>Ctrl-x 2</code>: split the window vertically</li>
+<li><code>Ctrl-x 3</code>: split the window horizontally</li>
+<li><code>Ctrl-x 1</code> undo the splitting</li>
+<li><code>Shift-Return</code>: Send the widget text to the configured <em>-toolcommand</em></li>
+<li><code>Control-Return</code>: send the current line to configured <em>-toolcommand</em></li>
+<li><code>Control-Shift-Return</code>: send the current selection to the tool command
+</li></ul>
+
+<p>Please note, that the tool command accelerator keys can be changed to other keys 
+by using the options of the <em>dgw::seditor</em> widget using the <code>tedit</code> sub command of the <em>dgw::sqlview</em> widget.</p>
+
+<h4>Tableview widget</h4>
+
+<p>The tableview widget at the bottom can be sorted by column if the user clicks on 
+the column headers. It otherwise provides the standard bindings of the ttk::treeview widget to the developer and user.</p>
+
+<h4>Notebook tabs</h4>
+
+<p>The following shortcuts are only available if the users click on the notebook tab:</p>
+
+<ul>
+<li>Ctrl-Tab: after click on the notebook will open a new tab, Ctrl-Tab outside of the notebook widget will change the visible tab</li>
+<li>Ctrl-Shift-Left: Move tab to the left.</li>
+<li>Ctrl-Shift-Right: move tab to the right</li>
+<li>Ctrl-w: closes the tab if the users confirms the dialog box message.</li>
+<li>Right mouse click: change the tab name.
+</li></ul>
+
+<p>If you the notebook tab has not the focus you have the following bindings available:</p>
+
+<ul>
+<li>Ctrl-Tab: cycle the tabs and bring the next in the forground, also called tab traversal.
+</li></ul>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>In the example below we create a sample database and load the database and 
+their information into the three sub widgets.</p>
+
+<pre><code>package require dgw::sqlview
+set sqlv [::dgw::sqlview .sql -database test.sqlite3 -funcfile sqlfunc.tcl]
+# create a test database
+$sqlv dbSelect &quot;drop table if exists students&quot;
+$sqlv dbSelect &quot;create table students (id INTEGER, firstname TEXT, lastname TEXT, city TEXT)&quot;
+$sqlv dbSelect &quot;insert into students (id,firstname, lastname, city) values (1234, 'Marc', 'Musterman', 'Mustercity')&quot;
+$sqlv dbSelect &quot;insert into students (id,firstname, lastname, city) values (1235, 'Marcella', 'Musterwoman', 'Berlin')&quot;
+$sqlv refreshDatabase
+$sqlv tedit doHilights sql
+$sqlv tedit insert end &quot; select * from students&quot;
+$sqlv executeSQL
+pack $sqlv -side top -fill both -expand yes
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>You can install and use the <strong>dgw::sqlview</strong> package if you have a working install of:</p>
+
+<ul>
+<li>Tcl/Tk installed together with the database extensions <em>tdbc</em></li>
+<li>the snit package, which is  part of <a href="https://core.tcl-lang.org/tcllib">tcllib</a>
+</li></ul>
+
+<p>If you have this, then download the latest <em>dgw</em> and <em>dgtools</em> package releases from: <a href="https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases">dgw package release page</a>.
+For installation unzip the latest <em>dgw</em> and <em>dgtools</em> zip files and copy the complete <em>dgw</em> and <em>dgtools</em> folders into a path 
+of your <em>auto_path</em> list of Tcl. Alternatively you can append the <em>auto_path</em> list with the parent directory of the <em>dgw</em> directory.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish sqlview.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ tclsh sqlview.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh sqlview.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh sqlview.tcl --html
+</code></pre>
+
+<p>If the tcllib Markdown package is installed, this will directly create a HTML page <code>sqlview.html</code> 
+which contains the formatted documentation.</p>
+
+<p>Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh sqlview.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a Markdown processor for conversion into a 
+html, docx or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../sqlview.tcl --man &gt; sqlview.md
+pandoc -i sqlview.md -s -o sqlview.html
+pandoc -i sqlview.md -s -o sqlview.tex
+pdflatex sqlview.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="https://chiselapp.com/user/dgroth/repository/tclcode/index">dgw package homepage</a> - various other useful widgets and tools to build Tcl/Tk applications.
+
+ </li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-03-05 - version 0.6 started
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>tests</li>
+<li>github url 
+</li></ul>
+
+<h2><a name='authors'>AUTHORS</a></h2>
+
+<p>The <strong>dgw::sqlview</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>Copyright</a></h2>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::sqlview package, version 0.6.</p>
+
+<p>Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

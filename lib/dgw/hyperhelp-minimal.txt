@@ -1,0 +1,103 @@
+---
+title: Hyperhelp template
+author: Marc Musterman, Mustercity, Mustercountry
+date: 2020-MM-DD
+geometry:
+- top=20mm
+- bottom=20mm
+- left=20mm
+---
+
+## <a name="toc">Table of Contents</a>
+
+  * [Home](#home)
+  * Markup samples
+     * [Structure](#structure)
+     * [Emphasis](#emph)
+     * [Code](#code)
+     * [Images and Links](#links)
+     * [Substitutions](#subst)
+  * [Table of Contents](#toc)
+-----
+
+## <a name="home">Home</a>
+
+This is a small starting template for the hyperhelp::package.
+
+-----
+
+## <a name="structure">Structure</a>
+
+### Header level 3
+
+horizontal row:
+
+----
+
+List examples:
+
+  * list item 1
+  * list item 2
+  * list item 3
+    * subitem 3.1
+    * subitem 3.2
+  * list item 4
+
+  1. numbered item 1
+  2. numbered item 2
+  3. numbered item 3  
+  4. numbered item 4  
+
+Paragraph indentation:
+
+> some text which can be continued without linebreak in the output
+  here.
+
+List indentation:
+
+> * item 1
+  * item 2
+  * item 3
+    
+-----
+
+## <a name="emph">Emphasis</a>
+
+Let's write mixed **bold** and *italic* and `typewriter text` in one line.
+
+
+-----
+
+## <a name="code">Code</a>
+
+Source code blocks are done using at least three whitespaces at the beginning
+of the lines.
+
+    if {$x == 1} {
+       puts "x is 1"
+    }
+
+
+Show lines start with list symbols by preceeding them with a dot.
+
+    .* first list item as source code
+    .* second itemlist item as source code
+      
+-----
+
+## <a name="images">Images and Links</a>
+
+Image:
+
+![](hyperhelp.png)
+    
+Link to [Table of Contents](#toc)
+
+
+-----
+
+## <a name="subst">Substitutions</a>
+
+We use:
+    * Tcl/Tk $::tcl_patchLevel
+    * dgw::hyperhelp [[package present dgw::hyperhelp]]

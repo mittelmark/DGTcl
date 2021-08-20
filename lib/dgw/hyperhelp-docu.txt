@@ -1,0 +1,455 @@
+title: Table of Contents 
+alias: TOC
+  - [Welcome to the Help System]
+  - [What's New]
+  - [Short Formatting Reference]
+  - Formatting
+    - [Basic Formatting]
+    - [Aliases]
+    - [Lists]
+    - [Substitutions]
+    - [Images]
+    - [Code Blocks]
+    - [Indentation]
+  - [Creating the TOC]
+  - [Key Bindings]
+  - [To Do]
+  - [Index]
+  - [Search]
+
+-------
+title: Welcome to the Help System
+alias: overview
+alias: home
+icon: acthelp16
+
+This is a new simple hypertext help system.
+ 
+It's based on ''A Little Hypertext System'' so it includes:
+  * Hyperlinks to other help pages
+  * Simple searching ability
+  * History
+  * Simple wiki formatting
+ 
+This new version also includes (see [What's New])
+  * [Table of Contents]
+  * Hypertext [aliases]
+  * [Multi-level Lists]
+  11. numeric lists
+  ** bullet lists
+  -- dash list
+  * '''Bold text''' in wiki snytax and **bold text** in Markdown
+  * ''Italic text'' in wiki syntax and *italic text* in Markdown
+  * `code font` using tickmarks
+  * variable and command substitutions 
+  * support for images
+  * support for home, index and browser buttons 
+  * browser like key bindings
+  * refresh help to update display
+  * show toolbar and help outline widgets only if neccessary
+  
+You are using hyperhelp package version [[package present dgw::hyperhelp]]. 
+
+If you see an error in the  package  version statement in the line before, you should  activate  the option
+*-commandsubst* by running for instance a standalone hyperhelp script as
+
+    tclsh hyperhelp.tcl filename --commandsubst
+    
+
+    
+ 
+[hyperhelp.png]
+
+-----
+title: What's New
+Here are some features of this help system not found in the previous version:
+    * Table of Content
+    * Bullets
+    * Multiple levels of indentation
+      -- like this
+      -- ''and this''
+      --- '''and even this'''
+    * Aliases
+    -- So this link [Welcome to the Help System]
+    -- is the same as this link [Overview]
+    * Substitutions
+    -- variable substitution - you use Tcl/Tk $::tcl_patchLevel 
+    -- command substitutions - you have package ttk/tile [[package provide tile]]
+    * support for images 
+    * support for toolbar buttons index, home, backward, forward, next, previous
+    * key bindings to browser, 'n', 'p', 'space' etc.
+    * refresh help to update display
+    * indentation with markup
+    * single page mode without toolbar and toc tree widget
+    * more markdown like markup
+-----
+## <a name="shortref">Short Formatting Reference</a>
+
+### Markdown Markup like sytnax
+
+In this  example,  leading  and  trailing  spaces  are shown  with with dots:
+
+---
+
+'''headers'''
+   ...-----
+   ...## Page Title
+   
+   ...----- 
+   ... ## <a name="alias">Page Title</a>
+   
+   ... ### Internal Header
+
+The last lines produces:
+
+### Internal Header
+
+---
+
+**Emphasis**
+
+   ... *italic*
+
+*italic* 
+
+   ... **bold**
+
+**bold** 
+
+    ... normal code and `code in typewriter`
+
+normal code and `code in typewriter`
+
+Mix: **bold** combined with *italic* and `code samples` in one line
+
+---
+
+**Lists**
+
+Nested lists are not possbile in basic Markdown compatible syntax.
+
+Unordered lists:
+
+  * item 1
+  * item 2
+  * item 3
+  * item 4
+
+Ordered lists:
+  
+  1. item 1
+  2. item 2
+  3. item 3
+
+---
+
+**Blockquotes**
+
+Simple blockquoting can be done using the > sign
+
+   ... > This text will be a blockquote
+
+produces:
+
+> This text will be a blockquote
+
+Also lists can be indented:
+
+   ... > * item 1
+   ...    * item 2
+   ...    * item 3
+
+> * item 1
+  * item 2
+  * item 3
+  
+---
+
+**Codeblock**
+
+Are done by indeting text with three spaces:
+
+    ... this will be code 
+    ... this is another code line
+    
+produces:
+
+    this will be code 
+    this is another code line
+
+---
+
+**Images**
+
+    !\[ \]\(hyperhelp.png\)  
+    
+produces:
+
+![](hyperhelp.png)
+
+Alternatively   you  can  (Markdown   incompatible)   even easier  just  write  the
+filename with the png extension in rectangular brace onlys.
+
+
+**Links**
+
+   ...[Overview](#anchor)(#anchor)
+   
+produces: [Overview](#anchor)
+
+The text in the rectangular braces must be a valid page title or alias.
+Alternatively  you can as well use the easier,  Markdown  incompatible  syntax
+writing the link in rectangular braces.
+
+   ...[Overview]
+   
+produces as well: [Overview]
+
+---
+
+Horizontal  rules can be inserted by starting a line with exactly three  hyphens, such
+as here:
+
+   ... --- 
+
+Produces a horizontal line:
+
+---
+
+Back to the top [shortref]
+
+-----
+title: Basic Formatting
+alias: Formatting
+
+The formatting code for the help pages follows much like the
+tcler's wiki.
+
+'''Links, lists, bold, italics, unformatted''' are
+all done the same way. Inline code is shown using  tickmarks  like here `set x
+4`.
+
+   | You can also have block paragraphs by prefixing the first line 
+with a " | ". It will wrap the text and indent all the lines. Only
+one level of indentation can be requested.
+
+Horizontal lines can be create with three or four minus signs or underlines as
+the only characters on a line.
+
+So --- at the beginning of a line produces:
+
+---
+
+An ___ at the beginning of a line produces the same:
+
+___
+
+Please note that 5 or more hyphens are used to separate pages.
+ 
+[Aliases] and [multi-level lists] are only slightly more complicated.
+ 
+-----
+title: Aliases
+alias: alias
+
+''Aliases'' allow the same page to be referenced by different names.
+So this link [Welcome to the Help System]
+is the same as this link  [Overview].  The ''Home'' or ''home''  alias will be
+sign the home page  which can be reached by  pressing  the home  button in the
+toolbar.  If there is no such  alias  automatically  the  first  page  will be
+called.
+
+
+------
+title: Substitutions
+
+''Substitutions''  are done using the ''subst''  command. For security reasons
+some commands are not evaluated like 
+''file'',''open'',''socket'',''send'',''exec''.  
+'''Anyway  you should  only use help files written by yourself or which you really trust.'''
+
+Text with dollar signs is replaced with the appropiate variable: like here:
+    \$::tcl_patchLevel == $::tcl_patchLevel
+    
+Text within doubled rectangular brace pairs is replaced with the output of the 
+command like here:
+    \[\[package present TclOO\]\] == [[package present TclOO]]
+    
+Please note, that since version there is a option for command substitutions for
+the hyperhelp  widget which is set for security  reasons per default to false.
+To enable this you should set this option to true for documentation  files you
+trust.
+
+If you see an error in the  package  version statement, you should  activate  
+the option *-commandsubst* by running for instance a standalone hyperhelp 
+script as
+
+    tclsh hyperhelp.tcl filename --commandsubst
+
+The  statement  must be  complete  within one line, so it is not  possible  to
+create  long code  fragments.  It should be just used to  display  informative
+details such as the  current Tcl/Tk or package version.
+Missing variables as well as wrong command names are handled as well.
+Here an example for a missing package:
+
+[[package present dummy]]
+
+And here an example for a non-existing variable:
+
+$::tcl_dummyVar
+    
+They are simply not replaced.
+
+------
+title: Multi-level Lists
+alias: lists
+   1. numbered list
+   1. numbered list
+   11. numbered list
+   11. numbered list
+   1. numbered list
+   1. numbered list
+ 
+   * bullet list
+   ** nested bullet list
+   ** nested bullet list
+   * bullet list
+ 
+    - dash lists
+    -- nested dashed list
+    -- nested dashed list
+    - dash lists
+ 
+-----
+title: Creating the TOC
+
+The '''Table of Content''' is a just a help page with the
+name (or [alias]) '''TOC''' which gets displayed in a
+tile treeview widget. You can also view the [TOC] as a
+normal help page.
+ 
+Each line of the TOC help page that begins with a dash becomes
+a node in the treeview. The level of indentation dictates the
+tree structure.
+
+------
+title: Key Bindings
+
+The  hyperhelp  window  provides  some  standard  key bindings to navigate the
+content:
+
+  * space, next: scroll down
+  * backspace, prior: scroll up
+  * Ctrl-k, Ctrl-j: scroll in half page steps up and down
+  * Ctrl-space, Ctrl-b: scroll down or up
+  * Ctrl-h, Alt-Left, b: browse back history if possible
+  * Ctrl-l, Alt-Right: browse forward in history if possible
+  * n, p: browse forward or backward in page order
+  * Control-Plus, Control-Minus change font sizes 
+
+------
+title: Images
+
+Images can be embedded as links using rectangular braces like:
+
+   \[hyperhelp.png\]
+
+will be rendered as ...
+
+[hyperhelp.png]
+
+Missing images will be replaced with a placeholder:
+
+[missing.png]
+
+  
+------
+title: Code Blocks
+
+Code  blocks can be  created  by  indenting  text with 3 spaces,  such as the
+following:
+
+   set x 5
+   puts \$x
+------
+title: Indentation
+
+Here are some test indentations: 
+
+___
+
+Using "...| text" sytnax (... are here for whitespace)
+
+   ... | test indent
+   ... | test indent 2
+
+produces:
+   
+   | test indent
+   | test indent 2
+
+___ 
+
+Using "> * text" syntax where subsequent lines are just ".. * text"
+
+   ... > * indented one with `code text`
+   ...    * indented two with **bold text**
+   ...    * indented three with *italic text*
+   ... Should be not indented anymore ...
+
+produces:
+
+> * indented one with `code text`
+  * indented two with **bold text**
+  * indented three with *italic text*
+
+Should be not indented anymore ...
+
+Using  "> * text"  syntax  where  subsequent  lines  are  just ".. * text",
+replace dots with whitespaces.
+
+   >.* indented one with `code text`
+   ..* indented two with **bold text**
+   ..* indented three with *italic text*
+   .
+   Should be not indented anymore ...
+
+Back to standard list?
+  
+Standard list:
+  * item 1
+  * item 2
+  * item 3
+
+___
+
+> Here some indented text ...
+which wraps over two lines ... but is displayed on one line ...
+
+    > Here some indented text ...
+    which wraps over two lines ... but is displayed on one line ...
+  
+Finally a longer lipsum fragment which is indented ...
+
+> *Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+incididunt  ut labore et dolore  magna  aliqua. Ut enim ad minim  veniam, quis
+nostrud  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in  reprehenderit  in voluptate velit esse cillum dolore
+eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
+in culpa qui officia deserunt mollit anim id est laborum.*
+
+------
+title: To Do 
+icon: idea
+  1 Visual clues in TOC about what is a link (don't know treeview well enough  to do this) (Done, blue color)
+  1 Mouse buttons 4 & 5 do history back and forward like Firefox and IE (not necessary)
+  1 Image support--not hard, I just haven't needed it (done)
+  1 msgcat support
+  1 read  help  data  from  separate  file  (done)
+  1 keyboard navigation like surf and Prior, Next, Space, BackSpace (done)
+  1 fix history for duplicates (done)
+  1 buttons at the top, navigation bar instead of internal text (done)
+  1 change default font 
+  1 wrap into snit widgets (done)
+
+

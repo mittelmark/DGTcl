@@ -1,0 +1,36 @@
+title: Double Help Example
+alias: Start
+
+This is a simple help page consisting only of a single page.
+ 
+It's based on **A Little Hypertext System** so it includes:
+  * Hyperlinks to other help pages
+  * Simple searching ability
+  * History
+  * Simple wiki formatting
+  * and many other features
+
+Continue here [Page 2]
+
+-------
+
+title: Page 2
+
+  * item 1
+  * item 2
+  * item 3
+  
+
+Continue here [Page 3]
+   
+
+-------
+
+title: Page 3
+
+  * item 1
+  * item 2
+  * item 3
+  
+
+Back to start [Start]

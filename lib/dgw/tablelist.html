@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation tablelist">
+<meta name="author" content="NN">
+<title>Documentation tablelist</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::tablelist 0.2</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2019-11-04</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::tablelist</strong> - extended tablelist widget with icons and tree mode implementation.</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE also</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHORS</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require Tk
+package require snit
+package require dgw::tablelist
+dgw::tablelist pathName ?options?
+pathName configure -option value
+pathName cget -option 
+pathName loadFile filename ?boolean?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The widget <strong>dgw::tablelist</strong> inherits from the standard tablelist widget 
+all methods and options but has embedded standard icons. 
+The treemode of tablelist is supported further with changing icons on opening and closing tree nodes.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::tablelist</strong> <em>pathName ?options?</em></p>
+
+<blockquote>
+<p>Creates and configures the <strong>dgw::tablelist</strong>  widget using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p>As the <strong>dgw::tablelist</strong> is an extension of the tablelist widget it has all the options of the tablelist widget. 
+The following options are added or modified:</p>
+
+<p><strong>-browsecmd</strong> <em>script</em></p>
+
+<blockquote>
+<p>Set a command if the user double clicks an entry in the listbox or presses the <code>Return</code> key if the widget has the focus.
+   The widget path and the index of the item getting the event are appended to the script call as function arguments. 
+   So the implementation of the script should have two arguments in the parameter list as shown in the following example:</p>
+
+<pre class='code'><code>  proc click {tbl idx} {
+     puts [$tbl itemcget $idx -text]
+  }
+  dgw::tablelist .tl -browsecmd click</code></pre>
+</blockquote>
+
+<p><strong>-collapsecommand</strong> <em>command</em></p>
+
+<blockquote>
+<p>This options is per default configured to change the icons in the tree 
+  for parent items which have child items if the node is opened. Can be overwritten by the user.</p>
+</blockquote>
+
+<p><strong>-collapseicon</strong> <em>iconprefix</em></p>
+
+<blockquote>
+<p>The imagw which should be displayed if a folder node is closed.
+  Currently the default is a folder icon.</p>
+</blockquote>
+
+<p><strong>-expandcommand</strong> <em>command</em></p>
+
+<blockquote>
+<p>This options is per default configured to change the icons in the tree 
+  for parent items which have child items. Can be overwritten by the user.</p>
+</blockquote>
+
+<p><strong>-treestyle</strong> <em>stylename</em></p>
+
+<blockquote>
+<p>Currently this option is just delegated to the standard tablelist widget.</p><h2><a name='commands'>WIDGET COMMANDS</a></h2>
+</blockquote>
+
+<p>Each <strong>dgw::tablelist</strong> widget supports all the commands of the standard tablelist widget. 
+See the tablelist manual page for a description of those widget commands.</p>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code>proc click {tbl idx} {
+     puts &quot;clicked in $tbl on $idx&quot;
+}
+dgw::tablelist .mtab   -columns {0 &quot;Name&quot;  left 0 &quot;Page&quot; left} \
+       -movablecolumns no -setgrid no -treecolumn 0 -treestyle gtk -showlabels false \
+       -stripebackground white -width 40 -height 25 \
+       -browsecmd click
+
+ pack .mtab -side left -fill both -expand yes
+ dgw::tablelist .mtab2   -columns {0 &quot;Name&quot;  left 0 &quot;Page&quot; left} \
+       -movablecolumns no -setgrid no -treecolumn 0 -treestyle ubuntu -showlabels false \
+       -stripebackground grey90 -width 40 -height 25
+
+ pack .mtab2 -side left -fill both -expand yes
+ set x 0 
+ while {[incr x] &lt; 5} {
+     set y 0
+     set parent [.mtab insertchild root end [list Name$x $x]]
+     set parent [.mtab2 insertchild root end [list Name$x $x]]        
+     while {[incr y] &lt; 5} {
+         .mtab insertchild $parent end [list Child$y $y]
+         .mtab2 insertchild $parent end [list Child$y $y]
+     }
+ }
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can install and use the <strong>dgw::tablelist</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgw/tablelist-0.2.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of tablelist.tcl. 
+Try &quot;tclsh tablelist.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish tablelist.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ wish tablelist.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh tablelist.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh tablelist.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>tablelist.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh tablelist.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a 
+man page, html or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code># man page
+tclsh tablelist.tcl --man | pandoc -s -f markdown -t man - &gt; tablelist.n
+# html 
+tclsh tablelist.tcl --man &gt; tablelist.md
+pandoc -i tablelist.md -s -o tablelist.html
+# pdf
+pandoc -i tablelist.md -s -o tablelist.tex
+pdflatex tablelist.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">dgw - package homepage: http://chiselapp.com/user/dgroth/repository/tclcode/index</a>
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>more icons</li>
+<li>more, real, tests</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The dgw::<strong>tablelist</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::tablelist widget dgw::tablelist, version 0.2.</p>
+
+<p>Copyright (c)</p>
+
+<ul>
+<li>2019-2020  Dr. Detlef Groth, &lt;detlef (at) dgroth(dot)de&gt;
+</li></ul>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

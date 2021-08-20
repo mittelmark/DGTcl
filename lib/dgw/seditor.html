@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="Documentation seditor">
+<meta name="author" content="NN">
+<title>Documentation seditor</title>
+
+    <style>
+    body {
+        margin-left: 5%; margin-right: 5%;
+        font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    }
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	2ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-top:		1px solid black;
+border-bottom:		1px solid black;
+font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1,h2, h3,h4 {
+    font-family:	sans-serif;
+    background: 	transparent;
+}
+h1 {
+    font-size: 120%;
+}
+h2 {
+    font-size: 110%;
+}
+h3, h4 {
+    font-size: 100%
+}
+div.title h1 {
+    font-family:	sans-serif;
+    font-size:	120%;
+    background: 	transparent;
+    text-align:	center;
+    color: black;
+}
+div.author h3, div.date h3 {
+    font-family:	sans-serif;
+    font-size:	110%;
+    background: 	transparent;
+    text-align:	center;
+    color: black ;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+
+h3 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	100%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+
+</head>
+<body>
+
+<p><a href="dgw.html">dgw</a> - 
+<a href="basegui.html">basegui</a> - 
+<a href="combobox.html">combobox</a> - 
+<a href="drawcanvas.html">drawcanvas</a> - 
+<a href="hyperhelp.html">hyperhelp</a> - 
+<a href="sbuttonbar.html">sbuttonbar</a> - 
+<a href="seditor.html">seditor</a> - 
+<a href="sfilebrowser.html">sfilebrowser</a> - 
+<a href="sfinddialog.html">sfinddialog</a> - 
+<a href="sqlview.html">sqlview</a> - 
+<a href="statusbar.html">statusbar</a> - 
+<a href="tablelist.html">tablelist</a> - 
+<a href="tlistbox.html">tlistbox</a> - 
+<a href="tvmixins.html">tvmixins</a> - 
+<a href="txmixins.html">txmixins</a></p>
+
+<h1>dgw::seditor 0.3</h1>
+
+<h3>Detlef Groth, Schwielowsee, Germany</h3>
+
+<h3>2021-08-20</h3>
+
+<h2>NAME</h2>
+
+<p><strong>dgw::seditor</strong> - extended Tk text editor widget with toolbar buttons, configurable syntax highlighting, window splitting facilities 
+and right click popupmenu for standard operations like cut, paste etc.</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">WIDGET OPTIONS</a></li>
+<li><a href="#commands">WIDGET COMMANDS</a></li>
+<li><a href="#bindings">KEY BINDINGS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#changes">CHANGES</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHORS</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre class='synopsis'><code>package require Tk
+package require snit
+package require dgw::seditor
+dgw::seditor pathName ?options?
+pathName configure option value
+pathName cget option
+pathName loadFile filename ?boolean?
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The widget <strong>dgw::seditor</strong> inherits from the standard Tk text editor widget 
+all methods and options but has further a standard toolbar, 
+a right click context menu and allows easy configuration for syntax highlighting. 
+Scrollbars are as well added by default, they are only shown however if necessary. 
+Furthermore window splitting is added, the user can split the text editor window into two by pressing &lt;Control-x&gt; and thereafter either 2 or 3, splitting can be undone by pressing &lt;Control-x&gt; and thereafter the key 1.</p>
+
+<h2><a name='command'>COMMAND</a></h2>
+
+<p><strong>dgw::seditor</strong> <em>pathName ?-option value ...?</em></p>
+
+<blockquote>
+<p>Creates and configures the <strong>dgw::seditor</strong>  widget using the Tk window id <em>pathName</em> and the given <em>options</em>.</p>
+</blockquote>
+
+<h2><a name='options'>WIDGET OPTIONS</a></h2>
+
+<p>As the <strong>dgw::seditor</strong> is an extension of the standard Tk text editor widget 
+it supports all method and options of the tk text editor widget. 
+The following options are added by the <em>dgw::seditor</em> widget:</p>
+
+<p><strong>-accelerator</strong> <em>keysequence</em></p>
+
+<blockquote>
+<p>The key shortcut to execute a possibly given <em>-toolcommand</em>. 
+Defaults to &lt;Shift-Return&gt; or &lt;Control-x-Control-s&gt;. Does nothing if no <em>-toolcommand</em> is given.</p>
+</blockquote>
+
+<p><strong>-filetypes</strong> <em>list of filetypes</em></p>
+
+<blockquote>
+<p>The filetypes to be used for the file dialogs if the open or save buttons are pressed.
+  Defaults to Text (*.txt), SQL (*.sql) and all files (*.*). 
+See the <a href="#example">Example</a> section on how to define other additional file extensions.</p>
+</blockquote>
+
+<p><strong>-font</strong> <em>fontname</em></p>
+
+<blockquote>
+<p>The font to be used for the text widget. 
+  Defaults to Tk standards which are depending on the platform.</p>
+</blockquote>
+
+<p><strong>-hilightcommand</strong> <em>command</em></p>
+
+<blockquote>
+<p>The command to be used for highlighting. The user can with this supply their own commands to do syntax highlighting. 
+   Please note, that the widget path of the text widget is appended to the argument list.</p>
+</blockquote>
+
+<p><strong>-hilights</strong> <em>list</em></p>
+
+<blockquote>
+<p>The list to be used for syntax highlighting the widget. 
+  It is a nested list where the first element is the file extension without the dot, 
+  the second element is the tagname and the third is the regular expression used for highlighting. Valid tagnames are:
+  header, comment, highlight, keyword, string, package, class, method, proc. 
+With the usual command <code>pathName tag configure tagname -forground color</code> etc., the developer can overwrite the default tag settings.</p>
+</blockquote>
+
+<p><strong>-inifiles</strong> <em>list</em></p>
+
+<blockquote>
+<p>The list of ini files to be used for hilights. 
+  The ini files are loaded if this option is configured. Per default the file <em>seditor.ini</em> 
+  in the same directory as seditor.tcl and a file seditor.ini in the folder <code>.config/dgw/seditor.ini</code> 
+  in the users home directory are loaded autmoatically if they exist. See the following example for an editor widget which provides Python highlighting-</p>
+
+<pre class='code'><code># file seditor.ini
+[Python]
+extension=*.py *.pyw
+package=^(import|from).+
+string=[&quot;'].+?[&quot;']
+method=^\s*(def|class)\s+[A-Z0-9_a-z]+
+keyword=(^| )(self|False|True|for|if|elif|else|try|and|as)
+comment=#.+</code></pre><p><strong>-lineaccelerator</strong> <em>keysequence</em></p>
+
+<p>The key shortcut to execute a possibly given <em>-toolcommand</em> with the current line as input.
+Defaults to &lt;Control-Return&gt;. Does nothing if no <em>-toolcommand</em> is given.</p>
+</blockquote>
+
+<p><strong>-selectionaccelerator</strong> <em>keysequence</em></p>
+
+<blockquote>
+<p>The key shortcut to execute a possibly given <em>-toolcommand</em>. with the current selection text as input.
+Defaults to &lt;Control-Shift-Return&gt;. Does nothing if no <em>-toolcommand</em> is given.</p>
+</blockquote>
+
+<p><strong>-toolcommand</strong> <em>command</em></p>
+
+<blockquote>
+<p>The text inside the text area can be executed with the give <em>-toolcommand</em>. 
+For instance you can execute a SQL statement which was written into the text editor against a database.
+There is also the possibility to execute just the current line, or the current selection. 
+See the options for setting accelerators keys. Please note, that the text, either the current selection, the current line or the complete widget text is appended to the command as first argument.
+  Defaults to empty string, so no toolcommand is executable on the current text.</p>
+</blockquote>
+
+<p><strong>-toollabel</strong> <em>string</em></p>
+
+<blockquote>
+<p>Label to be used as the Tool label in the popupmenu and if the tool Button on the top right is hovered with the mouse.
+  Defaults to &quot;tool&quot;</p>
+</blockquote>
+
+<h2><a name='commands'>WIDGET COMMANDS</a></h2>
+
+<p>Each <strong>dgw::seditor</strong> widget supports all usual methods of the Tk text widget and it adds the follwing method(s):</p>
+
+<p><em>pathName</em> <strong>doHilights</strong> <em>?mode?</em></p>
+
+<blockquote>
+<p>Hilights the text within in the editor in the language given with the mode variable. 
+  The following arguments are supported:</p>
+
+<p><em>mode</em> - the programming or markup language used for hilighting, the following modes 
+are already embedded into the widget: <em>tcl' (default), </em>sql', <em>text'. Other modes can be 
+added to the widget by specifying the option </em>-hilights* or by using the inifile.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>fileNew</strong></p>
+
+<blockquote>
+<p>Loads a empty new file into the editor widget, if the previous file in the
+  widget was changed and not saved, before opening a new file, a dialogbox will show up, 
+  asking the user if he would like to save the file.</p>
+</blockquote>
+
+<p><em>pathName</em> <strong>loadFile</strong> <em>filename ?reload:boolean?</em></p>
+
+<blockquote>
+<p>Loads the given filename into the text widget or reloads the currently 
+  loaded file if reload is set to true. The default for reload is false.</p><h2><a name='binding'>KEY BINDINGS</a></h2>
+</blockquote>
+
+<p>In addition to the standard Bindings of a text editor widget the <em>dgw::editor</em> 
+provides the following key and mouse bindings.</p>
+
+<ul>
+<li><code>mouse right click</code> : editor popup with cut, paste etc.</li>
+<li><code>Ctrl-x 2</code>: split the window vertically</li>
+<li><code>Ctrl-x 3</code>: split the window horizontally</li>
+<li><code>Ctrl-x 1</code> undo the splitting</li>
+<li><code>Shift-Return</code>: Send the widget text to toolcommand </li>
+<li><code>Control-Return</code>: send the ehe current line to toolcommand</li>
+<li><code>Control-Shift-Return</code>: send the current selection to toolcommand
+</li></ul>
+
+<p>Please note, that the toolcommand accelerator keys can be changed to other keys by using the options of this widget.</p>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>In the example below we create a Markdown markup aware text editor.</p>
+
+<pre><code>package require dgw::seditor
+dgw::seditor .top -borderwidth 5 -relief flat -font &quot;Helvetica 20&quot; \
+                  -hilights {{md header ^#.+}    
+                             {md comment ^&gt;.+} 
+                             {md keyword _{1,2}[^_]+_{1,2}}  
+                             {md string {&quot;[^&quot;]+&quot;}}}
+pack .top -side top -fill both -expand true ;#&quot;  
+.top configure -filetypes {{Markdown Files}  {.md}}
+
+# create a sample Markdown file and load it later
+set out [open test.md w 0600] 
+puts $out &quot;# Header example\n&quot;
+puts $out &quot;_keyword_ example\n&quot;
+puts $out &quot;Some not hilighted text\n&quot;
+puts $out &quot;&gt; some markdown quote text\n&quot;
+puts $out &quot;## Subheader\n&quot;
+puts $out &quot;Some more standard text with two \&quot;strings\&quot; which are \&quot;inside!\&quot;&quot; 
+puts $out [lsort [.top cget -filetypes]]
+puts $out &quot;\n\n## Tcl\n\nTcl be with you!\n\n## EOF\n\nThe End\n&quot;
+close $out
+.top loadFile test.md
+.top lipsum end
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy you can install and use the <strong>dgw::seditor</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgw</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgw/seditor-0.3.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of seditor.tcl. 
+Try &quot;tclsh seditor.tcl --install&quot; for this purpose.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ wish seditor.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ tclsh seditor.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh seditor.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh seditor.tcl --html
+</code></pre>
+
+<p>If the tcllib Markdown package is installed, this will directly create a HTML page <code>seditor.html</code> 
+which contains the formatted documentation.</p>
+
+<p>Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<pre><code>$ tclsh seditor.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to feed a Markdown processor for conversion into a 
+html, docx or pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code>tclsh ../seditor.tcl --man &gt; seditor.md
+pandoc -i seditor.md -s -o seditor.html
+pandoc -i seditor.md -s -o seditor.tex
+pdflatex seditor.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li><a href="https://chiselapp.com/user/dgroth/repository/tclcode/index">dgw package homepage</a> - various useful widgets</li>
+<li><a href="https://wiki.tcl-lang.org/page/Tklib+Contents">ctext widget in tklib</a> other syntax hilighting widget</li>
+<li><a href="https://www.tcl.tk/man/tcl8.6/TkCmd/text.htm">text widget manual</a> standard manual page for the underlying text widget
+
+ </li></ul>
+
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-02-04 - version 0.3 started</li>
+<li>adding splitting window keys and word wrap button to the toolbar</li>
+<li>fixing splitting issues, updating documentation</li>
+<li>automatic loading of infile from <home>/.config/dgw/seditor.ini added
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>config file for syntax hilights in the same directory as the source code and in some config dir in the home directory</li>
+<li>example for a derived syntax editor with an added syntax hilight schema</li>
+<li>more, real, tests</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='authors'>AUTHORS</a></h2>
+
+<p>The <strong>dgw::seditor</strong> widget was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>Copyright</a></h2>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgw::seditor package, version 0.3.</p>
+
+<p>Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>
