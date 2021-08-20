@@ -4,6 +4,7 @@ This repository contains the following Tcl packages:
 
 ## Tk Widgets
 
+* [dgw](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgw/dgw.html) - collection of various snit widgets and snit widget adaptors.
 * [chesschart](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/chesschart.html) - a pure Tcl/Tk widget to make flowcharts using the chess coordinate system. Here the link to the [chesschart tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/doc/intro.html).
 * [shtmlview::shtmlview](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/shtmlview/shtmlview.html) - a pure Tcl/Tk widget to render a reasonable subset of html.
 
@@ -17,6 +18,13 @@ This repository contains the following Tcl packages:
 
 * mkdoc - extract Markdown documentation from source code files and produce HTML files
   * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
+
+* dgtools - various small snit objects, some are required by the dgw package
+  * [argvparse manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/argvparse.html) - command line argument parser
+  * [dgtutils manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/dgtutils.html) - command line tools for the dgtools package
+  * [recover manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/recover.html) - debugging tool
+  * [repo manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/repo.html) - install Tcl package from github or chiselapp
+  * [shistory manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/shistory.html) - snit history type to manage lists with history
 
 ## Download
 

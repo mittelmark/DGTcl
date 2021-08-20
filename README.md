@@ -20,11 +20,11 @@ This repository contains the following Tcl packages:
   * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
 
 * dgtools - various small snit objects, some are required by the dgw package
-  * [argvparse manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/argvparse.html) - command line argument parser
-  * [dgtutils manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/dgtutils.html) - command line tools for the dgtools package
-  * [recover manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/recover.html) - debugging tool
-  * [repo manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/repo.html) - install Tcl package from github or chiselapp
-  * [shistory manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/shistory.html) - snit history type to manage lists with history
+  * [argvparse manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/argvparse.html) - command line argument parser
+  * [dgtutils manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/dgtutils.html) - command line tools for the dgtools package
+  * [recover manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/recover.html) - debugging tool
+  * [repo manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/repo.html) - install Tcl package from github or chiselapp
+  * [shistory manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/dgtools/shistory.html) - snit history type to manage lists with history
 
 ## Download
 
