@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="dgtools::repo 0.1">
+<meta name="author" content="Detlef Groth, Schwielowsee, Germany">
+<title>dgtools::repo 0.1</title>
+<style>
+body {
+    margin-left: 5%; margin-right: 5%;
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+}
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	1.5ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-bottom:	1px solid black;
+border-top:	1px solid black;
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1 {
+font-family:	sans-serif;
+font-size:	120%;
+background: 	transparent;
+text-align:	center;
+}
+h3 {
+font-family:	sans-serif;
+font-size:	110%;
+background: 	transparent;
+text-align:	center;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+</head>
+<body>
+<div class="title"><h1>dgtools::repo 0.1</h1></div>
+<div class="author"><h3>Detlef Groth, Schwielowsee, Germany</h3></div>
+<div class="date"><h3>2020-03-21</h3></div>
+
+<h2>NAME</h2>
+
+<p><strong>dgtools::repo</strong> - package and command line application for installation of tcl packages directly from hithubn and chiselapp</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#demo">DEMO</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#see">SEE ALSO</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#authors">AUTHOR</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<p>Usage as package:</p>
+
+<pre><code>package require tls
+package require json
+package require dgtools::repo
+namespace import ::dgtools::repo
+repo import github user repository folder
+repo import chiselapp user repository folder
+repo download github url folder
+repo download chiselapp url folder
+</code></pre>
+
+<p>Usage as command line application:</p>
+
+<pre><code>tclsh repo.tcl &quot;https://chiselapp.com/user/dgroth/repository/tclcode/dir?ci=c50f458ca23f7ae5&amp;name=dgw&quot; dgw
+tclsh repo.tcl https://github.com/tcltk/tcllib/tree/master/modules/des
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p><strong>dgtools::repo</strong> - is a package for directly downloading folders and packages 
+from github and chiselapp repositories. I is useful if multiple packages are 
+available within a certain repository  and the users only like to install one 
+or a few of them. Further a command line interface is available to download specific directories from larger repositories.</p><h2><a name='command'>COMMAND</a></h2>
+
+<p>There are three sub commands available, <em>import</em> and <em>update</em> should be used to retrieve tcl packages and install them in a parallel directory to the actual script or the last directory given in auto_path. <em>download</em> downloads a specific subfolder of a directory.</p>
+
+<p><strong>dgtools::repo</strong> <em>provider cmd user repo directory</em></p>
+
+<p>Downloads and installs the given directory as a tcl package in parallel to the actual script. As package name the last part of the directory name is used. The arguments are explained below:</p>
+
+<blockquote>
+<ul>
+<li><em>provider</em>:  either github or chiselapp currently</li>
+<li><em>cmd</em>: either <code>import</code> which checks if the package was already download and only if not installes it, or <code>update</code> which will redo the download and possibly overwrite the current package.</li>
+<li><em>user</em>: the user id of the repository maintainer such as &quot;tcltk&quot; for example</li>
+<li><em>repo</em>: the repository name such as &quot;tcllib&quot; for example</li>
+<li><em>directory</em>: the relative folder within the repository such as &quot;modules/snit&quot; for example</li></ul>
+
+
+</blockquote>
+
+<p><strong>dgtools::repo</strong> <em>provider download url directory</em></p>
+
+<p>Downloads a specific (sub)folder from a repository of github or chiselapp.</p>
+
+<blockquote>
+<ul>
+<li><em>provider</em> either github or chiselapp</li>
+<li><em>url</em> the url which is visible in standard view </li>
+<li><em>directory</em> in which the repository folder should be stored locally</li></ul>
+
+
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>Below an example which install the snit package from tcllib 
+and the dgw package from
+the chiselapp tclcode repository of dgroth.</p>
+
+<pre><code>package require dgtools::repo
+namespace import dgtool::repo
+repo github import tcltk tcllib modules/snit
+repo chiselapp import dgroth tclcode dgw
+package require snit
+package require dgw
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy, you can install and use the <strong>dgtools::repo</strong> package if you have a working install of:</p>
+
+<ul>
+<li>the Tcl tls package  and the json package from  which can be found in <a href="https://core.tcl-lang.org/tcllib">tcllib - https://core.tcl-lang.org/tcllib</a>
+</li></ul>
+
+<p>For installation you copy the complete <em>dgtools</em> folder into a path 
+of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgtools</em> directory.
+Alternatively you can install the package as a Tcl module by creating a file dgtools/repo-0.1.tm in your Tcl module path.
+The latter in many cases can be achieved by using the <em>--install</em> option of repo.tcl. 
+Try &quot;tclsh repo.tcl --install&quot; for this purpose in the terminal.</p>
+
+<h2><a name='demo'>DEMO</a></h2>
+
+<p>Example code for this package can  be executed by running this file using the following command line:</p>
+
+<pre><code>$ tclsh repo.tcl --demo
+</code></pre>
+
+<p>The example code used for this demo can be seen in the terminal by using the following command line:</p>
+
+<pre><code>$ tclsh repo.tcl --code
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh repo.tcl --markdown
+</code></pre>
+
+<p>This will extract the embedded manual pages in standard Markdown format. You can as well use this markdown output directly to create html pages for the documentation by using the <em>--html</em> flag.</p>
+
+<pre><code>$ tclsh repo.tcl --html
+</code></pre>
+
+<p>This will directly create a HTML page <code>repo.html</code> which contains the formatted documentation. 
+Github-Markdown can be extracted by using the <em>--man</em> switch:</p>
+
+<p>The output of this command can be used to feed a markdown processor for conversion into a man page, 
+a html or a pdf document. If you have pandoc installed for instance, you could execute the following commands:</p>
+
+<pre><code># man page
+tclsh repo.tcl --man | pandoc -s -f markdown -t man - &gt; repo.n
+# html page
+tclsh ../repo.tcl --man &gt; repo.md
+pandoc -i repo.md -s -o repo.html
+# pdf
+pandoc -i repo.md -s -o repo.tex
+pdflatex repo.tex
+</code></pre>
+
+<h2><a name='see'>SEE ALSO</a></h2>
+
+<ul>
+<li>dgw - package homepage <a href="http://chiselapp.com/user/dgroth/repository/tclcode/index">http://chiselapp.com/user/dgroth/repository/tclcode/index</a>
+</li></ul>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>tests</li>
+<li>github repo as automatic copy of the chiselapp repo
+</li></ul>
+
+<h2><a name='authors'>AUTHOR</a></h2>
+
+<p>The <strong>dgtools::repo</strong> package type was written by Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='license'>LICENSE AND COPYRIGHT</a></h2>
+
+<p>package  dgtools::repo, version 0.1.</p>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

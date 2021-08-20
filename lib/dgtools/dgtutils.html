@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="dgtools::dgtutils 0.1">
+<meta name="author" content="Detlef Groth, Schwielowsee, Germany">
+<title>dgtools::dgtutils 0.1</title>
+<style>
+body {
+    margin-left: 5%; margin-right: 5%;
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+}
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	1.5ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-bottom:	1px solid black;
+border-top:	1px solid black;
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1 {
+font-family:	sans-serif;
+font-size:	120%;
+background: 	transparent;
+text-align:	center;
+}
+h3 {
+font-family:	sans-serif;
+font-size:	110%;
+background: 	transparent;
+text-align:	center;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+</head>
+<body>
+<div class="title"><h1>dgtools::dgtutils 0.1</h1></div>
+<div class="author"><h3>Detlef Groth, Schwielowsee, Germany</h3></div>
+<div class="date"><h3>2020-03-21</h3></div>
+
+<h2>NAME</h2>
+
+<p><strong>dgtools::dgtutils</strong> - internal helper procedures for the dgtools package</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#commands">COMMANDS</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#author">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre><code>package require dgtools::dgtutils
+dgtools::getVersion filename
+dgtools::install filename
+dgtools::manual mode filename
+dgtools::runExample filename boolean
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>dgtools::dgtutils</strong> package provide a few helper commands for other packages
+in the <em>dgtools</em> package to format the documentation, to extract the help pages and to show and run example code
+embedded within the package documentation.</p>
+
+<p><a name="commands">COMMANDS</a></p>
+
+<p><strong>dgtools::getVersion</strong> <em>filename</em></p>
+
+<blockquote>
+<p>Returns the package version of a given file. Please note, that the package must have the same name as the file basename.</p>
+</blockquote>
+
+<p><strong>dgtools::install</strong> <em>filename</em></p>
+
+<blockquote>
+<p>Installs the fiven file as Tcl module within the Tcl module path.
+  Please note, that the package must have the same name as the file basename.</p>
+</blockquote>
+
+<p><strong>dgtools::manual</strong> <em>mode filename</em></p>
+
+<blockquote>
+<p>Extracts and formats the embedded documentation. Option <em>mode</em> can bei either <em>-html</em>, <em>-man</em> or <em>-markdown</em>.
+ -<em>man</em> is pandoc markdown, an extended version for the pandoc document converter.
+ Documentation in Markdown must be prefix with a <code>#'</code> comment sign.</p>
+</blockquote>
+
+<p><strong>dgtools::runExample</strong> <em>filename ?eval:boolean?</em></p>
+
+<blockquote>
+<p>Extracts and executes the code of the example section in the Markdown formatted 
+documentation. Documentation must be prefixed with a <code>#'</code> comment indicator
+and must be followed directly the example section header after two '##' signs. If the option eval is set to false the code is only returned.</p>
+</blockquote>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. 
+To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh recover.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to create a markdown document for conversion into a markdown 
+document that can be converted thereafter into a html or pdf document. If, for instance, you have pandoc installed you could execute the following commands:</p>
+
+<pre><code>tclsh recover.tcl --man &gt; recover.md
+pandoc -i recover.md -s -o recover.html
+pandoc -i recover.md -s -o recover.tex
+pdflatex recover.tex
+</code></pre>
+
+<p>Alternatively if the Markdown package of tcllib is available you can convert the documentation as well directly to html using the <em>--html</em> flag:</p>
+
+<pre><code>$ tclsh recover.tcl --html
+</code></pre>
+
+<h2><a name='author'>AUTHOR</a></h2>
+
+<p>The <strong>dgtools::recover</strong> command was written Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgtools::dgtutils package 0.1  - private procedures to be used within the dgtools packages.</p>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

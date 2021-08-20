@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="dgtools::recover 0.1">
+<meta name="author" content="Detlef Groth, Schwielowsee, Germany">
+<title>dgtools::recover 0.1</title>
+<style>
+body {
+    margin-left: 5%; margin-right: 5%;
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+}
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	1.5ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-bottom:	1px solid black;
+border-top:	1px solid black;
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1 {
+font-family:	sans-serif;
+font-size:	120%;
+background: 	transparent;
+text-align:	center;
+}
+h3 {
+font-family:	sans-serif;
+font-size:	110%;
+background: 	transparent;
+text-align:	center;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+</head>
+<body>
+<div class="title"><h1>dgtools::recover 0.1</h1></div>
+<div class="author"><h3>Detlef Groth, Schwielowsee, Germany</h3></div>
+<div class="date"><h3>2020-03-22</h3></div>
+
+<h2>NAME</h2>
+
+<p><strong>dgtools::recover</strong> - debugging command</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#commands">COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#author">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre><code>package require dgtools::recover
+dgtools::recover
+dgtools::recover_onerror
+dgtools::recover_stop
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>dgtools::recover</strong> command allows to debug interactively errors pr problems in 
+Tcl terminal programs in the same spirit as the R recover command.</p>
+
+<p><a name="commands">COMMANDS</a></p>
+
+<p><strong>dgtools::recover</strong></p>
+
+<blockquote>
+<p>Manually jumps in debugging mode. This command can be placed into critical code fragments and then you can jump directly during debugging in this procedure. See the following example:</p>
+
+<pre class='code'><code>proc test {x} {
+   set y $x
+   incr y
+   dgtools::recover
+   incr x
+   return $y
+}
+test 5</code></pre>
+</blockquote>
+
+<p><strong>dgtools::recover_onerror</strong></p>
+
+<blockquote>
+<p>This replaces the error command, instead of reporting the error there will be an interactive terminal 
+  where you can debug all variables in the current procedure or method.</p>
+</blockquote>
+
+<p><strong>dgtools::recover_stop</strong></p>
+
+<blockquote>
+<p>This resets the error handling by the recover command to the normal error command.</p>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<p>The following example shows how you can jump into your own error calls in your code.
+As you normally report critical parts of your code with such error calls it allows you to jump directly into those places and debug them.
+Unfortunately, I don't know how to jump automatically into the error call of Tcl.</p>
+
+<pre><code>package require dgtools::recover
+::dgtools::recover_onerror
+proc test {x} {
+  set y $x
+  # the next line with the error 
+  # will jump into the recover moce
+  error &quot;z does not exists&quot;
+  return $z
+}
+test 6
+</code></pre>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. 
+To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh recover.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to create a markdown document for conversion into a markdown 
+document that can be converted thereafter into a html or pdf document. If, for instance, you have pandoc installed you could execute the following commands:</p>
+
+<pre><code>tclsh recover.tcl --man &gt; recover.md
+pandoc -i recover.md -s -o recover.html
+pandoc -i recover.md -s -o recover.tex
+pdflatex recover.tex
+</code></pre>
+
+<p>Alternatively if the Markdown package of tcllib is available you can convert the documentation as well directly to html using the <em>--html</em> flag:</p>
+
+<pre><code>$ tclsh recover.tcl --html
+</code></pre>
+
+<h2><a name='author'>AUTHOR</a></h2>
+
+<p>The <strong>dgtools::recover</strong> command was written Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgtools:recover package - debugging tool in spirit of R's recover function.</p>
+
+<p>Copyright (c) 2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>

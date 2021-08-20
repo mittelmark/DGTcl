@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: ; script-src 'self' 'nonce-d717cfb5d902616b7024920ae20346a8494f7832145c90e0' ; style-src 'self' 'unsafe-inline'" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="title" content="dgtools::shistory 0.2">
+<meta name="author" content="Detlef Groth, Schwielowsee, Germany">
+<title>dgtools::shistory 0.2</title>
+<style>
+body {
+    margin-left: 5%; margin-right: 5%;
+    font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+}
+pre {
+padding-top:	1ex;
+padding-bottom:	1ex;
+padding-left:	1.5ex;
+padding-right:	1ex;
+width:		100%;
+color: 		black;
+background: 	#ffefdf;
+border-bottom:	1px solid black;
+border-top:	1px solid black;
+font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+pre.synopsis {
+    background: #cceeff;
+}
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+h1 {
+font-family:	sans-serif;
+font-size:	120%;
+background: 	transparent;
+text-align:	center;
+}
+h3 {
+font-family:	sans-serif;
+font-size:	110%;
+background: 	transparent;
+text-align:	center;
+}
+h2 {
+margin-top: 	1em;
+font-family:	sans-serif;
+font-size:	110%;
+color:		#005A9C;
+background: 	transparent;
+text-align:		left;
+}
+</style>
+</head>
+<body>
+<div class="title"><h1>dgtools::shistory 0.2</h1></div>
+<div class="author"><h3>Detlef Groth, Schwielowsee, Germany</h3></div>
+<div class="date"><h3>2020-03-21</h3></div>
+
+<h2>NAME</h2>
+
+<p><strong>dgtools::shistory</strong> - a snit type history command.</p>
+
+<h2><a name='toc'></a>TABLE OF CONTENTS</h2>
+
+<ul>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#command">COMMAND</a></li>
+<li><a href="#options">TYPE OPTIONS</a></li>
+<li><a href="#commands">TYPE COMMANDS</a></li>
+<li><a href="#example">EXAMPLE</a></li>
+<li><a href="#install">INSTALLATION</a></li>
+<li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#todo">TODO</a></li>
+<li><a href="#author">AUTHOR</a></li>
+<li><a href="#copyright">COPYRIGHT</a></li>
+<li><a href="#license">LICENSE</a>
+ </li></ul>
+
+<h2><a name='synopsis'>SYNOPSIS</a></h2>
+
+<pre><code>package require dgtools::shistory
+::dgtools::shistory cmd ?option value?
+cmd back 
+cmd canBackward
+cmd canForward
+cmd canFirst
+cmd canLast
+cmd cget option
+cmd configure option value
+cmd current
+cmd first
+cmd forward
+cmd getHistory
+cmd home
+cmd insert value
+cmd last
+cmd resetHistory
+</code></pre>
+
+<h2><a name='description'>DESCRIPTION</a></h2>
+
+<p>The <strong>shistory</strong> type is data structure to allow the storage of text strings in a history. 
+this can be useful to store for instance a browser history or a move history in a board game like Chess or Go.</p>
+
+<h2><a name='options'>TYPE OPTIONS</a></h2>
+
+<p><strong>-home</strong> value</p>
+
+<blockquote>
+<p>The value which is set as the home, it is stored in principle as the first item in the history. Defaults to an empty string.</p>
+</blockquote>
+
+<h2><a name='commands'>TYPE COMMANDS</a></h2>
+
+<p>The <strong>shistory</strong> type supports a few commands to navigate in a history list.</p>
+
+<p><em>cmd</em> <strong>back</strong></p>
+
+<blockquote>
+<p>Walks back in history one step and retrieves the value of the history at this position.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>canBackward</strong></p>
+
+<blockquote>
+<p>Returns true if the current position in history is not the first value in history and if the length of history is greater than 1.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>canFirst</strong></p>
+
+<blockquote>
+<p>Returns true if the current position in history is not the first value in history and if history length is greater than 1.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>canForward</strong></p>
+
+<blockquote>
+<p>Returns true if the current position in history is not the last value in history.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>canLast</strong></p>
+
+<blockquote>
+<p>Returns true if the current position in history is not the last value in history.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>cget</strong> <em>option</em></p>
+
+<blockquote>
+<p>Retrieves the given option value for the shistory type. Curently only the <em>-home</em> option is available for <em>cget</em>.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>configure</strong> <em>option value ?option value ...?</em></p>
+
+<blockquote>
+<p>Configures the given option for the shistory type. Curently only the <em>-home</em> option is available for <em>configure</em>.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>current</strong></p>
+
+<blockquote>
+<p>Retrieves the current value of the history.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>first</strong></p>
+
+<blockquote>
+<p>Jumps to the first entry in history and returns it.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>forward</strong></p>
+
+<blockquote>
+<p>Gos one step forward in history and returns the value there.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>getHistory</strong></p>
+
+<blockquote>
+<p>Returns the history, a list of text entries.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>insert</strong>  <em>value</em></p>
+
+<blockquote>
+<p>Inserts the value in the history at the actual index.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>home</strong></p>
+
+<blockquote>
+<p>Returns the home index value which was set using the <em>-home</em> option.</p>
+</blockquote>
+
+<p><em>cmd</em> <strong>last</strong></p>
+
+<blockquote>
+<p>Jumps to the last value in history and returns the value there.</p>
+</blockquote>
+
+<h2><a name='example'>EXAMPLE</a></h2>
+
+<pre><code> package require dgtools::shistory
+ set sh [::dgtools::shistory %AUTO% -home h]
+ $sh insert a
+ $sh insert a ;# should not give duplicates
+ $sh insert a
+ $sh insert b
+ puts &quot;\ncanback: [$sh canBackward]&quot;
+ puts &quot;canforw: [$sh canForward]&quot;
+ $sh back
+ $sh insert z
+ puts [$sh getHistory]
+ puts [$sh home]
+ puts &quot;last: [$sh last]&quot;
+</code></pre>
+
+<h2><a name='install'>INSTALLATION</a></h2>
+
+<p>Installation is easy, you can install and use this <strong>dgtools::shistory</strong> package if you have a working install of the snit package  which can be found in <a href="https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md">tcllib</a>.
+To use the <strong>dgtools::shistory</strong>  package then, you can either sourc it within your Tcl-code: 
+<code>source /path/to/dgtools/shistory.tcl</code>, or by copying the folder <em>dgtools</em> to a path belonging to your Tcl <code>$auto_path</code> variable or by installing it as an Tcl-module. 
+To do this, make either yourself a copy of <code>shistory.tcl</code> to a file like <code>shistory-0.1.tm</code> and put this file into a folder named <code>dgtools</code> where the parent folder belongs to your module path.
+You must eventually adapt your Tcl-module path by using in your Tcl code the command: 
+<code>tcl::tm::path add /parent/dir/</code> of the <code>dgtools</code> directory. 
+For details of the latter consult see the <a href="https://www.tcl.tk/man/tcl/TclCmd/tm.htm">manual page of tcl::tm</a>.</p>
+
+<p>Alternatively there is an install option you can use as well. 
+Try <code>tclsh shistory.tcl --install</code> which should perform the procedure described above automatically. 
+This requires eventually the setting of an environment variables if you have no write access to all 
+of your module paths. For instance on my computer I have the following entry in my <code>.bashrc</code></p>
+
+<pre><code>export TCL8_6_TM_PATH=/home/groth/.local/lib/tcl8.6
+</code></pre>
+
+<p>If I execute <code>tclsh shistory.tcl --install</code> the file <code>shistory.tcl</code> will be copied to <br/>
+<code>/home/groth/.local/lib/tcl8.6/dgtools/shistory-0.1.tm</code> and is thereafter available for a<br/> 
+<code>package require dgtools::shistory</code>.</p>
+
+<h2><a name='docu'>DOCUMENTATION</a></h2>
+
+<p>The script contains embedded the documentation in Markdown format. To extract the documentation you should use the following command line:</p>
+
+<pre><code>$ tclsh shistory.tcl --man
+</code></pre>
+
+<p>The output of this command can be used to create a markdown document for conversion into a markdown 
+document that can be converted thereafter into a html or pdf document. If, for instance, you have pandoc installed you could execute the following commands:</p>
+
+<pre><code>tclsh ../shistory.tcl --man &gt; shistory.md
+pandoc -i shistory.md -s -o shistory.html
+pandoc -i shistory.md -s -o shistory.tex
+pdflatex shistory.tex
+</code></pre>
+
+<h2><a name='todo'>TODO</a></h2>
+
+<ul>
+<li>probably as usually more documentation</li>
+<li>github url for putting the code
+</li></ul>
+
+<h2><a name='author'>AUTHOR</a></h2>
+
+<p>The <strong>shistory</strong> snit type was written Detlef Groth, Schwielowsee, Germany.</p>
+
+<h2><a name='copyright'>COPYRIGHT</a></h2>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<h2><a name='license'>LICENSE</a></h2>
+
+<p>dgtools:shistory package - data structure, a list of text entries 
+which can be navigated as history, version 0.2.</p>
+
+<p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
+
+<p>This library is free software; you can use, modify, and redistribute it
+for any purpose, provided that existing copyright notices are retained
+in all copies and that this notice is included verbatim in any
+distributions.</p>
+
+<p>This software is distributed WITHOUT ANY WARRANTY; without even the
+implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+
+</body>
+</html>
