@@ -101,13 +101,13 @@ text-align:		left;
 
 <h3>Detlef Groth, Schwielowsee, Germany</h3>
 
-<h3>2021-08-20</h3>
+<h3>2021-08-21</h3>
 
 <h2>NAME</h2>
 
 <p><strong>dgw::txmixins</strong> - implementations of extensions for the <em>text</em> 
         widget which can be added dynamically using chaining of commands 
-        at widget creation or using the <em>dgw::mixin</em> command after widget 
+        at widget creation or using the <em>dgw::txmixin</em> command after widget 
         creation.</p>
 
 <h2><a name='toc'></a>TABLE OF CONTENTS</h2>
@@ -152,11 +152,11 @@ dgw::txmixin $txt dgw::txfold ?options?
 <p>The package <strong>dgw::txmixins</strong> implements several <em>snit::widgetadaptor</em>s which 
 extend the standard <em>tk::text</em> widget with different functionalities.
 Different adaptors can be chained together to add the required functionalities. 
-Furthermore at any later time point using the <em>dgw::mixin</em> command other adaptors can be installed on the widget.</p>
+Furthermore at any later time point using the <em>dgw::txmixin</em> command other adaptors can be installed on the widget.</p>
 
 <h2><a name='commands'>WIDGET COMMANDS</a></h2>
 
-<p><a name="mixin"><strong>dgw::mixin</strong></a> <em>pathName mixinWidget ?-option value ...?</em></p>
+<p><a name="txmixin"><strong>dgw::txmixin</strong></a> <em>pathName mixinWidget ?-option value ...?</em></p>
 
 <p>Adds the properties and methods of a snit::widgetadaptor specified with <em>mixinWidget</em> 
 to the exising widget created before with the given <em>pathName</em> and configures the widget 

@@ -3,7 +3,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Thu Aug 12 12:00:00 2021
-#  Last Modified : <210820.1050>
+#  Last Modified : <210821.1031>
 #
 #  Description	
 #
@@ -26,7 +26,7 @@
 #'
 #' **dgw::txmixins** - implementations of extensions for the *text* 
 #'         widget which can be added dynamically using chaining of commands 
-#'         at widget creation or using the *dgw::mixin* command after widget 
+#'         at widget creation or using the *dgw::txmixin* command after widget 
 #'         creation.
 #'
 #' ## <a name='toc'></a>TABLE OF CONTENTS
@@ -67,7 +67,7 @@
 #' The package **dgw::txmixins** implements several *snit::widgetadaptor*s which 
 #' extend the standard *tk::text* widget with different functionalities.
 #' Different adaptors can be chained together to add the required functionalities. 
-#' Furthermore at any later time point using the *dgw::mixin* command other adaptors can be installed on the widget.
+#' Furthermore at any later time point using the *dgw::txmixin* command other adaptors can be installed on the widget.
 #'
 #' ## <a name='commands'>WIDGET COMMANDS</a>
 #'
@@ -78,7 +78,7 @@ namespace eval ::dgw {}
 package provide dgw::txmixins 0.1
 
 #'
-#' <a name="mixin">**dgw::mixin**</a> *pathName mixinWidget ?-option value ...?*
+#' <a name="txmixin">**dgw::txmixin**</a> *pathName mixinWidget ?-option value ...?*
 #' 
 #' Adds the properties and methods of a snit::widgetadaptor specified with *mixinWidget* 
 #' to the exising widget created before with the given *pathName* and configures the widget 
