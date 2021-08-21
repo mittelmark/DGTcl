@@ -1,7 +1,7 @@
 ##-*- makefile -*-############################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Aug 20 08:46:11 2021
-#  Last Modified : <210820.0919>
+#  Last Modified : <210821.1243>
 #
 #  Description	
 #
@@ -30,7 +30,15 @@ doc:
 	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl $(pkg).md $(pkg).html
 	#$(tclsh) ../dgtools/autoPather.tcl .. $(pkg).tcl --man | pandoc -s -f markdown -t man  - > dgw_$(pkg).n
 dgw: header
-	for file in $(DGWPACKAGES) ; do make doc pkg=$${file} ; done
-	rm temp.md
+	for file in $(DGWPACKAGES) ; do make --no-print-directory $${file}.md $${file}.html ; done
+	-rm temp.md
 demos:
 	for file in $(DGWPACKAGES) ; do $(tclsh) ../dgtools/autoPather.tcl .. $${file}.tcl --demo ; done 		
+%.md: %.tcl
+	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl $<  temp.md
+	cat header.md temp.md > `basename $< .tcl`.md
+%.html: %.tcl
+	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl $<  temp.md
+	cat header.md temp.md > `basename $< .tcl`.md
+	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl `basename $< .tcl`.md `basename $< .tcl`.html
+

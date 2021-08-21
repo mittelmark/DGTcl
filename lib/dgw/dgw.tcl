@@ -150,8 +150,8 @@ package require dgw::txmixins
 #' 
 #' ## <a name='see'>SEE ALSO</a>
 #'
-#' - [dgw - package homepage: http://chiselapp.com/user/dgroth/repository/tclcode/index](http://chiselapp.com/user/dgroth/repository/tclcode/index)
-#'
+#' - dgw - package homepage: [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl)
+#' - download via Downgit: https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/dgw
 #'
 #' ## <a name='authors'>AUTHOR</a>
 #'
