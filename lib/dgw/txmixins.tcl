@@ -3,7 +3,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Thu Aug 12 12:00:00 2021
-#  Last Modified : <210821.1031>
+#  Last Modified : <210821.1240>
 #
 #  Description	
 #
@@ -335,7 +335,7 @@ snit::widgetadaptor ::dgw::txfold {
 #' Creates and configures the *dgw::txindent*  widget using the Tk window id _pathName_ and 
 #' the given *options*. All options are delegated to the standard text widget. 
 #' The widget indents every new line based on the initial indention of the previous line.
-#' Based on code in the Wiki page https://wiki.tcl-lang.org/page/auto-indent started by Richard Suchenwirth.
+#' Based on code in the Wiki page [https://wiki.tcl-lang.org/page/auto-indent](https://wiki.tcl-lang.org/page/auto-indent) started by Richard Suchenwirth.
 #'
 #' Example:
 #' 

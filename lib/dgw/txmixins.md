@@ -157,7 +157,7 @@ pack .txt -side top -fill both -expand yes
 Creates and configures the *dgw::txindent*  widget using the Tk window id _pathName_ and 
 the given *options*. All options are delegated to the standard text widget. 
 The widget indents every new line based on the initial indention of the previous line.
-Based on code in the Wiki page https://wiki.tcl-lang.org/page/auto-indent started by Richard Suchenwirth.
+Based on code in the Wiki page [https://wiki.tcl-lang.org/page/auto-indent](https://wiki.tcl-lang.org/page/auto-indent) started by Richard Suchenwirth.
 
 Example:
 
