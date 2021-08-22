@@ -1,7 +1,7 @@
 ##-*- makefile -*-############################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Aug 20 08:46:11 2021
-#  Last Modified : <210821.1243>
+#  Last Modified : <210822.0703>
 #
 #  Description	
 #
@@ -20,6 +20,7 @@
 DGWPACKAGES=dgw basegui combobox dgwutils drawcanvas hyperhelp sbuttonbar seditor sfilebrowser sfinddialog sqlview statusbar tablelist tlistbox tvmixins txmixins
 pkg=dgw
 tclsh=~/tcl8.7/bin/tclsh8.7
+# tclsh=tclsh
 header:
 	-rm header.md
 	for file in $(DGWPACKAGES) ; do [[ "dgwutils" != "$${file}" ]] && echo -e "[$${file}]($${file}.html) - " >> header.md ; done
@@ -37,8 +38,7 @@ demos:
 %.md: %.tcl
 	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl $<  temp.md
 	cat header.md temp.md > `basename $< .tcl`.md
-%.html: %.tcl
-	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl $<  temp.md
-	cat header.md temp.md > `basename $< .tcl`.md
-	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl `basename $< .tcl`.md `basename $< .tcl`.html
+	-rm temp.md
+%.html: %.md %.tcl
+	$(tclsh) ../dgtools/autoPather.tcl .. ../mkdoc/mkdoc.tcl `basename $< .md`.md `basename $< .md`.html
 

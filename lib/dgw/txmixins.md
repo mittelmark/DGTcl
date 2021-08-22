@@ -339,9 +339,10 @@ html, docx or pdf document. If you have pandoc installed for instance, you could
 
 ## <a name='authors'>AUTHORS</a>
 
-The **dgw::txmixins** widget was written by Detlef Groth, Schwielowsee, Germany.
+The **dgw::txmixins** widget adaptors were written by Detlef Groth, Schwielowsee, Germany based on code mentioned at the specific adaptor documentation.
 
 ## <a name='copyright'>Copyright</a>
+
 
 Copyright (c) 2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 

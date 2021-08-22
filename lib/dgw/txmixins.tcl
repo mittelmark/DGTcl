@@ -3,7 +3,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Thu Aug 12 12:00:00 2021
-#  Last Modified : <210821.1240>
+#  Last Modified : <210821.1708>
 #
 #  Description	
 #
@@ -617,9 +617,10 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp {txmixins} $argv0]
 #'
 #' ## <a name='authors'>AUTHORS</a>
 #'
-#' The **__PKGNAME__** widget was written by Detlef Groth, Schwielowsee, Germany.
+#' The **__PKGNAME__** widget adaptors were written by Detlef Groth, Schwielowsee, Germany based on code mentioned at the specific adaptor documentation.
 #'
 #' ## <a name='copyright'>Copyright</a>
+#' 
 #'
 #' Copyright (c) 2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 #'
