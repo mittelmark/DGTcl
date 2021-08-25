@@ -52,7 +52,7 @@ Here the output:
 
 The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
 
-This document was processed using `tcl package provide Tcl`.
+This document was processed using Tcl `tcl package provide Tcl`.
 
 
 The results from the code execution will be directly embedded in the text and will replace the Tcl code.
@@ -62,14 +62,19 @@ several lines.
 Larger chunks of code can be placed within triple backticks such as in the example below.
 
 ```
- ```{.tcl}
+` ``{.tcl}
+ # please remove the space after the first backtick above
  set x 3
  proc add {x y} {
-    return [expr {$x+$y}]
+       return [expr {$x+$y}]
  }
  add $x 7
- ```
-``` 
+ # please remove the space after the first backtick below
+` ``
+```
+
+In the code above a space was added to avoid confusiing the pandoc interpreter
+by nesteding triple tickmarks, remove those spaces in your code.
 
 And here the output:
 
@@ -108,7 +113,7 @@ Please look at the source Markdown file to see which Markdown code was the input
 
 ## Links
 
-* [Discussion page for pandoc-tcl-filter.tcl on the Wiki](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) 
+* [Discussion page for pandoc-tcl-filter.tcl on the Tclers Wiki](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) 
 * [https://pandoc.org/filters.html](https://pandoc.org/filters.html) - background on  pandoc filters
 * [pandoc lua filters](https://github.com/pandoc/lua-filters)
 * [https://github.com/mvhenderson/pandoc-filter-node](https://github.com/mvhenderson/pandoc-filter-node) - pandoc filters using JavaScript and TypeScript
