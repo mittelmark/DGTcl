@@ -28,7 +28,7 @@ The filter can be installed locally by placing it in a folder belonging to
 your personal PATH and making the file executable or alternatively you can
 just use it by specifying the correct path to the Tcl script in your pandoc
 command line call. The direct link to the github repository folder is:
-[https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter)
+[https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter)
 Just unpack the Tcl script from the download and make the file executable.
 
 The filter requires the Tcl package *rl_json* which is available from Github: [https://github.com/RubyLane/rl_json](https://github.com/RubyLane/rl_json).
