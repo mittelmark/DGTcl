@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Detlef Groth" />
+  <title>Readme pandoc-tcl-filter.tcl</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="mini.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
+<p class="author">Detlef Groth</p>
+<p class="date">August 25, 2021 06:00</p>
+</header>
+<h2 id="name">NAME</h2>
+<p><em>pandoc-tcl-filter.tcl</em> - filter to execute code within Markdown documents and use code results for documentation.</p>
+<h2 id="usage">Usage</h2>
+<pre><code>pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl</code></pre>
+<h2 id="installation">Installation</h2>
+<p>The filter can be installed locally by placing it in a folder belonging to your personal PATH and making the file executable or alternatively you can just use it by specifying the correct path to the Tcl script in your pandoc command line call. The direct link to the github repository folder is: <a href="https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc">https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc</a> Just unpack the Tcl script from the download and make the file executable.</p>
+<p>The filter requires the Tcl package rl_json which is available from Github: <a href="https://github.com/RubyLane/rl_json">https://github.com/RubyLane/rl_json</a>. Unix users should be able to install the package via the standard configure/make pipeline. Windows users should install the rl_json package via the Magicplats Tcl-Installer: <a href="https://www.magicsplat.com/tcl-installer/index.html">https://www.magicsplat.com/tcl-installer</a></p>
+<h2 id="example">Example</h2>
+<p>Tcl code can be embedded either within single backtick marks where the first backtick is immediately followed by the string tcl and the the tcl code such as in the following example:</p>
+<pre><code>The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
+
+This document was processed using Tcl `tcl package provide Tcl`.
+</code></pre>
+<p>Here the output:</p>
+<p>The variable is now <code>5</code> or five times three is <code>15</code>.</p>
+<p>This document was processed using <code>8.6.10</code>.</p>
+<p>The results from the code execution will be directly embedded in the text and will replace the Tcl code. Such inline statements should be short an concise and should not break over several lines.</p>
+<p>Larger chunks of code can be placed within triple backticks such as in the example below.</p>
+<pre><code> ```{.tcl}
+ set x 3
+ proc add {x y} {
+    return [expr {$x+$y}]
+ }
+ add $x 7</code></pre>
+<pre><code>
+And here the output:
+
+```{.tcl}
+set x 3
+proc add {x y} {
+    return [expr {$x+$y}]
+}
+add $x 7</code></pre>
+<p>Please note, that only the last statement is shown in code block after the Tcl code. To show more output you can use the <code>puts</code> command.</p>
+<p>Within the curly braces the following attributes are currently supported:</p>
+<ul>
+<li><em>eval=false|true</em> - evaluate the Tcl code</li>
+<li><em>results=show|hide</em> - show the output of the Tcl code execution</li>
+<li><em>echo=true|false</em> - show the Tcl code</li>
+</ul>
+<p>Errors in the tcl code will be usually trapped and the error info is shown instead of the regular output.</p>
+<h2 id="documentation">Documentation</h2>
+<p>The HTML version of this document was generated using the following commandline:</p>
+<pre><code>pandoc Readme.md --metadata title=&quot;Readme pandoc-tcl-filter.tcl&quot; \
+    -M date=&quot;`date &quot;+%B %e, %Y %H:%M&quot;`&quot; -s -o Readme.html \
+     --filter pandoc-tcl-filter.tcl --css mini.css
+</code></pre>
+<p>Please look at the source Markdown file to see which Markdown code was the input.</p>
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter">Discussion page for pandoc-tcl-filter.tcl on the Wiki</a></li>
+<li><a href="https://pandoc.org/filters.html">https://pandoc.org/filters.html</a> - background on pandoc filters</li>
+<li><a href="https://github.com/pandoc/lua-filters">pandoc lua filters</a></li>
+<li><a href="https://github.com/mvhenderson/pandoc-filter-node">https://github.com/mvhenderson/pandoc-filter-node</a> - pandoc filters using JavaScript and TypeScript</li>
+<li><a href="https://pypi.org/project/panflute/">https://pypi.org/project/panflute/</a> - pandoc filters in Python</li>
+<li></li>
+</ul>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>code block labels (label=chunkname)</li>
+<li>code block figures (include=false fig=true)</li>
+<li>regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc.</li>
+</ul>
+<h2 id="history">History</h2>
+<ul>
+<li>2021-08-22 - Release of Wiki cocde</li>
+<li>2021-08-25 - Release of github code</li>
+</ul>
+<h2 id="author">Author</h2>
+<p>Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<h2 id="license">License</h2>
+<p>MIT, see the file LICENSE in the release folder.</p>
+</body>
+</html>
