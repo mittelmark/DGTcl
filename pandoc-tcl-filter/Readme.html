@@ -85,15 +85,15 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 25, 2021 06:29</p>
+<p class="date">August 25, 2021 06:31</p>
 </header>
 <h2 id="name">NAME</h2>
 <p><em>pandoc-tcl-filter.tcl</em> - filter to execute code within Markdown documents and use code results for documentation.</p>
 <h2 id="usage">Usage</h2>
 <pre><code>pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl</code></pre>
 <h2 id="installation">Installation</h2>
-<p>The filter can be installed locally by placing it in a folder belonging to your personal PATH and making the file executable or alternatively you can just use it by specifying the correct path to the Tcl script in your pandoc command line call. The direct link to the github repository folder is: <a href="https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc">https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc</a> Just unpack the Tcl script from the download and make the file executable.</p>
-<p>The filter requires the Tcl package rl_json which is available from Github: <a href="https://github.com/RubyLane/rl_json">https://github.com/RubyLane/rl_json</a>. Unix users should be able to install the package via the standard configure/make pipeline. Windows users should install the rl_json package via the Magicplats Tcl-Installer: <a href="https://www.magicsplat.com/tcl-installer/index.html">https://www.magicsplat.com/tcl-installer</a></p>
+<p>The filter can be installed locally by placing it in a folder belonging to your personal PATH and making the file executable or alternatively you can just use it by specifying the correct path to the Tcl script in your pandoc command line call. The direct link to the github repository folder is: <a href="https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter">https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc</a> Just unpack the Tcl script from the download and make the file executable.</p>
+<p>The filter requires the Tcl package <em>rl_json</em> which is available from Github: <a href="https://github.com/RubyLane/rl_json">https://github.com/RubyLane/rl_json</a>. Unix users should be able to install the package via the standard configure/make pipeline. Windows users should install the rl_json package via the Magicplats Tcl-Installer: <a href="https://www.magicsplat.com/tcl-installer/index.html">https://www.magicsplat.com/tcl-installer</a></p>
 <h2 id="example">Example</h2>
 <p>Tcl code can be embedded either within single backtick marks where the first backtick is immediately followed by the string tcl and the the tcl code such as in the following example:</p>
 <pre><code>The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
