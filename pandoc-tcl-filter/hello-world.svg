@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="100" width="100">
+
+<circle cx="50" cy="50" r="45" stroke="black" stroke-width="2" fill="salmon" />
+
+<text x="29" y="45">
+Hello
+</text>
+
+<text x="27" y="65">
+World!
+</text>
+
+</svg>

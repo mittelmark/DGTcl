@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="420" width="420">
+
+<rect x="10" y="10" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="10" y="60" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="10" y="110" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="10" y="160" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="10" y="210" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="10" y="260" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="10" y="310" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="10" y="360" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="60" y="10" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="60" y="60" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="60" y="110" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="60" y="160" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="60" y="210" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="60" y="260" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="60" y="310" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="60" y="360" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="110" y="10" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="110" y="60" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="110" y="110" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="110" y="160" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="110" y="210" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="110" y="260" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="110" y="310" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="110" y="360" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="160" y="10" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="160" y="60" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="160" y="110" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="160" y="160" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="160" y="210" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="160" y="260" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="160" y="310" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="160" y="360" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="210" y="10" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="210" y="60" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="210" y="110" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="210" y="160" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="210" y="210" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="210" y="260" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="210" y="310" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="210" y="360" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="260" y="10" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="260" y="60" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="260" y="110" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="260" y="160" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="260" y="210" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="260" y="260" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="260" y="310" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="260" y="360" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="310" y="10" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="310" y="60" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="310" y="110" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="310" y="160" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="310" y="210" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="310" y="260" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="310" y="310" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="310" y="360" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+<rect x="360" y="10" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="360" y="60" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="360" y="110" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="360" y="160" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="360" y="210" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="360" y="260" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="360" y="310" width="50" height="50" fill="burlywood" stroke-width="3" />
+
+<rect x="360" y="360" width="50" height="50" fill="cornsilk" stroke-width="3" />
+
+<rect x="6" y="6" width="408" height="408" stroke="sienna" stroke-width="7" fill="transparent" />
+
+</svg>

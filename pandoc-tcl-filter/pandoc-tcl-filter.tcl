@@ -36,12 +36,16 @@ proc evalTclCode {jsonData} {
         
         proc puts {args} {
             global res
-            if {[lindex $args 0] eq "-nonewline"} {
-                append res "[lindex $args 1]"
+            if {[regexp {^file} [lindex $args 0]]} {
+                puts.orig [lindex $args 0] {*}[lrange $args 1 end]
             } else {
-                append res "[lindex $args 0]\n"
+                if {[lindex $args 0] eq "-nonewline"} {
+                    append res "[lindex $args 1]"
+                } else {
+                    append res "[lindex $args 0]\n"
+                }
+                return ""
             }
-            return ""
         }
     }
     set blocks ""
@@ -79,7 +83,7 @@ proc evalTclCode {jsonData} {
                     }
                     #set eres [mdi eval $cont]
                     #set eres "[mdi eval {set res}]$eres"
-                    if {[dict get $a results] eq "show"} {
+                    if {[dict get $a results] eq "show" && $eres ne ""} {
                         rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
                         #rl_json::json set cblock c 0 2 [rl_json::json array [list string "a" string ""]]
                         rl_json::json set cblock c 1 [rl_json::json string [regsub {\{(.+)\}} $eres "\\1"]]

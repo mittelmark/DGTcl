@@ -85,7 +85,7 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 25, 2021 06:32</p>
+<p class="date">August 26, 2021 19:50</p>
 </header>
 <h2 id="name">NAME</h2>
 <p><em>pandoc-tcl-filter.tcl</em> - filter to execute code within Markdown documents and use code results for documentation.</p>
@@ -103,7 +103,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <p>Here the output:</p>
 <p>The variable is now <code>5</code> or five times three is <code>15</code>.</p>
 <p>This document was processed using Tcl <code>8.6.10</code>.</p>
-<p>The results from the code execution will be directly embedded in the text and will replace the Tcl code. Such inline statements should be short an concise and should not break over several lines.</p>
+<p>The results from the code execution will be directly embedded in the text and will replace the Tcl code. Such inline statements should be short and concise and should not break over several lines.</p>
 <p>Larger chunks of code can be placed within triple backticks such as in the example below.</p>
 <pre><code>` ``{.tcl}
  # please remove the space after the first backtick above
@@ -130,6 +130,102 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <li><em>echo=true|false</em> - show the Tcl code</li>
 </ul>
 <p>Errors in the tcl code will be usually trapped and the error info is shown instead of the regular output.</p>
+<h2 id="images">Images</h2>
+<p>As Tcl has no standard library in the core to create graphics without the Tk toolkit we will create a small object using a minimal object oriented system which can create svg files easily.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>;<span class="co"># the onliner OO system thingy see here</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>;<span class="co"># https://wiki.tcl-lang.org/page/Thingy%3A+a+one%2Dliner+OO+system</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="kw">proc</span> thingy <span class="ot">name</span> <span class="kw">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>    <span class="kw">proc</span> <span class="dt">$name</span> <span class="ot">args</span> <span class="st">&quot;namespace eval </span><span class="dt">$</span><span class="st">name </span><span class="ch">\$</span><span class="st">args&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="kw">}</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>;<span class="co"># our object</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>thingy svg</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>;<span class="co"># some variables</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>svg <span class="kw">set</span> code <span class="st">&quot;&quot;</span> ;<span class="co"># the svg code</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>svg <span class="kw">set</span> header <span class="kw">{</span>&lt;?xml version=<span class="st">&quot;1.0&quot;</span> <span class="kw">encoding</span>=<span class="st">&quot;utf-8&quot;</span> standalone=<span class="st">&quot;yes&quot;</span>?&gt;</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>    &lt;svg version=<span class="st">&quot;1.1&quot;</span> xmlns=<span class="st">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="ot">height</span>=<span class="st">&quot;__HEIGHT__&quot;</span> <span class="ot">width</span>=<span class="st">&quot;__WIDTH__&quot;</span>&gt;<span class="kw">}</span>    </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>svg <span class="kw">set</span> footer <span class="kw">{</span>&lt;/svg&gt;<span class="kw">}</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>svg <span class="kw">set</span> <span class="ot">width</span> <span class="dv">100</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>svg <span class="kw">set</span> <span class="ot">height</span> <span class="dv">100</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>;<span class="co"># lets look what variables are there</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a><span class="kw">info</span> <span class="ot">vars</span> svg::* </span></code></pre></div>
+<pre class="tclout"><code>::svg::width ::svg::height ::svg::header ::svg::footer ::svg::code</code></pre>
+<p>We now need a method <em>unknow</em> which catches all command on the object and forward this to the tag creation method.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>;<span class="co"># the actual tag svg creation method</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>svg <span class="kw">proc</span> <span class="ot">tag</span> <span class="kw">{</span><span class="ot">args</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    <span class="kw">variable</span> code</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>    <span class="kw">set</span> <span class="ot">tag</span> <span class="kw">[lindex</span> <span class="dt">$args</span> <span class="dv">0</span><span class="kw">]</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>    <span class="kw">set</span> <span class="ot">args</span> <span class="kw">[lrange</span> <span class="dt">$args</span> <span class="dv">1</span> end<span class="kw">]</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>    <span class="kw">set</span> ret <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&lt;</span><span class="dt">$</span><span class="st">tag&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>    <span class="kw">foreach</span> <span class="kw">{</span>key val<span class="kw">}</span> <span class="dt">$args</span> <span class="kw">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>        <span class="kw">if</span> <span class="kw">{</span><span class="dt">$val</span> eq <span class="st">&quot;&quot;</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>            <span class="kw">append</span> ret <span class="st">&quot;&gt;</span><span class="ch">\n</span><span class="dt">$</span><span class="st">key</span><span class="ch">\n</span><span class="st">&lt;/</span><span class="dt">$</span><span class="st">tag&gt;</span><span class="ch">\n</span><span class="st">&quot;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>            <span class="kw">break</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>        <span class="kw">}</span> <span class="kw">else</span> <span class="kw">{</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>            <span class="kw">append</span> ret <span class="st">&quot; </span><span class="dt">$</span><span class="st">key=</span><span class="ch">\&quot;</span><span class="dt">$</span><span class="st">val</span><span class="ch">\&quot;</span><span class="st">&quot;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>        <span class="kw">}</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>    <span class="kw">if</span> <span class="kw">{</span><span class="dt">$val</span> ne <span class="st">&quot;&quot;</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>        <span class="kw">append</span> ret <span class="st">&quot; /&gt;</span><span class="ch">\n</span><span class="st">&quot;</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>    <span class="kw">append</span> code <span class="dt">$ret</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a><span class="kw">}</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>;<span class="co"> # any unknown should forward to the tag method</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a><span class="kw">namespace</span> <span class="kw">eval</span> svg <span class="kw">{</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>    <span class="kw">namespace</span> <span class="kw">unknown</span> svg::<span class="ot">tag</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true"></a><span class="kw">}</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true"></a>;<span class="co"> # write out the current svg code </span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true"></a>svg <span class="kw">proc</span> write <span class="kw">{</span>filename<span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true"></a>    <span class="kw">variable</span> <span class="ot">width</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true"></a>    <span class="kw">variable</span> <span class="ot">height</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true"></a>    <span class="kw">variable</span> header</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true"></a>    <span class="kw">variable</span> footer</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true"></a>    <span class="kw">variable</span> code</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true"></a>    <span class="kw">set</span> out <span class="kw">[open</span> <span class="dt">$filename</span> w <span class="dv">0600</span><span class="kw">]</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true"></a>    <span class="kw">set</span> head <span class="kw">[regsub</span> <span class="kw">{</span>__HEIGHT__<span class="kw">}</span> <span class="dt">$header</span> <span class="dt">$height</span><span class="kw">]</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true"></a>    <span class="kw">set</span> head <span class="kw">[regsub</span> <span class="kw">{</span>__WIDTH__<span class="kw">}</span> <span class="dt">$head</span> <span class="dt">$width</span><span class="kw">]</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true"></a>    <span class="kw">puts</span> <span class="dt">$out</span> <span class="dt">$head</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true"></a>    <span class="kw">puts</span> <span class="dt">$out</span> <span class="dt">$code</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true"></a>    <span class="kw">puts</span> <span class="dt">$out</span> <span class="dt">$footer</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true"></a>    <span class="kw">close</span> <span class="dt">$out</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true"></a><span class="kw">}</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true"></a></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true"></a>;<span class="co"># what methods we have</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true"></a><span class="kw">info</span> <span class="ot">commands</span> svg::*</span></code></pre></div>
+<pre class="tclout"><code>::svg::tag ::svg::write</code></pre>
+<p>Ok we are now ready to go: Let’s create the typical “Hello World!” example, the first argument will be the tag every remaining pairs will be the attribute and the value, remaining single arguments will be placed within the tag as content:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>svg circle cx <span class="dv">50</span> cy <span class="dv">50</span> r <span class="dv">45</span> stroke black stroke-<span class="ot">width</span> <span class="dv">2</span> fill salmon</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>svg <span class="kw">text</span> <span class="ot">x</span> <span class="dv">29</span> <span class="ot">y</span> <span class="dv">45</span> Hello</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>svg <span class="kw">text</span> <span class="ot">x</span> <span class="dv">27</span> <span class="ot">y</span> <span class="dv">65</span> World!</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>svg write hello-world.svg</span></code></pre></div>
+<p>Let’s now display the image:</p>
+<pre><code> ![](hello-world.svg)</code></pre>
+<p>Here the image displayed:</p>
+<p><img src="hello-world.svg" /></p>
+<p>Let’s now clean up the svg code:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>svg <span class="kw">set</span> code <span class="st">&quot;&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>svg <span class="kw">set</span> code </span></code></pre></div>
+<p>We can now create an other image, let’s create a chessboard:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>svg <span class="kw">set</span> <span class="ot">width</span> <span class="dv">420</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>svg <span class="kw">set</span> <span class="ot">height</span> <span class="dv">420</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="kw">for</span> <span class="kw">{set</span> i <span class="dv">0</span><span class="kw">}</span> <span class="kw">{</span><span class="dt">$i</span> &lt; <span class="dv">8</span><span class="kw">}</span> <span class="kw">{incr</span> i<span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a>    <span class="kw">if</span> <span class="kw">{[expr</span> <span class="kw">{</span><span class="dt">$i</span> % <span class="dv">2</span><span class="kw">}]</span> == <span class="dv">0</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>        <span class="kw">set</span> cols <span class="kw">[join</span> <span class="kw">[lrepeat</span> <span class="dv">4</span> <span class="kw">[list</span> cornsilk burlywood<span class="kw">]]]</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a>    <span class="kw">}</span> <span class="kw">else</span> <span class="kw">{</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>        <span class="kw">set</span> cols <span class="kw">[join</span> <span class="kw">[lrepeat</span> <span class="dv">4</span> <span class="kw">[list</span> burlywood cornsilk <span class="kw">]]]</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>    <span class="kw">}</span>   </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>    <span class="kw">for</span> <span class="kw">{set</span> j <span class="dv">0</span><span class="kw">}</span> <span class="kw">{</span><span class="dt">$j</span> &lt; <span class="dv">8</span><span class="kw">}</span> <span class="kw">{incr</span> j<span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true"></a>        <span class="kw">set</span> <span class="ot">x</span> <span class="kw">[expr</span> <span class="kw">{</span><span class="dv">10</span>+<span class="dt">$i</span>*<span class="dv">50</span><span class="kw">}]</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true"></a>        <span class="kw">set</span> <span class="ot">y</span> <span class="kw">[expr</span> <span class="kw">{</span><span class="dv">10</span>+<span class="dt">$j</span>*<span class="dv">50</span><span class="kw">}]</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true"></a>        svg rect <span class="ot">x</span> <span class="dt">$x</span> <span class="ot">y</span> <span class="dt">$y</span> <span class="ot">width</span> <span class="dv">50</span> <span class="ot">height</span> <span class="dv">50</span> fill <span class="kw">[lindex</span> <span class="dt">$cols</span> <span class="dt">$j</span><span class="kw">]</span> stroke-<span class="ot">width</span> <span class="dv">3</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true"></a>    svg rect <span class="ot">x</span> <span class="dv">6</span> <span class="ot">y</span> <span class="dv">6</span> <span class="ot">width</span> <span class="dv">408</span> <span class="ot">height</span> <span class="dv">408</span> stroke sienna stroke-<span class="ot">width</span> <span class="dv">7</span> fill transparent</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true"></a><span class="kw">}</span>   </span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true"></a>svg write chessboard.svg</span></code></pre></div>
+<p><img src="chessboard.svg" /></p>
 <h2 id="documentation">Documentation</h2>
 <p>The HTML version of this document was generated using the following commandline:</p>
 <pre><code>pandoc Readme.md --metadata title=&quot;Readme pandoc-tcl-filter.tcl&quot; \
@@ -151,11 +247,13 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <li>code block labels (label=chunkname)</li>
 <li>code block figures (include=false fig=true)</li>
 <li>regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc.</li>
+<li>Windows exe / starkit containing the rl_json library as well</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>
 <li>2021-08-22 - Release of Wiki cocde</li>
 <li>2021-08-25 - Release of github code</li>
+<li>2021-08-26 - Adding thingy svg creator, image file writing works</li>
 </ul>
 <h2 id="author">Author</h2>
 <p>Detlef Groth, Caputh-Schwielowsee, Germany</p>

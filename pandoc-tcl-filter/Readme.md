@@ -56,7 +56,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 
 
 The results from the code execution will be directly embedded in the text and will replace the Tcl code.
-Such inline statements should be short an concise and should not break over
+Such inline statements should be short and concise and should not break over
 several lines.
 
 Larger chunks of code can be placed within triple backticks such as in the example below.
@@ -98,6 +98,133 @@ Within the curly braces the following attributes are currently supported:
 Errors in the tcl code will be usually trapped and the error info is shown
 instead of the regular output.
 
+## Images
+
+As Tcl has no standard library in the core to create graphics without the Tk
+toolkit we will create a small object using a minimal object oriented system
+which can create svg files easily.
+
+```{.tcl}
+;# the onliner OO system thingy see here
+;# https://wiki.tcl-lang.org/page/Thingy%3A+a+one%2Dliner+OO+system
+proc thingy name {
+    proc $name args "namespace eval $name \$args"
+} 
+;# our object
+thingy svg
+
+;# some variables
+svg set code "" ;# the svg code
+svg set header {<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="__HEIGHT__" width="__WIDTH__">}    
+svg set footer {</svg>}
+svg set width 100
+svg set height 100
+
+;# lets look what variables are there
+info vars svg::* 
+```
+
+We now need a method _unknow_ which catches all command on the object and
+forward this to the tag creation method.
+
+```{.tcl}
+;# the actual tag svg creation method
+svg proc tag {args} {
+    variable code
+    set tag [lindex $args 0]
+    set args [lrange $args 1 end]
+    set ret "\n<$tag"
+    foreach {key val} $args {
+        if {$val eq ""} {
+            append ret ">\n$key\n</$tag>\n"
+            break
+        } else {
+            append ret " $key=\"$val\""
+        }
+    }
+    if {$val ne ""} {
+        append ret " />\n"
+    }
+    append code $ret
+}
+
+; # any unknown should forward to the tag method
+namespace eval svg {
+    namespace unknown svg::tag
+}
+
+; # write out the current svg code 
+svg proc write {filename} {
+    variable width
+    variable height
+    variable header
+    variable footer
+    variable code
+    set out [open $filename w 0600]
+    set head [regsub {__HEIGHT__} $header $height]
+    set head [regsub {__WIDTH__} $head $width]
+    puts $out $head
+    puts $out $code
+    puts $out $footer
+    close $out
+}
+
+;# what methods we have
+info commands svg::*
+```
+
+Ok we are now ready to go: Let's create the typical "Hello World!" example,
+the first argument will be the tag every remaining pairs will be the attribute
+and the value, remaining single arguments will be placed within the tag as
+content:
+
+```{.tcl}
+svg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+svg text x 29 y 45 Hello
+svg text x 27 y 65 World!
+svg write hello-world.svg
+```
+
+Let's now display the image:
+
+```
+ ![](hello-world.svg)
+``` 
+
+Here the image displayed:
+
+![](hello-world.svg)
+
+Let's now clean up the svg code:
+```{.tcl}
+svg set code ""
+svg set code 
+```
+
+We can now create an other image, let's create a chessboard:
+
+```{.tcl}
+svg set width 420
+svg set height 420
+for {set i 0} {$i < 8} {incr i} {
+    if {[expr {$i % 2}] == 0} {
+        set cols [join [lrepeat 4 [list cornsilk burlywood]]]
+    } else {
+        set cols [join [lrepeat 4 [list burlywood cornsilk ]]]
+    }   
+    for {set j 0} {$j < 8} {incr j} {
+        set x [expr {10+$i*50}]
+        set y [expr {10+$j*50}]
+        svg rect x $x y $y width 50 height 50 fill [lindex $cols $j] stroke-width 3
+    }
+    svg rect x 6 y 6 width 408 height 408 stroke sienna stroke-width 7 fill transparent
+}   
+svg write chessboard.svg
+```
+
+![](chessboard.svg)
+
 ## Documentation
 
 The HTML version of this document was generated using the following commandline:
@@ -125,12 +252,14 @@ Please look at the source Markdown file to see which Markdown code was the input
 * code block labels (label=chunkname)
 * code block figures (include=false fig=true)
 * regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc.
-
+* Windows exe / starkit containing the rl_json library as well
 
 ## History
 
 * 2021-08-22 - Release of Wiki cocde
 * 2021-08-25 - Release of github code
+* 2021-08-26 - Adding thingy svg creator, image file writing works
+
 
 ## Author
 
