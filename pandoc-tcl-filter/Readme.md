@@ -37,6 +37,8 @@ Windows users should install the rl_json package via the Magicplats Tcl-Installe
 
 ## Example
 
+The HTML version of this file can be seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html)-
+
 Tcl code can be embedded either within single backtick marks where the first
 backtick is immediately followed by the string tcl and the the tcl code such
 as in the following example:
