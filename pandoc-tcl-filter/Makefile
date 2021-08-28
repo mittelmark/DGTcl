@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210825.1118>
+#  Last Modified : <210828.0804>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -10,7 +10,8 @@
 # 
 ##############################################################################
 
-FILES=Makefile Readme.html Readme.md pandoc-tcl-filter.tcl mini.css LICENSE json-pretty.tcl
+FILES=Makefile Readme.html Readme.md pandoc-tcl-filter.tcl mini.css LICENSE json-pretty.tcl \
+	pandoc-tcl-filter.md pandoc-tcl-filter.html filter-dot.tcl
 
 
 default:
@@ -26,6 +27,13 @@ devel:
 Readme.html : Readme.md mini.css
 	pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
 		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-		--filter pandoc-tcl-filter.tcl --css mini.css
+		--filter pandoc-tcl-filter.tcl --css mini.css --toc
+
+pandoc-tcl-filter.html: pandoc-tcl-filter.tcl
+	perl -ne "s/^#' ?(.*)/\$$1/ and print " pandoc-tcl-filter.tcl > pandoc-tcl-filter.md
+	pandoc pandoc-tcl-filter.md -s  \
+	    --metadata title="pandoc-tcl-filter.tcl documentation"  \
+	    -o pandoc-tcl-filter.html  --filter pandoc-tcl-filter.tcl \
+	    --css mini.css
 github:
 	for file in $(FILES) ; do cp -u $${file} ~/workspace/DGTcl/pandoc-tcl-filter/ ; done

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pandoc-tcl-filter.tcl documentation</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="mini.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">pandoc-tcl-filter.tcl documentation</h1>
+</header>
+<h2 id="name">NAME</h2>
+<p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As an example a dot filter plugin is given as <code>filter-dot.tcl</code>.</p>
+<h2 id="synopsis">SYNOPSIS</h2>
+<p>Embed code either inline or in form of code chunks like here (triple ticks without space):</p>
+<pre><code>  ` ``{.tcl}
+  # a code block
+  # remove the space between backticks
+  # to avoid Pandoc confusion
+  set x 4
+  ` ```
+  
+  Hello this is Tcl `tcl package provide Tcl`!</code></pre>
+<p>The Markdown document within this file could be processed as follows:</p>
+<pre><code> perl -ne &quot;s/^#&#39; ?(.*)/\$1/ and print &quot; &gt; pandoc-tcl-filter.md
+ pandoc pandoc-tcl-filter.md -s \
+   --metadata title=&quot;pandoc-tcl-filter.tcl documentation&quot; \
+   -o pandoc-tcl-filter.html  --filter pandoc-tcl-filter.tcl  \
+   --css mini.css</code></pre>
+<h2 id="plugins">Plugins</h2>
+<p>The pandoc-tcl-filter.tcl application allows to create custom filters for other command line application quite easily. The Tcl files has to be named <code>filter-NAME.tcl</code> where NAME hast to match the code chunk marker. Below an example:</p>
+<pre><code>   ` ``{.dot label=dotgraph}
+   digraph G {
+     main -&gt; parse -&gt; execute;
+     main -&gt; init;
+     main -&gt; cleanup;
+     execute -&gt; make_string;
+     execute -&gt; printf
+     init -&gt; make_string;
+     main -&gt; printf;
+     execute -&gt; compare;
+   }
+
+   ![](dotgraph.svg)
+   ` ``</code></pre>
+<p>The main script pandoc-tcl-filter.tcl looks if in the same folders as the script is, if there any other files named <code>filter-NAME.tcl</code> and source them. In case of the dot filter the file is named <code>filter-dot.tcl</code> and its filter function filter-dot is executed. Below is the code: of this file <code>filter-dot.tcl</code>:</p>
+<pre><code>proc filter-dot {cont dict cblock} {
+   global n
+   incr n
+   set ret &quot;&quot;
+   if {[dict get $dict label] eq &quot;null&quot;} {
+       set fname dot-$n
+   } else {
+        set fname [dict get $dict label]
+   }
+   set out [open $fname.dot w 0600]
+   puts $out $cont
+   close $out
+   set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+   if {[dict get $dict results] eq &quot;show&quot; &amp;&amp; $res ne &quot;&quot;} {
+       rl_json::json set cblock c 0 1 [rl_json::json array [list string dotout]]
+       rl_json::json set cblock c 1 [rl_json::json string $res]
+       set ret &quot;,[::rl_json::json extract $cblock]&quot;
+   }
+   return $ret
+}</code></pre>
+<p>Automatic inclusion of the image would require more effort and dealing with the cblock which is a copy of the current json block containing the source code. Using the label We could create an image link and append this block after the <code>$cblock</code> part of the <code>$ret var</code>. As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.</p>
+<h2 id="changelog">ChangeLog</h2>
+<ul>
+<li>2021-08-22 Version 0.1</li>
+<li>2021-08-28 Version 0.2
+<ul>
+<li>adding custom filters structure (dot, tsvg)</li>
+<li>adding attributes label, width, height, results</li>
+</ul></li>
+</ul>
+<h2 id="see-also">SEE ALSO</h2>
+<ul>
+<li><a href="Readme.html">Readme.html</a> - more information and small tutorial</li>
+<li><a href="https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter">Tclers Wikipage</a> - palce for discussion</li>
+<li><a href="https://pandoc.org/filters.html">Pandoc filter documentation</a> - more background and information on how to implement filters in Haskell and Markdown</li>
+</ul>
+<h2 id="author">AUTHOR</h2>
+<p>Dr. Detlef Groth, Caputh-Schwielowsee, Germany, detlef(<em>at</em>)dgroth(<em>dot</em>).de</p>
+<h2 id="license">LICENSE</h2>
+<pre><code>MIT License
+
+Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html>

@@ -37,7 +37,7 @@ Windows users should install the rl_json package via the Magicplats Tcl-Installe
 
 ## Example
 
-The HTML version of this file can be seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html)-
+The HTML version of this file can be seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html).
 
 Tcl code can be embedded either within single backtick marks where the first
 backtick is immediately followed by the string tcl and the the tcl code such
@@ -126,6 +126,7 @@ svg set height 100
 ;# lets look what variables are there
 info vars svg::* 
 ```
+
 
 We now need a method _unknow_ which catches all command on the object and
 forward this to the tag creation method.
@@ -226,6 +227,150 @@ svg write chessboard.svg
 ```
 
 ![](chessboard.svg)
+
+
+Great! Let's now illustrate a few more basic shapes. We will follow the examples at [https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes)
+
+But first let's rewrite the `svg tag` function so that we can as well take a list of attributes.
+
+```{.tcl}
+svg proc tag {args} {
+    variable code
+    set tag [lindex $args 0]
+    set args [lrange $args 1 end]
+    set ret "\n<$tag"
+    # new check if attr="val" syntax  
+    if {[regexp {=} [lindex $args 0]]} {
+        set nargs [list]
+        foreach kval $args {
+            set idx [string first = $kval]
+            set key [string range $kval 0 $idx-1]
+            set val [string range $kval $idx+2 end-1]
+            lappend nargs $key
+            lappend nargs $val
+        }
+        set args $nargs
+    } 
+    # end of new check
+    foreach {key val} $args {
+       if {$val eq ""} {
+           append ret ">\n$key\n</$tag>\n"
+           break
+       } else {
+           append ret " $key=\"$val\""
+       }
+    }
+    if {$val ne ""} {
+        append ret " />\n"
+    }
+    append code $ret
+}
+```
+
+With this redefinition of the tag method we can nowe very easily copy the svg
+code from the website. WE just have to remove the greater, smaller and slash
+tag signs from the svg code. As arguments to functions in Tcl are separated by
+spaces we have to protect attributes containing spaces with curly braces for
+the last three shapes, the polyline, the polygone and the path.
+
+```{.tcl}
+svg set code "" ;# cleanup chessboard
+svg set width 200 ;# new size as on the webpage
+svg set height 250 
+svg rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+svg rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+svg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
+svg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
+svg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
+svg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145"} \
+     stroke="orange" fill="transparent" stroke-width="5"
+svg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
+     stroke="green" fill="transparent" stroke-width="5"
+svg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
+svg write basic-shapes.svg
+```
+
+![](basic-shapes.svg)
+
+Ok, great basic shapes can be directly copied from svg code and with a few
+modifications we can create valid tcl code out of the svg code.
+
+## Code chunk attributes for figures
+
+Let's introduce now a few code chunk attributes for figures as they are known for instance in R.
+
+Below an example:
+```
+    ```{.tcl fig=true fig.width=400 fig.height=400}
+    # some figure code
+    ```
+```
+
+This code should call some procedure figure with the arguments of a basic filename, fig.width, fig.height and it should return a filename with an extension like `.svg`
+
+Here an outline of such a function:
+
+```
+proc figure {filename width height args} {
+    # parse args, get width, get height
+    # write file
+    # return filename with extension
+}
+```
+Ok, lets now implement our figure procedure for our svg:
+
+```{.tcl} 
+proc figure {filename width height args} {
+    svg set width $width
+    svg set height $height
+    svg write $filename.svg
+    return $filename.svg
+}
+```
+
+Now in the next code chunk we create a new figure:
+
+```
+   ` ``{.tcl label=figsample fig=true width=80 height=80}
+   svg set code ""
+   svg rect x 0 y 0 width 80 height 80 fill cornsilk
+   svg rect x 10 y 10 width 60 height 60 fill salmon
+   ` ``
+   
+   ![](figsample.svg)
+```   
+
+Here the actual code (the space between the backticks was added to avoid
+interpretation problems by pandoc):
+
+```{.tcl label=figsample fig=true width=80 height=80}
+svg set code ""
+svg rect x 0 y 0 width 80 height 80 fill cornsilk
+svg rect x 10 y 10 width 60 height 60 fill salmon
+```
+
+![](figsample.svg)
+
+* TODO: autoembedding of figures by chunk number
+
+## Other filters than Tcl code filter
+
+Let's finish our small tutorial with the implementation of a filter for a command line application.
+
+```{.dot label=digraph echo=false}
+digraph G {
+  main -> parse -> execute;
+  main -> init;
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+```
+
+![](digraph.svg)
 
 ## Documentation
 
