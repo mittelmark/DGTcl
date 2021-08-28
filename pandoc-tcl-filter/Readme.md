@@ -439,12 +439,12 @@ Please look at the source Markdown file to see which Markdown code was the input
 * [https://pypi.org/project/panflute/](https://pypi.org/project/panflute/) - pandoc filters in Python
 * 
 
-## TODO
+## Todo
 
-* code block labels (label=chunkname)
-* code block figures (include=false fig=true)
-* regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc.
-* Windows exe / starkit containing the rl_json library as well
+* code block labels (label=chunkname)  - done
+* code block figures (include=false fig=true) - done
+* regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc. - done (examples for dot code and tsvg plugin)
+* Windows exe / starkit containing the rl_json library as well (adding linux library)
 
 ## History
 

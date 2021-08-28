@@ -101,13 +101,13 @@ package provide pandoc 0.2
 #' 
 #' * 2021-08-22 Version 0.1
 #' * 2021-08-28 Version 0.2
-#'     * adding custom filters structure (dot, tsvg)
+#'     * adding custom filters structure (dot, tsvg examples)
 #'     * adding attributes label, width, height, results
 #'     
 #' ## SEE ALSO
 #' 
 #' * [Readme.html](Readme.html) - more information and small tutorial
-#' * [Tclers Wikipage](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) - palce for discussion
+#' * [Tclers Wiki page](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) - place for discussion
 #' * [Pandoc filter documentation](https://pandoc.org/filters.html) - more background and information on how to implement filters in Haskell and Markdown
 #' * [Lua filters on GitHub](https://github.com/pandoc/lua-filters)
 #' * [Plotting filters on Github](https://github.com/LaurentRDC/pandoc-plot)
