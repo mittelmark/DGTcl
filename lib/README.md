@@ -30,6 +30,10 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
 
 ## Tcl Libraries / Applications    
 
+* tsvg - the Thingy SVG writer. Create SVG files with ease. Either using a Tclish or a SVGish syntax.
+  * [tsvg manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html)
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/pandoc-tcl-filter/lib/tsvg)
+  
 * tmdoc - embed and execute Tcl code in Markdown or LaTex documents
   * [tmdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tmdoc.html) - literate programming using Tcl for embedding Tcl code into Markdown and LaTeX documents.
   * [tmdoc Markdown based tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tutorial/tmd.html) - Tutorial about on how to use the package.
