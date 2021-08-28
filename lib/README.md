@@ -1,6 +1,13 @@
 # DGTcl - Project
 
-This repository contains the following Tcl packages:
+This repository contains the following Tcl packages and Pandoc filters:
+
+## Pandoc filters
+
+* [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
+* [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
+* [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
+  
 
 ## Tk Widgets
 
@@ -15,7 +22,6 @@ This repository contains the following Tcl packages:
     a pure Tcl/Tk widget to render a reasonable subset of html,   [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/shtmlview).
 
 ## Tcl Libraries / Applications    
-
 
 * tmdoc - embed and execute Tcl code in Markdown or LaTex documents
   * [tmdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tmdoc.html) - literate programming using Tcl for embedding Tcl code into Markdown and LaTeX documents.
