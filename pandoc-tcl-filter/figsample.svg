@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="80" width="80">
+
+<rect x="0" y="0" width="80" height="80" fill="cornsilk" />
+
+<rect x="10" y="10" width="60" height="60" fill="salmon" />
+
+</svg>
