@@ -1,6 +1,6 @@
 # DGTcl - Project
 
-This repository contains the following Tcl packages and Pandoc filters:
+This repository contains the following Tcl packages and Pandoc filters written in the Tcl programming language:
 
 ## Pandoc filters
 
@@ -11,6 +11,8 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
 * [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
 * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
+
+_Please note, that for the installation of this package you need as well the Tcl package [rl_json](https://github.com/RubyLane/rl_json) from Ruby Lane. I will try to make some binaries of this package available for Windows, Linux and OSX._
 
 For other filters have a look at the Pandoc topic list [https://github.com/topics/pandoc-filter](https://github.com/topics/pandoc-filter).
 
