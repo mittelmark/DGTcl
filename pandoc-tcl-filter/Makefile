@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210828.0804>
+#  Last Modified : <210828.1228>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -11,7 +11,9 @@
 ##############################################################################
 
 FILES=Makefile Readme.html Readme.md pandoc-tcl-filter.tcl mini.css LICENSE json-pretty.tcl \
-	pandoc-tcl-filter.md pandoc-tcl-filter.html filter-dot.tcl
+	pandoc-tcl-filter.md pandoc-tcl-filter.html filter-dot.tcl filter-tsvg.tcl lib/tsvg/tsvg.tcl lib/tsvg/pkgIndex.tcl \
+	lib/rl_json/pkgIndex.tcl lib/rl_json/json.html lib/rl_json/librl_json0.11.0.so \
+	lib/rl_json/json.n lib/rl_json/mini.css
 
 
 default:
@@ -36,4 +38,7 @@ pandoc-tcl-filter.html: pandoc-tcl-filter.tcl
 	    -o pandoc-tcl-filter.html  --filter pandoc-tcl-filter.tcl \
 	    --css mini.css
 github:
-	for file in $(FILES) ; do cp -u $${file} ~/workspace/DGTcl/pandoc-tcl-filter/ ; done
+	for file in $(FILES) ; do cp -u $${file} ~/workspace/DGTcl/pandoc-tcl-filter/$${file} ; done
+
+tsvg-test:
+	tclsh lib/tsvg/tsvg.tcl

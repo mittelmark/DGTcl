@@ -85,17 +85,18 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 28, 2021 08:05</p>
+<p class="date">August 28, 2021 12:23</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#name">NAME</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">USAGE</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#example">Example</a></li>
 <li><a href="#images">Images</a></li>
 <li><a href="#code-chunk-attributes-for-figures">Code chunk attributes for figures</a></li>
 <li><a href="#other-filters-than-tcl-code-filter">Other filters than Tcl code filter</a></li>
+<li><a href="#tsvg-plugin">tsvg plugin</a></li>
 <li><a href="#documentation">Documentation</a></li>
 <li><a href="#links">Links</a></li>
 <li><a href="#todo">TODO</a></li>
@@ -106,7 +107,7 @@
 </nav>
 <h2 id="name">NAME</h2>
 <p><em>pandoc-tcl-filter.tcl</em> - filter to execute code within Markdown documents and use code results for documentation.</p>
-<h2 id="usage">Usage</h2>
+<h2 id="usage">USAGE</h2>
 <pre><code>pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl</code></pre>
 <h2 id="installation">Installation</h2>
 <p>The filter can be installed locally by placing it in a folder belonging to your personal PATH and making the file executable or alternatively you can just use it by specifying the correct path to the Tcl script in your pandoc command line call. The direct link to the github repository folder is: <a href="https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter">https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter</a> Just unpack the Tcl script from the download and make the file executable.</p>
@@ -332,7 +333,30 @@ This document was processed using Tcl `tcl package provide Tcl`.
 </ul>
 <h2 id="other-filters-than-tcl-code-filter">Other filters than Tcl code filter</h2>
 <p>Let’s finish our small tutorial with the implementation of a filter for a command line application.</p>
+<div class="sourceCode" id="cb21" label="digraph" data-echo="true"><pre class="sourceCode dot"><code class="sourceCode dot"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">digraph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">parse</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">execute</span><span class="ot">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">init</span><span class="ot">;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">cleanup</span><span class="ot">;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a><span class="co">  </span><span class="va">init</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span><span class="ot">;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">compare</span><span class="ot">;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a><span class="ot">}</span></span></code></pre></div>
 <p><img src="digraph.svg" /></p>
+<p>Using the chunk option echo=false, we can as well hide the source code:</p>
+<p><img src="digraph2.svg" /></p>
+<p>If you would like to see the code you now have to consult the Markdown file.</p>
+<h2 id="tsvg-plugin">tsvg plugin</h2>
+<p>The code shown above creating svg files using the thingy object was as well saved as a plugin with some minor modifications, that way you can include code creating svg files using the described syntax above. Please not that the plugin object is named <code>tsvg</code>. Here an example.</p>
+<pre><code> ` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
+ tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+ tsvg text x 29 y 45 Hello
+ tsvg text x 26 y 65 World!
+ ` ```
+ ![](tsvg-hello-world.svg)</code></pre>
+<p>Will produce this:</p>
+<p><img src="tsvg-hello-world.svg" /></p>
 <h2 id="documentation">Documentation</h2>
 <p>The HTML version of this document was generated using the following commandline:</p>
 <pre><code>pandoc Readme.md --metadata title=&quot;Readme pandoc-tcl-filter.tcl&quot; \

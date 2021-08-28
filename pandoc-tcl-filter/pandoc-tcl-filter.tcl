@@ -1,4 +1,5 @@
 #!/usr/bin/env tclsh
+lappend auto_path [file join [file dirname [info script]] lib]
 package require rl_json
 package provide pandoc 0.2
 

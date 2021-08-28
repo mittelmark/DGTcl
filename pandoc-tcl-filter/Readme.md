@@ -16,7 +16,7 @@ abstract: >
 
 _pandoc-tcl-filter.tcl_ - filter to execute code within Markdown documents and use code results for documentation.
 
-## Usage
+## USAGE
 
 ```
 pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl
@@ -357,7 +357,7 @@ svg rect x 10 y 10 width 60 height 60 fill salmon
 
 Let's finish our small tutorial with the implementation of a filter for a command line application.
 
-```{.dot label=digraph echo=false}
+```{.dot label=digraph echo=true}
 digraph G {
   main -> parse -> execute;
   main -> init;
@@ -371,6 +371,51 @@ digraph G {
 ```
 
 ![](digraph.svg)
+
+Using the chunk option echo=false, we can as well hide the source code:
+
+```{.dot label=digraph2 echo=false}
+digraph G {
+  main [shape=box,style=filled,fillcolor=".5 .8 1.0"] ;
+  main -> parse -> execute;
+  main -> init [style=dotted];
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  edge [color="red"];
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+```
+
+![](digraph2.svg)
+
+If you would like to see the code you now have to consult the Markdown file.
+
+## tsvg plugin
+
+The code shown above creating svg files using the thingy object was as well
+saved as a plugin with some minor modifications, that way you can include code creating svg files using the described syntax above. Please not that the plugin object is named `tsvg`. Here an example.
+
+```
+ ` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
+ tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+ tsvg text x 29 y 45 Hello
+ tsvg text x 26 y 65 World!
+ ` ```
+ ![](tsvg-hello-world.svg)
+```
+
+Will produce this:
+
+```{.tsvg label=tsvg-hello-world results=hide echo=false}
+tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+tsvg text x 29 y 45 Hello
+tsvg text x 26 y 65 World!
+```
+
+![](tsvg-hello-world.svg)
 
 ## Documentation
 
