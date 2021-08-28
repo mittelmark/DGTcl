@@ -4,10 +4,15 @@ This repository contains the following Tcl packages and Pandoc filters:
 
 ## Pandoc filters
 
+The [Pandoc](https://pandoc.org) application is a great document converter and processing tool. 
+The pandoc-tcl-filter folder contains two Pandoc filters for Tcl code and for Graphviz dot files. To know more about Pandoc filters have a look at Pandocs manual pages [https://pandoc.org/filters.html](https://pandoc.org/filters.html). 
+These filter allow you to directly embed Tcl code and Dot file code into your documents and produce code output or figures using these code chunks.
+
 * [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
 * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
-  
+
+For other filters have a look at the Pandoc topic list [https://github.com/topics/pandoc-filter](https://github.com/topics/pandoc-filter).
 
 ## Tk Widgets
 
