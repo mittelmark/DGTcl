@@ -49,7 +49,7 @@ __tsvg figure__ _filename_ _width_ _height_
 > Writes the current svg code into the given filename with the 
   given width and height settings. 
 
-__tsvg write__ _ filename_
+__tsvg write__ _filename_
 
 > writes the current svg code into the given filename with the current width and height settings.
 
@@ -64,6 +64,11 @@ functions have the same name. They should be not used directly.
 
 > - _tsvg text_
 
+The following function(s) are private and should not be used directly by the user of
+this package.
+
+> - _tsvg TagFix_
+
 ## EXAMPLES
 
 The typical Hello World example:
@@ -77,7 +82,7 @@ tsvg write hello-world.svg
 
 ![](hello-world.svg)
 
-To contine with an other image you have first to clean up the previous image:
+To continue with an other image you have first to clean up the previous image:
 
 ```{.tsvg}
 tsvg set code "" ;# clear 
@@ -88,11 +93,11 @@ tsvg rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fi
 tsvg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
 tsvg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
 tsvg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
-tsvg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145"} \
+tsvg polyline points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" \
     stroke="orange" fill="transparent" stroke-width="5"
-tsvg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
+tsvg polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180" \
     stroke="green" fill="transparent" stroke-width="5"
-tsvg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
+tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
 tsvg write basic-shapes.svg
 ```
 
@@ -126,11 +131,11 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
 
 ## ChangeLog
 
-* 2021-08-28 Version 0.1 wsith docu uplpaded to GutHub
+* 2021-08-28 Version 0.1 with docu uplpaded to GitHub
     
 ## SEE ALSO
 
-* [Readme.html](Readme.html) - more information about pandoc Tcl filters
+* [Readme.html](../../Readme.html) - more information about pandoc Tcl filters
 * [Tclers Wiki page](https://wiki.tcl-lang.org/page/tsvg) - place for discussion
 
 ## AUTHOR

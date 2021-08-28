@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210828.1353>
+#  Last Modified : <210828.2050>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -73,7 +73,7 @@
 #' > Writes the current svg code into the given filename with the 
 #'   given width and height settings. 
 #' 
-#' __tsvg write__ _ filename_
+#' __tsvg write__ _filename_
 #' 
 #' > writes the current svg code into the given filename with the current width and height settings.
 #' 
@@ -88,6 +88,11 @@
 #' 
 #' > - _tsvg text_
 #' 
+#' The following function(s) are private and should not be used directly by the user of
+#' this package.
+#' 
+#' > - _tsvg TagFix_
+#' 
 #' ## EXAMPLES
 #' 
 #' The typical Hello World example:
@@ -101,7 +106,7 @@
 #' 
 #' ![](hello-world.svg)
 #' 
-#' To contine with an other image you have first to clean up the previous image:
+#' To continue with an other image you have first to clean up the previous image:
 #' 
 #' ```{.tsvg}
 #' tsvg set code "" ;# clear 
@@ -112,11 +117,11 @@
 #' tsvg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
 #' tsvg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
 #' tsvg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
-#' tsvg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145"} \
+#' tsvg polyline points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" \
 #'     stroke="orange" fill="transparent" stroke-width="5"
-#' tsvg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
+#' tsvg polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180" \
 #'     stroke="green" fill="transparent" stroke-width="5"
-#' tsvg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
+#' tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
 #' tsvg write basic-shapes.svg
 #' ```
 #' 
@@ -150,11 +155,11 @@
 #' 
 #' ## ChangeLog
 #' 
-#' * 2021-08-28 Version 0.1 wsith docu uplpaded to GutHub
+#' * 2021-08-28 Version 0.1 with docu uplpaded to GitHub
 #'     
 #' ## SEE ALSO
 #' 
-#' * [Readme.html](Readme.html) - more information about pandoc Tcl filters
+#' * [Readme.html](../../Readme.html) - more information about pandoc Tcl filters
 #' * [Tclers Wiki page](https://wiki.tcl-lang.org/page/tsvg) - place for discussion
 #' 
 #' ## AUTHOR
@@ -211,10 +216,13 @@ tsvg set width 100
 tsvg set height 100
 
 tsvg proc tag {args} {
+    set self [self]
     variable code
+    set args [$self TagFix $args]
     set tag [lindex $args 0]
     set args [lrange $args 1 end]
     set ret "\n<$tag"
+    set val ""
     # new check if attr="val" syntax  
     if {[regexp {=} [lindex $args 0]]} {
         set nargs [list]
@@ -240,6 +248,29 @@ tsvg proc tag {args} {
         append ret " />\n"
     }
     append code $ret
+}
+
+tsvg proc TagFix {args} { 
+    set nargs [list]
+    set args {*}$args
+    set flag false
+    for {set i 0} {$i < [llength $args]} {incr i 1} {
+        if {!$flag && [regexp {=".+"} [lindex $args $i]]} { ;#"
+            lappend nargs [lindex $args $i]
+        } elseif {!$flag && [regexp {="} [lindex $args $i]]} { ;#"
+            set flag true
+            set qarg "[lindex $args $i] "
+        } elseif {$flag && [regexp {"} [lindex $args $i]]} { ;#"
+            set flag false
+            append qarg "[lindex $args $i]"
+            lappend nargs $qarg
+        } elseif {$flag} {
+            append qarg " [lindex $args $i]"
+        } else {
+            lappend nargs [lindex $args $i]
+        }
+    }
+    return $nargs
 }
 
 namespace eval tsvg {
@@ -281,12 +312,26 @@ tsvg proc demo {} {
     #$self figure 
     $self write hello-world.svg
     puts "Writing file hello-world.svg done!"
-
+    $self set code ""
+    $self set width 200 
+    $self set height 250 
+    $self rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+    $self rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+    $self circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
+    $self ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
+    $self line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
+    $self polyline points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" \
+           stroke="orange" fill="transparent" stroke-width="5"
+    $self polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180" \
+          stroke="green" fill="transparent" stroke-width="5"
+    $self path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
+    $self write basic-shapes.svg
+    puts "Writing file basic-shapes.svg done!"
 }
 
                    
 if {[info exists argv0] && $argv0 eq [info script] && [regexp tsvg.tcl $argv0]} {
-    package require Tk
+    #package require Tk
     tsvg demo
 }
 

@@ -293,7 +293,10 @@ svg write basic-shapes.svg
 ![](basic-shapes.svg)
 
 Ok, great basic shapes can be directly copied from svg code and with a few
-modifications we can create valid tcl code out of the svg code.
+modifications we can create valid tcl code out of the svg code. 
+Please not from the code shown in this Readme the package _tsvg_ was derived which
+does not need this protecting of the spaces within the attributes. See below the section
+about the _tsvg_ plugin.
 
 ## Code chunk attributes for figures
 
@@ -355,7 +358,29 @@ svg rect x 10 y 10 width 60 height 60 fill salmon
 
 ## Other filters than Tcl code filter
 
-Let's finish our small tutorial with the implementation of a filter for a command line application.
+Let's finish our small tutorial with the implementation of a filter for a
+command line application. Below you see the code for the GraphViz dot application.
+
+Here the a code example:
+
+```
+` ``{.dot label=digraph echo=true}
+digraph G {
+  main -> parse -> execute;
+  main -> init;
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+` ``
+
+![](digraph.svg)
+```
+
+Which will produce the following output:
 
 ```{.dot label=digraph echo=true}
 digraph G {
@@ -416,6 +441,26 @@ tsvg text x 26 y 65 World!
 ```
 
 ![](tsvg-hello-world.svg)
+
+In contrast to the svg code developed above the _tsvg_ plugin allows you to 
+send the attributes containing as well spaces as they are, the _tag_ method will clean up 
+the lists arguments by using the paired quotes. Thsi greatly simplifies the
+copy and paste procedure for existing svg examples, you in many cases just have to remove
+the leading and trailing greater and lower signs.
+Hereis  an example using different syntax types:
+
+```{.tsvg label=tsvg-polyline results=hide echo=true}
+tsvg set code ""
+tsvg set width 180
+tsvg set height 200
+tsvg rect x 10 y 10 width 160 height 180 style "fill:#ddeeff;"
+tsvg circle cx="130" cy="120" r="20" stroke="red" stroke-width="2" fill="salmon"
+tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
+   style="fill:white;stroke:red;stroke-width:4"
+```  
+
+![](tsvg-polyline.svg)
+
 
 ## Documentation
 

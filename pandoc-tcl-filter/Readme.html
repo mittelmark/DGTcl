@@ -85,7 +85,7 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 28, 2021 12:34</p>
+<p class="date">August 28, 2021 20:47</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -99,7 +99,7 @@
 <li><a href="#tsvg-plugin">tsvg plugin</a></li>
 <li><a href="#documentation">Documentation</a></li>
 <li><a href="#links">Links</a></li>
-<li><a href="#todo">TODO</a></li>
+<li><a href="#todo">Todo</a></li>
 <li><a href="#history">History</a></li>
 <li><a href="#author">Author</a></li>
 <li><a href="#license">License</a></li>
@@ -294,7 +294,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true"></a>svg path <span class="kw">{</span>d=<span class="st">&quot;M20,230 Q40,205 50,230 T90,230&quot;</span><span class="kw">}</span> fill=<span class="st">&quot;none&quot;</span> stroke=<span class="st">&quot;blue&quot;</span> stroke-<span class="ot">width</span>=<span class="st">&quot;5&quot;</span></span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true"></a>svg write basic-shapes.svg</span></code></pre></div>
 <p><img src="basic-shapes.svg" /></p>
-<p>Ok, great basic shapes can be directly copied from svg code and with a few modifications we can create valid tcl code out of the svg code.</p>
+<p>Ok, great basic shapes can be directly copied from svg code and with a few modifications we can create valid tcl code out of the svg code. Please not from the code shown in this Readme the package <em>tsvg</em> was derived which does not need this protecting of the spaces within the attributes. See below the section about the <em>tsvg</em> plugin.</p>
 <h2 id="code-chunk-attributes-for-figures">Code chunk attributes for figures</h2>
 <p>Let’s introduce now a few code chunk attributes for figures as they are known for instance in R.</p>
 <p>Below an example:</p>
@@ -332,17 +332,33 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <li>TODO: autoembedding of figures by chunk number</li>
 </ul>
 <h2 id="other-filters-than-tcl-code-filter">Other filters than Tcl code filter</h2>
-<p>Let’s finish our small tutorial with the implementation of a filter for a command line application.</p>
-<div class="sourceCode" id="cb21" label="digraph" data-echo="true"><pre class="sourceCode dot"><code class="sourceCode dot"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="kw">digraph</span> <span class="va">G</span> <span class="ot">{</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">parse</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">execute</span><span class="ot">;</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">init</span><span class="ot">;</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">cleanup</span><span class="ot">;</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a><span class="co">  </span><span class="va">init</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span><span class="ot">;</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">compare</span><span class="ot">;</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a><span class="ot">}</span></span></code></pre></div>
+<p>Let’s finish our small tutorial with the implementation of a filter for a command line application. Below you see the code for the GraphViz dot application.</p>
+<p>Here the a code example:</p>
+<pre><code>` ``{.dot label=digraph echo=true}
+digraph G {
+  main -&gt; parse -&gt; execute;
+  main -&gt; init;
+  main -&gt; cleanup;
+  execute -&gt; make_string;
+  execute -&gt; printf
+  init -&gt; make_string;
+  main -&gt; printf;
+  execute -&gt; compare;
+}
+` ``
+
+![](digraph.svg)</code></pre>
+<p>Which will produce the following output:</p>
+<div class="sourceCode" id="cb22" label="digraph" data-echo="true"><pre class="sourceCode dot"><code class="sourceCode dot"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="kw">digraph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">parse</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">execute</span><span class="ot">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">init</span><span class="ot">;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">cleanup</span><span class="ot">;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true"></a><span class="co">  </span><span class="va">init</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">make_string</span><span class="ot">;</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true"></a><span class="co">  </span><span class="va">main</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">printf</span><span class="ot">;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true"></a><span class="co">  </span><span class="va">execute</span><span class="co"> </span><span class="ot">-&gt;</span><span class="co"> </span><span class="va">compare</span><span class="ot">;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true"></a><span class="ot">}</span></span></code></pre></div>
 <p><img src="digraph.svg" /></p>
 <p>Using the chunk option echo=false, we can as well hide the source code:</p>
 <p><img src="digraph2.svg" /></p>
@@ -357,6 +373,15 @@ This document was processed using Tcl `tcl package provide Tcl`.
  ![](tsvg-hello-world.svg)</code></pre>
 <p>Will produce this:</p>
 <p><img src="tsvg-hello-world.svg" /></p>
+<p>In contrast to the svg code developed above the <em>tsvg</em> plugin allows you to send the attributes containing as well spaces as they are, the <em>tag</em> method will clean up the lists arguments by using the paired quotes. Thsi greatly simplifies the copy and paste procedure for existing svg examples, you in many cases just have to remove the leading and trailing greater and lower signs. Hereis an example using different syntax types:</p>
+<pre class="tsvg" label="tsvg-polyline" data-results="hide" data-echo="true"><code>tsvg set code &quot;&quot;
+tsvg set width 180
+tsvg set height 200
+tsvg rect x 10 y 10 width 160 height 180 style &quot;fill:#ddeeff;&quot;
+tsvg circle cx=&quot;130&quot; cy=&quot;120&quot; r=&quot;20&quot; stroke=&quot;red&quot; stroke-width=&quot;2&quot; fill=&quot;salmon&quot;
+tsvg polyline points=&quot;0,40 40,40 40,80 80,80 80,120 120,120 120,160&quot; \
+   style=&quot;fill:white;stroke:red;stroke-width:4&quot;</code></pre>
+<p><img src="tsvg-polyline.svg" /></p>
 <h2 id="documentation">Documentation</h2>
 <p>The HTML version of this document was generated using the following commandline:</p>
 <pre><code>pandoc Readme.md --metadata title=&quot;Readme pandoc-tcl-filter.tcl&quot; \
@@ -373,12 +398,12 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <li><a href="https://pypi.org/project/panflute/">https://pypi.org/project/panflute/</a> - pandoc filters in Python</li>
 <li></li>
 </ul>
-<h2 id="todo">TODO</h2>
+<h2 id="todo">Todo</h2>
 <ul>
-<li>code block labels (label=chunkname)</li>
-<li>code block figures (include=false fig=true)</li>
-<li>regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc.</li>
-<li>Windows exe / starkit containing the rl_json library as well</li>
+<li>code block labels (label=chunkname) - done</li>
+<li>code block figures (include=false fig=true) - done</li>
+<li>regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc. - done (examples for dot code and tsvg plugin)</li>
+<li>Windows exe / starkit containing the rl_json library as well (adding linux library)</li>
 </ul>
 <h2 id="history">History</h2>
 <ul>

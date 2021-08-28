@@ -12,11 +12,14 @@ proc filter-tsvg {cont dict cblock} {
     } else {
         set fname [dict get $dict label]
     }
-    set res [eval $cont]
+    set code [regsub -all {([^ ]);} $cont "\\1\\\\;"]
+    set res2 [eval $code]
+    #set res2 [regsub -all {___SEMI___} $res2 ";"]
+    #tsvg set code "$code"
     tsvg write $fname.svg
-    if {[dict get $dict results] eq "show" && $res ne ""} {
+    if {[dict get $dict results] eq "show" && $res2 ne ""} {
         rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
-        rl_json::json set cblock c 1 [rl_json::json string $res]
+        rl_json::json set cblock c 1 [rl_json::json string $res2]
         set ret ",[::rl_json::json extract $cblock]"
     }
     return $ret

@@ -62,7 +62,7 @@ tsvg text x="27" y="65" World!</code></pre>
 <blockquote>
 <p>Writes the current svg code into the given filename with the given width and height settings.</p>
 </blockquote>
-<p><strong>tsvg write</strong> _ filename_</p>
+<p><strong>tsvg write</strong> <em>filename</em></p>
 <blockquote>
 <p>writes the current svg code into the given filename with the current width and height settings.</p>
 </blockquote>
@@ -76,6 +76,12 @@ tsvg text x="27" y="65" World!</code></pre>
 <li><em>tsvg text</em></li>
 </ul>
 </blockquote>
+<p>The following function(s) are private and should not be used directly by the user of this package.</p>
+<blockquote>
+<ul>
+<li><em>tsvg TagFix</em></li>
+</ul>
+</blockquote>
 <h2 id="examples">EXAMPLES</h2>
 <p>The typical Hello World example:</p>
 <pre class="tsvg"><code>tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
@@ -83,7 +89,7 @@ tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:hello-world.svg--></p>
-<p>To contine with an other image you have first to clean up the previous image:</p>
+<p>To continue with an other image you have first to clean up the previous image:</p>
 <pre class="tsvg"><code>tsvg set code "" ;# clear 
 tsvg set width 200 ;# new size as on the webpage
 tsvg set height 250 
@@ -92,13 +98,13 @@ tsvg rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fi
 tsvg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
 tsvg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
 tsvg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
-tsvg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145"} \
+tsvg polyline points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" \
     stroke="orange" fill="transparent" stroke-width="5"
-tsvg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
+tsvg polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180" \
     stroke="green" fill="transparent" stroke-width="5"
-tsvg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
+tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
 tsvg write basic-shapes.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwIDExMCA2NSAxMjAgNzAgMTE1IDc1IDEzMCA4MCAxMjUgODUgMTQwIDkwIDEzNSA5NSAxNTAgMTAwIDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwIDE2MCA1NSAxODAgNzAgMTgwIDYwIDE5MCA2NSAyMDUgNTAgMTk1IDM1IDIwNSA0MCAxOTAgMzAgMTgwIDQ1IDE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgUTQwLDIwNSA1MCwyMzAgVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwICAxMTAgNjUgMTIwIDcwIDExNSA3NSAxMzAgODAgMTI1IDg1IDE0MCA5MCAxMzUgOTUgMTUwIDEwMDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwICAxNjAgNTUgMTgwIDcwIDE4MCA2MCAxOTAgNjUgMjA1IDUwIDE5NSAzNSAyMDUgNDAgMTkwIDMwIDE4MCA0NTE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgIFE0MCwyMDUgNTAsMjMwVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
 <h2 id="extending">Extending</h2>
 <p>If you need to extend the package or to fix nameclashes with other packages you can just write your own procedures. For instance if one package you are working with would import an <em>rect</em> command you would call this using the <em>tsvg rect</em> command to fix this issue you just have to implement your own <em>tsvg rect</em> procedure like this:</p>
 <pre><code>tsvg proc rect {args} {
@@ -115,11 +121,11 @@ tsvg write basic-shapes.svg</code></pre>
  htmlark -o lib/tsvg/tsvg.html tsvg.html</code></pre>
 <h2 id="changelog">ChangeLog</h2>
 <ul>
-<li>2021-08-28 Version 0.1 wsith docu uplpaded to GutHub</li>
+<li>2021-08-28 Version 0.1 with docu uplpaded to GitHub</li>
 </ul>
 <h2 id="see-also">SEE ALSO</h2>
 <ul>
-<li><a href="Readme.html">Readme.html</a> - more information about pandoc Tcl filters</li>
+<li><a href="../../Readme.html">Readme.html</a> - more information about pandoc Tcl filters</li>
 <li><a href="https://wiki.tcl-lang.org/page/tsvg">Tclers Wiki page</a> - place for discussion</li>
 </ul>
 <h2 id="author">AUTHOR</h2>
@@ -147,4 +153,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 </body>
-</html><!--Generated by HTMLArk 2021-08-28 13:53:27.239083. Original URL tsvg.html-->
+</html><!--Generated by HTMLArk 2021-08-28 20:50:36.808233. Original URL tsvg.html-->
