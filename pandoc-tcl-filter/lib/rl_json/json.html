@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 2015 Ruby Lane
+  
+   See the file "LICENSE" for information on usage and redistribution
+   of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+   -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="mini.css" type="text/css" media="all"/>
+  <title>json(n)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">json(n)</td>
+    <td class="head-vol">RubyLane/JSON Package Commands</td>
+    <td class="head-rtitle">json(n)</td>
+  </tr>
+</table>
+<div class="manual-text">
+    
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+json - Parse, manipulate and produce JSON documents
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<pre>
+<b>package require rl_json</b> ?<b>0.11.0</b>? 
+<b>json get </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json extract </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json exists </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json set </b><i>jsonVariableName</i> ?<i>key ...</i>? <i>value</i>
+<b>json unset </b><i>jsonVariableName</i> ?<i>key ...</i>?
+<b>json foreach </b><i>varlist1 jsonValue1</i> ?<i>varlist2 jsonValue2 ...</i>? <i>script</i>
+<b>json lmap </b><i>varlist1 jsonValue1</i> ?<i>varlist2 jsonValue2 ...</i>? <i>script</i>
+<b>json amap </b><i>varlist1 jsonValue1</i> ?<i>varlist2 jsonValue2 ...</i>? <i>script</i>
+<b>json omap </b><i>varlist1 jsonValue1</i> ?<i>varlist2 jsonValue2 ...</i>? <i>script</i>
+<b>json string </b><i>value</i>
+<b>json number </b><i>value</i>
+<b>json boolean </b><i>value</i>
+<b>json object </b><i>?key value ?key value ...??</i>
+<b>json array </b><i>elem ...</i>
+<b>json bool </b><i>value</i>
+<b>json normalize </b><i>jsonValue</i>
+<b>json pretty </b><i>jsonValue</i>
+<b>json template </b><i>jsonValue</i> ?<i>dictionary</i>?
+<b>json isnull </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json type </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json length </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json keys </b><i>jsonValue</i> ?<i>key ...</i>?
+<b>json decode </b><i>bytes</i> ?<i>encoding</i>?
+<b>json valid ?</b><b>-extensions</b> <i>extensionlist</i>? ?<b>-details</b> <i>detailsvar</i>? <i>jsonValue</i>
+</pre>
+<pre>
+
+</pre>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+This package adds a command <b>json</b> to the interpreter, and defines a new
+  Tcl_Obj type to store the parsed JSON document. The <b>json</b> command
+  directly manipulates values whose string representation is valid JSON, in a
+  similar way to how the <b>dict</b> command directly manipulates values whose
+  string representation is a valid dictionary. It is similar to <b>dict</b> in
+  performance.
+<dl class="Bl-tag">
+  <dt><b>json get </b><i>jsonValue</i> ?<i>key ...</i>?</dt>
+  <dd>Extract the value of a portion of the <i>jsonValue</i>, returns the
+      closest native Tcl type (other than JSON) for the extracted portion. The
+      <i>key ...</i> arguments are a path, as described in <b>PATHS</b>
+    below.</dd>
+  <dt><b>json extract </b><i>jsonValue</i> ?<i>key ...</i>?</dt>
+  <dd>Extract the value of a portion of the <i>jsonValue</i>, returns the JSON
+      fragment. The <i>key ...</i> arguments are a path, as described in
+      <b>PATHS</b> below.</dd>
+  <dt><b>json exists </b><i>jsonValue</i> ?<i>key ...</i>?</dt>
+  <dd>Tests whether the supplied key path (see <b>PATHS</b> below) resolves to
+      something that exists in <i>jsonValue</i> (i.e., that it can be used with
+      <b>json get</b> without error) and is not null. Returns false if the value
+      named by the path <i>key ...</i> is null.</dd>
+  <dt><b>json set </b><i>jsonVariableName</i> ?<i>key ...</i>? <i>value</i></dt>
+  <dd>Updates the JSON value stored in the variable <i>jsonVariableName</i>,
+      replacing the value referenced by <i>key ...</i> (a path as described in
+      <b>PATHS</b> below) with the JSON value <i>value</i>. If <i>value</i> is a
+      valid JSON as given by the JSON grammar, it is added as that JSON type,
+      otherwise it is converted to a JSON string. Thus the following are
+      equivalent (modulo efficiency):
+    <p class="Pp"></p>
+  </dd>
+</dl>
+<div class="Bd-indent">
+<pre>
+ json set doc foo [json string baz]
+ json set doc bar [json number 123]
+ json set doc baz [json boolean true]
+ #------------------------------------------
+ json set doc foo baz
+ json set doc bar 123
+ json set doc baz true
+</pre>
+</div>
+<p class="Pp">Watch out for unintended behaviour if the value might look like a
+    boolean or number but not meet the JSON grammar for those types, in which
+    case the value is converted to a JSON string:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ json set doc foo [json boolean yes]
+ # Key &quot;foo&quot; contains the JSON boolean value &quot;true&quot;
+ json set doc foo yes
+ # Key &quot;foo&quot; contains the JSON string value &quot;yes&quot;
+</pre>
+</div>
+<p class="Pp">Constructing the values using [<b>json </b><i>type</i>] forces the
+    conversion to the specified JSON type, or throws an exception if that can't
+    be done. Which is more efficent will depend on the situation:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {[]}
+ for {set i 0} {$i &lt; 100} {incr i} {
+ 	json set doc end+1 [json boolean true]	;# 1
+ 	json set doc end+1 true				;# 2
+ }
+ # 2 will be faster since &quot;true&quot; will be stored as a literal, and converted
+ # to a JSON boolean.  Each loop iteration will just append another reference
+ # to this static value to the array, whereas 1 will call [json boolean] each
+ # iteration.
+ 
+ set doc {[]}
+ for {set i 0} {$i &lt; 100} {incr i} {
+ 	json set doc end+1 [json string false$i]	;# 1
+ 	json set doc end+1 false$i				;# 2
+ }
+ # 1 will be faster since [json string] knows what the type is and directly
+ # creates the new element as that type.  2 Needs to parse the string to
+ # determine the type.
+</pre>
+</div>
+<dl class="Bl-tag">
+  <dt><b>json unset </b><i>jsonVariableName</i> ?<i>key ...</i>?</dt>
+  <dd>Updates the JSON value stored in the variable <i>jsonVariableName</i>,
+      removing the value referenced by <i>key ...</i>, a path as described in
+      <b>PATHS</b> below. If the path names a entry in an object then that key
+      is removed from the object. If the path names an element in an array, that
+      element is removed and all later elements are moved up.</dd>
+  <dt><b>json template </b><i>jsonValue</i> ?<i>dictionary</i>?</dt>
+  <dd>Return a JSON value by interpolating the values from <i>dictionary</i>
+      into the template, or from variables in the current scope if
+      <i>dictionary</i> is not supplied, in the manner described in the section
+      <b>TEMPLATES</b>.</dd>
+  <dt><b>json string </b><i>value</i></dt>
+  <dd>Return a JSON string with the value <i>value</i>.</dd>
+  <dt><b>json number </b><i>value</i></dt>
+  <dd>Return a JSON number with the value <i>value</i>.</dd>
+  <dt><b>json boolean </b><i>value</i></dt>
+  <dd>Return a JSON boolean with the value <i>value</i>. Any of the forms
+      accepted by Tcl_GetBooleanFromObj are accepted and normalized.</dd>
+  <dt><b>json object </b><i>?key value ?key value ...??</i> -or- <b>json object
+    </b> <i>packed_value</i></dt>
+  <dd>Return a JSON object with the each of the keys and values given.
+      <i>value</i> is a list of two elements, the first being the type {string,
+      number, boolean, null, object, array, json}, and the second being the
+      value. The alternate syntax <b>json object </b><i>packed_value</i> takes
+      the list of keys and values as a single arg instead of a list of args, but
+      is otherwise the same.</dd>
+  <dt><b>json array </b><i>?elem ...?</i></dt>
+  <dd>Return a JSON array containing each of the elements given. <i>elem</i> is
+      a list of two elements, the first being the type {string, number, boolean,
+      null, object, array, json}, and the second being the value.</dd>
+  <dt><b>json foreach </b><i>varList1 jsonValue1</i> ?<i>varList2 jsonValue2
+    ...</i>? <i>script</i></dt>
+  <dd>Evaluate <i>script</i> in a loop in a similar way to the <b>foreach</b>
+      command. In each iteration, the values stored in the iterator variables in
+      each <i>varList</i> are the JSON fragments from <i>jsonValue</i>. This
+      command supports iterating over JSON arrays and JSON objects. In the JSON
+      object case, the corresponding <i>varList</i> must be a two element list,
+      with the first specifiying the variable to hold the key and the second the
+      value. In the JSON array case, the rules are the same as the
+      <b>foreach</b> command.</dd>
+  <dt><b>json lmap </b><i>varList1 jsonValue1</i> ?<i>varList2 jsonValue2
+    ...</i>? <i>script</i></dt>
+  <dd>As for <b>json foreach</b>, except that it is collecting; the result from
+      each evaluation of <i>script</i> is added to a Tcl list and returned as
+      the result of the <b>json lmap</b> command. If the <i>script</i> results
+      in a TCL_CONTINUE code (e.g., the script does <b>continue</b>), that
+      iteration is skipped and no element is added to the result list. If it
+      results in TCL_BREAK (e.g., the script does <b>break</b>) the iterations
+      are stopped and the results accumulated so far are returned.</dd>
+  <dt><b>json amap </b><i>varList1 jsonValue1</i> ?<i>varList2 jsonValue2
+    ...</i>? <i>script</i></dt>
+  <dd>As for <b>json lmap</b>, but the result is a JSON array rather than a
+      list. If the result of each iteration is a JSON value it is added to the
+      array as-is, otherwise it is converted to a JSON string.</dd>
+  <dt><b>json omap </b><i>varList1 jsonValue1</i> ?<i>varList2 jsonValue2
+    ...</i>? <i>script</i></dt>
+  <dd>As for <b>json lmap</b>, but the result is a JSON object rather than a
+      list. The result of each iteration must be a dictionary (or a list of 2n
+      elements, including n = 0). Tcl_ObjType snooping is done to ensure that
+      the iteration over the result is efficient for both dict and list cases.
+      Each entry in the dictionary will be added to the result object. If the
+      value for each key in the iteration result is a JSON value it is added to
+      the array as-is, otherwise it is converted to a JSON string.</dd>
+  <dt><b>json isnull </b><i>jsonVariableName</i> ?<i>key ...</i>?</dt>
+  <dd>Return a boolean indicating whether the named JSON value is null.</dd>
+  <dt><b>json type </b><i>jsonVariableName</i> ?<i>key ...</i>?</dt>
+  <dd>Return the type of the named JSON value, one of &quot;object&quot;,
+      &quot;array&quot;, &quot;string&quot;, &quot;number&quot;,
+      &quot;boolean&quot; or &quot;null&quot;.</dd>
+  <dt><b>json length </b><i>jsonVariableName</i> ?<i>key ...</i>?</dt>
+  <dd>Return the length of the of the named JSON array, number of entries in the
+      named JSON object, or number of characters in the named JSON string. Other
+      value types aren't supported.</dd>
+  <dt><b>json keys </b><i>jsonVariableName</i> ?<i>key ...</i>?</dt>
+  <dd>Return the keys in the of the named JSON object, found by following the
+      path of <i>key</i>s.</dd>
+  <dt><b>json normalize </b><i>jsonValue</i></dt>
+  <dd>Return a &#x201C;normalized&#x201D; version of the input <i>jsonValue</i>,
+      i.e., with all optional whitespace trimmed.</dd>
+  <dt><b>json pretty </b><i>jsonValue</i></dt>
+  <dd>Returns a pretty-printed string representation of <i>jsonValue</i>. Useful
+      for debugging or inspecting the structure of JSON data.</dd>
+  <dt><b>json decode </b><i>bytes</i> ?<i>encoding</i>?</dt>
+  <dd>Rl_json operates on characters, as returned from Tcl's
+      Tcl_GetStringFromObj, not raw bytes, so considerations of encoding are
+      strictly outside of its scope (other than ignoring a byte order mark if
+      the string starts with one). The JSON RFC lays out some behaviour for
+      conforming implementations regarding character encoding, and ensuring that
+      an application using rl_json meets that standard would be up to the
+      application. Some aspects are not straightforward, so rl_json provides
+      this utility subcommand that takes binary data in <i>bytes</i> and returns
+      a character string according to the RFC specified behaviour. If the
+      optional <i>encoding</i> argument is given, that encoding will be used to
+      interpret <i>bytes</i>. The supported encodings are those specified in the
+      RFC: utf-8, utf-16le, utf-16be, utf-32le, utf-32be. If the string starts
+      with a BOM (byte order mark (U+FFFE)), and no encoding is given, it will
+      be determined from the encoding of the BOM. All the encodings listed are
+      supported, even if Tcl lacks support for the utf-16 and utf-32 encodings
+      natively. However, without native support the conversion will be slow.
+    <p class="Pp">This might look something like this in an application:</p>
+    <p class="Pp"></p>
+  </dd>
+</dl>
+<div class="Bd-indent">
+<pre>
+ proc readjson file {
+ 	set h [open $file rb]	;# Note that the file is opened in binary mode - no encoding
+ 	try {
+ 		json decode [read $h]
+ 	} finally {
+ 		close $h
+ 	}
+ }
+</pre>
+</div>
+<dl class="Bl-tag">
+  <dt><b>json valid</b> ?<b>-extensions</b> <i>extensionlist</i>?
+    ?<b>-details</b> <i>details</i>? <i>jsonValue</i></dt>
+  <dd>Validate <b>jsonValue</b> against the JSON grammar, returning true if it
+      conforms and false otherwise. A list of extensions to accept can be
+      supplied with <b>-extensions</b>, with only one currently supported
+      extension: <b>comments</b>, which accepts JSON documents containing <b>//
+      foo</b> and <b>/*</b> <b>foo */</b> style comments anywhere whitespace
+      would be valid. To reject documents containing comments, set
+      <i>extensionlist</i> to {}.
+    <p class="Pp">Validation using this subcommand is about 3 times faster than
+        parsing and catching a parsing exception, and it allows strict
+        validation against the RFC without comments.</p>
+    <p class="Pp">If validation fails and <b>-details</b> <i>detailsvar</i> is
+        supplied, the variable <i>detailsvar</i> is set to a dictionary
+        containing the keys:</p>
+  </dd>
+</dl>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><b>errmsg</b></dt>
+  <dd>A reason for the failure.</dd>
+  <dt><b>doc</b></dt>
+  <dd>The document that failed validation</dd>
+  <dt><b>char_ofs</b></dt>
+  <dd>The character offset into <b>doc</b> that caused validation to fail.</dd>
+</dl>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="PATHS"><a class="permalink" href="#PATHS">PATHS</a></h1>
+Several of the commands (e.g., <b>json get</b>, <b>json exists</b>, <b>json</b>
+  <b>set</b> and <b>json unset</b>) accept a path specification that names some
+  subset of the supplied <i>jsonValue</i>. The rules are similar to the
+  equivalent concept in the <b>dict</b> command, except that the paths used by
+  <b>json</b> allow indexing into JSON arrays by the integer key (or a string
+  matching the regex &#x201C;^end(-[0-9]+)?$&#x201D;).
+</section>
+<section class="Sh">
+<h1 class="Sh" id="TEMPLATES"><a class="permalink" href="#TEMPLATES">TEMPLATES</a></h1>
+The command <b>json template</b> generates JSON documents by interpolating
+  values into a template from a supplied dictionary or variables in the current
+  call frame, a flexible mechanism for generating complex documents. The
+  templates are valid JSON documents containing string values which match the
+  regex &#x201C;^~[SNBJTL]:.+$&#x201D;. The second character determines what the
+  resulting type of the substituted value will be:
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt><b>S</b></dt>
+  <dd>A string.</dd>
+  <dt><b>N</b></dt>
+  <dd>A number.</dd>
+  <dt><b>B</b></dt>
+  <dd>A boolean.</dd>
+  <dt><b>J</b></dt>
+  <dd>A JSON fragment.</dd>
+  <dt><b>T</b></dt>
+  <dd>A JSON template (substitutions are performed on the inserted
+    fragment).</dd>
+  <dt><b>L</b></dt>
+  <dd>A literal. The resulting string is simply everything from the fourth
+      character onwards (this allows literal strings to be included in the
+      template that would otherwise be interpreted as the substitutions
+    above).</dd>
+</dl>
+</div>
+<p class="Pp">None of the first three characters for a template may be
+  escaped.</p>
+<p class="Pp">The value inserted is determined by the characters following the
+    substitution type prefix. When interpolating values from a dictionary they
+    name keys in the dictionary which hold the values to interpolate. When
+    interpolating from variables in the current scope, they name scalar or array
+    variables which hold the values to interpolate. In either case if the named
+    key or variable doesn't exist, a JSON null is interpolated in its place.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXCEPTIONS"><a class="permalink" href="#EXCEPTIONS">EXCEPTIONS</a></h1>
+Exceptions are thrown when attempting to parse a string which isn't valid JSON,
+  or when a named path is invalid or doesn't exist:
+<dl class="Bl-tag">
+  <dt><b>RL JSON PARSE </b><i>errormessage</i> <i>string</i> <i>charOfs</i></dt>
+  <dd>Thrown when trying to parse a string that isn't valid JSON. The
+      <i>string</i> element contains the string that failed to parse, and the
+      first invalid character is at offset <i>charOfs</i> within that string,
+      using 0 based offsets.</dd>
+  <dt><b>RL JSON BAD_PATH </b><i>path</i></dt>
+  <dd>Thrown when indexing into a JSON value and the specified path isn't valid.
+      <i>path</i> is the left subset of the path up to first element that caused
+      the failure.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Produce a JSON value from a template:
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ <b>json template</b> {
+     {
+         &quot;thing1&quot;: &quot;~S:val1&quot;,
+         &quot;thing2&quot;: [&quot;a&quot;, &quot;~N:val2&quot;, &quot;~S:val2&quot;, &quot;~B:val2&quot;,
+                    &quot;~S:val3&quot;, &quot;~L:~S:val1&quot;],
+         &quot;subdoc1&quot;: &quot;~J:subdoc&quot;,
+         &quot;subdoc2&quot;: &quot;~T:subdoc&quot;
+     }
+ } {
+     val1   hello
+     val2   1e6
+     subdoc {
+         { &quot;thing3&quot;: &quot;~S:val1&quot; }
+     }
+ }
+</pre>
+</div>
+<p class="Pp">The result (with formatting for readability):</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ {
+     &quot;thing1&quot;:&quot;hello&quot;,
+     &quot;thing2&quot;:[&quot;a&quot;,1000000.0,&quot;1e6&quot;,true,null,&quot;~S:val1&quot;],
+     &quot;subdoc1&quot;:{&quot;thing3&quot;:&quot;~S:val1&quot;},
+     &quot;subdoc2&quot;:{&quot;thing3&quot;:&quot;hello&quot;}
+ }
+</pre>
+</div>
+<p class="Pp">Incrementally append an element to an array (similar to <b>dict
+    lappend</b>):</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {{&quot;foo&quot;:[]}}
+ for {set i 0} {$i &lt; 4} {incr i} {
+     json set doc foo end+1 [json string &quot;elem: $i&quot;]
+ }
+ # $doc is {&quot;foo&quot;:[&quot;elem 0&quot;,&quot;elem 1&quot;,&quot;elem 2&quot;,&quot;elem 3&quot;]}
+</pre>
+</div>
+<p class="Pp">Similar to the above, but prepend the elements instead:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {{&quot;foo&quot;:[]}}
+ for {set i 0} {$i &lt; 4} {incr i} {
+     json set doc foo -1 [json string &quot;elem: $i&quot;]
+ }
+ # $doc is {&quot;foo&quot;:[&quot;elem 3&quot;,&quot;elem 2&quot;,&quot;elem 1&quot;,&quot;elem 0&quot;]}
+</pre>
+</div>
+<p class="Pp">Trim an element out of an array:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]}
+ json unset doc 1
+ # $doc is {[&quot;a&quot;,&quot;c&quot;]}
+</pre>
+</div>
+<p class="Pp">Implicitly create objects when setting a path that doesn't
+  exist:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {{&quot;foo&quot;:1}}
+ json set doc bar baz {&quot;hello, new obj&quot;}
+ # $doc is {&quot;foo&quot;:1,&quot;bar&quot;:{&quot;baz&quot;:&quot;hello, new obj&quot;}}
+</pre>
+</div>
+<p class="Pp">Index through objects and arrays (the path elements are
+    unambiguous because the json types they index into are known at resolve
+    time):</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ set doc {{&quot;foo&quot;:[&quot;a&quot;,{&quot;primes&quot;:[2,3,5,7,11,13,17,19]},&quot;c&quot;]}}
+ json get $doc foo 1 primes end-1
+ # returns 17
+</pre>
+</div>
+<p class="Pp">Handle a parse error and display a helpful message indicating the
+    character that caused the failure:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ try {
+     json get {
+         {
+             &quot;foo&quot;: {
+                 &quot;bar&quot;: true,
+             }
+         }
+     } foo bar
+ } trap {RL JSON PARSE} {errmsg options} {
+     lassign [lrange [dict get $options -errorcode] 4 5] doc char_ofs
+     puts stderr &quot;$errmsg\n[string range $doc 0 $char_ofs-1](here --&gt;)[string range $doc $char_ofs end]&quot;
+ }
+</pre>
+</div>
+<p class="Pp">Produces:</p>
+<p class="Pp"></p>
+<div class="Bd-indent">
+<pre>
+ Error parsing JSON value: Illegal character at offset 37
+ 
+ 		{
+ 			&quot;foo&quot;: {
+ 				&quot;bar&quot;: true,
+ 			(here --&gt;)}
+ 		}
+</pre>
+</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="KEYWORDS"><a class="permalink" href="#KEYWORDS">KEYWORDS</a></h1>
+json, parsing, formatting
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">0.11.0</td>
+    <td class="foot-os">rl_json</td>
+  </tr>
+</table>
+</body>
+</html>
