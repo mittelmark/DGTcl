@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8"/>
+<meta content="pandoc" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<title>tsvg package documentation</title>
+<style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%0A%20%20%20%20%20%20%20%20%20%20%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%201200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20%7B%0A%20%20%20%20%20%20%20%20min-width%3A%20300px%3B%0A%20%20%20%20%20%20%20%20border-spacing%3A%200%3B%0A%20%20%20%20%20%20%20%20border-collapse%3A%20collapse%3B%0A%20%20%20%20%20%20%20%20cell-padding%3A%200px%3B%0A%20%20%20%20%20%20%20%20cell-spacing%3A%200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.header%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23dddddd%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.even%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23ddeeff%3B%0A%20%20%20%20%7D%0A%20%20%20%20td%2C%20th%20%7B%0A%20%20%20%20%20%20%20%20padding%3A%203px%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
+<!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">tsvg package documentation</h1>
+</header>
+<p>NAME</p>
+<p><em>tsvg</em> - package to create svg files with a syntax close to Tcl and to SVG.</p>
+<h2 id="synopsis">SYNOPSIS</h2>
+<pre><code>package require tsvg
+tsvg set width 100
+tsvg set height 100
+# Tcl like syntax
+tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+tsvg text x 29 y 45 Hello
+tsvg text x 27 y 65 World!
+tsvg write hello-world.svg
+tsvg set code ""
+# SVG like syntax
+# Please note that the last argument contains a space and 
+# must be therefor protected by curly braces
+tsvg circle cx="50" cy="50" r="45" stroke="black" \
+   stroke-width="2" {fill="light blue"}
+tsvg text x="29" y="45" Hello
+tsvg text x="27" y="65" World!</code></pre>
+<h2 id="methods">METHODS</h2>
+<p>The package provides one command <em>tsvg</em> which can hold currently just a single svg code. All commands will be evaluated within the tsvg namespace, all unknown methods which are all will be forwarded to the standard tsvg::tag method and produce svg code out of them. So <em>tsvg dummy hello</em> will produce <em>&gt;dummy&amp;lt&gt;hello&amp;lt/&gt;</em>.</p>
+<p>The following public variables can be modified sing <em>tsvg set varname</em>:</p>
+<blockquote>
+<ul>
+<li><em>code</em> - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling <em>tsvg set ""</em>.</li>
+<li><em>footer</em> - the standard SVG-XML footer, should be usually not changed.</li>
+<li><em>header</em> - the standard SVG-XML header, should be usually not changed.</li>
+<li><em>height</em> - the image height used for writing out the svg file, default: 100</li>
+<li><em>width</em> - the image width used for writing out the svg file, default: 100</li>
+</ul>
+</blockquote>
+<p>The follwing methods are implemented:</p>
+<p><strong>tsvg demo</strong></p>
+<blockquote>
+<p>Writes the “Hello World!” string into a file hello-world.svg in the current directory.</p>
+</blockquote>
+<p><strong>tsvg figure</strong> <em>filename</em> <em>width</em> <em>height</em></p>
+<blockquote>
+<p>Writes the current svg code into the given filename with the given width and height settings.</p>
+</blockquote>
+<p><strong>tsvg write</strong> _ filename_</p>
+<blockquote>
+<p>writes the current svg code into the given filename with the current width and height settings.</p>
+</blockquote>
+<p><strong>tsvg tag</strong> tagname <em>args</em></p>
+<blockquote>
+<p>Creates the given tagname and adds all remaining arguments as attibutes if they come in pairs. If the numer of arguments is odd, the last argument will be placed within the XML tags.</p>
+</blockquote>
+<p>The following functions are just implemented for avoiding name clashes because some existing Tcl/Tk functions have the same name. They should be not used directly.</p>
+<blockquote>
+<ul>
+<li><em>tsvg text</em></li>
+</ul>
+</blockquote>
+<h2 id="examples">EXAMPLES</h2>
+<p>The typical Hello World example:</p>
+<pre class="tsvg"><code>tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+tsvg text x 29 y 45 Hello
+tsvg text x 27 y 65 World!
+tsvg write hello-world.svg</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:hello-world.svg--></p>
+<p>To contine with an other image you have first to clean up the previous image:</p>
+<pre class="tsvg"><code>tsvg set code "" ;# clear 
+tsvg set width 200 ;# new size as on the webpage
+tsvg set height 250 
+tsvg rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+tsvg rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+tsvg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
+tsvg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
+tsvg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
+tsvg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145"} \
+    stroke="orange" fill="transparent" stroke-width="5"
+tsvg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
+    stroke="green" fill="transparent" stroke-width="5"
+tsvg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
+tsvg write basic-shapes.svg</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwIDExMCA2NSAxMjAgNzAgMTE1IDc1IDEzMCA4MCAxMjUgODUgMTQwIDkwIDEzNSA5NSAxNTAgMTAwIDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwIDE2MCA1NSAxODAgNzAgMTgwIDYwIDE5MCA2NSAyMDUgNTAgMTk1IDM1IDIwNSA0MCAxOTAgMzAgMTgwIDQ1IDE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgUTQwLDIwNSA1MCwyMzAgVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
+<h2 id="extending">Extending</h2>
+<p>If you need to extend the package or to fix nameclashes with other packages you can just write your own procedures. For instance if one package you are working with would import an <em>rect</em> command you would call this using the <em>tsvg rect</em> command to fix this issue you just have to implement your own <em>tsvg rect</em> procedure like this:</p>
+<pre><code>tsvg proc rect {args} {
+    set self [self]
+    $self tag rect {*}$args
+}</code></pre>
+<h2 id="documentation">Documentation</h2>
+<p>The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:</p>
+<pre><code> perl -ne "s/^#' ?(.*)/\$$1/ and print " lib/tsvg/tsvg.tcl &gt; tsvg.md
+ pandoc tsvg.md -s  \
+    --metadata title="tsvg package documentation"  \
+    -o tsvg.html  --filter pandoc-tcl-filter.tcl \
+    --css mini.css
+ htmlark -o lib/tsvg/tsvg.html tsvg.html</code></pre>
+<h2 id="changelog">ChangeLog</h2>
+<ul>
+<li>2021-08-28 Version 0.1 wsith docu uplpaded to GutHub</li>
+</ul>
+<h2 id="see-also">SEE ALSO</h2>
+<ul>
+<li><a href="Readme.html">Readme.html</a> - more information about pandoc Tcl filters</li>
+<li><a href="https://wiki.tcl-lang.org/page/tsvg">Tclers Wiki page</a> - place for discussion</li>
+</ul>
+<h2 id="author">AUTHOR</h2>
+<p>Dr. Detlef Groth, Caputh-Schwielowsee, Germany, detlef(<em>at</em>)dgroth(<em>dot</em>).de</p>
+<h2 id="license">License</h2>
+<pre><code>MIT License
+
+Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre>
+</body>
+</html><!--Generated by HTMLArk 2021-08-28 13:53:27.239083. Original URL tsvg.html-->
