@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210828.2050>
+#  Last Modified : <210828.2122>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -39,10 +39,8 @@
 #' tsvg write hello-world.svg
 #' tsvg set code ""
 #' # SVG like syntax
-#' # Please note that the last argument contains a space and 
-#' # must be therefor protected by curly braces
 #' tsvg circle cx="50" cy="50" r="45" stroke="black" \
-#'    stroke-width="2" {fill="light blue"}
+#'    stroke-width="2" fill="light blue"
 #' tsvg text x="29" y="45" Hello
 #' tsvg text x="27" y="65" World!
 #' ```
