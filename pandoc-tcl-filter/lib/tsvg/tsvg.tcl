@@ -2,13 +2,17 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210828.2122>
+#  Last Modified : <210829.0900>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
 #
-#  Notes         : TODO - start and end flags to open and close a tag
-#                       - text if tk is loaded
+#  Notes         : TODO - start and end flags to open and close a tag (done)
+#                       - text if tk is loaded (done)
+#                       - group_start, group_end tag (done)
+#                       - error catching (done)
+#                       - tsvg plugin embed
+#                       - options with dashes -x 10 -y 20 (done)
 #
 #  History       : 
 #                - 2021-08-28 - Version 0.1
@@ -32,12 +36,17 @@
 #' package require tsvg
 #' tsvg set width 100
 #' tsvg set height 100
-#' # Tcl like syntax
+#' # Tcl like syntax without hyphens
 #' tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 #' tsvg text x 29 y 45 Hello
 #' tsvg text x 27 y 65 World!
 #' tsvg write hello-world.svg
 #' tsvg set code ""
+#' # Tcl like syntax with hyphens
+#' tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill salmon
+#' tsvg text -x 29 -y 45 Hello
+#' tsvg text -x 27 -y 65 World!
+#' tsvg write hello-world.svg
 #' # SVG like syntax
 #' tsvg circle cx="50" cy="50" r="45" stroke="black" \
 #'    stroke-width="2" fill="light blue"
@@ -103,6 +112,18 @@
 #' ```
 #' 
 #' ![](hello-world.svg)
+#'
+#' The typical Hello World example but this time with hyphens to easier indicate the arguments:
+#'
+#' ```{.tsvg}
+#' tsvg set code "" ;# clear 
+#' tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
+#' tsvg text -x 29 -y 45 Hello
+#' tsvg text -x 27 -y 65 World!
+#' tsvg write hello-world2.svg
+#' ```
+#' 
+#' ![](hello-world2.svg)
 #' 
 #' To continue with an other image you have first to clean up the previous image:
 #' 
@@ -125,6 +146,37 @@
 #' 
 #' ![](basic-shapes.svg)
 #' 
+#' Nesting of elements can be achieved as well by adding *_start* and *_end* at the 
+#' end of the tag, here an example for a group using the tag _g_.
+#'
+#' ```{.tsvg}
+#' tsvg set code ""
+#' tsvg set width 100
+#' tsvg set height 100
+#' tsvg g_start fill="white" stroke="green" stroke-width="5"
+#' tsvg circle cx="40" cy="40" r="25"
+#' tsvg circle cx="60" cy="60" r="25"
+#' tsvg g_end
+#' tsvg write group-circles.svg
+#' ```
+#' 
+#' ![](group-circles.svg)
+#' 
+#' ## Embedding SVG code into HTML pages
+#' 
+#' The _tsvg_ object as well offers a _viewBox_ method which returns SVG code ready to be embed directly within HTML pages.
+#' 
+#' ```{.tsvg results=show}
+#' tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
+#' tsvg viewBox
+#' ```
+#' 
+#' ```{.tsvg echo=false}
+#' tsvg write viewbox.svg
+#' ```
+#'
+#' ![](viewbox.svg)
+#' 
 #' ## Extending
 #' 
 #' If you need to extend the package or to fix nameclashes with other packages you can 
@@ -138,6 +190,24 @@
 #' }
 #' ```
 #' 
+#' That way you can as well create your own function which perform more complex SVG element creations. Here an example:
+#' 
+#' ```{.tsvg}
+#' tsvg proc logo_tsvg {{filename ""}} {
+#'     tsvg set code ""
+#'     tsvg set width 100
+#'     tsvg set height 60
+#'     tsvg rect x 0 y 0 width 100 height 100 fill #F64935
+#'     tsvg text x 20 y 40 style "font-size:24px;fill:blue;" tSVG
+#'     if {$filename ne ""} {
+#'        tsvg write $filename
+#'     }
+#' }
+#' tsvg logo_tsvg logo.svg
+#' ```
+#' 
+#' ![](logo.svg)
+#'
 #' ## Documentation
 #' 
 #' The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:
@@ -219,8 +289,18 @@ tsvg proc tag {args} {
     set args [$self TagFix $args]
     set tag [lindex $args 0]
     set args [lrange $args 1 end]
+    set sflag false
+    if {[regexp {_end} $tag]} {
+        append code "</[regsub {_end} $tag {}]>"
+        return
+    }
+    if {[regexp {_start} $tag]} {
+        set tag [regsub {_start} $tag ""]
+        set sflag true
+    }
     set ret "\n<$tag"
     set val ""
+    
     # new check if attr="val" syntax  
     if {[regexp {=} [lindex $args 0]]} {
         set nargs [list]
@@ -236,14 +316,24 @@ tsvg proc tag {args} {
     # end of new check
     foreach {key val} $args {
        if {$val eq ""} {
-           append ret ">\n$key\n</$tag>\n"
+           append ret ">\n$key\n"
+           if {!$sflag} {
+               append ret "</$tag>\n"
+           }
            break
        } else {
+           if {[string index $key 0] eq "-"} {
+               set key [string range $key 1 end]
+           }
            append ret " $key=\"$val\""
        }
     }
     if {$val ne ""} {
-        append ret " />\n"
+        if {$sflag} {
+            append ret ">"
+        } else {
+            append ret " />\n"
+        }
     }
     append code $ret
 }
@@ -275,6 +365,14 @@ namespace eval tsvg {
     namespace unknown tsvg::tag
 }
 
+tsvg proc viewBox {} {
+    set self [self]
+    set ret "<svg viewBox=\"0 0 [$self set width] [$self set height]\" xmlns=\"http://www.w3.org/2000/svg\">\n"
+    append ret [$self set code]
+    append ret "\n</svg>"
+    return $ret
+}
+                      
 tsvg proc text {args} {
     set self [self]
     $self tag text {*}$args

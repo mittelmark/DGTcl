@@ -28,12 +28,17 @@
 <pre><code>package require tsvg
 tsvg set width 100
 tsvg set height 100
-# Tcl like syntax
+# Tcl like syntax without hyphens
 tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg
 tsvg set code ""
+# Tcl like syntax with hyphens
+tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill salmon
+tsvg text -x 29 -y 45 Hello
+tsvg text -x 27 -y 65 World!
+tsvg write hello-world.svg
 # SVG like syntax
 tsvg circle cx="50" cy="50" r="45" stroke="black" \
    stroke-width="2" fill="light blue"
@@ -87,6 +92,13 @@ tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:hello-world.svg--></p>
+<p>The typical Hello World example but this time with hyphens to easier indicate the arguments:</p>
+<pre class="tsvg"><code>tsvg set code "" ;# clear 
+tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
+tsvg text -x 29 -y 45 Hello
+tsvg text -x 27 -y 65 World!
+tsvg write hello-world2.svg</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:hello-world2.svg--></p>
 <p>To continue with an other image you have first to clean up the previous image:</p>
 <pre class="tsvg"><code>tsvg set code "" ;# clear 
 tsvg set width 200 ;# new size as on the webpage
@@ -103,12 +115,50 @@ tsvg polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 
 tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
 tsvg write basic-shapes.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwICAxMTAgNjUgMTIwIDcwIDExNSA3NSAxMzAgODAgMTI1IDg1IDE0MCA5MCAxMzUgOTUgMTUwIDEwMDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwICAxNjAgNTUgMTgwIDcwIDE4MCA2MCAxOTAgNjUgMjA1IDUwIDE5NSAzNSAyMDUgNDAgMTkwIDMwIDE4MCA0NTE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgIFE0MCwyMDUgNTAsMjMwVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
+<p>Nesting of elements can be achieved as well by adding *_start* and *_end* at the end of the tag, here an example for a group using the tag <em>g</em>.</p>
+<pre class="tsvg"><code>tsvg set code ""
+tsvg set width 100
+tsvg set height 100
+tsvg g_start fill="white" stroke="green" stroke-width="5"
+tsvg circle cx="40" cy="40" r="25"
+tsvg circle cx="60" cy="60" r="25"
+tsvg g_end
+tsvg write group-circles.svg</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGcgZmlsbD0id2hpdGUiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNSI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjI1IiAvPgoKPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjUiIC8+CjwvZz4KPC9zdmc+Cg=="/><!--URL:group-circles.svg--></p>
+<h2 id="embedding-svg-code-into-html-pages">Embedding SVG code into HTML pages</h2>
+<p>The <em>tsvg</em> object as well offers a <em>viewBox</em> method which returns SVG code ready to be embed directly within HTML pages.</p>
+<pre class="tsvg" data-results="show"><code>tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
+tsvg viewBox</code></pre>
+<pre class="tclout" data-results="show"><code>&lt;svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"&gt;
+
+&lt;g fill="white" stroke="green" stroke-width="5"&gt;
+&lt;circle cx="40" cy="40" r="25" /&gt;
+
+&lt;circle cx="60" cy="60" r="25" /&gt;
+&lt;/g&gt;
+&lt;circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5" /&gt;
+
+&lt;/svg&gt;</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGcgZmlsbD0id2hpdGUiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNSI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjI1IiAvPgoKPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjUiIC8+CjwvZz4KPGNpcmNsZSBjeD0iNzAiIGN5PSI3MCIgcj0iMjUiIHN0cm9rZT0iYmx1ZSIgZmlsbD0id2hpdGUiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjwvc3ZnPgo="/><!--URL:viewbox.svg--></p>
 <h2 id="extending">Extending</h2>
 <p>If you need to extend the package or to fix nameclashes with other packages you can just write your own procedures. For instance if one package you are working with would import an <em>rect</em> command you would call this using the <em>tsvg rect</em> command to fix this issue you just have to implement your own <em>tsvg rect</em> procedure like this:</p>
 <pre><code>tsvg proc rect {args} {
     set self [self]
     $self tag rect {*}$args
 }</code></pre>
+<p>That way you can as well create your own function which perform more complex SVG element creations. Here an example:</p>
+<pre class="tsvg"><code>tsvg proc logo_tsvg {{filename ""}} {
+    tsvg set code ""
+    tsvg set width 100
+    tsvg set height 60
+    tsvg rect x 0 y 0 width 100 height 100 fill #F64935
+    tsvg text x 20 y 40 style "font-size:24px;fill:blue;" tSVG
+    if {$filename ne ""} {
+       tsvg write $filename
+    }
+}
+tsvg logo_tsvg logo.svg</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSI2MCIgd2lkdGg9IjEwMCI+Cgo8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y2NDkzNSIgLz4KCjx0ZXh0IHg9IjIwIiB5PSI0MCIgc3R5bGU9ImZvbnQtc2l6ZToyNHB4O2ZpbGw6Ymx1ZTsiPgp0U1ZHCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:logo.svg--></p>
 <h2 id="documentation">Documentation</h2>
 <p>The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:</p>
 <pre><code> perl -ne "s/^#' ?(.*)/\$$1/ and print " lib/tsvg/tsvg.tcl &gt; tsvg.md
@@ -151,4 +201,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 </body>
-</html><!--Generated by HTMLArk 2021-08-28 21:23:13.256621. Original URL tsvg.html-->
+</html><!--Generated by HTMLArk 2021-08-29 09:00:12.452979. Original URL tsvg.html-->
