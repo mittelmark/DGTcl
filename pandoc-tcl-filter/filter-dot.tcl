@@ -4,7 +4,30 @@
 proc filter-dot {cont dict cblock} {
     global n
     incr n
-    set def [dict create results show eval true fig false width 400 height 400 \
+    set jsonImg {
+        {
+            "t": "Para",
+            "c": [
+                  {
+                      "t": "Image",
+                      "c": [
+                            [
+                             "",
+                             [],
+                             []
+                        ],
+                            [],
+                            [
+                             "image.svg",
+                             ""
+                             ]
+                            ]
+                   }
+                 ]
+         }
+   }
+
+    set def [dict create results show eval true fig true width 400 height 400 \
              include true]
     set dict [dict merge $def $dict]
     set ret ""
@@ -22,5 +45,12 @@ proc filter-dot {cont dict cblock} {
         rl_json::json set cblock c 1 [rl_json::json string $res]
         set ret ",[::rl_json::json extract $cblock]"
     }
+    if {[dict get $dict fig]} {
+        if {[dict get $dict include]} {
+            rl_json::json set jsonImg c 0 c 2 0 "$fname.svg"
+            append ret ",[::rl_json::json extract $jsonImg]"
+        }
+    }
+
     return $ret
 }

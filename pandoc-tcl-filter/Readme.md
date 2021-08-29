@@ -382,8 +382,6 @@ digraph G {
   execute -> compare;
 }
 ` ``
-
-![](digraph.svg)
 ```
 
 Which will produce the following output:
@@ -401,9 +399,9 @@ digraph G {
 }
 ```
 
-![](digraph.svg)
+Using the chunk option echo=false, we can as well hide the source code. 
+If you would like to see the code you now have to consult the Markdown file.
 
-Using the chunk option echo=false, we can as well hide the source code:
 
 ```{.dot label=digraph2 echo=false}
 digraph G {
@@ -420,10 +418,48 @@ digraph G {
 }
 ```
 
-![](digraph2.svg)
+To avoid automatic placement of figures you can as well set the option include
+to false _include=false and then create the usual Markdown code for the figure
+where the basename is defined by the chunk label.
 
-If you would like to see the code you now have to consult the Markdown file.
+```
+` ``{.dot label=digraph3 echo=false include=false}
+digraph G {
+  main [shape=box,style=filled,fillcolor=".5 .8 1.0"] ;
+  main -> parse -> execute;
+  main -> init [style=dotted];
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  edge [color="red"];
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+` ``
+![](digraph3.svg)
+```
 
+This will produce the following:
+
+```{.dot label=digraph3 echo=false include=false}
+digraph G {
+  main [shape=box,style=filled,fillcolor="0.95 0.90 .90"] ;
+  main -> parse -> execute;
+  main -> init [style=dotted];
+  main -> cleanup;
+  execute -> make_string;
+  execute -> printf
+  edge [color="red"];
+  init -> make_string;
+  main -> printf;
+  execute -> compare;
+}
+```
+
+![](digraph3.svg)
+
+Ok, now you know what was the code to create the graphic above.
 
 ## tsvg plugin
 
