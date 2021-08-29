@@ -40,6 +40,7 @@ proc filter-dot {cont dict cblock} {
     puts $out $cont
     close $out
     set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+    
     if {[dict get $dict results] eq "show" && $res ne ""} {
         rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
         rl_json::json set cblock c 1 [rl_json::json string $res]
@@ -51,6 +52,5 @@ proc filter-dot {cont dict cblock} {
             append ret ",[::rl_json::json extract $jsonImg]"
         }
     }
-
     return $ret
 }

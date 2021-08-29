@@ -38,7 +38,8 @@ command line call. The direct link to the github repository folder is:
 Just unpack the Tcl script from the download and make the file executable.
 
 The filter requires the Tcl package *rl_json* which is available from Github: [https://github.com/RubyLane/rl_json](https://github.com/RubyLane/rl_json).
-Unix users should be able to install the package via the standard configure/make pipeline.
+Unix users should be able to install the package via the standard configure/make pipeline. A Linux binary, complied on a recent Fedora system is included in the download
+link at the GitHub page as well to simplify the use of the Pandoc filter.
 Windows users should install the rl_json package via the Magicplats Tcl-Installer: [https://www.magicsplat.com/tcl-installer](https://www.magicsplat.com/tcl-installer/index.html)
 
 ## Example
@@ -81,7 +82,7 @@ Larger chunks of code can be placed within triple backticks such as in the examp
 ` ``
 ```
 
-In the code above a space was added to avoid confusiing the pandoc interpreter
+In the code above a space was added to avoid confusing the pandoc interpreter
 by nesteding triple tickmarks, remove those spaces in your code.
 
 And here the output:
@@ -419,7 +420,7 @@ digraph G {
 ```
 
 To avoid automatic placement of figures you can as well set the option include
-to false _include=false and then create the usual Markdown code for the figure
+to false _include=false_ and then create the usual Markdown code for the figure
 where the basename is defined by the chunk label.
 
 ```
@@ -464,7 +465,9 @@ Ok, now you know what was the code to create the graphic above.
 ## tsvg plugin
 
 The code shown above creating svg files using the thingy object was as well
-saved as a plugin with some minor modifications, that way you can include code creating svg files using the described syntax above. Please not that the plugin object is named `tsvg`. Here an example.
+saved as a plugin with some modifications and extensions. 
+That way you can include code creating svg files using the described syntax above. 
+Please not that the plugin object is named `tsvg`. Here an example.
 
 ```
  ` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
@@ -476,18 +479,19 @@ saved as a plugin with some minor modifications, that way you can include code c
 
 Will produce this:
 
-```{.tsvg label=tsvg-hello-world results=hide echo=false}
+```{.tsvg label=tsvg-hello-world results=hide echo=true}
 tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 26 y 65 World!
 ```
+
 
 In contrast to the svg code developed above the _tsvg_ plugin allows you to 
 send the attributes containing as well spaces as they are, the _tag_ method will clean up 
 the lists arguments by using the paired quotes. Thsi greatly simplifies the
 copy and paste procedure for existing svg examples, you in many cases just have to remove
 the leading and trailing greater and lower signs.
-Hereis  an example using different syntax types:
+Here is an example using different syntax types:
 
 ```{.tsvg label=tsvg-polyline results=hide echo=true}
 tsvg set code ""
@@ -498,6 +502,20 @@ tsvg circle cx="130" cy="120" r="20" stroke="red" stroke-width="2" fill="salmon"
 tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
    style="fill:white;stroke:red;stroke-width:4"
 ```  
+
+For more information about the _tsvg_ package visit the [tsvg manual page](lib/tsvg/tsvg.html).
+
+## Summary
+
+In this tutorial I explained on how to use the Tcl pandoc filter to embed and
+process  Tcl code during the creation of HTML or PDF documents. The Tcl filter
+was generalized so that as well filters for other tools, especially 
+command line application can be easily programmed using the Tcl programming
+language. Examples for a filter for the GraphViz tool dot to create flowcharts and graphs
+and a package to create SVG images using Tcl, the new _tsvg_ package, were as well
+given. The provided infrastructure has the advantage that Tcl programmers can stay
+within their favourite programming language but still can use other nice tools easily for
+their documentation. 
 
 ## Documentation
 
