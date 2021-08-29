@@ -436,7 +436,6 @@ saved as a plugin with some minor modifications, that way you can include code c
  tsvg text x 29 y 45 Hello
  tsvg text x 26 y 65 World!
  ` ```
- ![](tsvg-hello-world.svg)
 ```
 
 Will produce this:
@@ -446,8 +445,6 @@ tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 26 y 65 World!
 ```
-
-![](tsvg-hello-world.svg)
 
 In contrast to the svg code developed above the _tsvg_ plugin allows you to 
 send the attributes containing as well spaces as they are, the _tag_ method will clean up 
@@ -466,9 +463,6 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
    style="fill:white;stroke:red;stroke-width:4"
 ```  
 
-![](tsvg-polyline.svg)
-
-
 ## Documentation
 
 The HTML version of this document was generated using the following commandline:
@@ -484,7 +478,9 @@ Please look at the source Markdown file to see which Markdown code was the input
 
 ## Links
 
+* [DGTcl homepage at GitHub](https://github.com/mittelmark/DGTcl)
 * [Discussion page for pandoc-tcl-filter.tcl on the Tclers Wiki](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) 
+* [Documentation to the tsvg package](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html)
 * [https://pandoc.org/filters.html](https://pandoc.org/filters.html) - background on  pandoc filters
 * [pandoc lua filters](https://github.com/pandoc/lua-filters)
 * [https://github.com/mvhenderson/pandoc-filter-node](https://github.com/mvhenderson/pandoc-filter-node) - pandoc filters using JavaScript and TypeScript

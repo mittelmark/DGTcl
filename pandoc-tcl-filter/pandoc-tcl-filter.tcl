@@ -186,6 +186,28 @@ proc debug {jsonData} {
 # puts $x
 # ```
 #
+set jsonImg {
+  {
+            "t": "Para",
+            "c": [
+                {
+                    "t": "Image",
+                    "c": [
+                        [
+                            "",
+                            [],
+                            []
+                        ],
+                        [],
+                        [
+                            "image.svg",
+                            ""
+                        ]
+                    ]
+                }
+            ]
+  }
+}
 proc filter-tcl {cont a cblock} {
     set ret ""
     set jsimg ""
@@ -234,7 +256,7 @@ proc main {jsonData} {
         if {$blockType eq "CodeBlock"} {
             set type [rl_json::json get $jsonData blocks $i c 0 1] ;#type
             set attr [rl_json::json get $jsonData blocks $i c 0 2] ;# attributes
-            set a [dict create echo true results show eval true fig false width 400 height 400 include true label null]
+            set a [dict create echo true results show eval true] 
             if {[llength $attr] > 0} {
                 foreach el $attr {
                     dict set a [lindex $el 0] [lindex $el 1]
@@ -260,6 +282,8 @@ proc main {jsonData} {
             #puts [::rl_json::json  get $cblock t]
             #exit
             if {$type eq "tcl"} {
+                set b [dict create fig false width 400 height 400 include true label null]
+                set a [dict merge $b $a]
                 append blocks [filter-tcl $cont $a $cblock]
             } elseif {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {

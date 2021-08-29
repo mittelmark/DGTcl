@@ -4,6 +4,9 @@
 proc filter-dot {cont dict cblock} {
     global n
     incr n
+    set def [dict create results show eval true fig false width 400 height 400 \
+             include true]
+    set dict [dict merge $def $dict]
     set ret ""
     if {[dict get $dict label] eq "null"} {
         set fname dot-$n

@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210829.1031>
+#  Last Modified : <210829.1140>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -16,6 +16,7 @@
 #
 #  History       : 
 #                - 2021-08-28 - Version 0.1
+#                - 2021-08-30 - Version 0.2 automatic figures, error shown in document
 #	
 ##############################################################################
 #
@@ -28,7 +29,7 @@
 
 #' NAME 
 #' 
-#' _tsvg_ - package to create svg files with a syntax close to Tcl and to SVG.
+#' _tsvg_ - package to create svg image files with a syntax close to Tcl and to SVG.
 #' 
 #' ## SYNOPSIS
 #' 
@@ -108,18 +109,16 @@
 #' 
 #' The typical Hello World example:
 #'
-#' ```{.tsvg}
+#' ```{.tsvg label=hello-world}
 #' tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 #' tsvg text x 29 y 45 Hello
 #' tsvg text x 27 y 65 World!
 #' tsvg write hello-world.svg
 #' ```
 #' 
-#' ![](hello-world.svg)
-#'
 #' The typical Hello World example but this time with hyphens to easier indicate the arguments:
 #'
-#' ```{.tsvg}
+#' ```{.tsvg label=hello-world2}
 #' tsvg set code "" ;# clear 
 #' tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
 #' tsvg text -x 29 -y 45 Hello
@@ -127,11 +126,9 @@
 #' tsvg write hello-world2.svg
 #' ```
 #' 
-#' ![](hello-world2.svg)
-#' 
 #' To continue with an other image you have first to clean up the previous image:
 #' 
-#' ```{.tsvg}
+#' ```{.tsvg label=basic-shapes}
 #' tsvg set code "" ;# clear 
 #' tsvg set width 200 ;# new size as on the webpage
 #' tsvg set height 250 
@@ -148,12 +145,10 @@
 #' tsvg write basic-shapes.svg
 #' ```
 #' 
-#' ![](basic-shapes.svg)
-#' 
 #' Nesting of elements can be achieved as well by adding *_start* and *_end* at the 
 #' end of the tag, here an example for a group using the tag _g_.
 #'
-#' ```{.tsvg}
+#' ```{.tsvg label=group-circles}
 #' tsvg set code ""
 #' tsvg set width 100
 #' tsvg set height 100
@@ -164,22 +159,18 @@
 #' tsvg write group-circles.svg
 #' ```
 #' 
-#' ![](group-circles.svg)
-#' 
 #' ## Embedding SVG code into HTML pages
 #' 
 #' The _tsvg_ object as well offers a _inline_ method which returns SVG code ready to be embed directly within HTML pages.
 #' 
-#' ```{.tsvg results=show}
+#' ```{.tsvg results=show fig=false}
 #' tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
+#' tsvg write inline.svg
 #' tsvg inline
 #' ```
 #' 
-#' ```{.tsvg echo=false}
-#' tsvg write inline.svg
-#' ```
-#'
 #' ![](inline.svg)
+#'
 #' 
 #' ## Extending
 #' 
@@ -196,7 +187,7 @@
 #' 
 #' That way you can as well create your own function which perform more complex SVG element creations. Here an example:
 #' 
-#' ```{.tsvg}
+#' ```{.tsvg label=logo}
 #' tsvg proc logo_tsvg {{filename ""}} {
 #'     tsvg set code ""
 #'     tsvg set width 100
@@ -210,7 +201,6 @@
 #' tsvg logo_tsvg logo.svg
 #' ```
 #' 
-#' ![](logo.svg)
 #'
 #' ## Documentation
 #' 

@@ -23,7 +23,7 @@
 <h1 class="title">tsvg package documentation</h1>
 </header>
 <p>NAME</p>
-<p><em>tsvg</em> - package to create svg files with a syntax close to Tcl and to SVG.</p>
+<p><em>tsvg</em> - package to create svg image files with a syntax close to Tcl and to SVG.</p>
 <h2 id="synopsis">SYNOPSIS</h2>
 <pre><code>package require tsvg
 tsvg set width 100
@@ -91,20 +91,20 @@ tsvg text x="27" y="65" World!</code></pre>
 </blockquote>
 <h2 id="examples">EXAMPLES</h2>
 <p>The typical Hello World example:</p>
-<pre class="tsvg"><code>tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+<pre class="tsvg" label="hello-world"><code>tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:hello-world.svg--></p>
 <p>The typical Hello World example but this time with hyphens to easier indicate the arguments:</p>
-<pre class="tsvg"><code>tsvg set code "" ;# clear 
+<pre class="tsvg" label="hello-world2"><code>tsvg set code "" ;# clear 
 tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
 tsvg text -x 29 -y 45 Hello
 tsvg text -x 27 -y 65 World!
 tsvg write hello-world2.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:hello-world2.svg--></p>
 <p>To continue with an other image you have first to clean up the previous image:</p>
-<pre class="tsvg"><code>tsvg set code "" ;# clear 
+<pre class="tsvg" label="basic-shapes"><code>tsvg set code "" ;# clear 
 tsvg set width 200 ;# new size as on the webpage
 tsvg set height 250 
 tsvg rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
@@ -120,7 +120,7 @@ tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-wi
 tsvg write basic-shapes.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwICAxMTAgNjUgMTIwIDcwIDExNSA3NSAxMzAgODAgMTI1IDg1IDE0MCA5MCAxMzUgOTUgMTUwIDEwMDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwICAxNjAgNTUgMTgwIDcwIDE4MCA2MCAxOTAgNjUgMjA1IDUwIDE5NSAzNSAyMDUgNDAgMTkwIDMwIDE4MCA0NTE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgIFE0MCwyMDUgNTAsMjMwVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
 <p>Nesting of elements can be achieved as well by adding *_start* and *_end* at the end of the tag, here an example for a group using the tag <em>g</em>.</p>
-<pre class="tsvg"><code>tsvg set code ""
+<pre class="tsvg" label="group-circles"><code>tsvg set code ""
 tsvg set width 100
 tsvg set height 100
 tsvg g_start fill="white" stroke="green" stroke-width="5"
@@ -131,9 +131,10 @@ tsvg write group-circles.svg</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGcgZmlsbD0id2hpdGUiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNSI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjI1IiAvPgoKPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjUiIC8+CjwvZz4KPC9zdmc+Cg=="/><!--URL:group-circles.svg--></p>
 <h2 id="embedding-svg-code-into-html-pages">Embedding SVG code into HTML pages</h2>
 <p>The <em>tsvg</em> object as well offers a <em>inline</em> method which returns SVG code ready to be embed directly within HTML pages.</p>
-<pre class="tsvg" data-results="show"><code>tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
+<pre class="tsvg" data-fig="false" data-results="show"><code>tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
+tsvg write inline.svg
 tsvg inline</code></pre>
-<pre class="tclout" data-results="show"><code>&lt;svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg"&gt;
+<pre class="tclout" data-fig="false" data-results="show"><code>&lt;svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg"&gt;
 
 &lt;g fill="white" stroke="green" stroke-width="5"&gt;
 &lt;circle cx="40" cy="40" r="25" /&gt;
@@ -151,7 +152,7 @@ tsvg inline</code></pre>
     $self tag rect {*}$args
 }</code></pre>
 <p>That way you can as well create your own function which perform more complex SVG element creations. Here an example:</p>
-<pre class="tsvg"><code>tsvg proc logo_tsvg {{filename ""}} {
+<pre class="tsvg" label="logo"><code>tsvg proc logo_tsvg {{filename ""}} {
     tsvg set code ""
     tsvg set width 100
     tsvg set height 60
@@ -205,4 +206,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 </body>
-</html><!--Generated by HTMLArk 2021-08-29 10:31:41.416489. Original URL tsvg.html-->
+</html><!--Generated by HTMLArk 2021-08-29 11:39:48.266496. Original URL tsvg.html-->
