@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210829.0907>
+#  Last Modified : <210829.1031>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -80,9 +80,9 @@
 #' > Writes the current svg code into the given filename with the 
 #'   given width and height settings. 
 #' 
-#' __tsvg viewBox__ 
+#' __tsvg inline__ 
 #' 
-#' > Returns the SVG code as viewBox code which can be directly embedded within HTML pages.
+#' > Returns the SVG code as inline SVG with a viewBox code which can be directly embedded within HTML pages. So the xml header is here missing.
 #' 
 #' __tsvg write__ _filename_
 #' 
@@ -168,18 +168,18 @@
 #' 
 #' ## Embedding SVG code into HTML pages
 #' 
-#' The _tsvg_ object as well offers a _viewBox_ method which returns SVG code ready to be embed directly within HTML pages.
+#' The _tsvg_ object as well offers a _inline_ method which returns SVG code ready to be embed directly within HTML pages.
 #' 
 #' ```{.tsvg results=show}
 #' tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
-#' tsvg viewBox
+#' tsvg inline
 #' ```
 #' 
 #' ```{.tsvg echo=false}
-#' tsvg write viewbox.svg
+#' tsvg write inline.svg
 #' ```
 #'
-#' ![](viewbox.svg)
+#' ![](inline.svg)
 #' 
 #' ## Extending
 #' 
@@ -369,12 +369,17 @@ namespace eval tsvg {
     namespace unknown tsvg::tag
 }
 
-tsvg proc viewBox {} {
+tsvg proc inline {} {
     set self [self]
-    set ret "<svg viewBox=\"0 0 [$self set width] [$self set height]\" xmlns=\"http://www.w3.org/2000/svg\">\n"
+    set ret "<svg viewBox=\"0 0 [$self set width] [$self set height]\" width=\"[$self set width]\" height=\"[$self set width]\" xmlns=\"http://www.w3.org/2000/svg\">\n"
     append ret [$self set code]
     append ret "\n</svg>"
     return $ret
+}
+
+tsvg proc viewBox {} {
+    set self [self]
+    return [$self inline]
 }
                       
 tsvg proc text {args} {
