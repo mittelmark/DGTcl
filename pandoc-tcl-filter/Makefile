@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210828.2110>
+#  Last Modified : <210829.0746>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -30,7 +30,7 @@ devel:
 Readme.html : Readme.md mini.css
 	pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
 		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-		--filter pandoc-tcl-filter.tcl --css mini.css --toc
+		--filter pandoc-tcl-filter.tcl --toc
 	htmlark -o Readme-ark.html Readme.html
 	mv Readme-ark.html Readme.html
 

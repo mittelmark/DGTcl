@@ -85,7 +85,7 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 28, 2021 21:10</p>
+<p class="date">August 29, 2021 07:46</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -278,7 +278,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <span id="cb14-29"><a aria-hidden="true" href="#cb14-29"></a>    <span class="kw">}</span></span>
 <span id="cb14-30"><a aria-hidden="true" href="#cb14-30"></a>    <span class="kw">append</span> code <span class="dt">$ret</span></span>
 <span id="cb14-31"><a aria-hidden="true" href="#cb14-31"></a><span class="kw">}</span></span></code></pre></div>
-<p>With this redefinition of the tag method we can nowe very easily copy the svg code from the website. WE just have to remove the greater, smaller and slash tag signs from the svg code. As arguments to functions in Tcl are separated by spaces we have to protect attributes containing spaces with curly braces for the last three shapes, the polyline, the polygone and the path.</p>
+<p>With this redefinition of the tag method we can now very easily copy the svg code from the website. We just have to remove the greater, smaller and slash tag signs from the svg code. As arguments to functions in Tcl are separated by spaces we have to protect attributes containing spaces with curly braces for the last three shapes, the polyline, the polygon and the path.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1"></a>svg <span class="kw">set</span> code <span class="st">""</span> ;<span class="co"># cleanup chessboard</span></span>
 <span id="cb15-2"><a aria-hidden="true" href="#cb15-2"></a>svg <span class="kw">set</span> <span class="ot">width</span> <span class="dv">200</span> ;<span class="co"># new size as on the webpage</span></span>
 <span id="cb15-3"><a aria-hidden="true" href="#cb15-3"></a>svg <span class="kw">set</span> <span class="ot">height</span> <span class="dv">250</span> </span>
@@ -294,7 +294,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 <span id="cb15-13"><a aria-hidden="true" href="#cb15-13"></a>svg path <span class="kw">{</span>d=<span class="st">"M20,230 Q40,205 50,230 T90,230"</span><span class="kw">}</span> fill=<span class="st">"none"</span> stroke=<span class="st">"blue"</span> stroke-<span class="ot">width</span>=<span class="st">"5"</span></span>
 <span id="cb15-14"><a aria-hidden="true" href="#cb15-14"></a>svg write basic-shapes.svg</span></code></pre></div>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwIDExMCA2NSAxMjAgNzAgMTE1IDc1IDEzMCA4MCAxMjUgODUgMTQwIDkwIDEzNSA5NSAxNTAgMTAwIDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwIDE2MCA1NSAxODAgNzAgMTgwIDYwIDE5MCA2NSAyMDUgNTAgMTk1IDM1IDIwNSA0MCAxOTAgMzAgMTgwIDQ1IDE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgUTQwLDIwNSA1MCwyMzAgVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
-<p>Ok, great basic shapes can be directly copied from svg code and with a few modifications we can create valid tcl code out of the svg code. Please not from the code shown in this Readme the package <em>tsvg</em> was derived which does not need this protecting of the spaces within the attributes. See below the section about the <em>tsvg</em> plugin.</p>
+<p>Ok, great basic shapes can be directly copied from svg code and with a few modifications we can create valid Tcl code out of the svg code. Please note, that from the code shown in this Readme the package <em>tsvg</em> was derived which does not need this protecting of the spaces within the attributes. See below the section about the <em>tsvg</em> plugin for more details.</p>
 <h2 id="code-chunk-attributes-for-figures">Code chunk attributes for figures</h2>
 <p>Let’s introduce now a few code chunk attributes for figures as they are known for instance in R.</p>
 <p>Below an example:</p>
@@ -333,7 +333,7 @@ This document was processed using Tcl `tcl package provide Tcl`.
 </ul>
 <h2 id="other-filters-than-tcl-code-filter">Other filters than Tcl code filter</h2>
 <p>Let’s finish our small tutorial with the implementation of a filter for a command line application. Below you see the code for the GraphViz dot application.</p>
-<p>Here the a code example:</p>
+<p>Here the code example:</p>
 <pre><code>` ``{.dot label=digraph echo=true}
 digraph G {
   main -&gt; parse -&gt; execute;
@@ -416,4 +416,4 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
 <h2 id="license">License</h2>
 <p>MIT, see the file LICENSE in the release folder.</p>
 </body>
-</html><!--Generated by HTMLArk 2021-08-28 21:10:28.244942. Original URL Readme.html-->
+</html><!--Generated by HTMLArk 2021-08-29 07:46:45.623906. Original URL Readme.html-->

@@ -13,7 +13,12 @@ proc filter-tsvg {cont dict cblock} {
         set fname [dict get $dict label]
     }
     set code [regsub -all {([^ ]);} $cont "\\1\\\\;"]
-    set res2 [eval $code]
+    if {[catch {
+         set res2 [eval $code]
+     }]} {
+         set res2 "Error: [regsub {\n +invoked.+} $::errorInfo {}]"
+     }
+
     #set res2 [regsub -all {___SEMI___} $res2 ";"]
     #tsvg set code "$code"
     tsvg write $fname.svg

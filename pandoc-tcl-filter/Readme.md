@@ -4,6 +4,12 @@ shorttitle: "tcl-filter"
 author: 
 - Detlef Groth
 date: 2021-08-25
+standalone: true
+toc: true
+css: mini.css
+mainfont: Georgia
+monofont: Monaco
+
 abstract: >
     The pandoc-tcl-filter allows you the embed Tcl code in code blocks
     and short Tcl statements as wekk in the normal text of a Markdown 
@@ -267,11 +273,11 @@ svg proc tag {args} {
 }
 ```
 
-With this redefinition of the tag method we can nowe very easily copy the svg
-code from the website. WE just have to remove the greater, smaller and slash
+With this redefinition of the tag method we can now very easily copy the svg
+code from the website. We just have to remove the greater, smaller and slash
 tag signs from the svg code. As arguments to functions in Tcl are separated by
 spaces we have to protect attributes containing spaces with curly braces for
-the last three shapes, the polyline, the polygone and the path.
+the last three shapes, the polyline, the polygon and the path.
 
 ```{.tcl}
 svg set code "" ;# cleanup chessboard
@@ -293,10 +299,10 @@ svg write basic-shapes.svg
 ![](basic-shapes.svg)
 
 Ok, great basic shapes can be directly copied from svg code and with a few
-modifications we can create valid tcl code out of the svg code. 
-Please not from the code shown in this Readme the package _tsvg_ was derived which
+modifications we can create valid Tcl code out of the svg code. 
+Please note, that from the code shown in this Readme the package _tsvg_ was derived which
 does not need this protecting of the spaces within the attributes. See below the section
-about the _tsvg_ plugin.
+about the _tsvg_ plugin for more details.
 
 ## Code chunk attributes for figures
 
@@ -361,7 +367,7 @@ svg rect x 10 y 10 width 60 height 60 fill salmon
 Let's finish our small tutorial with the implementation of a filter for a
 command line application. Below you see the code for the GraphViz dot application.
 
-Here the a code example:
+Here the code example:
 
 ```
 ` ``{.dot label=digraph echo=true}
@@ -417,6 +423,7 @@ digraph G {
 ![](digraph2.svg)
 
 If you would like to see the code you now have to consult the Markdown file.
+
 
 ## tsvg plugin
 
