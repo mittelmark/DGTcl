@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210829.0900>
+#  Last Modified : <210829.0907>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -11,7 +11,7 @@
 #                       - text if tk is loaded (done)
 #                       - group_start, group_end tag (done)
 #                       - error catching (done)
-#                       - tsvg plugin embed
+#                       - tsvg plugin embed (partially)
 #                       - options with dashes -x 10 -y 20 (done)
 #
 #  History       : 
@@ -79,6 +79,10 @@
 #' 
 #' > Writes the current svg code into the given filename with the 
 #'   given width and height settings. 
+#' 
+#' __tsvg viewBox__ 
+#' 
+#' > Returns the SVG code as viewBox code which can be directly embedded within HTML pages.
 #' 
 #' __tsvg write__ _filename_
 #' 
@@ -223,7 +227,7 @@
 #' 
 #' ## ChangeLog
 #' 
-#' * 2021-08-28 Version 0.1 with docu uplpaded to GitHub
+#' * 2021-08-28 Version 0.1 with docu uploaded to GitHub
 #'     
 #' ## SEE ALSO
 #' 

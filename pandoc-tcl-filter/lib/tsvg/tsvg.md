@@ -52,6 +52,10 @@ __tsvg figure__ _filename_ _width_ _height_
 > Writes the current svg code into the given filename with the 
   given width and height settings. 
 
+__tsvg viewBox__ 
+
+> Returns the SVG code as viewBox code which can be directly embedded within HTML pages.
+
 __tsvg write__ _filename_
 
 > writes the current svg code into the given filename with the current width and height settings.
@@ -195,7 +199,7 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
 
 ## ChangeLog
 
-* 2021-08-28 Version 0.1 with docu uplpaded to GitHub
+* 2021-08-28 Version 0.1 with docu uploaded to GitHub
     
 ## SEE ALSO
 
