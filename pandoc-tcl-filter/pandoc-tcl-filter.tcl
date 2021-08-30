@@ -180,14 +180,48 @@ proc debug {jsonData} {
     puts [::rl_json::json keys $jsonData]
 }
 
-# a filter for Markdown code blocks of type
-# ```{.tcl}
-# set x 5
-# puts $x
-# ```
-#
-set jsonImg {
-  {
+proc filter-tcl {cont a} {
+    set ret ""
+    set b [dict create fig false width 400 height 400 include true label null]
+    set a [dict merge $b $a]
+    if {[dict get $a eval]} {
+        mdi eval "set res {}; incr chunk"
+        if {[catch {
+             set eres [mdi eval $cont]
+             set eres "[mdi eval {set res}]$eres"
+        }]} {
+             set eres "Error: [regsub {\n +invoked.+} $::errorInfo {}]"
+        }
+        if {[dict get $a fig]} {
+            # figure command there?
+            if {[mdi eval {info command figure}] eq "figure"} {
+                if {[dict get $a label] eq "null"} {
+                    set lab fig-[mdi eval { set chunk }]
+                } else {
+                    set lab [dict get $a label]
+                }
+                set filename [mdi eval "figure $lab [dict get $a width] [dict get $a height]"]
+                set eres ""
+            }
+        }
+        set img ""
+        if {[dict get $a results] eq "show" && $eres ne ""} {
+            set eres [regsub {\{(.+)\}} $eres "\\1"]
+            #rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
+            #rl_json::json set cblock c 1 [rl_json::json string [regsub {\{(.+)\}} $eres "\\1"]]
+            #set ret ",[::rl_json::json extract $cblock]"
+        } else {
+            set eres ""
+        }
+    }
+    return [list $eres $img]
+}
+
+# the main method parsing the json data
+proc main {jsonData} {
+    set blocks ""
+    set jsonImg {
+       {
             "t": "Para",
             "c": [
                 {
@@ -206,48 +240,8 @@ set jsonImg {
                     ]
                 }
             ]
-  }
-}
-proc filter-tcl {cont a cblock} {
-    set ret ""
-    set jsimg ""
-    if {[dict get $a eval]} {
-        mdi eval "set res {}; incr chunk"
-        if {[catch {
-             set eres [mdi eval $cont]
-             set eres "[mdi eval {set res}]$eres"
-        }]} {
-             set eres "Error: [regsub {\n +invoked.+} $::errorInfo {}]"
-        }
-        if {[dict get $a fig]} {
-            #append eres "figure in chunk [mdi eval { set chunk }] is true!\n"
-            # figure command check
-            
-            if {[mdi eval {info command figure}] eq "figure"} {
-                if {[dict get $a label] eq "null"} {
-                    set lab fig-[mdi eval { set chunk }]
-                } else {
-                    set lab [dict get $a label]
-                }
-                #append eres "figure procedure exists!\n"
-                set filename [mdi eval "figure $lab [dict get $a width] [dict get $a height]"]
-                #append eres "file $filename was created!\n"
-                set eres ""
-            }
-        }
-
-       if {[dict get $a results] eq "show" && $eres ne ""} {
-          rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
-          rl_json::json set cblock c 1 [rl_json::json string [regsub {\{(.+)\}} $eres "\\1"]]
-          set ret ",[::rl_json::json extract $cblock]"
       }
     }
-    return $ret
-}
-
-# the main method parsing the json data
-proc main {jsonData} {
-    set blocks ""
     for {set i 0} {$i < [llength [::rl_json::json get $jsonData blocks]]} {incr i} {
         if {$i > 0} {
             append blocks ","
@@ -268,26 +262,28 @@ proc main {jsonData} {
             if {[dict get $a echo]} {
                 append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
             } else {
-                #rl_json::json set jsonData blocks $i c 1 [rl_json::json string ""]
                 rl_json::json unset jsonData blocks $i
-                #rl_json::json set jsonData blocks $i c 0 [rl_json::json array [list string ""] "" ""]]
-                #rl_json::json set jsonData blocks $i {}
-                #rl_json::json set jsonData blocks $i t "Par"                
-
-                #rl_json::json set jsonData blocks $i c 0 0 array [list]                
-                #puts stderr  "[::rl_json::json extract $jsonData blocks $i]\n"
                 append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
             }
-            #puts $cblock
-            #puts [::rl_json::json  get $cblock t]
-            #exit
-            if {$type eq "tcl"} {
-                set b [dict create fig false width 400 height 400 include true label null]
-                set a [dict merge $b $a]
-                append blocks [filter-tcl $cont $a $cblock]
-            } elseif {$type ne ""} {
+            if {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {
-                    append blocks [filter-$type $cont $a $cblock]
+                    set res [filter-$type $cont $a]
+                    if {[llength $res] >= 1} {
+                        set code [lindex $res 0]
+                        if {$code ne ""} {
+                            rl_json::json set cblock c 0 1 [rl_json::json array [list string ${type}out]]
+                            rl_json::json set cblock c 1 [rl_json::json string $code]
+                            append blocks ",[::rl_json::json extract $cblock]"
+                        }
+                        if {[llength $res] == 2} {
+                            set img [lindex $res 1]
+                            if {$img ne ""} {
+                                rl_json::json set jsonImg c 0 c 2 0 "$img"
+                                append blocks ",[::rl_json::json extract $jsonImg]"
+                            }
+                        }
+
+                    }
                 }
             }
      

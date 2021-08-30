@@ -374,7 +374,7 @@ Here the code example:
 ` ``{.dot label=digraph echo=true}
 digraph G {
   main -> parse -> execute;
-  main -> init;
+  main -> init [dir=none];
   main -> cleanup;
   execute -> make_string;
   execute -> printf
@@ -390,7 +390,7 @@ Which will produce the following output:
 ```{.dot label=digraph echo=true}
 digraph G {
   main -> parse -> execute;
-  main -> init;
+  main -> init [dir=none];
   main -> cleanup;
   execute -> make_string;
   execute -> printf
@@ -412,7 +412,7 @@ digraph G {
   main -> cleanup;
   execute -> make_string;
   execute -> printf
-  edge [color="red"];
+  edge [color="red",dir=none];
   init -> make_string;
   main -> printf;
   execute -> compare;
@@ -434,6 +434,7 @@ digraph G {
   execute -> printf
   edge [color="red"];
   init -> make_string;
+  edge [dir="none"]; // no arrows
   main -> printf;
   execute -> compare;
 }
@@ -453,6 +454,7 @@ digraph G {
   execute -> printf
   edge [color="red"];
   init -> make_string;
+  edge [dir="none"];
   main -> printf;
   execute -> compare;
 }
