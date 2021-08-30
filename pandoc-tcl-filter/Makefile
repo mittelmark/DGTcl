@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210829.0746>
+#  Last Modified : <210830.0823>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #

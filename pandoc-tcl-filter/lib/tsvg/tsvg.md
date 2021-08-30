@@ -1,6 +1,6 @@
 NAME 
 
-_tsvg_ - package to create svg image files with a syntax close to Tcl and to SVG.
+_tsvg_ - Thingy SVG writer - package to create svg image files with a syntax close to Tcl and to SVG.
 
 ## SYNOPSIS
 
@@ -30,10 +30,14 @@ tsvg text x="27" y="65" World!
 
 The package provides one command _tsvg_ which can hold currently just a single 
 svg code. All commands will be evaluated within the tsvg namespace, all unknown 
-methods which are all will be forwarded to the standard tsvg::tag method and produce 
-svg code out of them. So _tsvg dummy hello_ will produce _&gt;dummy&lt>hello&lt/&gt;_.
+methods will be forwarded to the standard `tsvg::tag` method and produce 
+svg code out of them. So _tsvg dummy x="20" hello_ will produce:
 
-The following public variables can be modified sing _tsvg set varname_:
+```
+<dummy x="20">hello</dummy>
+```
+
+The following public variables can be modified using the set command like so: _tsvg set varname_ value:
 
 > - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set ""_.
   - _footer_ - the standard SVG-XML footer, should be usually not changed.
@@ -41,7 +45,7 @@ The following public variables can be modified sing _tsvg set varname_:
   - _height_ - the image height used for writing out the svg file, default: 100
   - _width_ - the image width used for writing out the svg file, default: 100
 
-The follwing methods are implemented:
+The following methods are implemented:
 
 __tsvg demo__ 
 

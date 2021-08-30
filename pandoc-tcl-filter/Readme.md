@@ -490,7 +490,7 @@ tsvg text x 26 y 65 World!
 
 In contrast to the svg code developed above the _tsvg_ plugin allows you to 
 send the attributes containing as well spaces as they are, the _tag_ method will clean up 
-the lists arguments by using the paired quotes. Thsi greatly simplifies the
+the lists arguments by using the paired quotes. This greatly simplifies the
 copy and paste procedure for existing svg examples, you in many cases just have to remove
 the leading and trailing greater and lower signs.
 Here is an example using different syntax types:
