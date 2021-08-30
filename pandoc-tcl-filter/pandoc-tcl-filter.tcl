@@ -171,7 +171,7 @@ mdi eval {
 }
 
 # load other tcl based filters
-foreach file [glob -nocomplain [file join [file dirname [info script]] filter*.tcl]]  {
+foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
     #puts stderr "sourcing $file"
     catch { source $file }
 }

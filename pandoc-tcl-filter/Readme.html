@@ -85,7 +85,7 @@
 <header id="title-block-header">
 <h1 class="title">Readme pandoc-tcl-filter.tcl</h1>
 <p class="author">Detlef Groth</p>
-<p class="date">August 30, 2021 07:45</p>
+<p class="date">August 30, 2021 21:06</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -97,6 +97,7 @@
 <li><a href="#code-chunk-attributes-for-figures">Code chunk attributes for figures</a></li>
 <li><a href="#other-filters-than-tcl-code-filter">Other filters than Tcl code filter</a></li>
 <li><a href="#tsvg-plugin">tsvg plugin</a></li>
+<li><a href="#filter-for-math-tex">Filter for Math-Tex</a></li>
 <li><a href="#summary">Summary</a></li>
 <li><a href="#documentation">Documentation</a></li>
 <li><a href="#links">Links</a></li>
@@ -393,7 +394,7 @@ digraph G {
 tsvg text x 29 y 45 Hello
 tsvg text x 26 y 65 World!</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjYiIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:tsvg-hello-world.svg--></p>
-<p>In contrast to the svg code developed above the <em>tsvg</em> plugin allows you to send the attributes containing as well spaces as they are, the <em>tag</em> method will clean up the lists arguments by using the paired quotes. Thsi greatly simplifies the copy and paste procedure for existing svg examples, you in many cases just have to remove the leading and trailing greater and lower signs. Here is an example using different syntax types:</p>
+<p>In contrast to the svg code developed above the <em>tsvg</em> plugin allows you to send the attributes containing as well spaces as they are, the <em>tag</em> method will clean up the lists arguments by using the paired quotes. This greatly simplifies the copy and paste procedure for existing svg examples, you in many cases just have to remove the leading and trailing greater and lower signs. Here is an example using different syntax types:</p>
 <pre class="tsvg" data-echo="true" data-results="hide" label="tsvg-polyline"><code>tsvg set code ""
 tsvg set width 180
 tsvg set height 200
@@ -403,6 +404,15 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
    style="fill:white;stroke:red;stroke-width:4"</code></pre>
 <p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyMDAiIHdpZHRoPSIxODAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE4MCIgc3R5bGU9ImZpbGw6I2RkZWVmZjsiIC8+Cgo8Y2lyY2xlIGN4PSIxMzAiIGN5PSIxMjAiIHI9IjIwIiBzdHJva2U9InJlZCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJzYWxtb24iIC8+Cgo8cG9seWxpbmUgcG9pbnRzPSIwLDQwICA0MCw0MCA0MCw4MCA4MCw4MCA4MCwxMjAgMTIwLDEyMDEyMCwxNjAiIHN0eWxlPSJmaWxsOndoaXRlO3N0cm9rZTpyZWQ7c3Ryb2tlLXdpZHRoOjQiIC8+Cgo8L3N2Zz4K"/><!--URL:tsvg-polyline.svg--></p>
 <p>For more information about the <em>tsvg</em> package visit the <a href="lib/tsvg/tsvg.html">tsvg manual page</a>.</p>
+<h2 id="filter-for-math-tex">Filter for Math-Tex</h2>
+<p>This filter requires a <em>LaTeX</em> installation and the texlive-standalone package. The plugin uses in the background conversion of a <em>LaTeX</em> formula using the <em>latex</em> command line application and thereafter a conversion to png using the <em>dvipgn</em> application which is part of the LaTeX installation. Please note that currently only single line equations are supported:</p>
+<p>Here two examples:</p>
+<pre class="mtex" data-fontsize="LARGE"><code>E = m \times c^2</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAAVCAIAAAAYUF2PAAAACXBIWXMAAA7EAAAOxAGVKw4bAAADsklEQVRYCe2X7ZVhQRCGd/ZMAEwIZIAQyGCkQAYIgQwQAiKYEQIiQAjIwD7OO1N6uvt+ONiz5+y9P6661dVV1W/Xl5fz+fyreB6BwGg0Qs1+v+c9mUwuKgG3eO5HoNfrmZJOp9NsNvn8fQG4eO5D4Hg8bjYb3lIDuMvlcrfbFeDeh+v37tVqpYIAo1Kp8D6dTq/fq5ffbrdrQki8vb2VSiXJHQ4H22xX5O79n+lyuexiQtiCxgViqxRGsACm9mkE+L6/v7PHOAURRaBWq43HY5Z8cIlcwKVqRLeBr0p1dLVgggCdbTgcCoofZQFYFdJgDx0+xL8KRbhUcEBgPp+T2VRXoREHl/BMAutSSoonhsDn5ydsIUsJJsv9aYHIJTar1aptZw9ThX2m4G4y/yDBEdxThB4KmpCfk7Ner5nGyHgZmk6njAMvVAfbj0Sj0aBrEd7G5Cq+/m8Y68kE107ZYjjhIrGOV7PZDF+5eLzXHyFc4jA4ghjdw42GqHcoQRsa6vV6KNBut2G6pw5ljIN7g8GAT5KY8DSa2ctkIC7AqvTqjZdwrR6zEw4+uTJ/gda/nY+PD5wBVtcf42y3W3mCcM4Bhl5NUvL2jkAw8XjMpE+2Yw7fTCCp+SPwo+aqm/EWAbhEB95zpDwPUaaNmcL4l5mGCgQUWt6onRIpnM1CFVU2gKfbJWbR5sXvTTGrzOayW62WbEEAt3noO2A3AKFJwOWArHtL7tKTaMwpuIgIfHWtcNlwFNfGRwy37TOTQLnF700xi2aKEo9rgk9LLJcv+uo9iYbrXhHwTsLxQhVP4uC35wy446GgN6NEridmS0mE8GVX/mqAKtVM3klqQ/4VXK/gStQ9Cch6WIfqHsVRkHpBgfVoLN90YHkIsuE9pTvPZXvW0+VZvYLLNabb42zWRjL13ikQDdIwlhUQt+aTqgEmrD7k8RZwbk2Ra0PTZBOdVNDL/EHfsDYCJ3zyNzRORXMINRhHjdFzBg+JZZOBYJzkwDQ6aEa0fr/vrkZpt4MxirAdW56h6EaYlKCkpThfl6Y0JDSS7hAnuOqk1YfzwyCNxjJHUk0gpUAq042wg+WPX1wKp670UvlVFpRf0ZKK3yB7U0fOPGSmAKjlLLjqClHPPSshshLIia/EXJ2Yxm5KUXollUg3peFisYAGR87GmMk2SoHmTS8f41nwIC7/IPFBPcBU4gYnsU8IqgEcKgPCmtvcVY/WWB39D8asStSjIb1SSYzSR3HAIv4Qy/q76Nmyzz9IsKAEmlFRBgAAAABJRU5ErkJggg=="/><!--URL:mtex-6.png--></p>
+<p>And here the second example:</p>
+<pre class="mtex" data-fontsize="LARGE"><code> F(x) = \int^a_b \frac{1}{3}x^3</code></pre>
+<p><img src="data:image/png;base64,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"/><!--URL:mtex-7.png--></p>
+<p>May be later version will support aligned sets of equations or matrices.</p>
 <h2 id="summary">Summary</h2>
 <p>In this tutorial I explained on how to use the Tcl pandoc filter to embed and process Tcl code during the creation of HTML or PDF documents. The Tcl filter was generalized so that as well filters for other tools, especially command line application can be easily programmed using the Tcl programming language. Examples for a filter for the GraphViz tool dot to create flowcharts and graphs and a package to create SVG images using Tcl, the new <em>tsvg</em> package, were as well given. The provided infrastructure has the advantage that Tcl programmers can stay within their favourite programming language but still can use other nice tools easily for their documentation.</p>
 <h2 id="documentation">Documentation</h2>
@@ -440,5 +450,6 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
 <p>Detlef Groth, Caputh-Schwielowsee, Germany</p>
 <h2 id="license">License</h2>
 <p>MIT, see the file LICENSE in the release folder.</p>
+<pre class="include"><code>file-a.md</code></pre>
 </body>
-</html><!--Generated by HTMLArk 2021-08-30 07:45:15.149264. Original URL Readme.html-->
+</html><!--Generated by HTMLArk 2021-08-30 21:06:16.637959. Original URL Readme.html-->

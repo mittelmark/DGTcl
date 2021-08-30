@@ -507,6 +507,28 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
 
 For more information about the _tsvg_ package visit the [tsvg manual page](lib/tsvg/tsvg.html).
 
+## Filter for Math-Tex 
+
+This filter requires a _LaTeX_ installation and the texlive-standalone package.
+The plugin uses in the background conversion of a _LaTeX_ formula using the _latex_
+command line application and thereafter a conversion to png using the _dvipgn_ application which is
+part of the LaTeX installation. Please note that currently only single line equations are supported:
+
+Here two examples:
+
+```{.mtex fontsize=LARGE}
+E = m \times c^2
+```
+
+And here the second example:
+
+```{.mtex fontsize=LARGE}
+ F(x) = \int^a_b \frac{1}{3}x^3
+```
+
+May be later version will support aligned sets of equations or matrices.
+
+ 
 ## Summary
 
 In this tutorial I explained on how to use the Tcl pandoc filter to embed and
@@ -564,3 +586,8 @@ Detlef Groth, Caputh-Schwielowsee, Germany
 ## License
 
 MIT, see the file LICENSE in the release folder.
+
+```{.include}
+file-a.md
+```
+

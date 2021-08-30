@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210830.0824>
+#  Last Modified : <210830.1058>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -55,7 +55,7 @@
 #' tsvg text x="27" y="65" World!
 #' ```
 #' 
-#' ## METHODS
+#' ## DESCRIPTION
 #' 
 #' The package provides one command _tsvg_ which can hold currently just a single 
 #' svg code. All commands will be evaluated within the tsvg namespace, all unknown 
@@ -66,6 +66,8 @@
 #' <dummy x="20">hello</dummy>
 #' ```
 #' 
+#' ## VARIABLES
+#' 
 #' The following public variables can be modified using the set command like so: _tsvg set varname_ value:
 #' 
 #' > - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set ""_.
@@ -74,7 +76,13 @@
 #'   - _height_ - the image height used for writing out the svg file, default: 100
 #'   - _width_ - the image width used for writing out the svg file, default: 100
 #' 
+#' ## METHODS
+#' 
 #' The following methods are implemented:
+#' 
+#' __self__
+#' 
+#' > just an `interp alias` for `namespace current`
 #' 
 #' __tsvg demo__ 
 #' 
@@ -267,7 +275,7 @@ proc thingy name {
     proc $name args "namespace eval $name \$args"
 } 
 
-# does not work
+# does now work!
 interp alias {} self {} namespace current 
 
 ;# our object
@@ -281,6 +289,10 @@ tsvg set footer {</svg>}
 tsvg set width 100
 tsvg set height 100
 
+# the main function of the package
+# creating the SVG code, must be not used directly
+# all unkown methods are forwarded properly to the 
+# tag method
 tsvg proc tag {args} {
     set self [self]
     variable code
@@ -336,6 +348,8 @@ tsvg proc tag {args} {
     append code $ret
 }
 
+# private method to collect arguments like a="1 2 3 4" as {a="1 2 3 4"}
+# allowing a more SVGish syntax
 tsvg proc TagFix {args} { 
     set nargs [list]
     set args {*}$args
@@ -363,6 +377,7 @@ namespace eval tsvg {
     namespace unknown tsvg::tag
 }
 
+# SVG code which can be embedded directly into web pages
 tsvg proc inline {} {
     set self [self]
     set ret "<svg viewBox=\"0 0 [$self set width] [$self set height]\" width=\"[$self set width]\" height=\"[$self set width]\" xmlns=\"http://www.w3.org/2000/svg\">\n"
@@ -371,15 +386,18 @@ tsvg proc inline {} {
     return $ret
 }
 
+# deprecated
 tsvg proc viewBox {} {
     set self [self]
     return [$self inline]
 }
-                      
+
+# workaround to not call Tk's text command
 tsvg proc text {args} {
     set self [self]
     $self tag text {*}$args
 }
+# write out svg code to file
 tsvg proc write {filename} {
     variable width
     variable height
@@ -395,6 +413,7 @@ tsvg proc write {filename} {
     close $out
 }
 
+# justify width and height without using set before
 tsvg proc figure {filename width height args} {
     set self [self]
     $self set width $width
@@ -403,6 +422,7 @@ tsvg proc figure {filename width height args} {
     return $filename.svg
 }
 
+# just a short demo 
 tsvg proc demo {} {
     set self [self]
     $self circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
