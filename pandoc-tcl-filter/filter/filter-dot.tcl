@@ -5,7 +5,7 @@ proc filter-dot {cont dict} {
     global n
     incr n
     set def [dict create results show eval true fig true width 400 height 400 \
-             include true imagepath images]
+             include true imagepath images app dot]
     set dict [dict merge $def $dict]
     set ret ""
     set owd [pwd] 
@@ -21,7 +21,7 @@ proc filter-dot {cont dict} {
     puts $out $cont
     close $out
     # TODO: error catching
-    set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+    set res [exec [dict get $dict app] -Tsvg $fname.dot -o $fname.svg]
     if {[dict get $dict results] eq "show"} {
         # should be usually empty
         set res $res

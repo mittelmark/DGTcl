@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210831.0715>
+#  Last Modified : <210831.0819>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -12,7 +12,7 @@
 
 FILES=Makefile Readme.html Readme.md pandoc-tcl-filter.tcl mini.css LICENSE json-pretty.tcl \
 	pandoc-tcl-filter.md pandoc-tcl-filter.html filter/filter-dot.tcl \
-	filter/filter-mtex.tcl \
+	filter/filter-mtex.tcl filter/small-caps.lua \
 	filter/filter-tsvg.tcl lib/tsvg/tsvg.tcl lib/tsvg/pkgIndex.tcl lib/tsvg/tsvg.html lib/tsvg/tsvg.md \
 	lib/rl_json/pkgIndex.tcl lib/rl_json/json.html lib/rl_json/librl_json0.11.0.so \
 	lib/rl_json/json.n lib/rl_json/mini.css

@@ -464,6 +464,35 @@ digraph G {
 
 Ok, now you know what was the code to create the graphic above.
 
+The dot filter supports as well the other command line applications from teh
+GraphViz toolbox. To switch for instance from the `dot` command line
+application to the `neato` application give the chung argument `app=neato` and you can enter neato code in your code chunk here an example:
+
+
+```
+` ``{.dot label=neato-sample app=neato}
+graph G {
+    node [shape=box,style=filled,fillcolor=skyblue,
+        color=black,width=0.4,height=0.4];
+    n0 -- n1 -- n2 -- n3 -- n0;
+}
+` ``
+```
+
+Will produce this:
+
+
+```{.dot label=neato-sample app=neato}
+graph G {
+    node [shape=box,style=filled,fillcolor=skyblue,
+        color=black,width=0.4,height=0.4];
+    n0 -- n1 -- n2 -- n3 -- n0;
+}
+```
+
+You can try out as well the GraphViz layout engines yourself. Please have a
+look at the GraphViz homepage at [https://www.graphviz.org/docs/layouts/](https://www.graphviz.org/docs/layouts/).
+
 ## tsvg plugin
 
 The code shown above creating svg files using the thingy object was as well
