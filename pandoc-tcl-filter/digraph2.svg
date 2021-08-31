@@ -60,8 +60,7 @@
 <!-- main&#45;&gt;printf -->
 <g id="edge8" class="edge">
 <title>main&#45;&gt;printf</title>
-<path fill="none" stroke="red" d="M207.09,-227.08C231.87,-220.2 267.2,-206.27 285.64,-180 313.6,-140.2 312.47,-80.78 308.79,-46.35"/>
-<polygon fill="red" stroke="red" points="312.22,-45.61 307.53,-36.11 305.27,-46.46 312.22,-45.61"/>
+<path fill="none" stroke="red" d="M207.09,-227.08C231.87,-220.2 267.2,-206.27 285.64,-180 316.62,-135.89 311.89,-67.68 307.53,-36.11"/>
 </g>
 <!-- execute -->
 <g id="node3" class="node">
@@ -102,14 +101,12 @@
 <!-- execute&#45;&gt;compare -->
 <g id="edge9" class="edge">
 <title>execute&#45;&gt;compare</title>
-<path fill="none" stroke="red" d="M183.73,-72.05C186.07,-64.26 188.9,-54.82 191.52,-46.08"/>
-<polygon fill="red" stroke="red" points="194.94,-46.86 194.46,-36.28 188.24,-44.85 194.94,-46.86"/>
+<path fill="none" stroke="red" d="M183.73,-72.05C186.98,-61.21 191.19,-47.18 194.46,-36.28"/>
 </g>
 <!-- init&#45;&gt;make_string -->
 <g id="edge7" class="edge">
 <title>init&#45;&gt;make_string</title>
-<path fill="none" stroke="red" d="M65.64,-71.7C65.64,-63.98 65.64,-54.71 65.64,-46.11"/>
-<polygon fill="red" stroke="red" points="69.14,-46.1 65.64,-36.1 62.14,-46.1 69.14,-46.1"/>
+<path fill="none" stroke="red" d="M65.64,-71.7C65.64,-60.85 65.64,-46.92 65.64,-36.1"/>
 </g>
 </g>
 </svg>
