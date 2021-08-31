@@ -193,23 +193,22 @@ content:
 svg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 svg text x 29 y 45 Hello
 svg text x 27 y 65 World!
-svg write hello-world.svg
+svg write images/hello-world.svg
 ```
 
 Let's now display the image:
 
 ```
- ![](hello-world.svg)
+ ![](images/hello-world.svg)
 ``` 
 
 Here the image displayed:
 
-![](hello-world.svg)
+![](images/hello-world.svg)
 
 Let's now clean up the svg code:
 ```{.tcl}
 svg set code ""
-svg set code 
 ```
 
 We can now create an other image, let's create a chessboard:
@@ -230,10 +229,10 @@ for {set i 0} {$i < 8} {incr i} {
     }
     svg rect x 6 y 6 width 408 height 408 stroke sienna stroke-width 7 fill transparent
 }   
-svg write chessboard.svg
+svg write images/chessboard.svg
 ```
 
-![](chessboard.svg)
+![](images/chessboard.svg)
 
 
 Great! Let's now illustrate a few more basic shapes. We will follow the examples at [https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes)
@@ -285,7 +284,8 @@ svg set code "" ;# cleanup chessboard
 svg set width 200 ;# new size as on the webpage
 svg set height 250 
 svg rect x="10" y="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
-svg rect x="60" y="10" rx="10" ry="10" width="30" height="30" stroke="black" fill="transparent" stroke-width="5"
+svg rect x="60" y="10" rx="10" ry="10" width="30" height="30" \
+    stroke="black" fill="transparent" stroke-width="5"
 svg circle cx="25" cy="75" r="20" stroke="red" fill="transparent" stroke-width="5"
 svg ellipse cx="75" cy="75" rx="20" ry="5" stroke="red" fill="transparent" stroke-width="5"
 svg line x1="10" x2="50" y1="110" y2="150" stroke="orange" stroke-width="5"
@@ -294,10 +294,10 @@ svg polyline {points="60 110 65 120 70 115 75 130 80 125 85 140 90 135 95 150 10
 svg polygon {points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 180 45 180"} \
      stroke="green" fill="transparent" stroke-width="5"
 svg path {d="M20,230 Q40,205 50,230 T90,230"} fill="none" stroke="blue" stroke-width="5"
-svg write basic-shapes.svg
+svg write images/basic-shapes.svg
 ```
 
-![](basic-shapes.svg)
+![](images/basic-shapes.svg)
 
 Ok, great basic shapes can be directly copied from svg code and with a few
 modifications we can create valid Tcl code out of the svg code. 
@@ -333,7 +333,7 @@ Ok, lets now implement our figure procedure for our svg:
 proc figure {filename width height args} {
     svg set width $width
     svg set height $height
-    svg write $filename.svg
+    svg write images/$filename.svg
     return $filename.svg
 }
 ```
@@ -347,7 +347,7 @@ Now in the next code chunk we create a new figure:
    svg rect x 10 y 10 width 60 height 60 fill salmon
    ` ``
    
-   ![](figsample.svg)
+   ![](images/figsample.svg)
 ```   
 
 Here the actual code (the space between the backticks was added to avoid
@@ -359,7 +359,7 @@ svg rect x 0 y 0 width 80 height 80 fill cornsilk
 svg rect x 10 y 10 width 60 height 60 fill salmon
 ```
 
-![](figsample.svg)
+![](images/figsample.svg)
 
 * TODO: autoembedding of figures by chunk number
 
@@ -421,7 +421,7 @@ digraph G {
 
 To avoid automatic placement of figures you can as well set the option include
 to false _include=false_ and then create the usual Markdown code for the figure
-where the basename is defined by the chunk label.
+where the basename is defined by a `images` subfolder the chunk label.
 
 ```
 ` ``{.dot label=digraph3 echo=false include=false}
@@ -439,7 +439,7 @@ digraph G {
   execute -> compare;
 }
 ` ``
-![](digraph3.svg)
+![](images/digraph3.svg)
 ```
 
 This will produce the following:
@@ -460,7 +460,7 @@ digraph G {
 }
 ```
 
-![](digraph3.svg)
+![](images/digraph3.svg)
 
 Ok, now you know what was the code to create the graphic above.
 
@@ -528,18 +528,42 @@ And here the second example:
 
 May be later version will support aligned sets of equations or matrices.
 
- 
+## Lua filters
+
+Pandoc since version 2.0 has embedded support for Lua filters. To no reinvent
+every file you should use Lua filters if they are available. Below an example for a Lua filter:
+
+```
+ **strong** should be converted to smallcaps using the Lua filter _smallcaps.lua_!
+```
+
+**strong** should be converted to smallcaps using the Lua filter _smallcaps.lua_!
+To apply Lua filters use the pandoc option `--lua-filter=filter/smallcaps.lua`.
+
+For more details see the Pandoc documentation at
+[https://pandoc.org/lua-filters.html](https://pandoc.org/lua-filters.html) and
+for examples of Lua filter look at GitHub
+[https://github.com/pandoc/lua-filters](https://github.com/pandoc/lua-filters).
+
+
+
+
+
 ## Summary
 
 In this tutorial I explained on how to use the Tcl pandoc filter to embed and
-process  Tcl code during the creation of HTML or PDF documents. The Tcl filter
-was generalized so that as well filters for other tools, especially 
-command line application can be easily programmed using the Tcl programming
-language. Examples for a filter for the GraphViz tool dot to create flowcharts and graphs
-and a package to create SVG images using Tcl, the new _tsvg_ package, were as well
-given. The provided infrastructure has the advantage that Tcl programmers can stay
-within their favourite programming language but still can use other nice tools easily for
-their documentation. 
+process Tcl code during the creation of HTML or PDF documents. The Tcl filter
+was generalized so that as well filters for other tools, especially command
+line application can be easily programmed using the Tcl programming language.
+Examples for a filter for the GraphViz tool dot to create flowcharts and
+graphs, a package to create SVG images using Tcl, the new _tsvg_ package, and
+a little renderer for single TeX equations were as well given. The provided
+infrastructure has the advantage that Tcl programmers can stay within their
+favourite programming language but still can use other nice tools easily for
+their documentation. In case of new may be complex things look for existing
+Lua filters. As Lua is embedded into Pandoc have a look for an existing Lua
+filter to not reinvent the (filter) wheel.
+
 
 ## Documentation
 
@@ -577,7 +601,7 @@ Please look at the source Markdown file to see which Markdown code was the input
 * 2021-08-22 - Release of Wiki cocde
 * 2021-08-25 - Release of github code
 * 2021-08-26 - Adding thingy svg creator, image file writing works
-
+* 2021-08-31 - adding mtex filter example, images now in images folder, Lua filter example
 
 ## Author
 

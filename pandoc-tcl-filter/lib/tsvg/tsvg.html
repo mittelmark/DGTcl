@@ -22,7 +22,24 @@
 <header id="title-block-header">
 <h1 class="title">tsvg package documentation</h1>
 </header>
-<p>NAME</p>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#name">NAME</a></li>
+<li><a href="#synopsis">SYNOPSIS</a></li>
+<li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#variables">VARIABLES</a></li>
+<li><a href="#methods">METHODS</a></li>
+<li><a href="#examples">EXAMPLES</a></li>
+<li><a href="#embedding-svg-code-into-html-pages">Embedding SVG code into HTML pages</a></li>
+<li><a href="#extending">Extending</a></li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#changelog">ChangeLog</a></li>
+<li><a href="#see-also">SEE ALSO</a></li>
+<li><a href="#author">AUTHOR</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+</nav>
+<h2 id="name">NAME</h2>
 <p><em>tsvg</em> - Thingy SVG writer - package to create svg image files with a syntax close to Tcl and to SVG.</p>
 <h2 id="synopsis">SYNOPSIS</h2>
 <pre><code>package require tsvg
@@ -44,9 +61,10 @@ tsvg circle cx="50" cy="50" r="45" stroke="black" \
    stroke-width="2" fill="light blue"
 tsvg text x="29" y="45" Hello
 tsvg text x="27" y="65" World!</code></pre>
-<h2 id="methods">METHODS</h2>
+<h2 id="description">DESCRIPTION</h2>
 <p>The package provides one command <em>tsvg</em> which can hold currently just a single svg code. All commands will be evaluated within the tsvg namespace, all unknown methods will be forwarded to the standard <code>tsvg::tag</code> method and produce svg code out of them. So <em>tsvg dummy x=“20” hello</em> will produce:</p>
 <pre><code>&lt;dummy x="20"&gt;hello&lt;/dummy&gt;</code></pre>
+<h2 id="variables">VARIABLES</h2>
 <p>The following public variables can be modified using the set command like so: <em>tsvg set varname</em> value:</p>
 <blockquote>
 <ul>
@@ -57,7 +75,12 @@ tsvg text x="27" y="65" World!</code></pre>
 <li><em>width</em> - the image width used for writing out the svg file, default: 100</li>
 </ul>
 </blockquote>
+<h2 id="methods">METHODS</h2>
 <p>The following methods are implemented:</p>
+<p><strong>self</strong></p>
+<blockquote>
+<p>just an <code>interp alias</code> for <code>namespace current</code></p>
+</blockquote>
 <p><strong>tsvg demo</strong></p>
 <blockquote>
 <p>Writes the “Hello World!” string into a file hello-world.svg in the current directory.</p>
@@ -96,14 +119,14 @@ tsvg text x="27" y="65" World!</code></pre>
 tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:hello-world.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ic2FsbW9uIiAvPgoKPHRleHQgeD0iMjkiIHk9IjQ1Ij4KSGVsbG8KPC90ZXh0PgoKPHRleHQgeD0iMjciIHk9IjY1Ij4KV29ybGQhCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:/home/groth/workspace/delfgroth/mytcl/pandoc/images/hello-world.svg--></p>
 <p>The typical Hello World example but this time with hyphens to easier indicate the arguments:</p>
 <pre class="tsvg" label="hello-world2"><code>tsvg set code "" ;# clear 
 tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
 tsvg text -x 29 -y 45 Hello
 tsvg text -x 27 -y 65 World!
 tsvg write hello-world2.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:hello-world2.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:/home/groth/workspace/delfgroth/mytcl/pandoc/images/hello-world2.svg--></p>
 <p>To continue with an other image you have first to clean up the previous image:</p>
 <pre class="tsvg" label="basic-shapes"><code>tsvg set code "" ;# clear 
 tsvg set width 200 ;# new size as on the webpage
@@ -119,7 +142,7 @@ tsvg polygon points="50 160 55 180 70 180 60 190 65 205 50 195 35 205 40 190 30 
     stroke="green" fill="transparent" stroke-width="5"
 tsvg path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
 tsvg write basic-shapes.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwICAxMTAgNjUgMTIwIDcwIDExNSA3NSAxMzAgODAgMTI1IDg1IDE0MCA5MCAxMzUgOTUgMTUwIDEwMDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwICAxNjAgNTUgMTgwIDcwIDE4MCA2MCAxOTAgNjUgMjA1IDUwIDE5NSAzNSAyMDUgNDAgMTkwIDMwIDE4MCA0NTE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgIFE0MCwyMDUgNTAsMjMwVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:basic-shapes.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNTAiIHdpZHRoPSIyMDAiPgoKPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cmVjdCB4PSI2MCIgeT0iMTAiIHJ4PSIxMCIgcnk9IjEwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIHN0cm9rZT0iYmxhY2siIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8Y2lyY2xlIGN4PSIyNSIgY3k9Ijc1IiByPSIyMCIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8ZWxsaXBzZSBjeD0iNzUiIGN5PSI3NSIgcng9IjIwIiByeT0iNSIgc3Ryb2tlPSJyZWQiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8bGluZSB4MT0iMTAiIHgyPSI1MCIgeTE9IjExMCIgeTI9IjE1MCIgc3Ryb2tlPSJvcmFuZ2UiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwb2x5bGluZSBwb2ludHM9IjYwICAxMTAgNjUgMTIwIDcwIDExNSA3NSAxMzAgODAgMTI1IDg1IDE0MCA5MCAxMzUgOTUgMTUwIDEwMDE0NSIgc3Ryb2tlPSJvcmFuZ2UiIGZpbGw9InRyYW5zcGFyZW50IiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8cG9seWdvbiBwb2ludHM9IjUwICAxNjAgNTUgMTgwIDcwIDE4MCA2MCAxOTAgNjUgMjA1IDUwIDE5NSAzNSAyMDUgNDAgMTkwIDMwIDE4MCA0NTE4MCIgc3Ryb2tlPSJncmVlbiIgZmlsbD0idHJhbnNwYXJlbnQiIHN0cm9rZS13aWR0aD0iNSIgLz4KCjxwYXRoIGQ9Ik0yMCwyMzAgIFE0MCwyMDUgNTAsMjMwVDkwLDIzMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibHVlIiBzdHJva2Utd2lkdGg9IjUiIC8+Cgo8L3N2Zz4K"/><!--URL:/home/groth/workspace/delfgroth/mytcl/pandoc/images/basic-shapes.svg--></p>
 <p>Nesting of elements can be achieved as well by adding *_start* and *_end* at the end of the tag, here an example for a group using the tag <em>g</em>.</p>
 <pre class="tsvg" label="group-circles"><code>tsvg set code ""
 tsvg set width 100
@@ -129,7 +152,7 @@ tsvg circle cx="40" cy="40" r="25"
 tsvg circle cx="60" cy="60" r="25"
 tsvg g_end
 tsvg write group-circles.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGcgZmlsbD0id2hpdGUiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNSI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjI1IiAvPgoKPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjUiIC8+CjwvZz4KPC9zdmc+Cg=="/><!--URL:group-circles.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGcgZmlsbD0id2hpdGUiIHN0cm9rZT0iZ3JlZW4iIHN0cm9rZS13aWR0aD0iNSI+CjxjaXJjbGUgY3g9IjQwIiBjeT0iNDAiIHI9IjI1IiAvPgoKPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMjUiIC8+CjwvZz4KPC9zdmc+Cg=="/><!--URL:/home/groth/workspace/delfgroth/mytcl/pandoc/images/group-circles.svg--></p>
 <h2 id="embedding-svg-code-into-html-pages">Embedding SVG code into HTML pages</h2>
 <p>The <em>tsvg</em> object as well offers a <em>inline</em> method which returns SVG code ready to be embed directly within HTML pages.</p>
 <pre class="tsvg" data-fig="false" data-results="show"><code>tsvg circle cx="70" cy="70" r="25" stroke="blue" fill="white" stroke-width="5"
@@ -164,7 +187,7 @@ tsvg inline</code></pre>
     }
 }
 tsvg logo_tsvg logo.svg</code></pre>
-<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSI2MCIgd2lkdGg9IjEwMCI+Cgo8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y2NDkzNSIgLz4KCjx0ZXh0IHg9IjIwIiB5PSI0MCIgc3R5bGU9ImZvbnQtc2l6ZToyNHB4O2ZpbGw6Ymx1ZTsiPgp0U1ZHCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:logo.svg--></p>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSI2MCIgd2lkdGg9IjEwMCI+Cgo8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI0Y2NDkzNSIgLz4KCjx0ZXh0IHg9IjIwIiB5PSI0MCIgc3R5bGU9ImZvbnQtc2l6ZToyNHB4O2ZpbGw6Ymx1ZTsiPgp0U1ZHCjwvdGV4dD4KCjwvc3ZnPgo="/><!--URL:/home/groth/workspace/delfgroth/mytcl/pandoc/images/logo.svg--></p>
 <h2 id="documentation">Documentation</h2>
 <p>The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:</p>
 <pre><code> perl -ne "s/^#' ?(.*)/\$$1/ and print " lib/tsvg/tsvg.tcl &gt; tsvg.md
@@ -207,4 +230,4 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 </body>
-</html><!--Generated by HTMLArk 2021-08-30 08:24:34.903540. Original URL tsvg.html-->
+</html><!--Generated by HTMLArk 2021-08-31 07:15:16.781136. Original URL tsvg.html-->

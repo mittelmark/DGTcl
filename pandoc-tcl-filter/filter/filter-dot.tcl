@@ -5,13 +5,17 @@ proc filter-dot {cont dict} {
     global n
     incr n
     set def [dict create results show eval true fig true width 400 height 400 \
-             include true]
+             include true imagepath images]
     set dict [dict merge $def $dict]
     set ret ""
+    set owd [pwd] 
     if {[dict get $dict label] eq "null"} {
-        set fname dot-$n
+        set fname [file join $owd [dict get $dict imagepath] dot-$n]
     } else {
-        set fname [dict get $dict label]
+        set fname [file join $owd [dict get $dict imagepath] [dict get $dict label]]
+    }
+    if {![file exists [file join $owd [dict get $dict imagepath]]]} {
+        file mkdir [file join $owd [dict get $dict imagepath]]
     }
     set out [open $fname.dot w 0600]
     puts $out $cont

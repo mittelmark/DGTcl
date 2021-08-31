@@ -11,14 +11,19 @@ proc filter-tsvg {cont dict} {
     global n
     incr n
     set def [dict create results hide eval true fig true width 100 height 100 \
-             include true label null]
+             include true label null imagepath images]
     set dict [dict merge $def $dict]
     set ret ""
+    set owd [pwd] 
     if {[dict get $dict label] eq "null"} {
-        set fname tsvg-$n
+        set fname [file join $owd [dict get $dict imagepath] tsvg-$n]
     } else {
-        set fname [dict get $dict label]
+        set fname [file join $owd [dict get $dict imagepath] [dict get $dict label]]
     }
+    if {![file exists [file join $owd [dict get $dict imagepath]]]} {
+        file mkdir [file join $owd [dict get $dict imagepath]]
+    }
+    # protect semicolons in attributes for ending a command
     set code [regsub -all {([^ ]);} $cont "\\1\\\\;"]
     if {[catch {
          set res2 [tsvgi eval $code]

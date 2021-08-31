@@ -8,7 +8,11 @@ package provide pandoc 0.2
 #' _pandoc-tcl-filter.tcl_ - filter application for the pandoc command line 
 #' application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown
 #' documentation and offers a plugin architecture to add other command line filters easily using Tcl
-#' and the `exec` command. As an example a dot filter plugin is given as `filter-dot.tcl`.
+#' and the `exec` command. As examples are give:
+#' 
+#' * Graphviz dot filter plugin: `filter-dot.tcl`
+#' * tsvg package plugin: `filter-tsvg.tcl`
+#' * Math TeX plugin for single line equations: `filter-mtex.tcl`
 #'
 #' ## SYNOPSIS 
 #' 
@@ -25,6 +29,8 @@ package provide pandoc 0.2
 #'   
 #'   Hello this is Tcl `tcl package provide Tcl`!
 #' ```
+#' 
+#' The markers for the other filters are `{.dot}`, `{.tsvg}` and `{.mtex}`.
 #' 
 #' The Markdown document within this file could be processed as follows:
 #' 
@@ -70,25 +76,39 @@ package provide pandoc 0.2
 #' executed. Below is the code: of this file `filter-dot.tcl`:
 #' 
 #' ```
-#' proc filter-dot {cont dict cblock} {
-#'    global n
-#'    incr n
-#'    set ret ""
-#'    if {[dict get $dict label] eq "null"} {
-#'        set fname dot-$n
-#'    } else {
+#' # a simple pandoc filter using Tcl
+#' # the script pandoc-tcl-filter.tcl 
+#' # must be in the same filter directoy of the pandoc-tcl-filter.tcl file
+#' proc filter-dot {cont dict} {
+#'     global n
+#'     incr n
+#'     set def [dict create results show eval true fig true width 400 height 400 \
+#'              include true fontsize Large envir equation imagepath images]
+#'     set dict [dict merge $def $dict]
+#'     set ret ""
+#'     if {[dict get $dict label] eq "null"} {
+#'         set fname dot-$n
+#'     } else {
 #'         set fname [dict get $dict label]
-#'    }
-#'    set out [open $fname.dot w 0600]
-#'    puts $out $cont
-#'    close $out
-#'    set res [exec dot -Tsvg $fname.dot -o $fname.svg]
-#'    if {[dict get $dict results] eq "show" && $res ne ""} {
-#'        rl_json::json set cblock c 0 1 [rl_json::json array [list string dotout]]
-#'        rl_json::json set cblock c 1 [rl_json::json string $res]
-#'        set ret ",[::rl_json::json extract $cblock]"
-#'    }
-#'    return $ret
+#'     }
+#'     set out [open $fname.dot w 0600]
+#'     puts $out $cont
+#'     close $out
+#'     # TODO: error catching
+#'     set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+#'     if {[dict get $dict results] eq "show"} {
+#'         # should be usually empty
+#'         set res $res
+#'     } else {
+#'         set res ""
+#'     }
+#'     set img ""
+#'     if {[dict get $dict fig]} {
+#'         if {[dict get $dict include]} {
+#'             set img $fname.svg
+#'         }
+#'     }
+#'     return [list $res $img]
 #' }
 #' ```
 #'
@@ -103,6 +123,10 @@ package provide pandoc 0.2
 #' * 2021-08-28 Version 0.2
 #'     * adding custom filters structure (dot, tsvg examples)
 #'     * adding attributes label, width, height, results
+#' * 2021-08-31 Version 0.3
+#'     * moved filters into filter folder
+#'     * plugin example mtex
+#'     * default image path _images_
 #'     
 #' ## SEE ALSO
 #' 

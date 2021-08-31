@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <210830.2108>
+#  Last Modified : <210831.0715>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -31,7 +31,7 @@ devel:
 Readme.html : Readme.md mini.css
 	pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
 		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-		--filter pandoc-tcl-filter.tcl --toc
+		--filter pandoc-tcl-filter.tcl --toc --lua-filter=filter/smallcaps.lua
 	htmlark -o Readme-ark.html Readme.html
 	mv Readme-ark.html Readme.html
 
@@ -50,7 +50,7 @@ tsvg-docu:
 	perl -ne "s/^#' ?(.*)/\$$1/ and print " lib/tsvg/tsvg.tcl > tsvg.md
 	pandoc tsvg.md -s  \
 	    --metadata title="tsvg package documentation"  \
-	    -o tsvg.html  --filter pandoc-tcl-filter.tcl --lua-filter filter/include.lua \
-	    --css mini.css
+	    -o tsvg.html  --filter pandoc-tcl-filter.tcl \
+	    --css mini.css --toc
 	htmlark -o lib/tsvg/tsvg.html tsvg.html
 	cp tsvg.md lib/tsvg/

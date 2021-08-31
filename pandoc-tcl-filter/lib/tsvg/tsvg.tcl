@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210830.1058>
+#  Last Modified : <210831.0719>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -27,7 +27,7 @@
 ##############################################################################
 
 
-#' NAME 
+#' ## NAME 
 #' 
 #' _tsvg_ - Thingy SVG writer - package to create svg image files with a syntax close to Tcl and to SVG.
 #' 
@@ -223,14 +223,14 @@
 #'  pandoc tsvg.md -s  \
 #'     --metadata title="tsvg package documentation"  \
 #'     -o tsvg.html  --filter pandoc-tcl-filter.tcl \
-#'     --css mini.css
+#'     --css mini.css --toc
 #'  htmlark -o lib/tsvg/tsvg.html tsvg.html
 #' ```
 #' 
 #' ## ChangeLog
 #' 
 #' * 2021-08-28 Version 0.1 with docu uploaded to GitHub
-#'     
+q#'     
 #' ## SEE ALSO
 #' 
 #' * [Readme.html](../../Readme.html) - more information about pandoc Tcl filters
