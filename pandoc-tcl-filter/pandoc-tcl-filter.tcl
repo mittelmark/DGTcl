@@ -196,8 +196,8 @@ mdi eval {
 
 # load other tcl based filters
 foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
-    #puts stderr "sourcing $file"
-    catch { source $file }
+    puts stderr "sourcing $file"
+    source $file
 }
 
 proc debug {jsonData} {

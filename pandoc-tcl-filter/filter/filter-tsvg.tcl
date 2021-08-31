@@ -4,7 +4,6 @@
 lappend auto_path [file join [file dirname [info script]] .. lib]
 package require tsvg
 interp create tsvgi
-
 tsvgi eval  "lappend auto_path [file join [file dirname [info script]] .. lib]"
 tsvgi eval "package require tsvg"
 proc filter-tsvg {cont dict} {
@@ -45,6 +44,9 @@ proc filter-tsvg {cont dict} {
             set img ""
         }
     }
+    puts stderr "tsvg: $img"
     return [list $res2 $img]
 }
+
+
 

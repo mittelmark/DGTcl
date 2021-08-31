@@ -464,7 +464,7 @@ digraph G {
 
 Ok, now you know what was the code to create the graphic above.
 
-The dot filter supports as well the other command line applications from teh
+The dot filter supports as well the other command line applications from the
 GraphViz toolbox. To switch for instance from the `dot` command line
 application to the `neato` application give the chung argument `app=neato` and you can enter neato code in your code chunk here an example:
 
@@ -510,7 +510,7 @@ Please not that the plugin object is named `tsvg`. Here an example.
 
 Will produce this:
 
-```{.tsvg label=tsvg-hello-world results=hide echo=true}
+```{.tsvg fig=true label=tsvg-hello-world results=hide echo=true}
 tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 26 y 65 World!
@@ -560,7 +560,7 @@ May be later version will support aligned sets of equations or matrices.
 ## Lua filters
 
 Pandoc since version 2.0 has embedded support for Lua filters. To no reinvent
-every file you should use Lua filters if they are available. Below an example for a Lua filter:
+every filter again you should use Lua filters if they are available. Below an example for a Lua filter:
 
 ```
  **strong** should be converted to smallcaps using the Lua filter _smallcaps.lua_!

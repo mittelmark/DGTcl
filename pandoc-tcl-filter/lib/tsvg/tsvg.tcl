@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210831.0719>
+#  Last Modified : <210831.0851>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -230,7 +230,8 @@
 #' ## ChangeLog
 #' 
 #' * 2021-08-28 Version 0.1 with docu uploaded to GitHub
-q#'     
+#' * 2021-08-31 Version 0.2 fix for the header line
+#'     
 #' ## SEE ALSO
 #' 
 #' * [Readme.html](../../Readme.html) - more information about pandoc Tcl filters
