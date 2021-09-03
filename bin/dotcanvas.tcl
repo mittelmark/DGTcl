@@ -3,7 +3,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Thu Sep 2 04:27:43 2021
-#  Last Modified : <210903.0818>
+#  Last Modified : <210903.0823>
 #
 #  Description	
 #
@@ -150,8 +150,10 @@ if {[info exists argv0] && $argv0 eq [info script]} {
     if {[llength $argv] > 0} {
         if {[lindex $argv 0] eq "--help"} {
             puts "tclsh dotcanvas.tcl dotfile.dot"
+            exit 0
         } elseif  {[lindex $argv 0] eq "--version"} {
             puts "[package present dotcanvas]"
+            exit 0
         } elseif {[file exists [lindex $argv 0]]} {
             pack [dotcanvas::dotcanvas .c [lindex $argv 0]] -fill both -expand true  -padx 5 -pady 5 -ipadx 5 -ipady 5
             pack [ttk::label .l -textvariable  ::dotcanvas::einfo] -side top -fill x -expand false -padx 5 -pady 5
@@ -175,5 +177,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' ## ChangeLog
 #' 
 #' * 2021-09-02 0.1 initial version         
-#' * 2021-09-02 0.2.0 all variables are now namespaces variables
+#' * 2021-09-02 0.2.0 
+#'     * all variables are now namespaces variables
+#'     * file saving using Control-c as svg, png, jpeg, etc
 #' 
