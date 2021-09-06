@@ -196,7 +196,6 @@ mdi eval {
 
 # load other tcl based filters
 foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
-    puts stderr "sourcing $file"
     source $file
 }
 
@@ -241,6 +240,17 @@ proc filter-tcl {cont a} {
     return [list $eres $img]
 }
 
+# parse Meta data
+proc getMetaDict {meta fkey} {
+    set d [dict create]
+    if {[rl_json::json exists $meta $fkey c]} {
+        foreach key [rl_json::json keys $meta $fkey c] {
+            dict set d $key [rl_json::json get $meta $fkey c $key c 0 c]
+        }
+    }
+    return $d    
+}
+
 # the main method parsing the json data
 proc main {jsonData} {
     set blocks ""
@@ -266,6 +276,7 @@ proc main {jsonData} {
             ]
       }
     }
+    set meta  [rl_json::json extract $jsonData meta] 
     for {set i 0} {$i < [llength [::rl_json::json get $jsonData blocks]]} {incr i} {
         if {$i > 0} {
             append blocks ","
@@ -291,6 +302,8 @@ proc main {jsonData} {
             }
             if {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {
+                    set d [getMetaDict $meta $type]
+                    set a [dict merge $a $d]
                     set res [filter-$type $cont $a]
                     if {[llength $res] >= 1} {
                         set code [lindex $res 0]
