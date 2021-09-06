@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210831.0851>
+#  Last Modified : <210905.0957>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -70,7 +70,7 @@
 #' 
 #' The following public variables can be modified using the set command like so: _tsvg set varname_ value:
 #' 
-#' > - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set ""_.
+#' > - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set code ""_.
 #'   - _footer_ - the standard SVG-XML footer, should be usually not changed.
 #'   - _header_ - the standard SVG-XML header, should be usually not changed.
 #'   - _height_ - the image height used for writing out the svg file, default: 100

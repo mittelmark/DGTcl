@@ -44,7 +44,6 @@ proc filter-tsvg {cont dict} {
             set img ""
         }
     }
-    puts stderr "tsvg: $img"
     return [list $res2 $img]
 }
 
