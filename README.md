@@ -30,6 +30,10 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
 
 ## Tcl Libraries / Applications    
 
+* tdot - the Thingy DOT writer. Create DOT files and images for DOT graphs with ease. Syntax is very close to the Graphviz DOT language.
+  * [tdot manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tdot/tdot.html)
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot)
+  
 * tsvg - the Thingy SVG writer. Create SVG files with ease. Either using a Tclish or a SVGish syntax.
   * [tsvg manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html)
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter/lib/tsvg)
