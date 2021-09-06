@@ -248,6 +248,10 @@ tdot write dot-neato2.png
 ```
 ![](dot-neato2.png)
 
+## INSTALLATION
+
+The _tdot_ package requires to create images a running installation of the [Graphviz](https://graphviz.org/download/) command line tools. For only creating the textual dot files there is no installation of these tools reequired.
+To use the package just download the library folder from [GitHub](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot) and place it in your Tcl-library path.
 
 ## DOCUMENTATION
 

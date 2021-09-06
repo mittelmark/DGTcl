@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210906.0850>
+#  Last Modified : <210906.0901>
 #
 #  Description	
 #
@@ -518,6 +518,10 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' ```
 #' ![](dot-neato2.png)
 #' 
+#' ## INSTALLATION
+#' 
+#' The _tdot_ package requires to create images a running installation of the [Graphviz](https://graphviz.org/download/) command line tools. For only creating the textual dot files there is no installation of these tools reequired.
+#' To use the package just download the library folder from [GitHub](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot) and place it in your Tcl-library path.
 #' 
 #' ## DOCUMENTATION
 #' 
