@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210906.0901>
+#  Last Modified : <210906.0941>
 #
 #  Description	
 #
@@ -198,8 +198,8 @@ tdot proc edge {args} {
         set txt ""
     }
     $self append code "\n$txt\["
-    for {set i 1} {$i < [llength $args]} {incr i 1} {
-        if {$i > 1} {
+    for {set i 0} {$i < [llength $args]} {incr i 1} {
+        if {$i > 0} {
             $self append code ", "
         }
         $self append code "[lindex $args $i]"
