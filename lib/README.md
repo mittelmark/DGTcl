@@ -35,7 +35,7 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot)
   
 * tpack - deployment system for Tcl 8.4+ using uncompressed tar file format.  
-  * [tpack manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/apps/tpack/tpack.html) 
+  * [tpack manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/apps/tpack/tpack.html) 
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/apps/tpack)
 
 * mkdoc - extract Markdown documentation from source code files and produce HTML files
