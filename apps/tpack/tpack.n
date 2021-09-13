@@ -1,0 +1,171 @@
+.SS NAME
+.PP
+\f[I]tpack\f[R] - create two file standalone Tcl applications based on tar archives
+
+.SS SYNOPSIS
+
+.IP
+.nf
+\f[C]
+$ tpack.tcl --help               # display usage information
+$ tpack.tcl wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
+$ tpack.tcl wrap app             #            as above
+$ tpack.tcl init app.tcl app.vfs # creates intial file app.tcl and folder app.vfs
+$ tpack.tcl init app             #            as above
+$ tpack.tcl init app.vfs         # create intial folder app.vfs
+\f[R]
+.fi
+
+.SS DESCRIPTION
+
+.PP
+The \f[I]tpack\f[R] application can be used to simplify deployment of
+Tcl applications to other computers and customers.
+The application created usually two files, one for the application and
+one for the library files.
+
+.PP 
+If we assume that we have the application code in a file
+\f[I]app.tcl\f[R] and the Tcl libraries in a folder
+\f[I]app.vfs/lib\f[R] together with a file \f[I]app.vfs/main.tcl\f[R].
+The call \f[C]$ tpack.tcl app.tcl app.vfs\f[R] will create two files:
+.RS
+.IP \[bu] 2
+\f[I]app.ttcl\f[R] - text file containing the application code from
+\f[I]app.tcl\f[R] and some code from the tar library to extract tar
+files
+.IP \[bu] 2
+\f[I]app.ttar\f[R] - the library files from \f[I]app.vfs\f[R]
+.RE
+.PP
+The file \f[I]main.tcl\f[R] should contain at least the following line:
+.IP
+.nf
+\f[C]
+lappend auto_path [file join [file dirname [info script]] lib]
+\f[R]
+.fi
+
+.PP
+To make this approch compatibe there can be as well starkit code added
+like this:
+
+.IP
+.nf
+\f[C]
+catch { package require starkit }
+if {[package versions starkit] ne \[dq]\[dq]} {
+    starkit::startup
+    package require app-appname
+}
+\f[R]
+.fi
+.PP
+That way you should be able to use your vfs-folder as well for creating
+starkits.
+
+.SS EXAMPLE
+
+.PP
+Let\[cq]s demonstrate a minimal application:
+
+.IP
+.nf
+\f[C]
+## FILE mini.tcl
+#!/usr/bin/env tclsh
+package require test
+puts mini
+puts [test::hello]
+## FILE mini.vfs/main.tcl
+lappend auto_path [file join [file dirname [info script]] lib]
+## FILE mini.vfs/lib/test/pkgIndex.tcl
+package ifneeded test 0.1 [list source [file join $dir test.tcl]]
+## FILE mini.vfs/lib/test/test.tcl
+package require Tcl
+package provide test 0.1
+namespace eval ::test { }
+proc ::test::hello { } { puts \[dq]Hello World!\[dq] }
+## EOF
+\f[R]
+.fi
+
+.PP
+There is the possibility to create such a minimal application
+automatically for you if you start a new project by using the command
+line options:
+
+.IP
+.nf
+\f[C]
+tpack.tcl init appname
+# - appname.tcl and appname.vfs folder with main.tcl and
+#   lib/test Tcl files will be created automatically for you.
+\f[R]
+.fi
+
+.PP
+The appname could be replaced with whatever you like, mini, maxi etc.
+If a the Tcl file or the VFS folder does already exists, tpack.tcl for
+your safeness will refuse to overwrite them.
+If the files wre created, after calling for instance thereafter
+\f[C]tpack.tcl wrap mini.tcl mini.vfs\f[R] we have two files,
+\f[I]mini.ttcl\f[R] the application code file and \f[I]mini.ttar\f[R]
+the tar file with the library code.
+You can move those two files around together and execute
+\f[I]mini.ttcl\f[R], it will unpack the tar file into a temporary
+directory, only if the tar file is newer than the directory and load the
+libraries from there.
+
+.PP
+Attention: if mini.ttcl is execute directly in the directory where
+mini.vfs is located not the tar file but the folder will be used for the
+libraries.
+That can simplify the development.
+
+.PP
+You can rename mini.ttcl to what every you like so \f[C]mini.bin\f[R] or
+even \f[C]mini\f[R], but the extension for the tar file must stay
+unchanged and must be in the same folder as the mini application file.
+
+.PP
+The tpack.tcl script, the minimal application and this Readme are as
+well packed together in a Zip archive which is available here: TODO
+
+.SS TODO
+
+.IP \[bu] 2
+tpack init napp - napp.tcl and napp.vfs will be created (done)
+.IP \[bu] 2
+tpack init napp.tcl - napp.tcl exists and napp.vfs will be created
+(done)
+.IP \[bu] 2
+tpack wrap napp.tcl - napp.ttcl and napp.ttar wull be created out of
+napp.tcl and napp.vfs (done)
+.IP \[bu] 2
+tpack wrap napp.tcl napp2.vfs - napp.ttcl napp.ttar will be created out
+of napp.tcl and napp2.vfs (done)
+.IP \[bu] 2
+tpack unwrap napp.ttar - create napp.vfs
+.IP \[bu] 2
+sample project dcanvas with txmixins for the editor for popup - Windows
+port
+.IP \[bu] 2
+nsis installer for Windows
+
+.SS AUTHOR
+
+.IP \[bu] 2
+Copyright (c) 2021 Detlef Groth, Caputh-Schwielowsee, Germany,
+detlef(at)dgroth(dot)de (tpack code)
+.IP \[bu] 2
+Copyright (c) 2013 Andreas Kupries
+andreas_kupries(at)users.sourceforge(dot)net (tar code)
+.IP \[bu] 2
+Copyright (c) 2004 Aaron Faupell afaupell(at)users.sourceforge(sot)net
+(tar code)
+
+.SS LICENSE
+
+.PP
+MIT - License
