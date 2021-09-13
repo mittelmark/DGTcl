@@ -34,19 +34,24 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
   * [tdot manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tdot/tdot.html)
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot)
   
-* tsvg - the Thingy SVG writer. Create SVG files with ease. Either using a Tclish or a SVGish syntax.
-  * [tsvg manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html)
-  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter/lib/tsvg)
-  
+* tpack - deployment system for Tcl 8.4+ using uncompressed tar file format.  
+  * [tpack manual]((http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/apps/tpack/tpack.html) 
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/apps/tpack)
+
+* mkdoc - extract Markdown documentation from source code files and produce HTML files
+  * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/mkdoc)
+
 * tmdoc - embed and execute Tcl code in Markdown or LaTex documents
   * [tmdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tmdoc.html) - literate programming using Tcl for embedding Tcl code into Markdown and LaTeX documents.
   * [tmdoc Markdown based tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/tutorial/tmd.html) - Tutorial about on how to use the package.
   * [tmdoc LaTeX based tutorial](https://github.com/mittelmark/DGTcl/blob/master/lib/tmdoc/latex/tmdoc-template.pdf)
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tmdoc)
 
-* mkdoc - extract Markdown documentation from source code files and produce HTML files
-  * [mkdoc manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/mkdoc/mkdoc.html) - Markdown based source code documentation
-  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/mkdoc)
+* tsvg - the Thingy SVG writer. Create SVG files with ease. Either using a Tclish or a SVGish syntax.
+  * [tsvg manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html)
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter/lib/tsvg)
+  
   
 
 * dgtools - various small snit objects, some are required by the dgw package
