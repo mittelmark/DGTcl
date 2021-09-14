@@ -213,7 +213,7 @@ tdot node A label="Hello World!\ntdot" shape=box fillcolor=grey90 style=filled
 tdot write tdot-hello-world.svg
 ```
 
-![](tdot-hello-world.svg)
+> ![](tdot-hello-world.svg)
 
 Here a more extensive example, the demo:
 

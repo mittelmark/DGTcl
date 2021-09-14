@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210914.0619>
+#  Last Modified : <210914.0642>
 #
 #  Description	
 #
@@ -513,7 +513,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' tdot write tdot-hello-world.svg
 #' ```
 #' 
-#' ![](tdot-hello-world.svg)
+#' > ![](tdot-hello-world.svg)
 #' 
 #' Here a more extensive example, the demo:
 #'
