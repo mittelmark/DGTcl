@@ -100,7 +100,7 @@ tdot dotstring {
   }
 }
 # make all nodes blue by adding code at the beginning
-tdot set code "node\[style=filled,fillcolor=salmon\];\n[tdot set code]"
+tdot set code "node\[style=filled,fillcolor=skyblue\];\n[tdot set code]"
 tdot write tdot-dotstring.svg
 ```
 

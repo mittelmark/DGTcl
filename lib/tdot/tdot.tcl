@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210914.0554>
+#  Last Modified : <210914.0619>
 #
 #  Description	
 #
@@ -203,7 +203,7 @@ tdot proc demo {} {
 #'   }
 #' }
 #' # make all nodes blue by adding code at the beginning
-#' tdot set code "node\[style=filled,fillcolor=salmon\];\n[tdot set code]"
+#' tdot set code "node\[style=filled,fillcolor=skyblue\];\n[tdot set code]"
 #' tdot write tdot-dotstring.svg
 #' ```
 #' 
