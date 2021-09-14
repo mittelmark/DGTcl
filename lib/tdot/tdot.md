@@ -1,3 +1,9 @@
+---
+author: Dr. Detlef Groth, Schwielowsee, Germany
+title: tdot package documentation 0.2.0
+date: 2021-09-14
+---
+
 ## NAME 
 
 _tdot_ - Thingy Graphviz dot file writer - package to create Graphviz dot files with a syntax close to Tcl and to the Dot language.
@@ -17,10 +23,10 @@ tdot node B label="World" fillcolor=skyblue
 tdot edge dir=back
 tdot addEdge B -> C
 tdot node C label="Powered by\n tdot"
-tdot write tdot-synopsis.png
+tdot write tdot-synopsis.svg
 ```
 
-![](tdot-synopsis.png)
+![](tdot-synopsis.svg)
 
 ## DESCRIPTION
 
@@ -37,7 +43,7 @@ There are a few restrictions because of this, for instance you can't delete node
 The following public variables can be modified using the set command like so: _tdot set varname_ value:
 
 > - _code_ - the variable collecting the dot code, usually you will only set this variable by hand to remove all existing dot code after creating a dot file by calling _tdot set code ""_.
-  - _type_ - the dot type of graph, default: "strict digraph G"
+  - _type_ - the dot type of graph, default: "strict digraph G", other possible value should be "graph G" for undirected graphs.
 
 ## METHODS
 
@@ -45,7 +51,7 @@ The following methods are implemented:
 
 __self__
 
-> just an `interp alias` for `namespace current`
+> just a shorthand `interp alias` for the longer command `namespace current`
 
 ## TDOT METHODS
 
@@ -72,6 +78,33 @@ tcldot block rank=same A B C
 __tdot demo__ 
 
 > Writes a simple "Hello World!" demo to stdout. 
+
+__tdot dotstring__ *dotstr* 
+
+> Adds complete graph code to the graph starting a new graph from scratch. 
+  First line and last line should contain opening and closing curly braces. As in the example
+  below.
+
+```{.tcl}
+# demo: synopsis
+package require tdot
+tdot dotstring {
+  digraph G {
+    dir1 -> CVS;
+    dir1 -> src -> doc;
+    dir1 -> vfs-> bin;
+    vfs -> config -> ps;
+    config -> pw -> pure;
+    vfs -> step1 -> substep;
+    dir1 -> www -> cgi;
+  }
+}
+# make all nodes blue by adding code at the beginning
+tdot set code "node\[style=filled,fillcolor=salmon\];\n[tdot set code]"
+tdot write tdot-dotstring.svg
+```
+
+> ![](tdot-dotstring.svg)
 
 __tdot edge__ *args* 
 
@@ -148,7 +181,7 @@ __tdot write__ _?device?_
 
 > - Tk canvas widget
 
-> ```{.tcl}
+```{.tcl}
 # demo: write
 package require Tk
 pack [canvas .can -background white] -side top -fill both -expand true
@@ -162,9 +195,9 @@ tdot node B label="Hello World!"
 tdot write .can
 .can create rect 10 10 290 250 -outline red
 destroy . ;# just to allow automatic document processing
-> ```
+```
 
-![](tdot-canvas.png)
+> ![](tdot-canvas.png)
 
 > You can thereafter add additional items on the canvas widget using the standard 
   commands of the canvas.
@@ -177,10 +210,10 @@ Obviously we start with the typical "Hello World!" example.
 package require tdot
 tdot set code ""
 tdot node A label="Hello World!\ntdot" shape=box fillcolor=grey90 style=filled
-tdot write tdot-hello-world.png
+tdot write tdot-hello-world.svg
 ```
 
-![](tdot-hello-world.png)
+![](tdot-hello-world.svg)
 
 Here a more extensive example, the demo:
 
@@ -197,21 +230,21 @@ tdot addEdge D -> E
 tdot node A label="Hello" style=filled fillcolor=salmon width=2 height=1
 tdot node B label="World!" style=filled shape=box fillcolor=skyblue width=2 height=0.8
 tdot addEdge C -> F -> G
-tdot write tdot-demo.png
+tdot write tdot-demo.svg
 ```
 
-![](tdot-demo.png)
+![](tdot-demo.svg)
 
-Now an exampe which uses _neato_ as the layout engine:
+Now an example which uses _neato_ as the layout engine:
 
 ```{.tcl}
 tdot set code ""
 tdot set type "graph N" ;# switch to neato as layout engine
 tdot addEdge n0 -- n1 -- n2 -- n3 -- n0;
 tdot node n0 color=red style=filled fillcolor=salmon
-tdot write dot-neato.png
+tdot write dot-neato.svg
 ```
-![](dot-neato.png)
+> ![](dot-neato.svg)
 
 Alternatively you can as well overwrite the default layout engine using the graph layout option. Here the standard dot engine which is used for digraphs.
 
@@ -219,10 +252,10 @@ Alternatively you can as well overwrite the default layout engine using the grap
 tdot set code ""
 tdot set type "strict digraph G" ; # back to dot
 tdot addEdge A -> B -> C -> D -> A
-tdot write dot-circle1.png
+tdot write dot-circle1.svg
 ```
 
-![](dot-circle1.png)
+> ![](dot-circle1.svg)
 
 Now let's switch to circo as the layout engine, still having a digraph:
 
@@ -231,10 +264,10 @@ tdot set code ""
 tdot set type "strict digraph G" ; # back to dot
 tdot graph layout=circo ;# switch to circo (circular layout engine)
 tdot addEdge A -> B -> C -> D -> A
-tdot write dot-circle2.png
+tdot write dot-circle2.svg
 ```
 
-![](dot-circle2.png)
+> ![](dot-circle2.svg)
 
 Also undirected graphs can be converted:
 
@@ -244,9 +277,10 @@ tdot set type "graph N" ;# switch to neato as layout engine
 tdot graph layout=circo
 tdot addEdge n0 -- n1 -- n2 -- n3 -- n0;
 tdot node n0 color=red style=filled fillcolor=salmon
-tdot write dot-neato2.png
+tdot write dot-neato2.svg
 ```
-![](dot-neato2.png)
+
+> ![](dot-neato2.svg)
 
 ## INSTALLATION
 
@@ -269,6 +303,9 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
 ## CHANGELOG
 
 * 2021-09-06 Version 0.1 released with docu uploaded to GitHub
+* 2021-09-14 Version 0.2.0 
+    * adding dotstring command similar to tcldot's command
+    * docu fixes, switching from png to svg if possible for filesize
 
 ## TODO
 
@@ -287,7 +324,7 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
     - [dotguide (pdf)](https://www.graphviz.org/pdf/dotguide.pdf).
     - [neatoguide (pdf)](https://www.graphviz.org/pdf/neatoguide.pdf).
     - [dot language (pdf)](https://www.graphviz.org/pdf/dot.1.pdf)
-    - [tcdot documenation (pdf)](https://www.graphviz.org/pdf/tcldot.3tcl.pdf)
+    - [tcldot documenation (pdf)](https://www.graphviz.org/pdf/tcldot.3tcl.pdf)
 * [Readme.html](../../Readme.html) - Pandoc Tcl filters which were used to create this manual
 * [Tclers Wiki page](https://wiki.tcl-lang.org/page/tdot) - place for discussion
 
