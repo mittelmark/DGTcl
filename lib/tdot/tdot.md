@@ -1,6 +1,6 @@
 ---
 author: Dr. Detlef Groth, Schwielowsee, Germany
-title: tdot package documentation 0.2.0
+title: tdot package documentation 0.3.0
 date: 2021-09-14
 ---
 
@@ -37,6 +37,8 @@ and the [gvtcl](https://graphviz.org/pdf/gv.3tcl.pdf)  packages this package
 uses directly the Graphviz executables and has a syntax very close to the dot language. So there is no need to consult special API pages for the interfaces. It is therefore enough to consult the few methods below and the
 standard [dot](https://graphviz.org/pdf/dotguide.pdf) or [neato](https://graphviz.org/pdf/neatoguide.pdf)  documentation.
 There are a few restrictions because of this, for instance you can't delete nodes and edges, you can only use _shape=invis_ to hide them for instance.
+
+Please note that semikolon and brackets are special Tcl symbols to use them in labels you must escape them with backslashes, an example is given in the [history example](#tdot-history) below.
 
 ## VARIABLES
 
@@ -100,7 +102,7 @@ tdot dotstring {
   }
 }
 # make all nodes blue by adding code at the beginning
-tdot set code "node\[style=filled,fillcolor=skyblue\];\n[tdot set code]"
+tdot header node style=filled fillcolor=skyblue
 tdot write tdot-dotstring.svg
 ```
 
@@ -125,6 +127,33 @@ tcldot graph margin=0.2
 # creates: graph[margin=0.2];
 > ```
 
+__tdot header__ *args* 
+
+> Adds code to teh beginning of the graph which should affect all nodes and edges
+  created before and afterwards. This is a workaround for changing global properties
+  after the first initial nodes and edges were added to the graph code.
+
+```{.tcl}
+# demo: synopsis
+package require tdot
+tdot dotstring {
+  graph G {
+     run -- intr;
+     intr -- runbl;
+     runbl -- run;
+     run -- kernel;
+     kernel -- zombie;
+     kernel -- sleep;
+     kernel -- runmem;
+     runmem[label="run\nmem"];
+  }
+}
+tdot header node style=filled fillcolor=skyblue
+tdot write tdot-dotstring-neato.svg
+```
+
+> ![](tdot-dotstring-neato.svg)
+
 __tdot node__ *args* 
 
 > Adds code to the graph within regarding node properties, first argument can be a list 
@@ -146,6 +175,42 @@ __tdot render__
 > ```
 puts [tcldot render]
 > ```
+
+__tdot subgraph__ *name ?args?* 
+
+> Starts a subgraph with the given name. Subsequent arguments are interpreted as
+  standard dot commands to set global properties of the graph. 
+  To end a subgraph the special name END has to be used. 
+  Code is based on this [Graphviz gallery code](https://graphviz.org/Gallery/directed/cluster.html).
+
+> Example:
+
+```{.tcl}
+package require tdot
+tdot set code ""
+tdot set type "digraph G"
+tdot graph rankdir=LR
+tdot subgraph cluster_0 style=filled \
+                        color=lightgrey \
+                        label="process #1"
+tdot node	style=filled color=white
+tdot addEdge	a0 -> a1 -> a2 -> a3
+tdot subgraph	END
+tdot subgraph cluster_1 label="process #2" color=blue
+tdot node	style=filled
+tdot addEdge	b0 -> b1 -> b2 -> b3;
+tdot subgraph	END
+tdot addEdge	start -> a0
+tdot addEdge	start -> b0
+tdot addEdge	a1 -> b3 -> end
+tdot addEdge	b2 -> a3 -> end
+tdot addEdge	a3 -> a0;
+tdot node start shape=Mdiamond
+tdot node end   shape=Msquare
+tdot write subgraph-sample.svg
+```
+
+> ![](subgraph-sample.svg)
 
 __tdot usage__ 
 
@@ -187,6 +252,7 @@ package require Tk
 pack [canvas .can -background white] -side top -fill both -expand true
 package require tdot
 tdot set code ""
+tdot set type "strict digraph G"
 tdot graph margin=0.4
 tdot node style=filled fillcolor=salmon shape=hexagon
 tdot addEdge A -> B
@@ -251,6 +317,7 @@ Alternatively you can as well overwrite the default layout engine using the grap
 ```{.tcl}
 tdot set code ""
 tdot set type "strict digraph G" ; # back to dot
+tdot graph rankdir=LR
 tdot addEdge A -> B -> C -> D -> A
 tdot write dot-circle1.svg
 ```
@@ -282,6 +349,68 @@ tdot write dot-neato2.svg
 
 > ![](dot-neato2.svg)
 
+<a name="tdot-history" />
+Now a very extended example based on the example _asde91_ 
+in the [dotguide manual](https://www.graphviz.org/pdf/dotguide.pdf) showing the history of Tcl/Tk and tdot within ...
+
+```{.tcl}
+tdot set code ""
+tdot set type "digraph Tk"
+tdot graph margin=0.3 
+tdot graph size="8\;7" ;# semikolon must be backslashed due to thingy
+tdot node shape=box style=filled fillcolor=grey width=1
+tdot addEdge 1988  -> 1993 -> 1995 -> 1997 -> 1999 \
+      -> 2000 -> 2002 -> 2007 -> 2012 -> future
+tdot node fillcolor="#ff9999"
+tdot edge style=invis
+tdot addEdge  Tk -> Bytecode -> Unicode -> TEA -> vfs -> \
+      Tile -> TclOO -> zipvfs
+tdot edge style=filled
+tdot node fillcolor="salmon"
+tdot addEdge "Tcl/Tk" -> 7.3 -> 7.4 -> 8.0  ->  8.1 ->  8.3 \
+      -> 8.4  -> 8.5  ->  8.6 -> 8.7;
+tdot node fillcolor=cornsilk
+tdot addEdge  7.3 -> Itcl -> 8.6
+tdot addEdge  Tk -> 7.4 -> Otcl -> XOTcl -> NX 
+tdot addEdge  Otcl -> Thingy -> tdot
+tdot addEdge  Bytecode -> 8.0 
+tdot addEdge  8.0 -> Namespace dir=back
+tdot addEdge  Unicode -> 8.1
+tdot addEdge  8.1 -> Wiki
+tdot addEdge  TEA -> 8.3 
+tdot addEdge  8.3 -> Tcllib -> Tklib
+tdot addEdge  8.4 -> Starkit -> Snit -> Dict -> 8.5 
+tdot addEdge  vfs -> 8.4
+tdot addEdge  Tile -> 8.5
+tdot addEdge  TclOO -> 8.6  -> TDBC
+tdot addEdge  zipvfs -> 8.7  ;# Null is just a placeholder for the history
+tdot block    rank=same 1988 "Tcl/Tk"  group=g1
+tdot block    rank=same 1993  7.3      group=g1  Itcl
+tdot block    rank=same 1995  Tk       group=g0  7.4 group=g1 Otcl group=g2
+tdot block    rank=same 1997  Bytecode group=g0  8.0 group=g1 Namespace
+tdot block    rank=same 1999  Unicode  group=g0  8.1 group=g1 Wiki 
+tdot block    rank=same 2000  TEA      group=g0  8.3 group=g1 Tcllib \
+                              Tklib XOTcl group=g2 
+tdot block    rank=same 2002  vfs      group=g0  8.4 group=g1 Starkit Dict Snit
+tdot block    rank=same 2007  Tile     group=g0  8.5 group=g1 
+tdot block    rank=same 2012  TclOO    group=g0  8.6 group=g1 TDBC NX group=g2
+tdot block    rank=same future zipvfs  group=g0  8.7 group=g1 Null group=g2 tdot group=g3
+
+# specific node settings 
+tdot node     History label="History of Tcl/Tk\nand  tdot" shape=doubleoctagon color="salmon" penwidth=5 \
+      fillcolor="white" fontsize=26 fontname="Monaco"
+tdot node     Namespace fillcolor="#ff9999"
+tdot node     future label=2021
+tdot node     8.7    label="\[ 8.7a5 \]"
+# arranging the History in the middle
+tdot addEdge  8.7 -> Null style=invis
+tdot addEdge  Null -> History style=invis
+tdot node Null style=invis
+tdot write tdot-history.png
+```
+
+![](tdot-history.svg)
+
 ## INSTALLATION
 
 The _tdot_ package requires to create images a running installation of the [Graphviz](https://graphviz.org/download/) command line tools. For only creating the textual dot files there is no installation of these tools reequired.
@@ -306,6 +435,12 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
 * 2021-09-14 Version 0.2.0 
     * adding dotstring command similar to tcldot's command
     * docu fixes, switching from png to svg if possible for filesize
+* 2021-09-26 Version 0.3.0
+    * adding header method for code at the beginning
+    * adding subgraph method with extended example from Graphviz gallery
+    * adding quoted node names
+    * fixing spacing issues in label spaces 
+    * adding semikolon issue as note on top
 
 ## TODO
 

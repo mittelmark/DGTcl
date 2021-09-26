@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210914.0642>
+#  Last Modified : <210926.0731>
 #
 #  Description	
 #
@@ -23,10 +23,10 @@
 
 package require Tcl
 
-package provide tdot 0.2.0
+package provide tdot 0.3.0
 #' ---
 #' author: Dr. Detlef Groth, Schwielowsee, Germany
-#' title: tdot package documentation 0.2.0
+#' title: tdot package documentation 0.3.0
 #' date: 2021-09-14
 #' ---
 #' 
@@ -63,19 +63,22 @@ package provide tdot 0.2.0
 #' uses directly the Graphviz executables and has a syntax very close to the dot language. So there is no need to consult special API pages for the interfaces. It is therefore enough to consult the few methods below and the
 #' standard [dot](https://graphviz.org/pdf/dotguide.pdf) or [neato](https://graphviz.org/pdf/neatoguide.pdf)  documentation.
 #' There are a few restrictions because of this, for instance you can't delete nodes and edges, you can only use _shape=invis_ to hide them for instance.
-#  There is as well currently no graph information available like number of nodes and edges etc.
+#  There is as well currently no graph information available like number of nodes and edges etc. 
+#' 
+#' Please note that semikolon and brackets are special Tcl symbols to use them in labels you must escape them with backslashes, an example is given in the [history example](#tdot-history) below.
 #' 
 # minimal OOP
 proc thingy name {
-    proc $name args "namespace eval $name \$args"
+    proc ::$name args "namespace eval ::$name \$args"
 } 
+    
 ;# our object
 thingy tdot
 
 interp alias {} self {} namespace current 
 
-tdot set code ""
 tdot set type "strict digraph G"
+tdot set code ""
 
 #' ## VARIABLES
 #' 
@@ -111,7 +114,7 @@ tdot set type "strict digraph G"
 tdot proc addEdge {args} {
     set self [self]
     set args [$self TagFix $args]
-    $self append code "\n"
+    #$self append code ""
     set flag false
     for {set i 0} {$i < [llength $args]} {incr i 1} {
         if {!$flag && [regexp {=} [lindex $args $i]]} {
@@ -123,14 +126,21 @@ tdot proc addEdge {args} {
             $self append code "\]"
             set flag false
         }
-        if {$i > 0 && !$flag} {
+        if {$i == 0} {
+            $self append code "  "
+        } elseif {$i > 0 && !$flag} {
             $self append code " "
         }
-        $self append code "[lindex $args $i]"
+        if {[regexp {[/ ]} [lindex $args $i]]} {
+            $self append code "\"[lindex $args $i]\""
+        } else {
+            $self append code "[lindex $args $i]"
+        }
     }
     if {$flag} {
         $self append code "\]"
     }
+    
     $self append code ";\n"
 
 }
@@ -149,13 +159,47 @@ tdot proc addEdge {args} {
 tdot proc block {args} {
     set self [self]
     set args [$self TagFix $args]
-    set txt "{"
+    set txt "{\n"
     set flag false
+    set open false
     for {set i 0} {$i < [llength $args]} {incr i 1} {
         # TODO: block rank=same A label="Hello" fillcolor=salmon B label=World!
-        append txt "[lindex $args $i]; "
+        if {[regexp {[/ ]} [lindex $args $i]]} {
+            set arg "\"[lindex $args $i]\""
+            lset args $i $arg
+        }
+        if {[regexp {^[A-Za-z].+=.+} [lindex $args $i]] && $i > 0} {
+            if {$flag} {
+                append txt ", [lindex $args $i]"
+            } else {
+                append txt "\[[lindex $args $i]"
+            }
+            set flag true
+        } else {
+            if {$flag} {
+                append txt "\]"
+                set flag false
+            }
+            if {$i > 0} {
+                if {![regexp -- {-[->]} [lindex $args $i]]} {
+                    append txt "; "
+                } else {
+                    append txt " "
+                }
+            } 
+            if {[regexp { } [lindex $args $i]]} {
+                append txt "\"[lindex $args $i]\""
+            } else {
+                append txt "[lindex $args $i]"
+            }
+        }
     }
-    append txt " }"
+    if {$flag} {
+        append txt "\]"
+    }
+    append txt ";"
+    set txt [regsub -all -- {(-[->]);} $txt "\\1"]
+    append txt "\n}\n"
     $self append code $txt
 }
 
@@ -203,7 +247,7 @@ tdot proc demo {} {
 #'   }
 #' }
 #' # make all nodes blue by adding code at the beginning
-#' tdot set code "node\[style=filled,fillcolor=skyblue\];\n[tdot set code]"
+#' tdot header node style=filled fillcolor=skyblue
 #' tdot write tdot-dotstring.svg
 #' ```
 #' 
@@ -283,6 +327,7 @@ tdot proc edge {args} {
 # }
 tdot proc graph {args} {
     set self [self]
+
     set args [$self TagFix $args]
     $self append code "graph\["
     for {set i 0} {$i < [llength $args]} {incr i 1} {
@@ -293,6 +338,43 @@ tdot proc graph {args} {
     }
     $self append code "\];\n"
 }
+# tdot header docu {
+#' __tdot header__ *args* 
+#' 
+#' > Adds code to teh beginning of the graph which should affect all nodes and edges
+#'   created before and afterwards. This is a workaround for changing global properties
+#'   after the first initial nodes and edges were added to the graph code.
+#' 
+#' ```{.tcl}
+#' # demo: synopsis
+#' package require tdot
+#' tdot dotstring {
+#'   graph G {
+#'      run -- intr;
+#'      intr -- runbl;
+#'      runbl -- run;
+#'      run -- kernel;
+#'      kernel -- zombie;
+#'      kernel -- sleep;
+#'      kernel -- runmem;
+#'      runmem[label="run\nmem"];
+#'   }
+#' }
+#' tdot header node style=filled fillcolor=skyblue
+#' tdot write tdot-dotstring-neato.svg
+#' ```
+#' 
+#' > ![](tdot-dotstring-neato.svg)
+#' 
+# }
+tdot proc header {args} {
+    set self [self]
+    set ocode [$self set code]
+    $self set code ""
+    $self {*}$args
+    $self append code $ocode
+}
+
 # tdot node docu {
 #' __tdot node__ *args* 
 #' 
@@ -315,9 +397,9 @@ tdot proc node {args} {
     set n [lindex $args 0]
     if {[regexp {=} $n]} {
         # all nodes
-        set txt "node\["
+        set txt "  node\["
     } else {
-        set txt "[lindex $args 0]\["
+        set txt "  [lindex $args 0]\["
         set args [lrange $args 1 end]
     }
     $self append code "$txt"
@@ -344,6 +426,69 @@ tdot proc render {} {
     return "[$self set type] {\n[$self set code]\n}\n"
 }
 
+# tdot subgraph docu {
+#' __tdot subgraph__ *name ?args?* 
+#' 
+#' > Starts a subgraph with the given name. Subsequent arguments are interpreted as
+#'   standard dot commands to set global properties of the graph. 
+#'   To end a subgraph the special name END has to be used. 
+#'   Code is based on this [Graphviz gallery code](https://graphviz.org/Gallery/directed/cluster.html).
+#' 
+#' > Example:
+#' 
+#' ```{.tcl}
+#' package require tdot
+#' tdot set code ""
+#' tdot set type "digraph G"
+#' tdot graph rankdir=LR
+#' tdot subgraph cluster_0 style=filled \
+#'                         color=lightgrey \
+#'                         label="process #1"
+#' tdot node	style=filled color=white
+#' tdot addEdge	a0 -> a1 -> a2 -> a3
+#' tdot subgraph	END
+#' tdot subgraph cluster_1 label="process #2" color=blue
+#' tdot node	style=filled
+#' tdot addEdge	b0 -> b1 -> b2 -> b3;
+#' tdot subgraph	END
+#' tdot addEdge	start -> a0
+#' tdot addEdge	start -> b0
+#' tdot addEdge	a1 -> b3 -> end
+#' tdot addEdge	b2 -> a3 -> end
+#' tdot addEdge	a3 -> a0;
+#' tdot node start shape=Mdiamond
+#' tdot node end   shape=Msquare
+#' tdot write subgraph-sample.svg
+#' ```
+#' 
+#' > ![](subgraph-sample.svg)
+#' 
+# }
+
+tdot proc subgraph {name args} { 
+    set self [self]
+    if {$name eq "END"} {
+        $self append code "\}\n"
+    } else {
+        $self append code "subgraph $name \{\n"
+        set args [$self TagFix $args]
+        for {set i 0} {$i < [llength $args]} {incr i 1} {
+            $self append code "  [lindex $args $i];\n"
+        }
+    }
+}
+#tdot proc subgraph {name args} {
+#    set self [self]
+#    if {$name eq "END"} {
+#        $self append code "}\n"
+#    } else {
+#        $self append code "subgraph $name {\n"
+#        set args [$self TagFix $args]
+#        for {set i 0} {$i < [llength $args]} {incr i 1} {
+#            $self append code "  [lindex $args i]\n"
+#        }
+#    }
+#}
 
 # tdot usage docu {
 #' __tdot usage__ 
@@ -399,6 +544,7 @@ tdot proc usage {} {
 #' pack [canvas .can -background white] -side top -fill both -expand true
 #' package require tdot
 #' tdot set code ""
+#' tdot set type "strict digraph G"
 #' tdot graph margin=0.4
 #' tdot node style=filled fillcolor=salmon shape=hexagon
 #' tdot addEdge A -> B
@@ -469,14 +615,16 @@ tdot proc TagFix {args} {
     set args {*}$args
     set flag false
     for {set i 0} {$i < [llength $args]} {incr i 1} {
+        #set arg [regsub -all {;} [lindex $args $i] "\\;"]
+        #lset args $i $arg
         if {!$flag && [regexp {=".+"} [lindex $args $i]]} { ;#"
-            lappend nargs [lindex $args $i]
+            lappend nargs [lindex $args $i] 
         } elseif {!$flag && [regexp {="} [lindex $args $i]]} { ;#"
             set flag true
-            set qarg "[lindex $args $i] "
+            set qarg "[lindex $args $i]"
         } elseif {$flag && [regexp {"} [lindex $args $i]]} { ;#"
             set flag false
-            append qarg "[lindex $args $i]"
+            append qarg " [lindex $args $i]"
             lappend nargs $qarg
         } elseif {$flag} {
             append qarg " [lindex $args $i]"
@@ -551,6 +699,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' ```{.tcl}
 #' tdot set code ""
 #' tdot set type "strict digraph G" ; # back to dot
+#' tdot graph rankdir=LR
 #' tdot addEdge A -> B -> C -> D -> A
 #' tdot write dot-circle1.svg
 #' ```
@@ -582,6 +731,68 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' 
 #' > ![](dot-neato2.svg)
 #' 
+#' <a name="tdot-history" />
+#' Now a very extended example based on the example _asde91_ 
+#' in the [dotguide manual](https://www.graphviz.org/pdf/dotguide.pdf) showing the history of Tcl/Tk and tdot within ...
+#' 
+#' ```{.tcl}
+#' tdot set code ""
+#' tdot set type "digraph Tk"
+#' tdot graph margin=0.3 
+#' tdot graph size="8\;7" ;# semikolon must be backslashed due to thingy
+#' tdot node shape=box style=filled fillcolor=grey width=1
+#' tdot addEdge 1988  -> 1993 -> 1995 -> 1997 -> 1999 \
+#'       -> 2000 -> 2002 -> 2007 -> 2012 -> future
+#' tdot node fillcolor="#ff9999"
+#' tdot edge style=invis
+#' tdot addEdge  Tk -> Bytecode -> Unicode -> TEA -> vfs -> \
+#'       Tile -> TclOO -> zipvfs
+#' tdot edge style=filled
+#' tdot node fillcolor="salmon"
+#' tdot addEdge "Tcl/Tk" -> 7.3 -> 7.4 -> 8.0  ->  8.1 ->  8.3 \
+#'       -> 8.4  -> 8.5  ->  8.6 -> 8.7;
+#' tdot node fillcolor=cornsilk
+#' tdot addEdge  7.3 -> Itcl -> 8.6
+#' tdot addEdge  Tk -> 7.4 -> Otcl -> XOTcl -> NX 
+#' tdot addEdge  Otcl -> Thingy -> tdot
+#' tdot addEdge  Bytecode -> 8.0 
+#' tdot addEdge  8.0 -> Namespace dir=back
+#' tdot addEdge  Unicode -> 8.1
+#' tdot addEdge  8.1 -> Wiki
+#' tdot addEdge  TEA -> 8.3 
+#' tdot addEdge  8.3 -> Tcllib -> Tklib
+#' tdot addEdge  8.4 -> Starkit -> Snit -> Dict -> 8.5 
+#' tdot addEdge  vfs -> 8.4
+#' tdot addEdge  Tile -> 8.5
+#' tdot addEdge  TclOO -> 8.6  -> TDBC
+#' tdot addEdge  zipvfs -> 8.7  ;# Null is just a placeholder for the history
+#' tdot block    rank=same 1988 "Tcl/Tk"  group=g1
+#' tdot block    rank=same 1993  7.3      group=g1  Itcl
+#' tdot block    rank=same 1995  Tk       group=g0  7.4 group=g1 Otcl group=g2
+#' tdot block    rank=same 1997  Bytecode group=g0  8.0 group=g1 Namespace
+#' tdot block    rank=same 1999  Unicode  group=g0  8.1 group=g1 Wiki 
+#' tdot block    rank=same 2000  TEA      group=g0  8.3 group=g1 Tcllib \
+#'                               Tklib XOTcl group=g2 
+#' tdot block    rank=same 2002  vfs      group=g0  8.4 group=g1 Starkit Dict Snit
+#' tdot block    rank=same 2007  Tile     group=g0  8.5 group=g1 
+#' tdot block    rank=same 2012  TclOO    group=g0  8.6 group=g1 TDBC NX group=g2
+#' tdot block    rank=same future zipvfs  group=g0  8.7 group=g1 Null group=g2 tdot group=g3
+#' 
+#' # specific node settings 
+#' tdot node     History label="History of Tcl/Tk\nand  tdot" shape=doubleoctagon color="salmon" penwidth=5 \
+#'       fillcolor="white" fontsize=26 fontname="Monaco"
+#' tdot node     Namespace fillcolor="#ff9999"
+#' tdot node     future label=2021
+#' tdot node     8.7    label="\[ 8.7a5 \]"
+#' # arranging the History in the middle
+#' tdot addEdge  8.7 -> Null style=invis
+#' tdot addEdge  Null -> History style=invis
+#' tdot node Null style=invis
+#' tdot write tdot-history.png
+#' ```
+#' 
+#' ![](tdot-history.svg)
+#' 
 #' ## INSTALLATION
 #' 
 #' The _tdot_ package requires to create images a running installation of the [Graphviz](https://graphviz.org/download/) command line tools. For only creating the textual dot files there is no installation of these tools reequired.
@@ -606,6 +817,12 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' * 2021-09-14 Version 0.2.0 
 #'     * adding dotstring command similar to tcldot's command
 #'     * docu fixes, switching from png to svg if possible for filesize
+#' * 2021-09-26 Version 0.3.0
+#'     * adding header method for code at the beginning
+#'     * adding subgraph method with extended example from Graphviz gallery
+#'     * adding quoted node names
+#'     * fixing spacing issues in label spaces 
+#'     * adding semikolon issue as note on top
 #' 
 #' ## TODO
 #' 
