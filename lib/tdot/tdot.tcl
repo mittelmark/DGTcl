@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210926.0731>
+#  Last Modified : <210926.0754>
 #
 #  Description	
 #
@@ -131,7 +131,7 @@ tdot proc addEdge {args} {
         } elseif {$i > 0 && !$flag} {
             $self append code " "
         }
-        if {[regexp {[/ ]} [lindex $args $i]]} {
+        if {[regexp {[/ ]} [lindex $args $i]] && ![regexp {.+=.+} [lindex $args $i]]} {
             $self append code "\"[lindex $args $i]\""
         } else {
             $self append code "[lindex $args $i]"
