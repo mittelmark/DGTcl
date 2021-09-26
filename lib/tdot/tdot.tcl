@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210926.0754>
+#  Last Modified : <210926.0802>
 #
 #  Description	
 #
@@ -772,7 +772,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' tdot block    rank=same 1997  Bytecode group=g0  8.0 group=g1 Namespace
 #' tdot block    rank=same 1999  Unicode  group=g0  8.1 group=g1 Wiki 
 #' tdot block    rank=same 2000  TEA      group=g0  8.3 group=g1 Tcllib \
-#'                               Tklib XOTcl group=g2 
+#'                               Tklib Thingy group=g3 XOTcl group=g2 
 #' tdot block    rank=same 2002  vfs      group=g0  8.4 group=g1 Starkit Dict Snit
 #' tdot block    rank=same 2007  Tile     group=g0  8.5 group=g1 
 #' tdot block    rank=same 2012  TclOO    group=g0  8.6 group=g1 TDBC NX group=g2
@@ -788,7 +788,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' tdot addEdge  8.7 -> Null style=invis
 #' tdot addEdge  Null -> History style=invis
 #' tdot node Null style=invis
-#' tdot write tdot-history.png
+#' tdot write tdot-history.svg
 #' ```
 #' 
 #' ![](tdot-history.svg)
