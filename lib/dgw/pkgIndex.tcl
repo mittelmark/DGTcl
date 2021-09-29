@@ -11,7 +11,7 @@ package ifneeded dgw::seditor 0.3 [list source [file join $dir seditor.tcl]]
 package ifneeded dgw::sfinddialog 0.4 [list source [file join $dir sfinddialog.tcl]]
 package ifneeded dgw::statusbar 0.2 [list source [file join $dir statusbar.tcl]]
 package ifneeded dgw::tvmixins 0.3 [list source [file join $dir tvmixins.tcl]]
-package ifneeded dgw::txmixins 0.1 [list source [file join $dir txmixins.tcl]]
+package ifneeded dgw::txmixins 0.2.0 [list source [file join $dir txmixins.tcl]]
 
 # require tdbc::sqlite3
 package ifneeded dgw::sqlview 0.6 [list source [file join $dir sqlview.tcl]]
