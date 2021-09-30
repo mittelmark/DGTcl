@@ -110,7 +110,7 @@ tdot write tdot-dotstring.svg
 
 __tdot edge__ *args* 
 
-> Adds code to the graph within regarding edge properties which will
+> Adds code to the graph regarding edge properties which will
   affect all subsequently created edges.
 
 > ```
@@ -129,7 +129,7 @@ tcldot graph margin=0.2
 
 __tdot header__ *args* 
 
-> Adds code to teh beginning of the graph which should affect all nodes and edges
+> Adds code to the beginning of the graph which should affect all nodes and edges
   created before and afterwards. This is a workaround for changing global properties
   after the first initial nodes and edges were added to the graph code.
 
@@ -254,9 +254,9 @@ package require tdot
 tdot set code ""
 tdot set type "strict digraph G"
 tdot graph margin=0.4
-tdot node style=filled fillcolor=salmon shape=hexagon
+tdot node style=filled fillcolor=salmon shape=hexagon 
 tdot addEdge A -> B
-tdot node A label="tdot"
+tdot node A label="tdot" id=labA comment=Hello
 tdot node B label="Hello World!"  
 tdot write .can
 .can create rect 10 10 290 250 -outline red
@@ -293,7 +293,7 @@ tdot addEdge A -> B label=" connects"
 tdot addEdge B -> C 
 tdot addEdge B -> D
 tdot addEdge D -> E
-tdot node A label="Hello" style=filled fillcolor=salmon width=2 height=1
+tdot node A label="Hello" style=filled fillcolor=salmon width=2 height=1 id=nodeA comment="some data comment"
 tdot node B label="World!" style=filled shape=box fillcolor=skyblue width=2 height=0.8
 tdot addEdge C -> F -> G
 tdot write tdot-demo.svg
@@ -390,7 +390,7 @@ tdot block    rank=same 1995  Tk       group=g0  7.4 group=g1 Otcl group=g2
 tdot block    rank=same 1997  Bytecode group=g0  8.0 group=g1 Namespace
 tdot block    rank=same 1999  Unicode  group=g0  8.1 group=g1 Wiki 
 tdot block    rank=same 2000  TEA      group=g0  8.3 group=g1 Tcllib \
-                              Tklib XOTcl group=g2 
+                              Tklib Thingy group=g3 XOTcl group=g2 
 tdot block    rank=same 2002  vfs      group=g0  8.4 group=g1 Starkit Dict Snit
 tdot block    rank=same 2007  Tile     group=g0  8.5 group=g1 
 tdot block    rank=same 2012  TclOO    group=g0  8.6 group=g1 TDBC NX group=g2
@@ -406,7 +406,7 @@ tdot node     8.7    label="\[ 8.7a5 \]"
 tdot addEdge  8.7 -> Null style=invis
 tdot addEdge  Null -> History style=invis
 tdot node Null style=invis
-tdot write tdot-history.png
+tdot write tdot-history.svg
 ```
 
 ![](tdot-history.svg)
@@ -444,11 +444,11 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
 
 ## TODO
 
-- subgraphs
-- multi-line string problem
+- subgraphs (done, 0.3.0)
+- multi-line string problem (done, 0.3.0)
 - OSX check
 - method to get number of nodes or edges using -Tplain command flag
-- options more close to Tcl arguments (layout=circo == -layout circo)
+- options more close to Tcl arguments (layout=circo == -layout circo, done - see examples)
 - input as json file, so json2dot to remove edges nodes etc at a later point
 - pandoc filter _.tdot_
 - converter for tdot files as command line option

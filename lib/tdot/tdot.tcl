@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210926.0802>
+#  Last Modified : <210930.2028>
 #
 #  Description	
 #
@@ -23,10 +23,10 @@
 
 package require Tcl
 
-package provide tdot 0.3.0
+package provide tdot 0.3.1
 #' ---
 #' author: Dr. Detlef Groth, Schwielowsee, Germany
-#' title: tdot package documentation 0.3.0
+#' title: tdot package documentation 0.3.1
 #' date: 2021-09-14
 #' ---
 #' 
@@ -285,7 +285,7 @@ tdot proc dotstring {dotstr} {
 # tdot edge docu {
 #' __tdot edge__ *args* 
 #' 
-#' > Adds code to the graph within regarding edge properties which will
+#' > Adds code to the graph regarding edge properties which will
 #'   affect all subsequently created edges.
 #' 
 #' > ```
@@ -341,7 +341,7 @@ tdot proc graph {args} {
 # tdot header docu {
 #' __tdot header__ *args* 
 #' 
-#' > Adds code to teh beginning of the graph which should affect all nodes and edges
+#' > Adds code to the beginning of the graph which should affect all nodes and edges
 #'   created before and afterwards. This is a workaround for changing global properties
 #'   after the first initial nodes and edges were added to the graph code.
 #' 
@@ -546,9 +546,9 @@ tdot proc usage {} {
 #' tdot set code ""
 #' tdot set type "strict digraph G"
 #' tdot graph margin=0.4
-#' tdot node style=filled fillcolor=salmon shape=hexagon
+#' tdot node style=filled fillcolor=salmon shape=hexagon 
 #' tdot addEdge A -> B
-#' tdot node A label="tdot"
+#' tdot node A label="tdot" id=labA comment=Hello
 #' tdot node B label="Hello World!"  
 #' tdot write .can
 #' .can create rect 10 10 290 250 -outline red
@@ -605,6 +605,7 @@ tdot proc write {{device ""}} {
         exec $dot -T$extension $tfile -o $device
         return ""
     }
+    catch { file delete $tfile }
 }
     
 # private function 
@@ -823,14 +824,16 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #'     * adding quoted node names
 #'     * fixing spacing issues in label spaces 
 #'     * adding semikolon issue as note on top
+#' * 2021-09-30 
+#'     * adding file delete to tdot write procedure
 #' 
 #' ## TODO
 #' 
-#' - subgraphs
-#' - multi-line string problem
+#' - subgraphs (done, 0.3.0)
+#' - multi-line string problem (done, 0.3.0)
 #' - OSX check
 #' - method to get number of nodes or edges using -Tplain command flag
-#' - options more close to Tcl arguments (layout=circo == -layout circo)
+#' - options more close to Tcl arguments (layout=circo == -layout circo, done - see examples)
 #' - input as json file, so json2dot to remove edges nodes etc at a later point
 #' - pandoc filter _.tdot_
 #' - converter for tdot files as command line option
