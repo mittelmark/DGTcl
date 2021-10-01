@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <210930.2028>
+#  Last Modified : <211001.0703>
 #
 #  Description	
 #
@@ -524,19 +524,21 @@ tdot proc usage {} {
 #' __tdot write__ _?device?_
 #' 
 #' > Writes the current tdot code to the given device. If the argument is empty the function
-#'   just returns the tdot code. The following devices are support:
+#'   just returns the tdot code. The following output devices (filenames and the canvas widget) are support:
 #' 
-#' > - filenames which can be:
-#'      - dot files
-#'      - png files
-#'      - pdf files
-#'      - svg files
-#'      - any other file type support by Graphviz
+#' > Filenames can be:
+#' 
+#' > - dot files
+#'   - png files
+#'   - pdf files
+#'   - svg files
+#'   - tk files (containing Tk canvas code)
+#'   - any other file type support by Graphviz
 #' 
 #' > Please note, that except for the dot file format the other file formats require
 #'   an existing Graphviz installation.
 #' 
-#' > - Tk canvas widget
+#' > And we can write to a Tk canvas widget, see here an example:
 #' 
 #' ```{.tcl}
 #' # demo: write
@@ -548,10 +550,12 @@ tdot proc usage {} {
 #' tdot graph margin=0.4
 #' tdot node style=filled fillcolor=salmon shape=hexagon 
 #' tdot addEdge A -> B
-#' tdot node A label="tdot" id=labA comment=Hello
+#' tdot node A label="tdot" comment="Hello Canvas"
 #' tdot node B label="Hello World!"  
+#' tdot write canvas.tk ;# for inspection later
 #' tdot write .can
-#' .can create rect 10 10 290 250 -outline red
+#' # thereafter normal canvas commands can be added
+#' .can create rect 10 10 290 250 -outline red 
 #' destroy . ;# just to allow automatic document processing
 #' ```
 #' 
@@ -824,7 +828,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #'     * adding quoted node names
 #'     * fixing spacing issues in label spaces 
 #'     * adding semikolon issue as note on top
-#' * 2021-09-30 
+#' * 2021-09-30 Version 0.3.1
 #'     * adding file delete to tdot write procedure
 #' 
 #' ## TODO

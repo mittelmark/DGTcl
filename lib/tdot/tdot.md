@@ -1,6 +1,6 @@
 ---
 author: Dr. Detlef Groth, Schwielowsee, Germany
-title: tdot package documentation 0.3.0
+title: tdot package documentation 0.3.1
 date: 2021-09-14
 ---
 
@@ -232,19 +232,21 @@ $ tclsh tdot.tcl --demo | dot -Tx11
 __tdot write__ _?device?_
 
 > Writes the current tdot code to the given device. If the argument is empty the function
-  just returns the tdot code. The following devices are support:
+  just returns the tdot code. The following output devices (filenames and the canvas widget) are support:
 
-> - filenames which can be:
-     - dot files
-     - png files
-     - pdf files
-     - svg files
-     - any other file type support by Graphviz
+> Filenames can be:
+
+> - dot files
+  - png files
+  - pdf files
+  - svg files
+  - tk files (containing Tk canvas code)
+  - any other file type support by Graphviz
 
 > Please note, that except for the dot file format the other file formats require
   an existing Graphviz installation.
 
-> - Tk canvas widget
+> And we can write to a Tk canvas widget, see here an example:
 
 ```{.tcl}
 # demo: write
@@ -256,10 +258,12 @@ tdot set type "strict digraph G"
 tdot graph margin=0.4
 tdot node style=filled fillcolor=salmon shape=hexagon 
 tdot addEdge A -> B
-tdot node A label="tdot" id=labA comment=Hello
+tdot node A label="tdot" comment="Hello Canvas"
 tdot node B label="Hello World!"  
+tdot write canvas.tk ;# for inspection later
 tdot write .can
-.can create rect 10 10 290 250 -outline red
+# thereafter normal canvas commands can be added
+.can create rect 10 10 290 250 -outline red 
 destroy . ;# just to allow automatic document processing
 ```
 
@@ -293,7 +297,7 @@ tdot addEdge A -> B label=" connects"
 tdot addEdge B -> C 
 tdot addEdge B -> D
 tdot addEdge D -> E
-tdot node A label="Hello" style=filled fillcolor=salmon width=2 height=1 id=nodeA comment="some data comment"
+tdot node A label="Hello" style=filled fillcolor=salmon width=2 height=1
 tdot node B label="World!" style=filled shape=box fillcolor=skyblue width=2 height=0.8
 tdot addEdge C -> F -> G
 tdot write tdot-demo.svg
@@ -441,6 +445,8 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
     * adding quoted node names
     * fixing spacing issues in label spaces 
     * adding semikolon issue as note on top
+* 2021-09-30 Version 0.3.1
+    * adding file delete to tdot write procedure
 
 ## TODO
 
