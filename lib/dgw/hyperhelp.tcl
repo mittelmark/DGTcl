@@ -422,8 +422,12 @@ snit::widget ::dgw::hyperhelp {
         regsub -all -line {^ {4,5}([-+*]) } $data "    \\1\\1 " data
         set t [clock seconds]
         set cmds [list file open exec send socket] 
+        set rcmds [list]
         foreach cmd $cmds {
-            rename ::$cmd ::${cmd}.orig$t
+            if {[info command $cmd] ne ""} {
+                rename ::$cmd ::${cmd}.orig$t
+                lappend rcmds $cmd
+            }
         }
         set x 0
         foreach section [split $data \x01] {
@@ -487,7 +491,7 @@ snit::widget ::dgw::hyperhelp {
             $self AddPage $title $aliases $section
         }
 
-        foreach cmd $cmds {
+        foreach cmd $rcmds {
             rename ::${cmd}.orig$t ::$cmd 
         }
         if {$x > 1} {
