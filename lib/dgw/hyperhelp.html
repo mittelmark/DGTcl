@@ -97,11 +97,11 @@ text-align:		left;
 <a href="tvmixins.html">tvmixins</a> - 
 <a href="txmixins.html">txmixins</a></p>
 
-<h1>dgw::hyperhelp 0.8.2</h1>
+<h1>dgw::hyperhelp 0.8.3</h1>
 
 <h3>Dr. Detlef Groth, Schwielowsee, Germany</h3>
 
-<h3>2021-08-23</h3>
+<h3>2021-10-24</h3>
 
 <h2>NAME</h2>
 
@@ -418,7 +418,7 @@ But anyway only use your own help files</li></ul>
 
 <p>For installation you copy the complete <em>dgw</em> and the <em>dgtools</em> folder into a path 
 of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
-Alternatively you can install the package as a Tcl module by creating a file dgw/hyperhelp-0.8.2.tm in your Tcl module path.
+Alternatively you can install the package as a Tcl module by creating a file dgw/hyperhelp-0.8.3.tm in your Tcl module path.
 The latter in many cases can be achieved by using the <em>--install</em> option of hyperhelp.tcl. 
 Try &quot;tclsh hyperhelp.tcl --install&quot; for this purpose. Please note, that in the latter case you must redo this 
 for the <code>dgtools::shistory</code> package.</p>
@@ -509,10 +509,15 @@ pdflatex hyperhelp.tex
 <li>fixed bug in help page </li></ul>
 
 </li>
-<li>2020-03-02
+<li>2020-03-02 Release 0.8.2
 <ul>
 <li>adding hyperhelp-minimal example to the code</li>
-<li>adding --sample option to print this to the terminal
+<li>adding --sample option to print this to the terminal</li></ul>
+
+</li>
+<li>2021-10-20 Release 0.8.3 
+<ul>
+<li>fixing an issue on Windows because of missing send command
 </li></ul>
 
 </li></ul>
@@ -523,7 +528,7 @@ pdflatex hyperhelp.tex
 
 <h2><a name='license'>LICENSE AND COPYRIGHT</a></h2>
 
-<p>The dgw::hyperhelp package version 0.8.2</p>
+<p>The dgw::hyperhelp package version 0.8.3</p>
 
 <p>Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: &lt;detlef(at)dgroth(dot)de&gt;
 This library is free software; you can use, modify, and redistribute it

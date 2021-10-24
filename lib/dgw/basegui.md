@@ -14,11 +14,11 @@
 [tvmixins](tvmixins.html) - 
 [txmixins](txmixins.html) 
 
-# dgw::basegui 0.2
+# dgw::basegui 0.3.0
     
 ### Detlef Groth, Schwielowsee, Germany
     
-### 2021-08-23
+### 2021-10-24
 
 
 ## NAME
@@ -37,6 +37,7 @@
  - [INSTALLATION](#install)
  - [DEMO](#demo)
  - [DOCUMENTATION](#docu)
+ - [CHANGES](#changes)
  - [SEE ALSO](#see)
  - [TODO](#todo)
  - [AUTHOR](#authors)
@@ -57,6 +58,7 @@
     cmdName dlabel pathname
     cmdName getFrame
     cmdName getMenu
+    cmdName ilabel pathname
     cmdName labentry pathname
     cmdName message msg
     cmdName notebook pathname
@@ -104,6 +106,7 @@ this as *false* at object creation.
    - [center](#center)
    - [console](#console)
    - [dlabel](#dlabel)
+   - [ilabel](#ilabel)
    - [notebook](#notebook)
    - [rotext](#rotext)
    - [splash](#splash)
@@ -201,6 +204,31 @@ set fmenu [app getMenu "File"]
 $fmenu insert 0 command -label Open -underline 0 -command { puts Opening }
 > ```
  
+
+<a name="ilabel">*cmdName* **ilabel** *window -option value*</a>
+
+> Creates a ttk::label with an image where the image size is dynamically adjusted to the widget size. 
+  One of the following option are usually required:
+
+> - _-filename pngfile_ - usually a PNG file is used as image file
+  - _-image imgCmd_ - an Tk image usually create with the _image create_ command
+
+> All other options and methods are forwarded to the standard ttk::label command
+  
+> Here two example widgets:
+
+
+> ```
+dgw::basegui app -start false
+toplevel .test
+app ilabel .test.l -file [file join [file dirname [info script]] hyperhelp.png]
+pack  .test.l -expand 1 -fill both
+image create photo img  -file [file join [file dirname [info script]] hyperhelp.png]
+app ilabel .test.l2 -image img
+pack  .test.l2 -expand 1 -fill both
+wm geometry .test 400x300+0+0
+> ```
+
 
 <a name="labentry">*cmdName* **labentry**  *pathname ?-option value ...?*</a>
 
@@ -456,7 +484,7 @@ Installation is easy you can easily install and use this ** dgw::basegui** packa
 
 For installation you copy the complete *dgw* folder into a path 
 of your *auto_path* list of Tcl or you append the *auto_path* list with the parent dir of the *dgw* directory.
-Alternatively you can install the package as a Tcl module by creating a file `dgw/basegui-0.2.tm` in your Tcl module path.
+Alternatively you can install the package as a Tcl module by creating a file `dgw/basegui-0.3.0.tm` in your Tcl module path.
 The latter in many cases can be achieved by using the _--install_ option of basegui.tcl. 
 Try "tclsh basegui.tcl --install" for this purpose.
 
@@ -508,6 +536,25 @@ html or pdf document. If you have pandoc installed for instance, you could execu
     pdflatex basegui.tex
 
 
+## <a name='changes'>CHANGES</a>
+
+- 2020-01-18 - Release 0.1
+- 2020-01-19 - Version 0.2
+
+> - rotext command added   
+  - center command added
+  - notebook command added
+  - labentry command added
+  - timer command added
+  - start option to allow using commands in existing applications
+  - treeview widget with sorting facilities (better look at [dgw::tvmixins](tvmixins.html) )
+
+- 2021-10-24 - Version: 0.3
+
+> - adding dgw::ilabel widget as ilabel method to the basegui class
+  - small docu updates
+
+
 ## <a name='see'>SEE ALSO</a>
 
 - [dgw - package homepage: https://chiselapp.com/user/dgroth/repository/tclcode/index](http://chiselapp.com/user/dgroth/repository/tclcode/index)
@@ -528,7 +575,7 @@ Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 
 ## <a name='license'>LICENSE</a>
 
- dgw::basegui command, version 0.2.
+ dgw::basegui command, version 0.3.0.
 
 Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 

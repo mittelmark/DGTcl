@@ -51,6 +51,7 @@
 #'       - [center](basegui.html#center) - center toplevel widgets
 #'       - [console](basegui.html#console) - embedded Tcl console for debugging
 #'       - [dlabel](basegui.html#dlabel) - label widget with dynamic fontsize fitting the widget size
+#'       - [ilabel](basegui.html#ilabel) - label widget with dynamic image fitting the widget size
 #'       - [labentry](basegui.html#labentry) - composite widget of label and entry
 #'       - [notebook](basegui.html#notebook) - ttk::notebook with interactive tab management faciltities
 #'       - [rotext](basegui.html#rotext) - read only text widget
@@ -79,8 +80,8 @@
 namespace eval dgw {} 
 
 # mandatory packages
-package provide dgw 0.6
-package provide dgw::dgw 0.6
+package provide dgw 0.7.0
+package provide dgw::dgw 0.7.0
 package require dgw::dgwutils
 package require dgw::basegui
 package require dgw::combobox
@@ -147,6 +148,14 @@ package require dgw::txmixins
 #' pandoc -i __BASENAME__.md -s -o __BASENAME__.tex
 #' pdflatex __BASENAME__.tex
 #' ```
+#' 
+#' ## <a name='changes'>CHANGES</a>
+#' 
+#' - 2021-10-25 - Version 0.7.0
+#'     - dgw::txminxins added - Version 0.2.0
+#'     - fixes for dgw::hyperhelp on Windows - Version 0.8.3
+#'     - dgw::ilabel for dgw::basegui - Version 0.3.0
+#'
 #' 
 #' ## <a name='see'>SEE ALSO</a>
 #'

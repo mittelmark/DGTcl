@@ -3,7 +3,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Thu Aug 12 12:00:00 2021
-#  Last Modified : <210929.1954>
+#  Last Modified : <210930.0539>
 #
 #  Description	
 #
@@ -1353,10 +1353,10 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp {txmixins} $argv0]
 #'
 #' ## <a name='todo'>TODO</a>
 #' 
-#' * Syntax hilighter (donw)
+#' * Syntax hilighter (done)
 #' * switch folding by switching file
 #' * File watch: https://wiki.tcl-lang.org/page/File+watch (done)
-#' * Block selection: https://wiki.tcl-lang.org/page/Simple+Block+Selection+for+Text+Widget
+#' * Block selection: https://wiki.tcl-lang.org/page/Simple+Block+Selection+for+Text+Widget (done)
 #' * Text sorting: https://wiki.tcl-lang.org/page/Simple+Text+Widget+Sort
 #' * Logic notation https://wiki.tcl-lang.org/page/A+little+logic+notation+editor
 #' * Drag and drop of text: https://wiki.tcl-lang.org/page/Text+Drag+%2DDrag+and+Drop+for+Text+Widget+Selections

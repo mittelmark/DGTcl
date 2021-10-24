@@ -8,25 +8,15 @@
 #  Author        : $Author$
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Jan 17 05:48:00 2017
-#  Last Modified : <200227.1431>
+#  Last Modified : <211024.2003>
 #
 #  Description	 : Snit type as a base class to build Tk applications
 #
 #  Notes         : 
 #
-#  History       : 2020-01-18 - Release 0.1
-#                  2020-01-19 - Version 0.2
-#                               - rotext command added   
-#                               - center command added
-#                               - notebook command added
-#                               - labentry command added
-#                               - timer command added
-#                               - start option to allow using commands in existing applications
-#                               - treeview widget with sorting facilities
-#	
 ##############################################################################
 #
-#  Copyright (c) 2017-2020 Dr. Detlef Groth.
+#  Copyright (c) 2017-2021 Dr. Detlef Groth.
 # 
 #' ---
 #' documentclass: scrartcl
@@ -50,6 +40,7 @@
 #'  - [INSTALLATION](#install)
 #'  - [DEMO](#demo)
 #'  - [DOCUMENTATION](#docu)
+#'  - [CHANGES](#changes)
 #'  - [SEE ALSO](#see)
 #'  - [TODO](#todo)
 #'  - [AUTHOR](#authors)
@@ -70,6 +61,7 @@
 #' cmdName dlabel pathname
 #' cmdName getFrame
 #' cmdName getMenu
+#' cmdName ilabel pathname
 #' cmdName labentry pathname
 #' cmdName message msg
 #' cmdName notebook pathname
@@ -86,7 +78,7 @@
 package require Tk
 package require dgw::statusbar
 package require dgw::dgwutils
-package provide dgw::basegui 0.2
+package provide dgw::basegui 0.3.0
 
 #' ## <a name='description'>DESCRIPTION</a>
 #'
@@ -318,14 +310,248 @@ snit::widget  dgw::dlabel {
             font configure $options(-font) -size $size
         }
     }
-    
     method configureBinding {mwin width height} {
         bind $mwin <Configure> {}
         $self adjustFont $width $height
         after idle [list bind $mwin <Configure> [mymethod configureBinding %W %w %h]]
     }
 }
+# dynamic image size label
+snit::widget dgw::ilabel {
+    component label
+    option -file 
+    option -image
+    delegate method * to label 
+    delegate option * to label except {-image -file}
+    variable oWidth
+    variable oHeight
+    variable lastWidth
+    variable lastHeight
+    variable src
+    variable dest
+    constructor {args} {
+        set label [ttk::label $win.lbl]
+        $self configurelist $args
+        place $label -relx 0.5 -rely 0.5 -anchor center
+        bind  $win <Configure> [mymethod configureStart %W %w %h] 
+    }
+    onconfigure -file value {
+        set src [image create photo -file $value]
+        
+        set oWidth [image width $src]
+        set oHeight [image height $src]
+        set dest [image create photo]
+        $label configure -image $dest
+        #$self resize [$win cget -width] [$win cget -height]
+        set options(-file) $value
+    }
+    onconfigure -image value {
+        set src $value
+        
+        set oWidth [image width $src]
+        set oHeight [image height $src]
+        set dest [image create photo]
+        $dest copy $src
+        $label configure -image $dest
+        #$self resize [$win cget -width] [$win cget -height]
+        set options(-image) $value
+    }
+    
+    method configureStart {w width height} {
+        set lastWidth $width
+        set lastHeight $height
+        after 1000 [list $self configureEnd  $width $height]
+    }
+     method configureEnd {width height} {
+         if {$lastWidth == $width && $lastHeight == $height} {
+             $dest blank
+             set zy [expr {1.0*$height/$oHeight}]
+             set zx [expr {1.0*$width /$oWidth}]
+             if {$zx > $zy} {
+                 set width [expr {int($oWidth*$zy)}]
+             } else {
+                 set height [expr {int($oHeight*$zx)}]
+             }
+             $self resize $width $height 
+         }
+     }
+     method resize {newx newy} {
+         # todo check for faster image resize command
+         # availability instead of this Tcl only version
+         set mx [image width $src]
+         set my [image height $src]
+         
+         if { "$dest" == ""} {
+             set dest [image create photo]
+         }
+         $dest configure -width $newx -height $newy
+         
+         # Check if we can just zoom using -zoom option on copy
+         if { $newx % $mx == 0 && $newy % $my == 0} {
+             
+             set ix [expr {$newx / $mx}]
+             set iy [expr {$newy / $my}]
+             $dest copy $src -zoom $ix $iy
+             return $dest
+         }
+         
+         set ny 0
+         set ytot $my
+         
+         for {set y 0} {$y < $my} {incr y} {
+             
+             #
+             # Do horizontal resize
+             #
+             
+             foreach {pr pg pb} [$src get 0 $y] {break}
+             
+             set row [list]
+             set thisrow [list]
+             
+             set nx 0
+             set xtot $mx
+             
+             for {set x 1} {$x < $mx} {incr x} {
+                 
+                 # Add whole pixels as necessary
+                 while { $xtot <= $newx } {
+                     lappend row [format "#%02x%02x%02x" $pr $pg $pb]
+                     lappend thisrow $pr $pg $pb
+                     incr xtot $mx
+                     incr nx
+                 }
+                 
+                 # Now add mixed pixels
+                 
+                 foreach {r g b} [$src get $x $y] {break}
+                 
+                 # Calculate ratios to use
+                 
+                 set xtot [expr {$xtot - $newx}]
+                 set rn $xtot
+                 set rp [expr {$mx - $xtot}]
+                 
+                 # This section covers shrinking an image where
+                 # more than 1 source pixel may be required to
+                 # define the destination pixel
+                 
+                 set xr 0
+                 set xg 0
+                 set xb 0
+                 
+                 while { $xtot > $newx } {
+                     incr xr $r
+                     incr xg $g
+                     incr xb $b
+                     
+                     set xtot [expr {$xtot - $newx}]
+                     incr x
+                     foreach {r g b} [$src get $x $y] {break}
+                 }
+                 
+                 # Work out the new pixel colours
+                 
+                 set tr [expr {int( ($rn*$r + $xr + $rp*$pr) / $mx)}]
+                 set tg [expr {int( ($rn*$g + $xg + $rp*$pg) / $mx)}]
+                 set tb [expr {int( ($rn*$b + $xb + $rp*$pb) / $mx)}]
+                 
+                 if {$tr > 255} {set tr 255}
+                 if {$tg > 255} {set tg 255}
+                 if {$tb > 255} {set tb 255}
+                 
+                 # Output the pixel
+                 
+                 lappend row [format "#%02x%02x%02x" $tr $tg $tb]
+                 lappend thisrow $tr $tg $tb
+                 incr xtot $mx
+                 incr nx
+                 
+                 set pr $r
+                 set pg $g
+                 set pb $b
+             }
+             
+             # Finish off pixels on this row
+             while { $nx < $newx } {
+                 lappend row [format "#%02x%02x%02x" $r $g $b]
+                 lappend thisrow $r $g $b
+                 incr nx
+             }
+             
+             #
+             # Do vertical resize
+             #
+             
+             if {[info exists prevrow]} {
+                 
+                 set nrow [list]
+                 
+                 # Add whole lines as necessary
+                 while { $ytot <= $newy } {
+                     
+                     $dest put -to 0 $ny [list $prow]
+                     
+                     incr ytot $my
+                     incr ny
+                 }
+                 
+                 # Now add mixed line
+                 # Calculate ratios to use
+                 
+                 set ytot [expr {$ytot - $newy}]
+                 set rn $ytot
+                 set rp [expr {$my - $rn}]
+                 
+                 # This section covers shrinking an image
+                 # where a single pixel is made from more than
+                 # 2 others.  Actually we cheat and just remove 
+                 # a line of pixels which is not as good as it should be
+                 
+                 while { $ytot > $newy } {
+                     
+                     set ytot [expr {$ytot - $newy}]
+                     incr y
+                     continue
+                 }
+                 
+                 # Calculate new row
+                 
+                 foreach {pr pg pb} $prevrow {r g b} $thisrow {
+                     
+                     set tr [expr {int( ($rn*$r + $rp*$pr) / $my)}]
+                     
+                     
+                     set tg [expr {int( ($rn*$g + $rp*$pg) / $my)}]
+                     set tb [expr {int( ($rn*$b + $rp*$pb) / $my)}]
+                     
+                     lappend nrow [format "#%02x%02x%02x" $tr $tg $tb]
+                 }
+                 
+                 $dest put -to 0 $ny [list $nrow]
+                 
+                 incr ytot $my
+                 incr ny
+             }
+             
+             set prevrow $thisrow
+             set prow $row
+             # TODO: remove??
+             update idletasks
+         }
+         
+         # Finish off last rows
+         while { $ny < $newy } {
+             $dest put -to 0 $ny [list $row]
+             incr ny
+         }
+         update idletasks
+         
+         return $dest
+     }
 
+         
+ }
 # standard ttk::treeview with sort facilities if in table mode
 snit::widget dgw::treeview {
     component treeview
@@ -533,6 +759,7 @@ snit::type ::dgw::basegui {
     #'    - [center](#center)
     #'    - [console](#console)
     #'    - [dlabel](#dlabel)
+    #'    - [ilabel](#ilabel)
     #'    - [notebook](#notebook)
     #'    - [rotext](#rotext)
     #'    - [splash](#splash)
@@ -890,6 +1117,36 @@ snit::type ::dgw::basegui {
             }
             return $var(menu,$wpath)
         }
+    }
+    
+    #'
+    #' <a name="ilabel">*cmdName* **ilabel** *window -option value*</a>
+    #' 
+    #' > Creates a ttk::label with an image where the image size is dynamically adjusted to the widget size. 
+    #'   One of the following option are usually required:
+    #' 
+    #' > - _-filename pngfile_ - usually a PNG file is used as image file
+    #'   - _-image imgCmd_ - an Tk image usually create with the _image create_ command
+    #' 
+    #' > All other options and methods are forwarded to the standard ttk::label command
+    #'   
+    #' > Here two example widgets:
+    #' 
+    #'
+    #' > ```
+    #' dgw::basegui app -start false
+    #' toplevel .test
+    #' app ilabel .test.l -file [file join [file dirname [info script]] hyperhelp.png]
+    #' pack  .test.l -expand 1 -fill both
+    #' image create photo img  -file [file join [file dirname [info script]] hyperhelp.png]
+    #' app ilabel .test.l2 -image img
+    #' pack  .test.l2 -expand 1 -fill both
+    #' wm geometry .test 400x300+0+0
+    #' > ```
+    #' 
+    method ilabel {w args} {
+         dgw::ilabel $w {*}$args
+   
     }
     
     #'
@@ -1286,6 +1543,25 @@ snit::type ::dgw::basegui {
 #' pandoc -i __BASENAME__.md -s -o __BASENAME__.tex
 #' pdflatex __BASENAME__.tex
 #' ```
+#' 
+#' ## <a name='changes'>CHANGES</a>
+#'
+#' - 2020-01-18 - Release 0.1
+#' - 2020-01-19 - Version 0.2
+#' 
+#' > - rotext command added   
+#'   - center command added
+#'   - notebook command added
+#'   - labentry command added
+#'   - timer command added
+#'   - start option to allow using commands in existing applications
+#'   - treeview widget with sorting facilities (better look at [dgw::tvmixins](tvmixins.html) )
+#'
+#' - 2021-10-24 - Version: 0.3
+#' 
+#' > - adding dgw::ilabel widget as ilabel method to the basegui class
+#'   - small docu updates
+#' 
 #' 
 #' ## <a name='see'>SEE ALSO</a>
 #'

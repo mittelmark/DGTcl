@@ -97,11 +97,11 @@ text-align:		left;
 <a href="tvmixins.html">tvmixins</a> - 
 <a href="txmixins.html">txmixins</a></p>
 
-<h1>dgw::basegui 0.2</h1>
+<h1>dgw::basegui 0.3.0</h1>
 
 <h3>Detlef Groth, Schwielowsee, Germany</h3>
 
-<h3>2021-08-23</h3>
+<h3>2021-10-24</h3>
 
 <h2>NAME</h2>
 
@@ -122,6 +122,7 @@ text-align:		left;
 <li><a href="#install">INSTALLATION</a></li>
 <li><a href="#demo">DEMO</a></li>
 <li><a href="#docu">DOCUMENTATION</a></li>
+<li><a href="#changes">CHANGES</a></li>
 <li><a href="#see">SEE ALSO</a></li>
 <li><a href="#todo">TODO</a></li>
 <li><a href="#authors">AUTHOR</a></li>
@@ -142,6 +143,7 @@ cmdName console ?pathname?
 cmdName dlabel pathname
 cmdName getFrame
 cmdName getMenu
+cmdName ilabel pathname
 cmdName labentry pathname
 cmdName message msg
 cmdName notebook pathname
@@ -194,6 +196,7 @@ this as <em>false</em> at object creation.</p>
 <li><a href="#center">center</a></li>
 <li><a href="#console">console</a></li>
 <li><a href="#dlabel">dlabel</a></li>
+<li><a href="#ilabel">ilabel</a></li>
 <li><a href="#notebook">notebook</a></li>
 <li><a href="#rotext">rotext</a></li>
 <li><a href="#splash">splash</a></li>
@@ -303,6 +306,31 @@ wm geometry .test 400x300+0+0</code></pre>
 <pre class='code'><code>::dgw::basegui app -style clam
 set fmenu [app getMenu &quot;File&quot;]
 $fmenu insert 0 command -label Open -underline 0 -command { puts Opening }</code></pre>
+</blockquote>
+
+<p><a name="ilabel"><em>cmdName</em> <strong>ilabel</strong> <em>window -option value</em></a></p>
+
+<blockquote>
+<p>Creates a ttk::label with an image where the image size is dynamically adjusted to the widget size. 
+  One of the following option are usually required:</p>
+
+<ul>
+<li><em>-filename pngfile</em> - usually a PNG file is used as image file</li>
+<li><em>-image imgCmd</em> - an Tk image usually create with the <em>image create</em> command
+</li></ul>
+
+<p>All other options and methods are forwarded to the standard ttk::label command</p>
+
+<p>Here two example widgets:</p>
+
+<pre class='code'><code>dgw::basegui app -start false
+toplevel .test
+app ilabel .test.l -file [file join [file dirname [info script]] hyperhelp.png]
+pack  .test.l -expand 1 -fill both
+image create photo img  -file [file join [file dirname [info script]] hyperhelp.png]
+app ilabel .test.l2 -image img
+pack  .test.l2 -expand 1 -fill both
+wm geometry .test 400x300+0+0</code></pre>
 </blockquote>
 
 <p><a name="labentry"><em>cmdName</em> <strong>labentry</strong>  <em>pathname ?-option value ...?</em></a></p>
@@ -575,7 +603,7 @@ after implementing it in <code>your::basegui</code> type. If you follow this app
 
 <p>For installation you copy the complete <em>dgw</em> folder into a path 
 of your <em>auto_path</em> list of Tcl or you append the <em>auto_path</em> list with the parent dir of the <em>dgw</em> directory.
-Alternatively you can install the package as a Tcl module by creating a file <code>dgw/basegui-0.2.tm</code> in your Tcl module path.
+Alternatively you can install the package as a Tcl module by creating a file <code>dgw/basegui-0.3.0.tm</code> in your Tcl module path.
 The latter in many cases can be achieved by using the <em>--install</em> option of basegui.tcl. 
 Try &quot;tclsh basegui.tcl --install&quot; for this purpose.</p>
 
@@ -621,6 +649,38 @@ pandoc -i basegui.md -s -o basegui.tex
 pdflatex basegui.tex
 </code></pre>
 
+<h2><a name='changes'>CHANGES</a></h2>
+
+<ul>
+<li>2020-01-18 - Release 0.1</li>
+<li>2020-01-19 - Version 0.2
+</li></ul>
+
+<blockquote>
+<ul>
+<li>rotext command added<br/></li>
+<li>center command added</li>
+<li>notebook command added</li>
+<li>labentry command added</li>
+<li>timer command added</li>
+<li>start option to allow using commands in existing applications</li>
+<li>treeview widget with sorting facilities (better look at <a href="tvmixins.html">dgw::tvmixins</a> )</li></ul>
+
+
+</blockquote>
+
+<ul>
+<li>2021-10-24 - Version: 0.3
+</li></ul>
+
+<blockquote>
+<ul>
+<li>adding dgw::ilabel widget as ilabel method to the basegui class</li>
+<li>small docu updates</li></ul>
+
+
+</blockquote>
+
 <h2><a name='see'>SEE ALSO</a></h2>
 
 <ul>
@@ -645,7 +705,7 @@ pdflatex basegui.tex
 
 <h2><a name='license'>LICENSE</a></h2>
 
-<p>dgw::basegui command, version 0.2.</p>
+<p>dgw::basegui command, version 0.3.0.</p>
 
 <p>Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de</p>
 

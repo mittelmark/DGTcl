@@ -14,11 +14,11 @@
 [tvmixins](tvmixins.html) - 
 [txmixins](txmixins.html) 
 
-# dgw::dgw 0.6
+# dgw::dgw 0.7.0
     
 ### Dr. Detlef Groth, Schwielowsee, Germany
     
-### 2021-09-14
+### 2021-10-24
 
 
 ## NAME
@@ -56,6 +56,7 @@ The following packages are loaded via the *package require dgw::dgw* call.
       - [center](basegui.html#center) - center toplevel widgets
       - [console](basegui.html#console) - embedded Tcl console for debugging
       - [dlabel](basegui.html#dlabel) - label widget with dynamic fontsize fitting the widget size
+      - [ilabel](basegui.html#ilabel) - label widget with dynamic image fitting the widget size
       - [labentry](basegui.html#labentry) - composite widget of label and entry
       - [notebook](basegui.html#notebook) - ttk::notebook with interactive tab management faciltities
       - [rotext](basegui.html#rotext) - read only text widget
@@ -120,6 +121,14 @@ html or pdf document. If you have pandoc installed for instance, you could execu
     pdflatex dgw.tex
 
 
+## <a name='changes'>CHANGES</a>
+
+- 2021-10-25 - Version 0.7.0
+    - dgw::txminxins added - Version 0.2.0
+    - fixes for dgw::hyperhelp on Windows - Version 0.8.3
+    - dgw::ilabel for dgw::basegui - Version 0.3.0
+
+
 ## <a name='see'>SEE ALSO</a>
 
 - dgw - package homepage: [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl)
@@ -135,7 +144,7 @@ Copyright (c) 2019-2020  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 
 ## <a name='license'>LICENSE</a>
 
-dgw package, version 0.6.
+dgw package, version 0.7.0.
 
 Copyright (c) 2019-2021  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 

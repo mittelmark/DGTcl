@@ -18,7 +18,7 @@
     
 ### Detlef Groth, Schwielowsee, Germany
     
-### 2021-09-29
+### 2021-10-24
 
 
 ## NAME
@@ -554,10 +554,10 @@ html, docx or pdf document. If you have pandoc installed for instance, you could
 
 ## <a name='todo'>TODO</a>
 
-* Syntax hilighter (donw)
+* Syntax hilighter (done)
 * switch folding by switching file
 * File watch: https://wiki.tcl-lang.org/page/File+watch (done)
-* Block selection: https://wiki.tcl-lang.org/page/Simple+Block+Selection+for+Text+Widget
+* Block selection: https://wiki.tcl-lang.org/page/Simple+Block+Selection+for+Text+Widget (done)
 * Text sorting: https://wiki.tcl-lang.org/page/Simple+Text+Widget+Sort
 * Logic notation https://wiki.tcl-lang.org/page/A+little+logic+notation+editor
 * Drag and drop of text: https://wiki.tcl-lang.org/page/Text+Drag+%2DDrag+and+Drop+for+Text+Widget+Selections

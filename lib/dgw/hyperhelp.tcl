@@ -1551,7 +1551,7 @@ snit::widget ::dgw::hyperhelp {
     }
 }
 ## EON HELP
-package provide dgw::hyperhelp 0.8.2
+package provide dgw::hyperhelp 0.8.3
 #' 
 #' ## <a name='example'>EXAMPLE</a>
 #' 
@@ -1780,9 +1780,11 @@ package provide dgw::hyperhelp 0.8.2
 #'     - removed bug in the within page search
 #'     - insertion cursors for search remains in the widget
 #'     - fixed bug in help page 
-#' - 2020-03-02
+#' - 2020-03-02 Release 0.8.2
 #'     - adding hyperhelp-minimal example to the code
 #'     - adding --sample option to print this to the terminal
+#' - 2021-10-20 Release 0.8.3 
+#'     - fixing an issue on Windows because of missing send command
 #'
 #' ## <a name='authors'>AUTHOR(s)</a>
 #' 

@@ -1,8 +1,8 @@
 # pkgIndex.tcl
 # mandatory packages
-package ifneeded dgw::dgw 0.6 [list source [file join $dir dgw.tcl]]
-package ifneeded dgw 0.6 [list source [file join $dir dgw.tcl]]
-package ifneeded dgw::basegui 0.2 [list source [file join $dir basegui.tcl]]
+package ifneeded dgw::dgw 0.7.0 [list source [file join $dir dgw.tcl]]
+package ifneeded dgw 0.7.0 [list source [file join $dir dgw.tcl]]
+package ifneeded dgw::basegui 0.3 [list source [file join $dir basegui.tcl]]
 package ifneeded dgw::combobox 0.2 [list source [file join $dir combobox.tcl]]
 package ifneeded dgw::dgwutils 0.3 [list source [file join $dir dgwutils.tcl]]
 package ifneeded dgw::drawcanvas 0.1 [list source [file join $dir drawcanvas.tcl]]
@@ -22,5 +22,5 @@ package ifneeded dgw::tablelist 0.2 [list source [file join $dir tablelist.tcl]]
 package ifneeded dgw::tlistbox 0.2 [list source [file join $dir tlistbox.tcl]]
 
 # require dgtools::shistory
-package ifneeded dgw::hyperhelp 0.8.2 [list source [file join $dir hyperhelp.tcl]]
+package ifneeded dgw::hyperhelp 0.8.3 [list source [file join $dir hyperhelp.tcl]]
 

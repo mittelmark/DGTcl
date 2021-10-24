@@ -14,11 +14,11 @@
 [tvmixins](tvmixins.html) - 
 [txmixins](txmixins.html) 
 
-# dgw::hyperhelp 0.8.2
+# dgw::hyperhelp 0.8.3
     
 ### Dr. Detlef Groth, Schwielowsee, Germany
     
-### 2021-08-23
+### 2021-10-24
 
 
 
@@ -281,7 +281,7 @@ Installation is easy you can install and use the **dgw::hyperhelp** package if y
 
 For installation you copy the complete *dgw* and the *dgtools* folder into a path 
 of your *auto_path* list of Tcl or you append the *auto_path* list with the parent dir of the *dgw* directory.
-Alternatively you can install the package as a Tcl module by creating a file dgw/hyperhelp-0.8.2.tm in your Tcl module path.
+Alternatively you can install the package as a Tcl module by creating a file dgw/hyperhelp-0.8.3.tm in your Tcl module path.
 The latter in many cases can be achieved by using the _--install_ option of hyperhelp.tcl. 
 Try "tclsh hyperhelp.tcl --install" for this purpose. Please note, that in the latter case you must redo this 
 for the `dgtools::shistory` package.
@@ -363,9 +363,11 @@ html or pdf document. If you have pandoc installed for instance, you could execu
     - removed bug in the within page search
     - insertion cursors for search remains in the widget
     - fixed bug in help page 
-- 2020-03-02
+- 2020-03-02 Release 0.8.2
     - adding hyperhelp-minimal example to the code
     - adding --sample option to print this to the terminal
+- 2021-10-20 Release 0.8.3 
+    - fixing an issue on Windows because of missing send command
 
 ## <a name='authors'>AUTHOR(s)</a>
 
@@ -373,7 +375,7 @@ The *dgw::hyperhelp* package was written by Dr. Detlef Groth, Schwielowsee, Germ
 
 ## <a name='license'>LICENSE AND COPYRIGHT</a>
 
-The dgw::hyperhelp package version 0.8.2
+The dgw::hyperhelp package version 0.8.3
 
 Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
 This library is free software; you can use, modify, and redistribute it
