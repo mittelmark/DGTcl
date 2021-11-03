@@ -1,8 +1,7 @@
 #!/usr/bin/env tclsh
 lappend auto_path [file join [file dirname [info script]] lib]
 package require rl_json
-package provide pandoc 0.2
-
+package provide pandoc 0.3.1
 #' ## NAME
 #' 
 #' _pandoc-tcl-filter.tcl_ - filter application for the pandoc command line 
@@ -127,6 +126,8 @@ package provide pandoc 0.2
 #'     * moved filters into filter folder
 #'     * plugin example mtex
 #'     * default image path _images_
+#' * 2021-11-03 Version 0.3.1
+#'     * fix for parray and "puts stdout"
 #'     
 #' ## SEE ALSO
 #' 
@@ -175,12 +176,16 @@ while {[gets stdin line] > 0} {
 }
 interp create mdi
 mdi eval {
+    lappend auto_path [file join [file dirname [info script]] lib]
     set res ""
     set chunk 0
     rename puts puts.orig
     
     proc puts {args} {
         global res
+        if {[lindex $args 0] eq "stdout"} {
+            set args [lrange $args 1 end]
+        }
         if {[regexp {^file} [lindex $args 0]]} {
             puts.orig [lindex $args 0] {*}[lrange $args 1 end]
         } else {
