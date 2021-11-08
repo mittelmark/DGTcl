@@ -5,7 +5,7 @@
 <meta content="pandoc" name="generator"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
 <meta content="Detlef Groth, Caputh-Schwielowsee, Germany" name="author"/>
-<title>tpack application - application deployment with libraries in tar archives</title>
+<title>tpack 0.2.0 - Tcl application deployment</title>
 <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -14,39 +14,46 @@
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
   </style>
-<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%0A%20%20%20%20%20%20%20%20%20%20%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%201200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20%7B%0A%20%20%20%20%20%20%20%20min-width%3A%20300px%3B%0A%20%20%20%20%20%20%20%20border-spacing%3A%200%3B%0A%20%20%20%20%20%20%20%20border-collapse%3A%20collapse%3B%0A%20%20%20%20%20%20%20%20cell-padding%3A%200px%3B%0A%20%20%20%20%20%20%20%20cell-spacing%3A%200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.header%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23dddddd%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.even%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23ddeeff%3B%0A%20%20%20%20%7D%0A%20%20%20%20td%2C%20th%20%7B%0A%20%20%20%20%20%20%20%20padding%3A%203px%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
+<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%20800px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20%20%20font-size%3A%20120%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.author%2C%20p.date%20%7B%0A%20%20%20%20%20%20%20%20font-size%3A%20110%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20code.r%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23770000%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
 <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">tpack application - application deployment with libraries in tar archives</h1>
+<h1 class="title">tpack 0.2.0 - Tcl application deployment</h1>
 <p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
-<p class="date">September 10, 2021 10:08</p>
+<p class="date">November 9, 2021 00:55</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
 <li><a href="#name">NAME</a></li>
 <li><a href="#synopsis">SYNOPSIS</a></li>
 <li><a href="#description">DESCRIPTION</a></li>
+<li><a href="#installation">INSTALLATION</a></li>
 <li><a href="#example">EXAMPLE</a></li>
+<li><a href="#changelog">CHANGELOG</a></li>
 <li><a href="#todo">TODO</a></li>
 <li><a href="#author">AUTHOR</a></li>
 <li><a href="#license">LICENSE</a></li>
 </ul>
 </nav>
 <h2 id="name">NAME</h2>
-<p><em>tpack</em> - create two file standalone Tcl applications based on tar archives</p>
+<p><em>tpack</em> - create single or two file Tcl applications based on libraries in tar archives</p>
 <h2 id="synopsis">SYNOPSIS</h2>
-<pre><code>$ tpack.tcl --help               # display usage information
-$ tpack.tcl wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
-$ tpack.tcl wrap app             #            as above
-$ tpack.tcl init app.tcl app.vfs # creates intial file app.tcl and folder app.vfs
-$ tpack.tcl init app             #            as above
-$ tpack.tcl init app.vfs         # create intial folder app.vfs</code></pre>
+<pre><code>$ tpack --help               # display usage information
+$ tpack wrap app.tapp        # wraps app.tcl and app.vfs into app.tapp 
+                             # where app.vfs is attached as tar archive
+$ tpack wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
+$ tpack wrap app             #            as above
+$ tpack init app.tcl app.vfs # creates initial file app.tcl and folder app.vfs
+$ tpack init app             #            as above
+$ tpack init app.vfs         # create initial folder app.vfs
+$ tpack unwrap app.tapp      # extracts app.tcl and app.ttar out of app.tapp</code></pre>
 <h2 id="description">DESCRIPTION</h2>
-<p>The <em>tpack</em> application can be used to simplify deployment of Tcl applications to other computers and customers. The application created usually two files, one for the application and one for the library files. If we assume that we have the application code in a file <em>app.tcl</em> and the Tcl libraries in a folder <em>app.vfs/lib</em> together with a file <em>app.vfs/main.tcl</em>. The call <code>$ tpack.tcl app.tcl app.vfs</code> will create two files:</p>
+<p>The <em>tpack</em> application can be used to simplify deployment of Tcl applications to other computers and customers. The application can create single and two file applications. Single file applications, called tapp-files contain at the top the tar extraction code, the main tcl script and an attached tar archive containing the libraries required by this application file. At startup the tar file is detached from the file and unpacked into a temporary folder from where the libraries are loaded.</p>
+<p>The single file approach create as <em>app.tapp</em> file out of <em>app.vfs</em> and <em>app.tcl</em>.</p>
+<p>The two file approach creates a ttcl-file for the application and a ttar-file for the library files. The unpacking of the library code in the tar archives is done only if the tapp file is newer then the files in the temporary directorywhere the files are extracted. If we assume that we have the application code in a file <em>app.tcl</em> and the Tcl libraries in a folder <em>app.vfs/lib</em> together with a file <em>app.vfs/main.tcl</em>. The call <code>$ tpack.tcl app.tcl app.vfs</code> will create two files:</p>
 <blockquote>
 <ul>
 <li><em>app.ttcl</em> - text file containing the application code from <em>app.tcl</em> and some code from the tar library to extract tar files</li>
@@ -55,13 +62,24 @@ $ tpack.tcl init app.vfs         # create intial folder app.vfs</code></pre>
 </blockquote>
 <p>The file <em>main.tcl</em> should contain at least the following line:</p>
 <pre><code>lappend auto_path [file join [file dirname [info script]] lib]</code></pre>
-<p>To make this approch compatibe there can be as well starkit code added like this:</p>
-<pre><code>catch { package require starkit }
-if {[package versions starkit] ne ""} {
-    starkit::startup
-    package require app-appname
+<p>The <em>tpack</em> application provides as well a loader for default starkit layouts, so a fake starkit package so that as well existing starkits can be packed by <em>tpack</em>, here a <em>main.tcl</em> file from the tknotepad application.</p>
+<pre><code>package require starkit
+if {[starkit::startup] == "sourced"} return
+package require app-tknotepad</code></pre>
+<p>In this case the application file tknotepad.tcl which is in the same directoy as <em>tknotepad.vfs</em> can be just an empty file. It can as well contain code to handel command line arguments. Here the file tknotepad.tcl:</p>
+<pre><code>proc usage {} {
+    puts "Usage: tknotepad filename"
+}
+if {[info exists argv0] &amp;&amp; $argv0 eq [info script] &amp;&amp; [regexp tknotepad $argv0]} {
+    if {[llength $argv] &gt; -1 &amp;&amp; [lsearch $argv --help] &gt; -1} {
+        usage
+    } elseif {[llength $argv] &gt; 0 &amp;&amp; [file exists [lindex $argv 0]]} {
+        openoninit [lindex $argv 0]
+    }
 }</code></pre>
-<p>That way you should be able to use your vfs-folder as well for creating starkits.</p>
+<p>That way you should be able to use your vfs-folder for creating tpacked applications as well as for creating starkits.</p>
+<h2 id="installation">INSTALLATION</h2>
+<p>Make this file <em>tpack.tcl</em> executable and copy it as <em>tpack</em> into a directory belonging to your PATH environment. There are no other Tcl libraries required to install, just a working installation of Tcl/Tk is required.</p>
 <h2 id="example">EXAMPLE</h2>
 <p>Let’s demonstrate a minimal application:</p>
 <pre><code>## FILE mini.tcl
@@ -78,24 +96,37 @@ package require Tcl
 package provide test 0.1
 namespace eval ::test { }
 proc ::test::hello { } { puts "Hello World!" }
-## EOF</code></pre>
+## EOF's</code></pre>
 <p>There is the possibility to create such a minimal application automatically for you if you start a new project by using the command line options:</p>
-<pre><code>tpack.tcl init appname
+<pre><code>$ tpack init appname
 # - appname.tcl and appname.vfs folder with main.tcl and
 #   lib/test Tcl files will be created automatically for you.</code></pre>
-<p>The appname could be replaced with whatever you like, mini, maxi etc. If a the Tcl file or the VFS folder does already exists, tpack.tcl for your safeness will refuse to overwrite them. If the files wre created, after calling for instance thereafter <code>tpack.tcl wrap mini.tcl mini.vfs</code> we have two files, <em>mini.ttcl</em> the application code file and <em>mini.ttar</em> the tar file with the library code. You can move those two files around together and execute <em>mini.ttcl</em>, it will unpack the tar file into a temporary directory, only if the tar file is newer than the directory and load the libraries from there.</p>
+<p>The string <em>appname</em> has to be replaced with the name of your application. If a the Tcl file or the VFS folder does already exists, <em>tpack</em> for your safeness will refuse to overwrite them. If the files were created, you can overwrite the Tcl file (<em>appname.tcl</em>) with your own application and move your libraries into the folder <em>appname.vfs</em>. If you are ready you call <code>tpack wrap appname.tcl appname.vfs</code> and you end up with two new files, <em>appname.ttcl</em> your application code file, containing your code as well as some code from the tcllib tar package to unwrap your library file <em>appname.ttar</em> at program runtime. The ttar file contains your library files taken from the <em>appname.vfs</em> folder. You can move those two files around together and execute <em>appname.ttcl</em>, it will unpack the tar file into a temporary directory, only if the tar file is newer than the directory and load the libraries from there. You can as well rename <em>appname.ttcl</em> to <em>appname</em> but your tar-file should always have the same basename.</p>
 <p>Attention: if mini.ttcl is execute directly in the directory where mini.vfs is located not the tar file but the folder will be used for the libraries. That can simplify the development.</p>
 <p>You can rename mini.ttcl to what every you like so <code>mini.bin</code> or even <code>mini</code>, but the extension for the tar file must stay unchanged and must be in the same folder as the mini application file.</p>
 <p>The tpack.tcl script, the minimal application and this Readme are as well packed together in a Zip archive which is available here: TODO</p>
+<h2 id="changelog">CHANGELOG</h2>
+<ul>
+<li>2021-09-10 - release 0.1 - two file applications (ttcl and ttar) are working</li>
+<li>2021-11-10 - release 0.2.0
+<ul>
+<li>single file applications (ttap = ttcl+ttar in one file) are working as well</li>
+<li>fake starkit::startup to load existing starkit apps without modification</li>
+<li>build sample apps tknotepad, pandoc-tcl-filter,</li>
+</ul></li>
+</ul>
 <h2 id="todo">TODO</h2>
 <ul>
+<li>tpack wrap napp.tapp - single file applications whith attached tar archive (done 0.2.0)</li>
 <li>tpack init napp - napp.tcl and napp.vfs will be created (done)</li>
 <li>tpack init napp.tcl - napp.tcl exists and napp.vfs will be created (done)</li>
 <li>tpack wrap napp.tcl - napp.ttcl and napp.ttar wull be created out of napp.tcl and napp.vfs (done)</li>
 <li>tpack wrap napp.tcl napp2.vfs - napp.ttcl napp.ttar will be created out of napp.tcl and napp2.vfs (done)</li>
-<li>tpack unwrap napp.ttar - create napp.vfs</li>
-<li>sample project dcanvas with txmixins for the editor for popup - Windows port</li>
-<li>nsis installer for Windows</li>
+<li>tpack unwrap napp.ttar - create napp.vfs (just an untar, done)</li>
+<li>tpack unwrap napp.tapp - create napp.tcl and napp.ttar (done)</li>
+<li>using ttar.gz files with Tcl 8.6 and zlib and with Tcl 8.5/8.4 gunzip terminal app</li>
+<li>using Tcl only lz4 compression, option for Tcl 8.6</li>
+<li>nsis installer for Windows, to deploy minimal Tcl/Tk with the application</li>
 </ul>
 <h2 id="author">AUTHOR</h2>
 <ul>
@@ -106,4 +137,4 @@ proc ::test::hello { } { puts "Hello World!" }
 <h2 id="license">LICENSE</h2>
 <p>MIT - License</p>
 </body>
-</html><!--Generated by HTMLArk 2021-09-10 10:08:24.281664. Original URL tpack.html-->
+</html><!--Generated by HTMLArk 2021-11-09 00:55:38.120916. Original URL tpack.html-->
