@@ -22,7 +22,7 @@
 # 
 ##############################################################################
 
-# tar.tcl -- take form tar.tcl from tcllib
+# tpackTar -- take from tcllib tar
 #
 #       Creating, extracting, and listing posix tar archives
 #
@@ -33,14 +33,14 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tar.tcl,v 1.17 2012/09/11 17:22:24 andreas_kupries Exp $
+# RCS: @(#) $Id: tar,v 1.17 2012/09/11 17:22:24 andreas_kupries Exp $
 
 package require Tcl 8.4
-package provide tar 0.11
+package provide tpackTar 0.11
 
-namespace eval ::tar {}
+namespace eval ::tpackTar {}
 
-proc ::tar::parseOpts {acc opts} {
+proc ::tpackTar::parseOpts {acc opts} {
     array set flags $acc
     foreach {x y} $acc {upvar $x $x}
     
@@ -65,13 +65,13 @@ proc ::tar::parseOpts {acc opts} {
     }
 }
 
-proc ::tar::pad {size} {
+proc ::tpackTar::pad {size} {
     set pad [expr {512 - ($size % 512)}]
     if {$pad == 512} {return 0}
     return $pad
 }
 
-proc ::tar::seekorskip {ch off wh} {
+proc ::tpackTar::seekorskip {ch off wh} {
     if {[tell $ch] < 0} {
 	if {$wh!="current"} {
 	    return -code error -errorcode [list TAR INVALID WHENCE $wh] \
@@ -84,7 +84,7 @@ proc ::tar::seekorskip {ch off wh} {
     return
 }
 
-proc ::tar::skip {ch skipover} {
+proc ::tpackTar::skip {ch skipover} {
     while {$skipover > 0} {
 	set requested $skipover
 
@@ -111,7 +111,7 @@ proc ::tar::skip {ch skipover} {
     return
 }
 
-proc ::tar::readHeader {data} {
+proc ::tpackTar::readHeader {data} {
     binary scan $data a100a8a8a8a12a12a8a1a100a6a2a32a32a8a8a155 \
                       name mode uid gid size mtime cksum type \
                       linkname magic version uname gname devmajor devminor prefix
@@ -159,7 +159,7 @@ proc ::tar::readHeader {data} {
                  devminor $devminor prefix $prefix]
 }
 
-proc ::tar::contents {file args} {
+proc ::tpackTar::contents {file args} {
     set chan 0
     parseOpts {chan 0} $args
     if {$chan} {
@@ -183,7 +183,7 @@ proc ::tar::contents {file args} {
     return $ret
 }
 
-proc ::tar::stat {tar {file {}} args} {
+proc ::tpackTar::stat {tar {file {}} args} {
     set chan 0
     parseOpts {chan 0} $args
     if {$chan} {
@@ -212,7 +212,7 @@ proc ::tar::stat {tar {file {}} args} {
     return $ret
 }
 
-proc ::tar::get {tar file args} {
+proc ::tpackTar::get {tar file args} {
     set chan 0
     parseOpts {chan 0} $args
     if {$chan} {
@@ -244,7 +244,7 @@ proc ::tar::get {tar file args} {
 	"Tar \"$tar\": File \"$file\" not found"
 }
 
-proc ::tar::untar {tar args} {
+proc ::tpackTar::untar {tar args} {
     set nooverwrite 0
     set data 0
     set nomtime 0
@@ -322,10 +322,10 @@ proc ::tar::untar {tar args} {
 }
 
 ## 
- # ::tar::statFile
+ # ::tpackTar::statFile
  # 
  # Returns stat info about a filesystem object, in the form of an info 
- # dictionary like that returned by ::tar::readHeader.
+ # dictionary like that returned by ::tpackTar::readHeader.
  # 
  # The mode, uid, gid, mtime, and type entries are always present. 
  # The size and linkname entries are present if relevant for this type 
@@ -333,7 +333,7 @@ proc ::tar::untar {tar args} {
  # them. No devmajor or devminor entry is present.
  ##
 
-proc ::tar::statFile {name followlinks} {
+proc ::tpackTar::statFile {name followlinks} {
     if {$followlinks} {
         file stat $name stat
     } else {
@@ -362,9 +362,9 @@ proc ::tar::statFile {name followlinks} {
 }
 
 ## 
- # ::tar::formatHeader
+ # ::tpackTar::formatHeader
  # 
- # Opposite operation to ::tar::readHeader; takes a file name and info 
+ # Opposite operation to ::tpackTar::readHeader; takes a file name and info 
  # dictionary as arguments, returns a corresponding (POSIX-tar) header.
  # 
  # The following dictionary entries must be present:
@@ -385,7 +385,7 @@ proc ::tar::statFile {name followlinks} {
  # presently ignored.
  ##
 
-proc ::tar::formatHeader {name info} {
+proc ::tpackTar::formatHeader {name info} {
     array set A {
         linkname ""
         uname ""
@@ -436,7 +436,7 @@ proc ::tar::formatHeader {name info} {
 }
 
 
-proc ::tar::recurseDirs {files followlinks} {
+proc ::tpackTar::recurseDirs {files followlinks} {
     foreach x $files {
         if {[file isdirectory $x] && ([file type $x] != "link" || $followlinks)} {
             if {[set more [glob -dir $x -nocomplain *]] != ""} {
@@ -449,7 +449,7 @@ proc ::tar::recurseDirs {files followlinks} {
     return $files
 }
 
-proc ::tar::writefile {in out followlinks name} {
+proc ::tpackTar::writefile {in out followlinks name} {
      puts -nonewline $out [formatHeader $name [statFile $in $followlinks]]
      set size 0
      if {[file type $in] == "file" || ($followlinks && [file type $in] == "link")} {
@@ -461,7 +461,7 @@ proc ::tar::writefile {in out followlinks name} {
      puts -nonewline $out [string repeat \x00 [pad $size]]
 }
 
-proc ::tar::create {tar files args} {
+proc ::tpackTar::create {tar files args} {
     set dereference 0
     set chan 0
     parseOpts {dereference 0 chan 0} $args
@@ -483,7 +483,7 @@ proc ::tar::create {tar files args} {
     return $tar
 }
 
-proc ::tar::add {tar files args} {
+proc ::tpackTar::add {tar files args} {
     set dereference 0
     set prefix ""
     set quick 0
@@ -513,7 +513,7 @@ proc ::tar::add {tar files args} {
     return $tar
 }
 
-proc ::tar::remove {tar files} {
+proc ::tpackTar::remove {tar files} {
     set n 0
     while {[file exists $tar$n.tmp]} {incr n}
     set tfh [::open $tar$n.tmp w]
@@ -545,7 +545,7 @@ proc ::tar::remove {tar files} {
     file rename -force $tar$n.tmp $tar
 }
 
-proc ::tar::HandleLongLink {fh hv} {
+proc ::tpackTar::HandleLongLink {fh hv} {
     upvar 1 $hv header thelongname thelongname
 
     # @LongName Part I.
@@ -569,7 +569,7 @@ proc ::tar::HandleLongLink {fh hv} {
 
     return
 }
-## EOF tar.tcl
+## EOF tpackTar
 ## File tpack.tcl
 #' ---
 #' title: tpack 0.2.0 - Tcl application deployment
@@ -847,8 +847,8 @@ if {[file exists $rname.vfs]} {
     }
     if {![file exists $appdir]} {
         file mkdir $appdir
-        #tar::untar $tarfile -dir $appdir
-        tar::untar $tarfile -dir $appdir
+        #tpackTar::untar $tarfile -dir $appdir
+        tpackTar::untar $tarfile -dir $appdir
     }
     set vfspath [lindex [glob [file join $appdir *]] 0]
     if {[file exists [file join $vfspath tpack.tcl]]} {
@@ -876,15 +876,15 @@ proc rglob {dir {files {}}} {
 }
 proc tardir {folder tarfile}  {
     set files [rglob $folder] 
-    tar::create $tarfile $files -dereference
+    tpackTar::create $tarfile $files -dereference
 }
 proc untarfile {file} {
     #puts untar
-    set vfsfile [file dirname [lindex [tar::contents $file] 0]]
+    set vfsfile [file dirname [lindex [tpackTar::contents $file] 0]]
     if {[file exists $vfsfile]} {
         puts "Error: $vfsfile already exists - not overwriting it!"
     } else {
-        tar::untar $file -nooverwrite
+        tpackTar::untar $file -nooverwrite
     }   
 }
 proc unwraptapp {tappfile} {
@@ -932,9 +932,9 @@ proc wrapfile {tclfile ttclfile scriptfile} {
         set flag  true
         set pflag false
         while {[gets $infh line] >= 0} {
-            if {[regexp {^proc ::tar::skip} $line]} {
+            if {[regexp {^proc ::tpackTar::skip} $line]} {
                 set flag false
-            } elseif {[regexp {proc ::tar::(readHeader|untar|HandleLongLink)} $line]} {
+            } elseif {[regexp {proc ::tpackTar::(readHeader|untar|HandleLongLink)} $line]} {
                 set pflag true
                 puts $out $line
             } elseif {$pflag && [regexp {^\}} $line]} { ;#\{
@@ -942,7 +942,7 @@ proc wrapfile {tclfile ttclfile scriptfile} {
                  puts $out $line
             } elseif {$flag || $pflag} {
                  puts $out $line
-            } elseif {[regexp {## EOF tar.tcl} $line]} {
+            } elseif {[regexp {## EOF tpackTar} $line]} {
                 break
             }
         }
