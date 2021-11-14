@@ -7,6 +7,7 @@ bin
 lib
 pandoc-tcl-filter
 test.sh
+Operating System
 tcl_platform(byteOrder)     = littleEndian
 tcl_platform(engine)        = Tcl
 tcl_platform(machine)       = x86_64
@@ -18,4 +19,7 @@ tcl_platform(pointerSize)   = 8
 tcl_platform(threaded)      = 1
 tcl_platform(user)          = runner
 tcl_platform(wordSize)      = 8
+Tcl Version
+tpack version
+0.1
 echo this-is-test
