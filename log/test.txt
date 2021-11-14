@@ -23,7 +23,3 @@ tcl_platform(pointerSize)   = 8
 tcl_platform(threaded)      = 1
 tcl_platform(user)          = groth
 tcl_platform(wordSize)      = 8
-Tcl Version
-tpack version
-0.2.0
-this-is-test-end 
