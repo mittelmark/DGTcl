@@ -24,4 +24,4 @@ tcl_platform(wordSize)      = 8
 Tcl Version
 tpack version
 0.1
-echo this-is-test
+this-is-test-end 

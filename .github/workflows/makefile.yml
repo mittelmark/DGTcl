@@ -31,6 +31,6 @@ jobs:
          # use account 'github-actions[bot]' to set the git config
 
          git add -A
-         git commit -m "test.sh added"
+         git commit -m "log/test.txt added/updated"
          git push
       
