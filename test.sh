@@ -5,7 +5,9 @@ README.md
 apps
 bin
 lib
+log
 pandoc-tcl-filter
+releases
 test.sh
 Operating System
 tcl_platform(byteOrder)     = littleEndian
