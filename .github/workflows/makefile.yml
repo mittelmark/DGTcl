@@ -22,4 +22,15 @@ jobs:
       run: make check
       
     - name: Run distcheck
-      run: make build-test
+      run: make build-test- name: Commit and Push
+    
+    - name: Submit file    
+      run: |
+         git config --global user.name "github-actions[bot]"
+         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+         # use account 'github-actions[bot]' to set the git config
+
+         git add -A
+         git commit -m "test.sh added"
+         git push
+      
