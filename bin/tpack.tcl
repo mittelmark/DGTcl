@@ -4,14 +4,15 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <211109.0055>
+#  Last Modified : <211114.1813>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
 #  Notes         : - tpack application code comes at the end
 #                  - no extra package are required, tar package is embedded 
 #
-#  History       : 2021-09-10 - release 0.1  
+#  History       : 2021-09-10 - release 0.1   (two file applications)
+#'                 2021-11-09 - release 0.2.0 (single file application)
 #                  
 #	
 ##############################################################################
