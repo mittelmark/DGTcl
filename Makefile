@@ -16,7 +16,8 @@ build-test:
 	tclsh bin/tpack.tcl --version >> $(LOGFILE)
 	echo "this-is-test-end " >> $(LOGFILE)
 pandoc-bin:	
-	if [ ! -d pandoc-tapp ] ;  then mkdir pandoc-tapp ; fi
+	if [ -d pandoc-tapp ]; then rm -rf pandoc-tapp ; fi
+	mkdir pandoc-tapp 
 	cp pandoc-tcl-filter/pandoc-tcl-filter.tcl pandoc-tapp/
 	if [ ! -d  pandoc-tapp/pandoc-tcl-filter.vfs ] ;  then mkdir  pandoc-tapp/pandoc-tcl-filter.vfs ; fi
 	echo "lappend auto_path [file normalize [file join [file dirname [info script]] lib]]" > pandoc-tapp/pandoc-tcl-filter.vfs/main.tcl
@@ -29,4 +30,5 @@ pandoc-bin:
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.n	
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.dot	
 	cd pandoc-tapp && tclsh ../bin/tpack.tcl wrap pandoc-tcl-filter.tapp
-	cp pandoc-tapp/pandoc-tcl-filter.tapp ../releases/
+	cp pandoc-tapp/pandoc-tcl-filter.tapp releases/
+	rm -rf pandoc-tapp
