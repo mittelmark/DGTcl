@@ -1,6 +1,7 @@
 #!/usr/bin/env tclsh
-lappend auto_path [file join [file dirname [info script]] lib]
+
 package require rl_json
+package require tclfilters
 package provide pandoc 0.3.1
 #' ## NAME
 #' 
@@ -175,8 +176,14 @@ while {[gets stdin line] > 0} {
    append jsonData $line
 }
 interp create mdi
+proc luniq {L} {
+    # removes duplicates without sorting the input list
+    set t {}
+    foreach i $L {if {[lsearch -exact $t $i]==-1} {lappend t $i}}
+    return $t
+} 
+mdi eval "set auto_path \[list [luniq $auto_path]\]"
 mdi eval {
-    lappend auto_path [file join [file dirname [info script]] lib]
     set res ""
     set chunk 0
     rename puts puts.orig
