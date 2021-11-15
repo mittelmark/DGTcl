@@ -23,7 +23,12 @@
 <h1 class="title">pandoc-tcl-filter.tcl documentation</h1>
 </header>
 <h2 id="name">NAME</h2>
-<p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As an example a dot filter plugin is given as <code>filter-dot.tcl</code>.</p>
+<p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As examples are give:</p>
+<ul>
+<li>Graphviz dot filter plugin: <code>filter-dot.tcl</code></li>
+<li>tsvg package plugin: <code>filter-tsvg.tcl</code></li>
+<li>Math TeX plugin for single line equations: <code>filter-mtex.tcl</code></li>
+</ul>
 <h2 id="synopsis">SYNOPSIS</h2>
 <p>Embed code either inline or in form of code chunks like here (triple ticks without space):</p>
 <pre><code>  ` ``{.tcl}
@@ -34,6 +39,7 @@
   ` ```
   
   Hello this is Tcl `tcl package provide Tcl`!</code></pre>
+<p>The markers for the other filters are <code>{.dot}</code>, <code>{.tsvg}</code> and <code>{.mtex}</code>.</p>
 <p>The Markdown document within this file could be processed as follows:</p>
 <pre><code> perl -ne &quot;s/^#&#39; ?(.*)/\$1/ and print &quot; &gt; pandoc-tcl-filter.md
  pandoc pandoc-tcl-filter.md -s \
@@ -57,25 +63,39 @@
    ![](dotgraph.svg)
    ` ``</code></pre>
 <p>The main script pandoc-tcl-filter.tcl looks if in the same folders as the script is, if there any other files named <code>filter-NAME.tcl</code> and source them. In case of the dot filter the file is named <code>filter-dot.tcl</code> and its filter function filter-dot is executed. Below is the code: of this file <code>filter-dot.tcl</code>:</p>
-<pre><code>proc filter-dot {cont dict cblock} {
-   global n
-   incr n
-   set ret &quot;&quot;
-   if {[dict get $dict label] eq &quot;null&quot;} {
-       set fname dot-$n
-   } else {
+<pre><code># a simple pandoc filter using Tcl
+# the script pandoc-tcl-filter.tcl 
+# must be in the same filter directoy of the pandoc-tcl-filter.tcl file
+proc filter-dot {cont dict} {
+    global n
+    incr n
+    set def [dict create results show eval true fig true width 400 height 400 \
+             include true fontsize Large envir equation imagepath images]
+    set dict [dict merge $def $dict]
+    set ret &quot;&quot;
+    if {[dict get $dict label] eq &quot;null&quot;} {
+        set fname dot-$n
+    } else {
         set fname [dict get $dict label]
-   }
-   set out [open $fname.dot w 0600]
-   puts $out $cont
-   close $out
-   set res [exec dot -Tsvg $fname.dot -o $fname.svg]
-   if {[dict get $dict results] eq &quot;show&quot; &amp;&amp; $res ne &quot;&quot;} {
-       rl_json::json set cblock c 0 1 [rl_json::json array [list string dotout]]
-       rl_json::json set cblock c 1 [rl_json::json string $res]
-       set ret &quot;,[::rl_json::json extract $cblock]&quot;
-   }
-   return $ret
+    }
+    set out [open $fname.dot w 0600]
+    puts $out $cont
+    close $out
+    # TODO: error catching
+    set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+    if {[dict get $dict results] eq &quot;show&quot;} {
+        # should be usually empty
+        set res $res
+    } else {
+        set res &quot;&quot;
+    }
+    set img &quot;&quot;
+    if {[dict get $dict fig]} {
+        if {[dict get $dict include]} {
+            set img $fname.svg
+        }
+    }
+    return [list $res $img]
 }</code></pre>
 <p>Automatic inclusion of the image would require more effort and dealing with the cblock which is a copy of the current json block containing the source code. Using the label We could create an image link and append this block after the <code>$cblock</code> part of the <code>$ret var</code>. As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.</p>
 <h2 id="changelog">ChangeLog</h2>
@@ -85,6 +105,20 @@
 <ul>
 <li>adding custom filters structure (dot, tsvg examples)</li>
 <li>adding attributes label, width, height, results</li>
+</ul></li>
+<li>2021-08-31 Version 0.3
+<ul>
+<li>moved filters into filter folder</li>
+<li>plugin example mtex</li>
+<li>default image path <em>images</em></li>
+</ul></li>
+<li>2021-11-03 Version 0.3.1
+<ul>
+<li>fix for parray and “puts stdout”</li>
+</ul></li>
+<li>2021-11-15 Version 0.3.2
+<ul>
+<li>–help argument support</li>
 </ul></li>
 </ul>
 <h2 id="see-also">SEE ALSO</h2>

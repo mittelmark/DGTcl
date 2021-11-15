@@ -1,8 +1,18 @@
 #!/usr/bin/env tclsh
 
+if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
+    puts "Usage: pandoc \[arguments\] --filter $argv0 \[arguments\]"
+    puts "       This is the pandoc Tcl filter which should be run with"
+    puts "       a syntax like shown above. The filter allows you to embed"
+    puts "       Tcl code within ```{.tcl} ... ``` code blocks."    
+    puts "       Homepage: https://github.com/mittelmark/DGTcl"
+    puts "Author: Detlef Groth, University of Potsdam, Germany"
+    exit 0
+}
+
 package require rl_json
 package require tclfilters
-package provide pandoc 0.3.1
+package provide pandoc 0.3.2
 #' ## NAME
 #' 
 #' _pandoc-tcl-filter.tcl_ - filter application for the pandoc command line 
@@ -129,6 +139,8 @@ package provide pandoc 0.3.1
 #'     * default image path _images_
 #' * 2021-11-03 Version 0.3.1
 #'     * fix for parray and "puts stdout"
+#' * 2021-11-15 Version 0.3.2
+#'     * --help argument support
 #'     
 #' ## SEE ALSO
 #' 
