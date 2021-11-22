@@ -10,8 +10,19 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     exit 0
 }
 
+set appdir [file dirname [info script]]
+if {[file exists  [file join $appdir lib]]} {
+    lappend auto_path [file normalize [file join $appdir lib]]
+    package require tsvg
+}
+if {[file exists  [file join $appdir filter]]} {
+    lappend auto_path [file join $appdir filter]
+}
 package require rl_json
-package require tclfilters
+catch {
+    # if available load filters
+    package require tclfilters
+}
 package provide pandoc 0.3.2
 #' ## NAME
 #' 
@@ -199,7 +210,7 @@ mdi eval {
     set res ""
     set chunk 0
     rename puts puts.orig
-    
+    package provide pandoc 0.3.2
     proc puts {args} {
         global res
         if {[lindex $args 0] eq "stdout"} {
@@ -220,7 +231,9 @@ mdi eval {
 
 # load other tcl based filters
 foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
-    source $file
+    catch {
+        source $file
+    }
 }
 
 proc debug {jsonData} {
@@ -348,7 +361,8 @@ proc main {jsonData} {
                 }
             }
      
-        } elseif {$blockType eq "Para"} {
+        } elseif {$blockType in [list "Para"]} {
+            # BulletList Header not working
             for {set j 0} {$j < [llength [::rl_json::json get $jsonData blocks $i c]]} {incr j} {
                 set type [rl_json::json get $jsonData blocks $i c $j t] ;#type
                 if {$type eq "Code"} {
