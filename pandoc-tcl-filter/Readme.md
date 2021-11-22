@@ -18,6 +18,10 @@ abstract: >
     the code block as well.
 ---
 
+# Start
+
+This `tcl set x 1`
+
 ## NAME
 
 _pandoc-tcl-filter.tcl_ - filter to execute code within Markdown documents and use code results for documentation.
@@ -30,7 +34,7 @@ pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl
 
 ## Installation
 
-The filter can be installed locally by placing it in a folder belonging to
+The pandoc-tcl-filter can be installed locally by placing it in a folder belonging to
 your personal PATH and making the file executable or alternatively you can
 just use it by specifying the correct path to the Tcl script in your pandoc
 command line call. The direct link to the github repository folder is:
@@ -365,6 +369,18 @@ svg rect x 10 y 10 width 60 height 60 fill salmon
 
 ## Other filters than Tcl code filter
 
+The *pandoc-tcl-filter* supports as well generation of filters for other tools
+and programming languages using the Tcl programming language. The standalone application *pandoc-tcl-filter.tapp* comes with the following filters:
+
+|filter | Tool                 | URL                  |
+---     | ---                  | ---                  | 
+|.dot   | dot/neato (GraphViz) | [https://graphviz.org/](https://graphviz.org/) |
+|.eqn   | eqn2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
+|.mtex  | LaTex                | [https://www.latex-project.org/](https://www.latex-project.org/) |
+|.pic   | pic2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
+|.pik   | pikchr/fossil pikchr | [https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md](https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md) |
+|.tsvg  | Tcl tsvg package     | [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl) |
+
 Let's finish our small tutorial with the implementation of a filter for a
 command line application. Below you see the code for the GraphViz dot application.
 
@@ -557,6 +573,123 @@ And here the second example:
 
 May be later version will support aligned sets of equations or matrices.
 
+## PIC and EQN filters
+
+The *groff* typesetting systems comes with the tools *eqn2graph* which
+converts EQN equations into PNG graphics and and *pic2graph* which converts
+diagram code written in the PIC programming language into PNG graphics. Below are two examples, one for each tool:
+
+Here an example for the PIC language:
+
+```{.pic ext=png}
+circle "circle" rad 0.5 fill 0.3; arrow ;
+ellipse "ellipse" wid 1.4 ht 1 fill 0.1 ; line;
+box wid 1 ht 1 fill 0.05 "A";
+spline;
+box wid 0.4 ht 0.4 fill 0.05 "B";
+arc;
+box wid 0.2 ht 0.2 fill 0.05 "C";
+```
+
+
+The complete code was:
+
+```
+     ```{.pic ext=png}
+     circle "circle" rad 0.5 fill 0.3; arrow ;
+     ellipse "ellipse" wid 1.4 ht 1 fill 0.1 ; line;
+     box wid 1 ht 1 fill 0.05 "A";
+     spline;
+     box wid 0.4 ht 0.4 fill 0.05 "B";
+     arc;
+     box wid 0.2 ht 0.2 fill 0.05 "C";
+     ```
+```      
+
+And here an example for the EQN language:
+
+
+```{.eqn echo=false}
+x = {-b +- sqrt{b sup 2 - 4ac}} over 2a
+```
+
+The code here was (the indentation of five spaces is just to avoid interpretation):
+
+```
+     ```{.eqn echo=false}
+     x = {-b +- sqrt{b sup 2 - 4ac}} over 2a
+     ```
+```
+
+## The pikchr filter
+
+The PIC diagram language has a modern successor, the Pikchr Diagram Language
+used on the 'sqlite* webpage to display syntax diagrams. The homepage of the pikchr tool is at:
+[https://pikchr.org/](https://pikchr.org). The tool can be compiled easily, but even easier you can as well download the *fossil* application which has a subcommand *pikchr* which allows you to create as well diagrams. The downloads of *fossil* for various platforms can be found here [https://www.fossil-scm.org/home/uv/download.html](https://www.fossil-scm.org/home/uv/download.html). If the *fossil* application is in your PATH ou can create easily as well *pikchr* diagrams. Here an example:
+
+```{.pikchr app=fossil-2.17 ext=svg}
+box "box"
+circle "circle" fill cornsilk at 1 right of previous
+ellipse "ellipse" at 1 right of previous
+oval "oval" at .8 below first box
+cylinder "cylinder" at 1 right of previous
+file "file" at 1 right of previous
+```
+
+The code for this diagram follows below:
+
+```
+     ```{.pikchr app=fossil-2.17 ext=pdf}
+     box "box"
+     circle "circle" fill cornsilk at 1 right of previous
+     ellipse "ellipse" at 1 right of previous
+     oval "oval" at .8 below first box
+     cylinder "cylinder" at 1 right of previous
+     file "file" at 1 right of previous
+     ```
+```
+
+The option `app=fossil-2.17` was used to use a newer version of the *fossil*
+application than the default one. Please note, that at least *fossil* in
+version 2.13 is required.
+ 
+We can as well resize the image, in this case we have to create a *png*
+extension. As conversion from svg to png is then required we need a tool
+called cairosvg which can be installed as a Python packagte using pip:
+
+```
+pip3 install cairosvg --user
+```
+
+should do this. The advantage if using this tool is, that we beside resizing
+we can as well create PDF's for inclusion into LaTeX documents. Here an example for a PNF image.
+
+```{.pikchr label=fossil-sample app=fossil-2.17 ext=png width=500 height=300}
+box "box"
+circle "circle" fill cornsilk at 1 right of previous
+ellipse "ellipse" at 1 right of previous
+oval "oval" at .8 below first box
+cylinder "cylinder" at 1 right of previous
+file "file" at 1 right of previous
+```
+
+
+Here is the code:
+
+```
+     ```{.pikchr app=fossil-2.17 ext=png  width=500 height=300}
+     box "box"
+     circle "circle" fill cornsilk at 1 right of previous
+     ellipse "ellipse" at 1 right of previous
+     oval "oval" at .8 below first box
+     cylinder "cylinder" at 1 right of previous
+     file "file" at 1 right of previous
+     ```
+```
+
+As you can see using the `ext=png` setting and the `width` and `height` options, we can resize the image.
+
+
 ## Lua filters
 
 Pandoc since version 2.0 has embedded support for Lua filters. To no reinvent
@@ -601,7 +734,8 @@ The HTML version of this document was generated using the following commandline:
 ```
 pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
     -M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-     --filter pandoc-tcl-filter.tcl --css mini.css
+     --filter pandoc-tcl-filter.tcl --css mini.css \
+     --toc --lua-filter=filter/smallcaps.lua
 
 ```
 
@@ -625,12 +759,14 @@ Please look at the source Markdown file to see which Markdown code was the input
 * regular filter infrastructure for Tcl support for for instance other filters like .csv to include csv files .dot to include dot file graphics etc. - done (examples for dot code and tsvg plugin)
 * Windows exe / starkit containing the rl_json library as well (adding linux library)
 
+
 ## History
 
 * 2021-08-22 - Release of Wiki cocde
 * 2021-08-25 - Release of github code
 * 2021-08-26 - Adding thingy svg creator, image file writing works
 * 2021-08-31 - adding mtex filter example, images now in images folder, Lua filter example
+* 2021-11-23 - adding pikchr, pik, eqn filters, extending documentation
 
 ## Author
 
@@ -640,7 +776,4 @@ Detlef Groth, Caputh-Schwielowsee, Germany
 
 MIT, see the file LICENSE in the release folder.
 
-```{.include}
-file-a.md
-```
 

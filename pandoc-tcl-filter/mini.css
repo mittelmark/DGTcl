@@ -7,7 +7,7 @@
         line-height: 1.2;
         padding: 1em;
         margin: auto;
-        max-width:  1200px;
+        max-width:  800px;
     }
     a {
         color: #0645ad;
@@ -43,6 +43,10 @@
     }
     h1 {
         text-align: center;
+        font-size: 120%;
+    }
+    p.author, p.date {
+        font-size: 110%;
     }
     
     h2 {
@@ -75,7 +79,9 @@
         font-family: Monaco, 'courier new', monospace;
         font-size: 90%; 
     }
-    
+    code.r {
+        color: #770000;
+    }
     pre {
         white-space: pre;
         white-space: pre-wrap;
@@ -89,21 +95,22 @@
     figure, p.author {
         text-align: center;
     }
-    table {
-        min-width: 300px;
-        border-spacing: 0;
+    table {    
         border-collapse: collapse;
-        cell-padding: 0px;
-        cell-spacing: 0px;
+        border-bottom: 2px solid;
+        
+        
     }
-    tr.header {
-        background: #dddddd;
-        text-align: center;
+    table thead tr th { 
+        background-color: #fde9d9;
+        text-align: left; 
+        padding: 10px;
+        border-top: 2px solid;
+        border-bottom: 2px solid;
     }
-    tr.even {
-        background: #ddeeff;
-    }
-    td, th {
-        padding: 3px;
-        text-align: center;
+    table td { 
+        background-color: #fff9e9;
+
+        text-align: left; 
+        padding: 10px;
     }
