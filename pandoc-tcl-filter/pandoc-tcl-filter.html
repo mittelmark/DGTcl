@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Detlef Groth, Schwielowsee, Germany" />
+  <meta name="dcterms.date" content="2021-11-23" />
   <title>pandoc-tcl-filter.tcl documentation</title>
   <style>
     code{white-space: pre-wrap;}
@@ -21,13 +23,18 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">pandoc-tcl-filter.tcl documentation</h1>
+<p class="author">Detlef Groth, Schwielowsee, Germany</p>
+<p class="date">2021-11-23</p>
 </header>
 <h2 id="name">NAME</h2>
-<p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As examples are give:</p>
+<p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As examples are given in the filter folder of the project:</p>
 <ul>
 <li>Graphviz dot filter plugin: <code>filter-dot.tcl</code></li>
 <li>tsvg package plugin: <code>filter-tsvg.tcl</code></li>
-<li>Math TeX plugin for single line equations: <code>filter-mtex.tcl</code></li>
+<li>Math TeX filter plugin for single line equations: <code>filter-mtex.tcl</code></li>
+<li>Pikchr filter plugin for diagram creation: <code>filter-pik.tcl</code></li>
+<li>PIC filter plugin for diagram creation (older version): <code>filter-pic.tcl</code></li>
+<li>EQN filter plugin for equations written in the EQN language: <code>filter-eqn.tcl</code></li>
 </ul>
 <h2 id="synopsis">SYNOPSIS</h2>
 <p>Embed code either inline or in form of code chunks like here (triple ticks without space):</p>

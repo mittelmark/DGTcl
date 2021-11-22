@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <211122.1757>
+#  Last Modified : <211122.1820>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -13,7 +13,7 @@
 Readme.html : Readme.md mini.css
 	pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
 		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-		--filter pandoc-tcl-filter.tcl --toc --lua-filter=filter/smallcaps.lua
+		--filter ./pandoc-tcl-filter.tcl --toc --lua-filter=filter/smallcaps.lua
 	htmlark -o Readme-ark.html Readme.html
 	mv Readme-ark.html Readme.html
 
@@ -46,3 +46,17 @@ tdot-docu:
 	    --css mini.css --toc
 	htmlark -o lib/tdot/tdot.html tdot.html
 	cp tdot.md lib/tdot/
+tcl-filter.tapp:
+	if [ ! -d pandoc-tapp ] ;  then mkdir pandoc-tapp ; fi
+	cp pandoc-tcl-filter.tcl pandoc-tapp/
+	if [ ! -d  pandoc-tapp/pandoc-tcl-filter.vfs ] ;  then mkdir  pandoc-tapp/pandoc-tcl-filter.vfs ; fi
+	echo "lappend auto_path [file normalize [file join [file dirname [info script]] lib]]" > pandoc-tapp/pandoc-tcl-filter.vfs/main.tcl
+	cp -r lib pandoc-tapp/pandoc-tcl-filter.vfs/
+	cp -r filter pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
+	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*~
+	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*md
+	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*lua
+	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.n	
+	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.dot	
+	cd pandoc-tapp && tclsh ../../bin/tpack.tcl wrap pandoc-tcl-filter.tapp
+	cp pandoc-tapp/pandoc-tcl-filter.tapp .

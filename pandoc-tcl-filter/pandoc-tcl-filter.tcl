@@ -24,16 +24,25 @@ catch {
     package require tclfilters
 }
 package provide pandoc 0.3.2
+#' ---
+#' title: pandoc-tcl-filter documentaion - 0.3.2
+#' author: Detlef Groth, Schwielowsee, Germany
+#' date: 2021-11-23
+#' ---
+#'
 #' ## NAME
 #' 
 #' _pandoc-tcl-filter.tcl_ - filter application for the pandoc command line 
 #' application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown
 #' documentation and offers a plugin architecture to add other command line filters easily using Tcl
-#' and the `exec` command. As examples are give:
+#' and the `exec` command. As examples are given in the filter folder of the project:
 #' 
 #' * Graphviz dot filter plugin: `filter-dot.tcl`
 #' * tsvg package plugin: `filter-tsvg.tcl`
-#' * Math TeX plugin for single line equations: `filter-mtex.tcl`
+#' * Math TeX filter plugin for single line equations: `filter-mtex.tcl`
+#' * Pikchr filter plugin for diagram creation: `filter-pik.tcl`
+#' * PIC filter plugin for diagram creation (older version): `filter-pic.tcl`
+#' * EQN filter plugin for equations written in the EQN language: `filter-eqn.tcl`
 #'
 #' ## SYNOPSIS 
 #' 

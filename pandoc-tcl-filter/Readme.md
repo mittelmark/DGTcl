@@ -18,10 +18,6 @@ abstract: >
     the code block as well.
 ---
 
-# Start
-
-This `tcl set x 1`
-
 ## NAME
 
 _pandoc-tcl-filter.tcl_ - filter to execute code within Markdown documents and use code results for documentation.
