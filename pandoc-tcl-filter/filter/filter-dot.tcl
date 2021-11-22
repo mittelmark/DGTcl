@@ -24,7 +24,7 @@
 #' pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html
 #' ```
 #' 
-#' The file `filter-dot.tcl` is not used directy but sourced automatically by the `pandoc-tcl-filter.tcl` file.
+#' The file `filter-dot.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
 #' If code blocks with the `.dot` marker are found, the contents in the code block is processed via one of the Graphviz tools.
 #' 
 #' The following options can be given via code chunks or in the YAML header.

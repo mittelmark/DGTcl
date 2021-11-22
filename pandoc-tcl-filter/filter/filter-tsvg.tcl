@@ -1,10 +1,14 @@
 # a simple pandoc filter using Tcl
 # the script pandoc-tcl-filter.tcl 
 # must be in the same directoy as this file
-set dir [file join [file dirname [info script]] ..]
 package require tsvg
 interp create tsvgi
-tsvgi eval  "lappend auto_path $dir"
+set apath [tsvgi eval { set auto_path } ]
+foreach d $auto_path {
+    if {[lsearch $apath $d] == -1} {
+        tsvgi eval  "lappend auto_path $d"
+    }
+}
 tsvgi eval "package require tsvg"
 proc filter-tsvg {cont dict} {
     global n
