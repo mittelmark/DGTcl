@@ -12,7 +12,7 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
 * [pandoc-tcl-filter Presentation](https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/doc/Groth-S-and-T-2021.pdf) 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
 * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
-* [single file Tcl script pandoc-tcl-filter.tapp build with tpack](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp)
+* [single file Tcl script pandoc-tcl-filter.tapp build with tpack (Linux only tested)](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp)
 
 _Please note, that for the installation of this package you need as well the Tcl package [rl_json](https://github.com/RubyLane/rl_json) from Ruby Lane. I will try to make some binaries of this package available for Windows, Linux and OSX._
 
