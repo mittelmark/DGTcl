@@ -2,6 +2,11 @@
 
 package provide pandoc 0.3.2
 
+if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
+    puts "[package present pandoc]"
+    exit 0
+}   
+
 if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "Usage:    pandoc \[arguments\] --filter $argv0 \[arguments\]"
     puts "          This is the pandoc Tcl filter which should be run as filter"

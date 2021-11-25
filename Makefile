@@ -30,5 +30,5 @@ pandoc-bin:
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.n	
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.dot	
 	cd pandoc-tapp && tclsh ../bin/tpack.tcl wrap pandoc-tcl-filter.tapp
-	cp pandoc-tapp/pandoc-tcl-filter.tapp releases/
+	cp pandoc-tapp/pandoc-tcl-filter.tapp ../
 	rm -rf pandoc-tapp
