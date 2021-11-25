@@ -1,11 +1,25 @@
 #!/usr/bin/env tclsh
 
+package provide pandoc 0.3.2
+
 if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
-    puts "Usage: pandoc \[arguments\] --filter $argv0 \[arguments\]"
-    puts "       This is the pandoc Tcl filter which should be run with"
-    puts "       a syntax like shown above. The filter allows you to embed"
-    puts "       Tcl code within ```{.tcl} ... ``` code blocks."    
-    puts "       Homepage: https://github.com/mittelmark/DGTcl"
+    puts "Usage:    pandoc \[arguments\] --filter $argv0 \[arguments\]"
+    puts "          This is the pandoc Tcl filter which should be run as filter"
+    puts "          for the pandoc document converter with a syntax like shown above."
+    puts "          This filter allows you to embed Tcl code within"
+    puts "          ```{.tcl} ... ``` code blocks."   
+    puts "          For a list of other filters which are available see below." 
+    puts "Version:  [package present pandoc]"
+    puts "Homepage: https://github.com/mittelmark/DGTcl"
+    puts "Readme:   http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html"
+    puts "Filters:  "
+    puts "       - ```{.tcl}  Tcl code```"
+    puts "       - ```{.dot}  GraphViz dot/neato code```"
+    puts "       - ```{.eqn}  EQN equations```"    
+    puts "       - ```{.mtex} LaTeX equations```"        
+    puts "       - ```{.pic}  PIC diagram code```"        
+    puts "       - ```{.pik}  Pikchr diagram code```"
+    puts "       - ```{.tsvg} Tcl package tsvg code```"
     puts "Author: Detlef Groth, University of Potsdam, Germany"
     exit 0
 }
