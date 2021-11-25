@@ -24,9 +24,9 @@ jobs:
     - name: Run distcheck
       run: make build-test
     
-    - name: Make pandoc-tcl-filter.tapp
-      run: make pandoc-bin
+    - name: Make tcl-filter.tapp
+      run: cd pandoc-tcl-filter && make tcl-filter.tapp
     - uses: actions/upload-artifact@v2
       with:
-        name: pandoc-tcl-filter.tap upload
-        path: pandoc-tcl-filter.tapp
+        name: pandoc-tcl-filter.tapp upload
+        path: pandoc-tcl-filter/pandoc-tcl-filter.tapp
