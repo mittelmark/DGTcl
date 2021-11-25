@@ -25,8 +25,13 @@ jobs:
       run: make build-test
     
     - name: Make tcl-filter.tapp
-      run: cd pandoc-tcl-filter && make tcl-filter.tapp
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pandoc-tcl-filter.tapp upload
-        path: pandoc-tcl-filter/pandoc-tcl-filter.tapp
+      run: |
+        mkdir pandoc-filter
+        cd pandoc-tcl-filter && make tcl-filter.tapp
+        cp pandoc-tcl-filter/pandoc-tcl-filter.tapp pandoc-filter
+    - name: Step 3 - Use the Upload Artifact GitHub Action
+      uses: actions/upload-artifact@v2
+      with: 
+        name: pandoc-tcl-filter
+        path: pandoc-filter
+        
