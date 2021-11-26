@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <211114.1813>
+#  Last Modified : <211126.1637>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
@@ -12,7 +12,8 @@
 #                  - no extra package are required, tar package is embedded 
 #
 #  History       : 2021-09-10 - release 0.1   (two file applications)
-#'                 2021-11-09 - release 0.2.0 (single file application)
+#                  2021-11-09 - release 0.2.0 (single file application)
+#                  2021-11-26 - release 0.2.1 (tar package fix)
 #                  
 #	
 ##############################################################################
@@ -573,9 +574,9 @@ proc ::tar::HandleLongLink {fh hv} {
 ## EOF tar.tcl
 ## File tpack.tcl
 #' ---
-#' title: tpack 0.2.0 - Tcl application deployment
+#' title: tpack 0.2.1 - Tcl application deployment
 #' author: Detlef Groth, Caputh-Schwielowsee, Germany
-#' date: 2021-11-09
+#' date: 2021-11-26
 #' ---
 #' 
 #' ## NAME 
@@ -715,7 +716,9 @@ proc ::tar::HandleLongLink {fh hv} {
 #'     - single file applications (ttap = ttcl+ttar in one file) are working as well
 #'     - fake starkit::startup to load existing starkit apps without modification
 #'     - build sample apps tknotepad, pandoc-tcl-filter, 
-#' 
+#' - 2021-11-26 - release 0.2.1 
+#'     - bugfix: adding `package forget tar` after tar file loading to catch users `package require tar`
+#'  
 #' ## TODO
 #' 
 #' - tpack wrap napp.tapp - single file applications whith attached tar archive (done 0.2.0)
@@ -741,7 +744,7 @@ proc ::tar::HandleLongLink {fh hv} {
  
 package require Tcl
 package require tar
-package provide tpack 0.2.0
+package provide tpack 0.2.1
 
 namespace eval tpack {
     proc usage { } {
@@ -796,6 +799,9 @@ proc getTempDir {} {
 }
 set rname [file rootname [info script]]
 if {[file exists $rname.vfs]} {
+    catch {
+        package forget tar
+    }   
     source [file join $rname.vfs main.tcl]
 } else {
     set tail [file tail $rname]
@@ -852,6 +858,9 @@ if {[file exists $rname.vfs]} {
         tar::untar $tarfile -dir $appdir
     }
     set vfspath [lindex [glob [file join $appdir *]] 0]
+    catch {
+        package forget tar
+    }   
     if {[file exists [file join $vfspath tpack.tcl]]} {
         source [file join $vfspath tpack.tcl]
     } elseif {[file exists [file join $vfspath main.tcl]]} {
@@ -859,6 +868,7 @@ if {[file exists $rname.vfs]} {
     } else {
         error "Neither tpack.tcl or main.tcl found in tar archive!"
     }
+    
 }
 }
 }

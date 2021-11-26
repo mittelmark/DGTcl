@@ -1,7 +1,7 @@
 ---
-title: tpack 0.2.0 - Tcl application deployment
+title: tpack 0.2.1 - Tcl application deployment
 author: Detlef Groth, Caputh-Schwielowsee, Germany
-date: 2021-11-09
+date: 2021-11-26
 ---
 
 ## NAME 
@@ -141,7 +141,9 @@ The tpack.tcl script, the minimal application and this Readme are as well packed
     - single file applications (ttap = ttcl+ttar in one file) are working as well
     - fake starkit::startup to load existing starkit apps without modification
     - build sample apps tknotepad, pandoc-tcl-filter, 
-
+- 2021-11-26 - release 0.2.1 
+    - bugfix: adding `package forget tar` after tar file loading to catch users `package require tar`
+ 
 ## TODO
 
 - tpack wrap napp.tapp - single file applications whith attached tar archive (done 0.2.0)
