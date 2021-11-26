@@ -25,7 +25,9 @@ _pandoc-tcl-filter.tcl_ - filter to execute code within Markdown documents and u
 ## USAGE
 
 ```
-pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl
+ pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl
+ # or the standalone application
+ pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tapp
 ```
 
 ## Installation
@@ -40,7 +42,15 @@ Just unpack the Tcl script from the download and make the file executable.
 The filter requires the Tcl package *rl_json* which is available from Github: [https://github.com/RubyLane/rl_json](https://github.com/RubyLane/rl_json).
 Unix users should be able to install the package via the standard configure/make pipeline. A Linux binary, complied on a recent Fedora system is included in the download
 link at the GitHub page as well to simplify the use of the Pandoc filter.
-Windows users should install the rl_json package via the Magicplats Tcl-Installer: [https://www.magicsplat.com/tcl-installer](https://www.magicsplat.com/tcl-installer/index.html)
+Windows users should install the *rl_json* package via the Magicplats Tcl-Installer: [https://www.magicsplat.com/tcl-installer](https://www.magicsplat.com/tcl-installer/index.html)
+
+## Standalone application
+
+Alternatively the application is released as packed application where all the
+filters and the rl_json package are added, the file just requires and exiting
+Tcl installation and can be downloaded from here: [https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp). Just download the file, make it executable and place it in a folder belonging to your PATH.
+
+
 
 ## Example
 
@@ -576,6 +586,19 @@ converts EQN equations into PNG graphics and and *pic2graph* which converts
 diagram code written in the PIC programming language into PNG graphics. Below are two examples, one for each tool:
 
 Here an example for the PIC language:
+```
+     ```{.pic ext=png}
+     circle "circle" rad 0.5 fill 0.3; arrow ;
+     ellipse "ellipse" wid 1.4 ht 1 fill 0.1 ; line;
+     box wid 1 ht 1 fill 0.05 "A";
+     spline;
+     box wid 0.4 ht 0.4 fill 0.05 "B";
+     arc;
+     box wid 0.2 ht 0.2 fill 0.05 "C";
+     ```
+```
+
+And here the output:
 
 ```{.pic ext=png}
 circle "circle" rad 0.5 fill 0.3; arrow ;

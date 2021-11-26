@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Detlef Groth" />
+  <title>pandoc-tcl-filter example - tcl filter</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="ghpandoc.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<center>
+Examples: <a href="example-dot.html">dot</a> - <a href="example-mtex.html">mtex</a> - <a href="example-pic.html">pic</a> - <a href="example-pik.html">pikchr</a> - <a href="example-tcl.html">tcl</a> - <a href="example-tsvg.html">tsvg</a>
+</center>
+<center>
+<a href="../Readme.html">Readme</a>
+</center>
+<header id="title-block-header">
+<h1 class="title">pandoc-tcl-filter example - tcl filter</h1>
+<p class="author">Detlef Groth</p>
+<p class="date">Fri Nov 26 2021</p>
+</header>
+<h2 id="introduction">Introduction</h2>
+<p>Below are a few samples for embedding Tcl code into Markdown documents. The examples should work as well in other text markup languages like LaTeX, Asciidoc etc. This filter requires no additional software installations, just a working Tcl installation.</p>
+<p>Links:</p>
+<ul>
+<li>TclTk Homepage: <a href="https://www.tcl.tk/">https://www.tcl.tk/</a></li>
+</ul>
+<h2 id="tcl-examples">Tcl examples</h2>
+<p>Tcl code can be embedded either within single backtick marks where the first backtick is immediately followed by the string tcl and the the tcl code such as in the following example:</p>
+<pre><code>The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
+
+This document was processed using Tcl `tcl package provide Tcl`.
+</code></pre>
+<p>Here the output:</p>
+<p>The variable is now 5 or five times three is 15.</p>
+<p>This document was processed using Tcl 8.6.10.</p>
+<p>The results from the code execution will be directly embedded in the text and will replace the Tcl code. Such inline statements should be short and concise and should not break over several lines.</p>
+<p>Larger chunks of code can be placed within triple backticks such as in the example below.</p>
+<pre><code>` ``{.tcl}
+ # please remove the space after the first backtick above
+ set x 3
+ proc add {x y} {
+       return [expr {$x+$y}]
+ }
+ add $x 7
+ # please remove the space after the first backtick below
+` ``</code></pre>
+<p>In the code above a space was added to avoid confusing the pandoc interpreter by nesteding triple tickmarks, remove those spaces in your code.</p>
+<p>And here the output:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">set</span> <span class="ot">x</span> <span class="dv">3</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">proc</span> <span class="ot">add</span> <span class="kw">{</span><span class="ot">x</span> <span class="ot">y</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    <span class="kw">return</span> <span class="kw">[expr</span> <span class="kw">{</span><span class="dt">$x</span>+<span class="dt">$y</span><span class="kw">}]</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">add</span> <span class="dt">$x</span> <span class="dv">7</span></span></code></pre></div>
+<pre class="tclout"><code>10</code></pre>
+<h2 id="document-creation">Document creation</h2>
+<p>Assuming that the file pandoc-tcl-filter.tapp is in your PATH, this document can be converted into an HTML file using the command line:</p>
+<pre><code> pandoc -s -o sample-tcl.html --filter pandoc-tcl-filter.tapp sample.md
+ ## you can as well specify a style sheet to beatify the output
+ pandoc -s -o sample-tcl.html --css ghpandoc.css \
+    --filter pandoc-tcl-filter.tapp sample.md</code></pre>
+<h2 id="eof">EOF</h2>
+</body>
+</html>
