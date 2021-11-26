@@ -9,6 +9,7 @@ The pandoc-tcl-filter folder contains two Pandoc filters for Tcl code and for Gr
 These filter allow you to directly embed Tcl code and Dot file code into your documents and produce code output or figures using these code chunks.
 
 * [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
+* [pandoc-tcl-filter Examples](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/DGTcl/master/pandoc-tcl-filter/examples/example-dot.html)
 * [pandoc-tcl-filter Presentation](https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/doc/Groth-S-and-T-2021.pdf) 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
 * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
