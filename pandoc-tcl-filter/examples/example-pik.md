@@ -29,7 +29,7 @@ option *app=fossil-2.17* for instance. Alternatively you could as well add
 *app=pikchr* if you have commpiled the *pikchr* command line application
 yourself.
 
-The code for a sample diagram follows below:
+Here the code for a sample diagram (leading 5 character whitespaces must be removed):
 
 ```
      ```{.pikchr app=fossil}
@@ -106,10 +106,18 @@ The code to create this document was:
      ```
 ```
 
-
 ## Document creation
 
-Assuming that the file pandoc-tcl-filter.tapp is in your PATH, 
+
+Download the file
+[pandoc-tcl-filter.tapp](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp),
+make it executable and place it in a directory belonging to your `PATH`
+variable. The file contains the required libraries and the example filters. 
+Shared library for th required *rl_json* library for Linux and Windows (Windows is currently untested).
+
+Further you need either the *fossil* application or the *pikchr* application, the easiest is to Download a precompiled *fossil* binary for your platform from the *fossil* homepage at [https://fossil-scm.org/home/uv/download.html](https://fossil-scm.org/home/uv/download.html), download it and place it a directory belonging to your `PATH`. If you install it using your package manager, make sure that it is at least version 2.13.
+
+Assuming then that the file *pandoc-tcl-filter.tapp* and the application *fossil* is in your `PATH`, 
 this document can be converted into an HTML file using the command line:
 
 ```
