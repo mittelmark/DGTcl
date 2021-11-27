@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Detlef Groth" />
-  <title>pandoc-tcl-filter example - tsvg filter</title>
+  <title>pandoc-tcl-filter example - Pikchr filter</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -27,33 +27,74 @@ Examples: <a href="example-dot.html">dot</a> - <a href="example-mtex.html">mtex<
 <a href="../Readme.html">Readme</a>
 </center>
 <header id="title-block-header">
-<h1 class="title">pandoc-tcl-filter example - tsvg filter</h1>
+<h1 class="title">pandoc-tcl-filter example - Pikchr filter</h1>
 <p class="author">Detlef Groth</p>
 <p class="date">Nov 27, 2021</p>
 </header>
 <h2 id="introduction">Introduction</h2>
-<p>Below are a few samples for embedding code for the Tcl tsvg package into Markdown documents. The examples should work as well in other text markup languages like LaTeX, Asciidoc etc. This filter requires no additional software installations as the package and the filter are directly included in the pandoc-tcl-filter release.</p>
+<p>Below are a few samples for embedding code for the Pikchr diagram language which is an extension of the PIC diagram language. Pikchr is embedded in recent releases of the <em>fossil</em> software versioning system as subcommand <code>fossil pikchr</code> The examples below should work as well in other text markup languages like LaTeX, Asciidoc etc. This filter requires a installation of the <em>fossil</em> software or the standalone <em>pikchr</em> command.</p>
 <p>Links:</p>
 <ul>
-<li>DGTcl Homepage: <a href="https://github.com/mittelmark/DGTcl">https://github.com/mittelmark/DGTcl</a></li>
-<li>tsvg guide: <a href="http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html">http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html</a></li>
+<li>Fossil Homepage: <a href="https://fossil-scm.org">https://fossil-scm.org</a></li>
+<li>Pikchr Homepage: <a href="https://pikchr.org">https://pikchr.org</a></li>
+<li>Pikchr Manual: <a href="https://pikchr.org/home/doc/trunk/doc/userman.md">https://pikchr.org/home/doc/trunk/doc/userman.md</a></li>
+<li>Pikchr Grammar: <a href="https://pikchr.org/home/doc/trunk/doc/grammar.md">https://pikchr.org/home/doc/trunk/doc/grammar.md</a></li>
 </ul>
-<h2 id="tsvg-graphics">tsvg graphics</h2>
-<pre><code> ` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
- tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
- tsvg text x 29 y 45 Hello
- tsvg text x 26 y 65 World!
- ` ```</code></pre>
-<p>Will produce this:</p>
-<pre class="tsvg" data-fig="true" label="tsvg-hello-world" data-results="hide" data-echo="true"><code>tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
-tsvg text x 29 y 45 Hello
-tsvg text x 26 y 65 World!</code></pre>
-<p><img src="/home/groth/workspace/DGTcl/pandoc-tcl-filter/examples/images/tsvg-hello-world.svg" /></p>
+<h2 id="pikchr-diagrams">Pikchr diagrams</h2>
+<p>Here a code example for Pikchr diagrams. The indentation at the beginning must be removed. It is just here to avoid interpretation. To use a new downloaded version of the fossil application like <em>fossil-2.17</em> you could change the app option <em>app=fossil-2.17</em> for instance. Alternatively you could as well add <em>app=pikchr</em> if you have commpiled the <em>pikchr</em> command line application yourself.</p>
+<p>Here the code for a sample diagram (leading 5 character whitespaces must be removed):</p>
+<pre><code>     ```{.pikchr app=fossil}
+     box &quot;box&quot;
+     circle &quot;circle&quot; fill cornsilk at 1 right of previous
+     ellipse &quot;ellipse&quot; at 1 right of previous
+     oval &quot;oval&quot; at .8 below first box
+     cylinder &quot;cylinder&quot; at 1 right of previous
+     file &quot;file&quot; at 1 right of previous
+     ```</code></pre>
+<p>Here the output:</p>
+<pre class="pikchr" data-app="fossil"><code>box &quot;box&quot;
+circle &quot;circle&quot; fill cornsilk at 1 right of previous
+ellipse &quot;ellipse&quot; at 1 right of previous
+oval &quot;oval&quot; at .8 below first box
+cylinder &quot;cylinder&quot; at 1 right of previous
+file &quot;file&quot; at 1 right of previous</code></pre>
+<p><img src="/home/groth/workspace/DGTcl/pandoc-tcl-filter/examples/images/pik-1.svg" /></p>
+<p>We can resize as well the image by removing the automatic inclusion. Below an example.</p>
+<pre><code>     ```{.pikchr label=pikchr app=fossil include=false}
+     box &quot;box&quot;
+     circle &quot;circle&quot; fill cornsilk at 1 right of previous
+     ellipse &quot;ellipse&quot; at 1 right of previous
+     oval &quot;oval&quot; at .8 below first box
+     cylinder &quot;cylinder&quot; at 1 right of previous
+     file &quot;file&quot; at 1 right of previous
+     ```
+    ![](images/pikchr.svg){#id width=400}</code></pre>
+<p>And here the resulting output:</p>
+<pre class="pikchr" label="pikchr" data-app="fossil" data-include="false"><code>box &quot;box&quot;
+circle &quot;circle&quot; fill cornsilk at 1 right of previous
+ellipse &quot;ellipse&quot; at 1 right of previous
+oval &quot;oval&quot; at .8 below first box
+cylinder &quot;cylinder&quot; at 1 right of previous
+file &quot;file&quot; at 1 right of previous</code></pre>
+<p><img src="images/pikchr.svg" id="id" width="400" /></p>
+<h2 id="hiding-the-code">Hiding the Code</h2>
+<p>To avoid that the reader sees the diagram code just add the option <code>echo=false</code> to the code chunk options.</p>
+<p>The code to create this document was:</p>
+<p><img src="/home/groth/workspace/DGTcl/pandoc-tcl-filter/examples/images/pik-3.svg" /></p>
+<pre><code>     ```{.pikchr app=fossil ext=svg echo=false}
+     arrow right 200% &quot;Markdown&quot; &quot;Source&quot; 
+     box rad 10px &quot;Markdown&quot; &quot;Formatter&quot; &quot;(markdown.c)&quot; fill beige fit
+     arrow right 200% &quot;HTML+SVG&quot; &quot;Output&quot;
+     arrow &lt;-&gt; down 70% from last box.s
+     box same &quot;Pikchr&quot; &quot;Formatter&quot; &quot;(pikchr.c)&quot; fit
+     ```</code></pre>
 <h2 id="document-creation">Document creation</h2>
-<p>Assuming that the file pandoc-tcl-filter.tapp is in your PATH, this document can be converted into an HTML file using the command line:</p>
-<pre><code> pandoc -s -o sample-tsvg.html --filter pandoc-tcl-filter.tapp sample.md
+<p>Download the file <a href="https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp">pandoc-tcl-filter.tapp</a>, make it executable and place it in a directory belonging to your <code>PATH</code> variable. The file contains the required libraries and the example filters. Shared library for th required <em>rl_json</em> library for Linux and Windows (Windows is currently untested).</p>
+<p>Further you need either the <em>fossil</em> application or the <em>pikchr</em> application, the easiest is to Download a precompiled <em>fossil</em> binary for your platform from the <em>fossil</em> homepage at <a href="https://fossil-scm.org/home/uv/download.html">https://fossil-scm.org/home/uv/download.html</a>, download it and place it a directory belonging to your <code>PATH</code>. If you install it using your package manager, make sure that it is at least version 2.13.</p>
+<p>Assuming then that the file <em>pandoc-tcl-filter.tapp</em> and the application <em>fossil</em> is in your <code>PATH</code>, this document can be converted into an HTML file using the command line:</p>
+<pre><code> pandoc -s -o sample-pik.html --filter pandoc-tcl-filter.tapp sample.md
  ## you can as well specify a style sheet to beatify the output
- pandoc -s -o sample-tsvg.html --css ghpandoc.css \
+ pandoc -s -o sample-pik.html --css ghpandoc.css \
     --filter pandoc-tcl-filter.tapp sample.md</code></pre>
 <h2 id="eof">EOF</h2>
 </body>
