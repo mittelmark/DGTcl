@@ -17,8 +17,10 @@ Links:
 
 * Fossil Homepage: [https://fossil-scm.org](https://fossil-scm.org)
 * Pikchr Homepage: [https://pikchr.org](https://pikchr.org)
+* Pikchr Manual: [https://pikchr.org/home/doc/trunk/doc/userman.md](https://pikchr.org/home/doc/trunk/doc/userman.md)
+* Pikchr Grammar: [https://pikchr.org/home/doc/trunk/doc/grammar.md](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 
-## PIK diagrams
+## Pikchr diagrams
 
 Here a code example for Pikchr diagrams. The indentation at the beginning must
 be removed. It is just here to avoid interpretation. To use a new downloaded
