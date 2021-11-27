@@ -75,7 +75,7 @@ this document can be converted into an HTML file using the command line:
 
 ```
  pandoc -s -o sample-tcl.html --filter pandoc-tcl-filter.tapp sample.md
- ## you can as well specify a style sheet to beatify the output
+ ## you can as well specify a style sheet to beautify the output
  pandoc -s -o sample-tcl.html --css ghpandoc.css \
     --filter pandoc-tcl-filter.tapp sample.md
 ```

@@ -115,14 +115,19 @@ make it executable and place it in a directory belonging to your `PATH`
 variable. The file contains the required libraries and the example filters. 
 Shared library for th required *rl_json* library for Linux and Windows (Windows is currently untested).
 
-Further you need either the *fossil* application or the *pikchr* application, the easiest is to Download a precompiled *fossil* binary for your platform from the *fossil* homepage at [https://fossil-scm.org/home/uv/download.html](https://fossil-scm.org/home/uv/download.html), download it and place it a directory belonging to your `PATH`. If you install it using your package manager, make sure that it is at least version 2.13.
+Further you need either the *fossil* application or the *pikchr* application,
+the easiest is to Download a precompiled *fossil* binary for your platform
+from the *fossil* homepage at
+[https://fossil-scm.org/home/uv/download.html](https://fossil-scm.org/home/uv/download.html),
+download it and place it a directory belonging to your `PATH`. If you install
+it using your package manager, make sure that it is at least version 2.13.
 
 Assuming then that the file *pandoc-tcl-filter.tapp* and the application *fossil* is in your `PATH`, 
 this document can be converted into an HTML file using the command line:
 
 ```
  pandoc -s -o sample-pik.html --filter pandoc-tcl-filter.tapp sample.md
- ## you can as well specify a style sheet to beatify the output
+ ## you can as well specify a style sheet to beautify the output
  pandoc -s -o sample-pik.html --css ghpandoc.css \
     --filter pandoc-tcl-filter.tapp sample.md
 ```
