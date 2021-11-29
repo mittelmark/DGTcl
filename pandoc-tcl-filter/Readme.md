@@ -20,14 +20,14 @@ abstract: >
 
 ## NAME
 
-_pandoc-tcl-filter.tcl_ - filter to execute code within Markdown documents and use code results for documentation.
+_pandoc-tcl-filter_ - filter to execute code within Markdown documents and use code results for documentation.
 
 ## USAGE
 
 ```
- pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tcl
- # or the standalone application
- pandoc input.md -s -o output.html --filter pandoc-tcl-filter.tapp
+ pandoc input.md -s --filter pandoc-tcl-filter.tcl -o output.html
+ # or using the standalone application
+ pandoc input.md -s  --filter pandoc-tcl-filter.tapp -o output.html
 ```
 
 ## Installation
@@ -52,9 +52,10 @@ Tcl installation and can be downloaded from here: [https://github.com/mittelmark
 
 
 
-## Example
+## Tcl filter
 
-The HTML version of this file can be seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html).
+The HTML version of this file contains as well the output results and can be
+seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html).
 
 Tcl code can be embedded either within single backtick marks where the first
 backtick is immediately followed by the string tcl and the the tcl code such
@@ -73,12 +74,13 @@ The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
 
 This document was processed using Tcl `tcl package provide Tcl`.
 
+The results from the code execution will be directly embedded in the text and
+will replace the Tcl code. Such inline statements should be short and concise
+and should not break over several lines. Currently single backtick statements
+must be within non-list environments only.
 
-The results from the code execution will be directly embedded in the text and will replace the Tcl code.
-Such inline statements should be short and concise and should not break over
-several lines.
-
-Larger chunks of code can be placed within triple backticks such as in the example below.
+Larger chunks of code can be placed within triple backticks such as in the
+example below.
 
 ```
 ` ``{.tcl}
@@ -93,7 +95,7 @@ Larger chunks of code can be placed within triple backticks such as in the examp
 ```
 
 In the code above a space was added to avoid confusing the pandoc interpreter
-by nesteding triple tickmarks, remove those spaces in your code.
+by nested triple tickmarks, remove those spaces in your code.
 
 And here the output:
 
@@ -108,6 +110,8 @@ add $x 7
 Please note, that only the last statement is shown in code block after the Tcl
 code. To show more output you can use the `puts` command.
 
+### Code chunk attributes
+
 Within the curly braces the following attributes are currently supported:
 
 * _eval=false|true_ - evaluate the Tcl code
@@ -117,11 +121,13 @@ Within the curly braces the following attributes are currently supported:
 Errors in the tcl code will be usually trapped and the error info is shown
 instead of the regular output.
 
-## Images
+### Images
 
 As Tcl has no standard library in the core to create graphics without the Tk
 toolkit we will create a small object using a minimal object oriented system
-which can create svg files easily.
+which can be used to create svg files easily.
+
+#### Thingy svg example
 
 ```{.tcl}
 ;# the onliner OO system thingy see here
@@ -144,8 +150,7 @@ svg set height 100
 info vars svg::* 
 ```
 
-
-We now need a method _unknow_ which catches all command on the object and
+We now need a method _unknown_ which catches all command on the object and
 forward this to the tag creation method.
 
 ```{.tcl}
@@ -169,7 +174,7 @@ svg proc tag {args} {
     append code $ret
 }
 
-; # any unknown should forward to the tag method
+;# any unknown should forward to the tag method
 namespace eval svg {
     namespace unknown svg::tag
 }
@@ -245,9 +250,12 @@ svg write images/chessboard.svg
 ![](images/chessboard.svg)
 
 
-Great! Let's now illustrate a few more basic shapes. We will follow the examples at [https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes)
+Great! Let's now illustrate a few more basic shapes. We will follow the
+examples at
+[https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Basic_Shapes)
 
-But first let's rewrite the `svg tag` function so that we can as well take a list of attributes.
+But first let's rewrite the `svg tag` function so that we can as well take a
+list of attributes.
 
 ```{.tcl}
 svg proc tag {args} {
@@ -315,9 +323,10 @@ Please note, that from the code shown in this Readme the package _tsvg_ was deri
 does not need this protecting of the spaces within the attributes. See below the section
 about the _tsvg_ plugin for more details.
 
-## Code chunk attributes for figures
+#### Code chunk attributes for svg figures
 
-Let's introduce now a few code chunk attributes for figures as they are known for instance in R.
+Let's introduce now a few code chunk attributes for figures as they are known
+for instance in R.
 
 Below an example:
 ```
@@ -326,7 +335,9 @@ Below an example:
     ```
 ```
 
-This code should call some procedure figure with the arguments of a basic filename, fig.width, fig.height and it should return a filename with an extension like `.svg`
+This code should call some procedure figure with the arguments of a basic
+filename, _fig.width_, _fig.height_ and it should return a filename with an
+extension like `.svg`
 
 Here an outline of such a function:
 
@@ -337,6 +348,7 @@ proc figure {filename width height args} {
     # return filename with extension
 }
 ```
+
 Ok, lets now implement our figure procedure for our svg:
 
 ```{.tcl} 
@@ -351,13 +363,13 @@ proc figure {filename width height args} {
 Now in the next code chunk we create a new figure:
 
 ```
-   ` ``{.tcl label=figsample fig=true width=80 height=80}
-   svg set code ""
-   svg rect x 0 y 0 width 80 height 80 fill cornsilk
-   svg rect x 10 y 10 width 60 height 60 fill salmon
-   ` ``
+ ` ``{.tcl label=figsample fig=true width=80 height=80}
+ svg set code ""
+ svg rect x 0 y 0 width 80 height 80 fill cornsilk
+ svg rect x 10 y 10 width 60 height 60 fill salmon
+ ` ``
    
-   ![](images/figsample.svg)
+ ![](images/figsample.svg)
 ```   
 
 Here the actual code (the space between the backticks was added to avoid
@@ -373,7 +385,7 @@ svg rect x 10 y 10 width 60 height 60 fill salmon
 
 * TODO: autoembedding of figures by chunk number
 
-## Other filters than Tcl code filter
+## Other filters
 
 The *pandoc-tcl-filter* supports as well generation of filters for other tools
 and programming languages using the Tcl programming language. The standalone application *pandoc-tcl-filter.tapp* comes with the following filters:
@@ -422,7 +434,7 @@ digraph G {
 }
 ```
 
-Using the chunk option echo=false, we can as well hide the source code. 
+Using the chunk option _echo=false_, we can as well hide the source code. 
 If you would like to see the code you now have to consult the Markdown file.
 
 
@@ -488,7 +500,8 @@ Ok, now you know what was the code to create the graphic above.
 
 The dot filter supports as well the other command line applications from the
 GraphViz toolbox. To switch for instance from the `dot` command line
-application to the `neato` application give the chung argument `app=neato` and you can enter neato code in your code chunk here an example:
+application to the `neato` application give the chunk argument `app=neato` and
+you can enter neato code in your code chunk here an example:
 
 
 ```
@@ -501,7 +514,7 @@ graph G {
 ` ``
 ```
 
-Will produce this:
+Which will produce this:
 
 
 ```{.dot label=neato-sample app=neato}
@@ -513,7 +526,8 @@ graph G {
 ```
 
 You can try out as well the GraphViz layout engines yourself. Please have a
-look at the GraphViz homepage at [https://www.graphviz.org/docs/layouts/](https://www.graphviz.org/docs/layouts/).
+look at the GraphViz homepage at 
+[https://www.graphviz.org/docs/layouts/](https://www.graphviz.org/docs/layouts/).
 
 ## tsvg plugin
 
@@ -523,21 +537,20 @@ That way you can include code creating svg files using the described syntax abov
 Please not that the plugin object is named `tsvg`. Here an example.
 
 ```
- ` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
- tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
- tsvg text x 29 y 45 Hello
- tsvg text x 26 y 65 World!
- ` ```
+` ``{.tsvg label=tsvg-hello-world results=hide echo=false}
+tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
+tsvg text x 29 y 45 Hello
+tsvg text x 26 y 65 World!
+` ```
 ```
 
-Will produce this:
+Which will produce this:
 
 ```{.tsvg fig=true label=tsvg-hello-world results=hide echo=true}
 tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 26 y 65 World!
 ```
-
 
 In contrast to the svg code developed above the _tsvg_ plugin allows you to 
 send the attributes containing as well spaces as they are, the _tag_ method will clean up 
@@ -556,7 +569,8 @@ tsvg polyline points="0,40 40,40 40,80 80,80 80,120 120,120 120,160" \
    style="fill:white;stroke:red;stroke-width:4"
 ```  
 
-For more information about the _tsvg_ package visit the [tsvg manual page](lib/tsvg/tsvg.html).
+For more information about the _tsvg_ package visit the [tsvg manual
+page](lib/tsvg/tsvg.html).
 
 ## Filter for Math-Tex 
 
@@ -640,11 +654,18 @@ The code here was (the indentation of five spaces is just to avoid interpretatio
      ```
 ```
 
-## The pikchr filter
+## Pikchr filter
 
-The PIC diagram language has a modern successor, the Pikchr Diagram Language
-used on the 'sqlite* webpage to display syntax diagrams. The homepage of the pikchr tool is at:
-[https://pikchr.org/](https://pikchr.org). The tool can be compiled easily, but even easier you can as well download the *fossil* application which has a subcommand *pikchr* which allows you to create as well diagrams. The downloads of *fossil* for various platforms can be found here [https://www.fossil-scm.org/home/uv/download.html](https://www.fossil-scm.org/home/uv/download.html). If the *fossil* application is in your PATH ou can create easily as well *pikchr* diagrams. Here an example:
+The PIC diagram language has a modern successor, the Pikchr diagram language
+used on the Sqlite webpage to display syntax diagrams. The homepage of the
+pikchr tool is at: [https://pikchr.org/](https://pikchr.org). The tool can be
+compiled easily, but even easier you can as well download the *fossil*
+application which has a subcommand *pikchr* which allows you to create as well
+diagrams. The downloads of *fossil* for various platforms can be found here
+[https://www.fossil-scm.org/home/uv/download.html](https://www.fossil-scm.org/home/uv/download.html).
+
+If the *fossil* application is in your PATH ou can create easily as well
+*pikchr* diagrams. Here an example:
 
 ```{.pikchr app=fossil-2.17 ext=svg}
 box "box"
@@ -658,21 +679,21 @@ file "file" at 1 right of previous
 The code for this diagram follows below:
 
 ```
-     ```{.pikchr app=fossil-2.17 ext=pdf}
-     box "box"
-     circle "circle" fill cornsilk at 1 right of previous
-     ellipse "ellipse" at 1 right of previous
-     oval "oval" at .8 below first box
-     cylinder "cylinder" at 1 right of previous
-     file "file" at 1 right of previous
-     ```
+` ``{.pikchr app=fossil-2.17 ext=pdf}
+box "box"
+circle "circle" fill cornsilk at 1 right of previous
+ellipse "ellipse" at 1 right of previous
+oval "oval" at .8 below first box
+cylinder "cylinder" at 1 right of previous
+file "file" at 1 right of previous
+` ``
 ```
 
 The option `app=fossil-2.17` was used to use a newer version of the *fossil*
 application than the default one. Please note, that at least *fossil* in
 version 2.13 is required.
  
-We can as well resize the image, in this case we have to create a *png*
+We can as well resize the image. In this case we have to create a *png*
 extension. As conversion from svg to png is then required we need a tool
 called cairosvg which can be installed as a Python packagte using pip:
 
@@ -681,7 +702,8 @@ pip3 install cairosvg --user
 ```
 
 should do this. The advantage if using this tool is, that we beside resizing
-we can as well create PDF's for inclusion into LaTeX documents. Here an example for a PNF image.
+we can as well create PDF's for inclusion into LaTeX documents. 
+Here an example for a PNG image.
 
 ```{.pikchr label=fossil-sample app=fossil-2.17 ext=png width=500 height=300}
 box "box"
@@ -696,17 +718,12 @@ file "file" at 1 right of previous
 Here is the code:
 
 ```
-     ```{.pikchr app=fossil-2.17 ext=png  width=500 height=300}
-     box "box"
-     circle "circle" fill cornsilk at 1 right of previous
-     ellipse "ellipse" at 1 right of previous
-     oval "oval" at .8 below first box
-     cylinder "cylinder" at 1 right of previous
-     file "file" at 1 right of previous
-     ```
+` ``{.pikchr app=fossil-2.17 ext=png  width=500 height=300}
+` ``
 ```
 
-As you can see using the `ext=png` setting and the `width` and `height` options, we can resize the image.
+As you can see using the `ext=png` setting and the `width` and `height`
+options, we can resize the image.
 
 
 ## Lua filters
@@ -727,23 +744,21 @@ for examples of Lua filter look at GitHub
 [https://github.com/pandoc/lua-filters](https://github.com/pandoc/lua-filters).
 
 
-
-
-
 ## Summary
 
-In this tutorial I explained on how to use the Tcl pandoc filter to embed and
+In this Readme I explained on how to use the Tcl pandoc filter to embed and
 process Tcl code during the creation of HTML or PDF documents. The Tcl filter
 was generalized so that as well filters for other tools, especially command
 line application can be easily programmed using the Tcl programming language.
 Examples for a filter for the GraphViz tool dot to create flowcharts and
-graphs, a package to create SVG images using Tcl, the new _tsvg_ package, and
-a little renderer for single TeX equations were as well given. The provided
-infrastructure has the advantage that Tcl programmers can stay within their
-favourite programming language but still can use other nice tools easily for
-their documentation. In case of new may be complex things look for existing
-Lua filters. As Lua is embedded into Pandoc have a look for an existing Lua
-filter to not reinvent the (filter) wheel.
+graphs, a package to create SVG images using Tcl, the new _tsvg_ package, a
+little renderer for single TeX equations, filters for the PIC and EQN
+langauges and as well for the Pikchr diagram tools are as well included in the
+pandoc-tcl-filter. The provided infrastructure has the advantage that Tcl
+programmers can stay within their favourite programming language but still can
+use other nice tools easily for their documentation. In case of new may be
+complex things look for existing Lua filters. As Lua is embedded into Pandoc
+have a look for an existing Lua filter to not reinvent the (filter) wheel.
 
 
 ## Documentation
@@ -753,7 +768,7 @@ The HTML version of this document was generated using the following commandline:
 ```
 pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
     -M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
-     --filter pandoc-tcl-filter.tcl --css mini.css \
+     --filter pandoc-tcl-filter.tcl --css mini.css -B header.html \
      --toc --lua-filter=filter/smallcaps.lua
 
 ```
