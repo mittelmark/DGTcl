@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <211129.0616>
+#  Last Modified : <211129.0619>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -13,7 +13,7 @@
 Readme.html : Readme.md mini.css header.md
 	pandoc -o header.html header.md
 	pandoc Readme.md --metadata title="Readme pandoc-tcl-filter.tcl" \
-		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html \
+		-M date="`date "+%B %e, %Y %H:%M"`" -s -o Readme.html -B header.html  \
 		--filter ./pandoc-tcl-filter.tcl --toc --lua-filter=filter/smallcaps.lua
 	htmlark -o Readme-ark.html Readme.html
 	mv Readme-ark.html Readme.html
