@@ -18,11 +18,11 @@ abstract: >
     the code block as well.
 ---
 
-## NAME
+## Name
 
 _pandoc-tcl-filter_ - filter to execute code within Markdown documents and use code results for documentation.
 
-## USAGE
+## Usage
 
 ```
  pandoc input.md -s --filter pandoc-tcl-filter.tcl -o output.html
@@ -725,6 +725,65 @@ Here is the code:
 As you can see using the `ext=png` setting and the `width` and `height`
 options, we can resize the image.
 
+## Rplot filter
+
+The usual way to embed R code in Markdown is using the R-knitr library and then use R to
+execute the code embedded within the R-Markdown file. This type of execution
+is however not compatible with pandoc as knitr modifies the code chunks without R-code as well. So it
+is not easily possible to embed other filters in documents processed with
+R/knitr first. Although the R-knitr command is useful if the main focus is on R, it
+is however not favourable if you just would like to add a few plots or execute
+a few statements. For a few simple plots you can use the filter `.rplot` to
+embed them within your document. Here an example.
+
+```{.rplot label=iris echo=true results="hide" width=800 height=600}
+data(iris)
+pairs(iris[,1:3],pch=19,col=as.numeric(iris$Species)+1)
+x=1
+```
+
+Here is the code:
+
+```
+` ``{.rplot label=iris echo=true results="hide" width=800 height=600}
+data(iris)
+pairs(iris[,1:3],pch=19,col=as.numeric(iris$Species)+1)
+` ``
+```
+
+And here just some code without a figure.
+
+```{.rplot fig=false} 
+print(head(iris))
+```
+
+That is the code:
+
+```
+` ``{.rplot fig=false} 
+print(head(iris))
+` ``
+```
+
+Session are as well retained, so you can use variables created in code chunks before.
+
+```{.rplot fig=false} 
+print(x)
+```
+
+Here the code:
+
+```
+` ``{.rplot fig=false} 
+print(x)
+` ``
+```
+
+In contrast to the R-knitr tool this filter will start for each chunk a new
+process, so it is much slower then the R-knitr tool, so as I have written
+above, it should be used mostly for Markdown documents with just a few code
+chunks and with simple outputs. Thre is no support for sophisticated features
+like nice tables etc..
 
 ## Lua filters
 
