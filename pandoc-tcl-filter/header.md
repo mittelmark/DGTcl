@@ -4,6 +4,7 @@ Filters:
 [mtex](examples/example-mtex.html) -
 [pic](examples/example-pic.html) -
 [pikchr](examples/example-pik.html) -
+[rplot](examples/example-rplot.html) -
 [tcl](examples/example-tcl.html) -
 [tsvg](examples/example-tsvg.html) 
 </center>
