@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Detlef Groth, Caputh-Schwielowsee, Germany" />
+  <title>filter-dot.tcl documentation</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="mini.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">filter-dot.tcl documentation</h1>
+<p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<p class="date">August 31, 2021 21:14</p>
+</header>
+<h2 id="name">Name</h2>
+<p><em>filter-dot.tcl</em> - Filter which can be used to display GraphViz dot files within a Pandoc processed document using the Tcl filter driver <code>pandoc-tcl-filter.tcl</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>The conversion of the Markdown documents via Pandoc should be done as follows:</p>
+<pre><code>pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html</code></pre>
+<p>The file <code>filter-dot.tcl</code> is not used directy but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.dot</code> marker are found, the contents in the code block is processed via one of the Graphviz tools.</p>
+<p>The following options can be given via code chunks or in the YAML header.</p>
+<blockquote>
+<ul>
+<li>app - the application to be called, such as dot, neato, twopi etc default: dot</li>
+<li>imagepath - output imagepath, default: images</li>
+<li>include - should the created image be automatically included, default: true</li>
+<li>results - should the output of the command line application been shown, should be show or hide, default: hide</li>
+<li>eval - should the code in the code block be evaluated, default: true</li>
+<li>fig - should a figure be created, default: true</li>
+</ul>
+</blockquote>
+<p>The last three options should be normally not used, they are here just for compatibility reasons with the other filters.</p>
+<p>To change the defaults the YAML header can be used. Here an example to change the default layout engine to neator and the image output path to nfigures</p>
+<pre><code> ----
+ title: &quot;filter-dot.tcl documentation&quot;
+ author: &quot;Detlef Groth, Caputh-Schwielowsee, Germany&quot;
+ date: 2021-08-31
+ dot:
+     app: neato
+     imagepath: nfigures
+     ext: png
+ ----</code></pre>
+<h2 id="examples">Examples</h2>
+<p>Here an example for a simple neat undirected graph:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode dot"><code class="sourceCode dot"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="va">graph</span> <span class="va">G</span> <span class="ot">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">  </span><span class="kw">node</span><span class="co"> </span><span class="ot">[</span><span class="at">shape</span><span class="ot">=</span><span class="va">box</span><span class="co">,</span><span class="at">style</span><span class="ot">=</span><span class="va">filled</span><span class="co">,</span><span class="at">fillcolor</span><span class="ot">=</span><span class="va">salmon</span><span class="ot">];</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="co">  </span><span class="va">A</span><span class="co"> -- </span><span class="va">C</span><span class="co"> -- </span><span class="va">D</span><span class="co"> -- </span><span class="va">E</span><span class="co"> -- </span><span class="va">F</span><span class="co"> </span><span class="ot">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="co">  </span><span class="va">B</span><span class="co"> -- </span><span class="va">C</span><span class="co"> </span><span class="ot">;</span><span class="co"> </span><span class="va">D</span><span class="co"> -- </span><span class="va">F</span><span class="ot">;</span><span class="co"> </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="ot">}</span></span></code></pre></div>
+<p><img src="/home/groth/workspace/delfgroth/mytcl/pandoc/nfigures/dot-1.png" /></p>
+<h2 id="see-also">See also:</h2>
+<ul>
+<li><a href="../Readme.html">pandoc-tcl-filter Readme</a></li>
+</ul>
+</body>
+</html>
