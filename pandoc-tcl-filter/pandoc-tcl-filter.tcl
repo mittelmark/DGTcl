@@ -1,6 +1,6 @@
 #!/usr/bin/env tclsh
 
-package provide pandoc 0.3.2
+package provide pandoc 0.3.3
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
     puts "[package present pandoc]"
@@ -43,11 +43,10 @@ catch {
     # if available load filters
     package require tclfilters
 }
-package provide pandoc 0.3.2
 #' ---
-#' title: pandoc-tcl-filter documentaion - 0.3.2
+#' title: pandoc-tcl-filter documentaion - 0.3.3
 #' author: Detlef Groth, Schwielowsee, Germany
-#' date: 2021-11-23
+#' date: 2021-11-30
 #' ---
 #'
 #' ## NAME
@@ -63,6 +62,7 @@ package provide pandoc 0.3.2
 #' * Pikchr filter plugin for diagram creation: `filter-pik.tcl`
 #' * PIC filter plugin for diagram creation (older version): `filter-pic.tcl`
 #' * EQN filter plugin for equations written in the EQN language: `filter-eqn.tcl`
+#' * R plot filter plugin for displaying plots in the R statistical language: `filter-rplot.tcl`
 #'
 #' ## SYNOPSIS 
 #' 
@@ -80,7 +80,8 @@ package provide pandoc 0.3.2
 #'   Hello this is Tcl `tcl package provide Tcl`!
 #' ```
 #' 
-#' The markers for the other filters are `{.dot}`, `{.tsvg}` and `{.mtex}`.
+#' The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mtex}`, `{.pic}`,
+#' `{.pikchr}, `{.rplot} and `{.tsvg}`  
 #' 
 #' The Markdown document within this file could be processed as follows:
 #' 
@@ -120,9 +121,9 @@ package provide pandoc 0.3.2
 #'    ` ``
 #' ```
 #' 
-#' The main script pandoc-tcl-filter.tcl looks if in the same folders as the script is,
+#' The main script `pandoc-tcl-filter.tcl` looks if in the same folders as the script is,
 #' if there any other files named `filter-NAME.tcl` and source them. In case of the dot
-#' filter the file is named `filter-dot.tcl` and its filter function filter-dot is 
+#' filter the file is named `filter-dot.tcl` and its filter function `filter-dot` is 
 #' executed. Below is the code: of this file `filter-dot.tcl`:
 #' 
 #' ```
@@ -162,7 +163,7 @@ package provide pandoc 0.3.2
 #' }
 #' ```
 #'
-#' Automatic inclusion of the image would require more effort and dealing with the cblock
+#' Automatic inclusion of the image would require more effort and dealing with the `cblock`
 #' which is a copy of the current json block containing the source code. Using the label
 #' We could create an image link and append this block after the `$cblock` part of the `$ret var`.
 #' As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.
@@ -181,10 +182,15 @@ package provide pandoc 0.3.2
 #'     * fix for parray and "puts stdout"
 #' * 2021-11-15 Version 0.3.2
 #'     * --help argument support
+#'     * --version argument support
+#'     * filters for Pikchr, PIC and EQN
+#' * 2021-11-30 Version 0.3.3
+#'     * filter for R plots: `.rplot`
 #'     
 #' ## SEE ALSO
 #' 
 #' * [Readme.html](Readme.html) - more information and small tutorial
+#' * [Examples](examples/example-eqn.html) - more examples for the filters 
 #' * [Tclers Wiki page](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) - place for discussion
 #' * [Pandoc filter documentation](https://pandoc.org/filters.html) - more background and information on how to implement filters in Haskell and Markdown
 #' * [Lua filters on GitHub](https://github.com/pandoc/lua-filters)
@@ -197,8 +203,7 @@ package provide pandoc 0.3.2
 #'  
 #' ## LICENSE
 #' 
-#' ```
-#' MIT License
+#' *MIT License*
 #' 
 #' Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
 #' 
@@ -219,9 +224,12 @@ package provide pandoc 0.3.2
 #' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 #' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #' SOFTWARE.
-#' ```
 #' 
+## Actual filter code for Tcl and infratstucture to add other filters by writing
+## proc filter-NAME function in a file filter/filter-NAME.tcl
+
 ## Global variables
+
 set n 0
 set jsonData {}
 while {[gets stdin line] > 0} {

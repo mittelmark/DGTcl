@@ -1,7 +1,7 @@
 ---
-title: pandoc-tcl-filter documentaion - 0.3.2
+title: pandoc-tcl-filter documentaion - 0.3.3
 author: Detlef Groth, Schwielowsee, Germany
-date: 2021-11-23
+date: 2021-11-30
 ---
 
 ## NAME
@@ -17,6 +17,7 @@ and the `exec` command. As examples are given in the filter folder of the projec
 * Pikchr filter plugin for diagram creation: `filter-pik.tcl`
 * PIC filter plugin for diagram creation (older version): `filter-pic.tcl`
 * EQN filter plugin for equations written in the EQN language: `filter-eqn.tcl`
+* R plot filter plugin for displaying plots in the R statistical language: `filter-rplot.tcl`
 
 ## SYNOPSIS 
 
@@ -33,7 +34,8 @@ Embed code either inline or in form of code chunks like here (triple ticks witho
   Hello this is Tcl `tcl package provide Tcl`!
 ```
 
-The markers for the other filters are `{.dot}`, `{.tsvg}` and `{.mtex}`.
+The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mtex}`, `{.pic}`,
+`{.pikchr}, `{.rplot} and `{.tsvg}`  
 
 The Markdown document within this file could be processed as follows:
 
@@ -69,9 +71,9 @@ where NAME hast to match the code chunk marker. Below an example:
    ` ``
 ```
 
-The main script pandoc-tcl-filter.tcl looks if in the same folders as the script is,
+The main script `pandoc-tcl-filter.tcl` looks if in the same folders as the script is,
 if there any other files named `filter-NAME.tcl` and source them. In case of the dot
-filter the file is named `filter-dot.tcl` and its filter function filter-dot is 
+filter the file is named `filter-dot.tcl` and its filter function `filter-dot` is 
 executed. Below is the code: of this file `filter-dot.tcl`:
 
 ```
@@ -111,7 +113,7 @@ proc filter-dot {cont dict} {
 }
 ```
 
-Automatic inclusion of the image would require more effort and dealing with the cblock
+Automatic inclusion of the image would require more effort and dealing with the `cblock`
 which is a copy of the current json block containing the source code. Using the label
 We could create an image link and append this block after the `$cblock` part of the `$ret var`.
 As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.
@@ -130,10 +132,15 @@ As an exercise you could create a filter for the neato application which creates
     * fix for parray and "puts stdout"
 * 2021-11-15 Version 0.3.2
     * --help argument support
+    * --version argument support
+    * filters for Pikchr, PIC and EQN
+* 2021-11-30 Version 0.3.3
+    * filter for R plots: `.rplot`
     
 ## SEE ALSO
 
 * [Readme.html](Readme.html) - more information and small tutorial
+* [Examples](examples/example-eqn.html) - more examples for the filters 
 * [Tclers Wiki page](https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter) - place for discussion
 * [Pandoc filter documentation](https://pandoc.org/filters.html) - more background and information on how to implement filters in Haskell and Markdown
 * [Lua filters on GitHub](https://github.com/pandoc/lua-filters)
@@ -146,8 +153,7 @@ Dr. Detlef Groth, Caputh-Schwielowsee, Germany, detlef(_at_)dgroth(_dot_).de
  
 ## LICENSE
 
-```
-MIT License
+*MIT License*
 
 Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
 
@@ -168,5 +174,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-```
 

@@ -860,6 +860,7 @@ Please look at the source Markdown file to see which Markdown code was the input
 * 2021-08-26 - Adding thingy svg creator, image file writing works
 * 2021-08-31 - adding mtex filter example, images now in images folder, Lua filter example
 * 2021-11-23 - adding pikchr, pik, eqn filters, extending documentation
+* 2021-11-30 - adding rplot filter for embedding R code
 
 ## Author
 

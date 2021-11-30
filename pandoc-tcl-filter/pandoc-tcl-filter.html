@@ -5,7 +5,7 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Detlef Groth, Schwielowsee, Germany" />
-  <meta name="dcterms.date" content="2021-11-23" />
+  <meta name="dcterms.date" content="2021-11-30" />
   <title>pandoc-tcl-filter.tcl documentation</title>
   <style>
     code{white-space: pre-wrap;}
@@ -24,7 +24,7 @@
 <header id="title-block-header">
 <h1 class="title">pandoc-tcl-filter.tcl documentation</h1>
 <p class="author">Detlef Groth, Schwielowsee, Germany</p>
-<p class="date">2021-11-23</p>
+<p class="date">2021-11-30</p>
 </header>
 <h2 id="name">NAME</h2>
 <p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As examples are given in the filter folder of the project:</p>
@@ -35,6 +35,7 @@
 <li>Pikchr filter plugin for diagram creation: <code>filter-pik.tcl</code></li>
 <li>PIC filter plugin for diagram creation (older version): <code>filter-pic.tcl</code></li>
 <li>EQN filter plugin for equations written in the EQN language: <code>filter-eqn.tcl</code></li>
+<li>R plot filter plugin for displaying plots in the R statistical language: <code>filter-rplot.tcl</code></li>
 </ul>
 <h2 id="synopsis">SYNOPSIS</h2>
 <p>Embed code either inline or in form of code chunks like here (triple ticks without space):</p>
@@ -46,7 +47,7 @@
   ` ```
   
   Hello this is Tcl `tcl package provide Tcl`!</code></pre>
-<p>The markers for the other filters are <code>{.dot}</code>, <code>{.tsvg}</code> and <code>{.mtex}</code>.</p>
+<p>The markers for the other filters are <code>{.dot}</code>, <code>{.eqn}</code>, <code>{.mtex}</code>, <code>{.pic}</code>, <code class="rplot">{.pikchr},</code> and <code>{.tsvg}</code></p>
 <p>The Markdown document within this file could be processed as follows:</p>
 <pre><code> perl -ne &quot;s/^#&#39; ?(.*)/\$1/ and print &quot; &gt; pandoc-tcl-filter.md
  pandoc pandoc-tcl-filter.md -s \
@@ -69,7 +70,7 @@
 
    ![](dotgraph.svg)
    ` ``</code></pre>
-<p>The main script pandoc-tcl-filter.tcl looks if in the same folders as the script is, if there any other files named <code>filter-NAME.tcl</code> and source them. In case of the dot filter the file is named <code>filter-dot.tcl</code> and its filter function filter-dot is executed. Below is the code: of this file <code>filter-dot.tcl</code>:</p>
+<p>The main script <code>pandoc-tcl-filter.tcl</code> looks if in the same folders as the script is, if there any other files named <code>filter-NAME.tcl</code> and source them. In case of the dot filter the file is named <code>filter-dot.tcl</code> and its filter function <code>filter-dot</code> is executed. Below is the code: of this file <code>filter-dot.tcl</code>:</p>
 <pre><code># a simple pandoc filter using Tcl
 # the script pandoc-tcl-filter.tcl 
 # must be in the same filter directoy of the pandoc-tcl-filter.tcl file
@@ -104,7 +105,7 @@ proc filter-dot {cont dict} {
     }
     return [list $res $img]
 }</code></pre>
-<p>Automatic inclusion of the image would require more effort and dealing with the cblock which is a copy of the current json block containing the source code. Using the label We could create an image link and append this block after the <code>$cblock</code> part of the <code>$ret var</code>. As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.</p>
+<p>Automatic inclusion of the image would require more effort and dealing with the <code>cblock</code> which is a copy of the current json block containing the source code. Using the label We could create an image link and append this block after the <code>$cblock</code> part of the <code>$ret var</code>. As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.</p>
 <h2 id="changelog">ChangeLog</h2>
 <ul>
 <li>2021-08-22 Version 0.1</li>
@@ -126,11 +127,18 @@ proc filter-dot {cont dict} {
 <li>2021-11-15 Version 0.3.2
 <ul>
 <li>–help argument support</li>
+<li>–version argument support</li>
+<li>filters for Pikchr, PIC and EQN</li>
+</ul></li>
+<li>2021-11-30 Version 0.3.3
+<ul>
+<li>filter for R plots: <code>.rplot</code></li>
 </ul></li>
 </ul>
 <h2 id="see-also">SEE ALSO</h2>
 <ul>
 <li><a href="Readme.html">Readme.html</a> - more information and small tutorial</li>
+<li><a href="examples/example-eqn.html">Examples</a> - more examples for the filters</li>
 <li><a href="https://wiki.tcl-lang.org/page/pandoc%2Dtcl%2Dfilter">Tclers Wiki page</a> - place for discussion</li>
 <li><a href="https://pandoc.org/filters.html">Pandoc filter documentation</a> - more background and information on how to implement filters in Haskell and Markdown</li>
 <li><a href="https://github.com/pandoc/lua-filters">Lua filters on GitHub</a></li>
@@ -140,26 +148,10 @@ proc filter-dot {cont dict} {
 <h2 id="author">AUTHOR</h2>
 <p>Dr. Detlef Groth, Caputh-Schwielowsee, Germany, detlef(<em>at</em>)dgroth(<em>dot</em>).de</p>
 <h2 id="license">LICENSE</h2>
-<pre><code>MIT License
-
-Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</code></pre>
+<p><em>MIT License</em></p>
+<p>Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 </body>
 </html>
