@@ -397,6 +397,7 @@ and programming languages using the Tcl programming language. The standalone app
 |.mtex  | LaTex                | [https://www.latex-project.org/](https://www.latex-project.org/) |
 |.pic   | pic2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
 |.pik   | pikchr/fossil pikchr | [https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md](https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md) |
+|.rplot | Rscript              | [https://www.r-project.org](https://www.r-project.org) |
 |.tsvg  | Tcl tsvg package     | [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl) |
 
 Let's finish our small tutorial with the implementation of a filter for a
