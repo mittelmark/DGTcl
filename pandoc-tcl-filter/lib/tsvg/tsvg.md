@@ -13,6 +13,8 @@ tsvg circle cx 50 cy 50 r 45 stroke black stroke-width 2 fill salmon
 tsvg text x 29 y 45 Hello
 tsvg text x 27 y 65 World!
 tsvg write hello-world.svg
+tsvg write hello-world.pdf # needs cairosvg
+tsvg write hello-world.png # needs cairosvg
 tsvg set code ""
 # Tcl like syntax with hyphens
 tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill salmon
@@ -41,7 +43,7 @@ svg code out of them. So _tsvg dummy x="20" hello_ will produce:
 
 The following public variables can be modified using the set command like so: _tsvg set varname_ value:
 
-> - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set ""_.
+> - _code_ - the variable collecting the svg code, usually you will only set this variable by hand to remove all existing svg code after doing an image by calling _tsvg set code ""_.
   - _footer_ - the standard SVG-XML footer, should be usually not changed.
   - _header_ - the standard SVG-XML header, should be usually not changed.
   - _height_ - the image height used for writing out the svg file, default: 100
@@ -70,7 +72,8 @@ __tsvg inline__
 
 __tsvg write__ _filename_
 
-> writes the current svg code into the given filename with the current width and height settings.
+> Writes the current svg code into the given filename with the current width and height settings. 
+  Supported file extensions are *.svg* or if the tool *cairosvg* is installed as well *.png* and *.pdf*.
 
 __tsvg tag__ tagname _args_
 
@@ -109,6 +112,21 @@ tsvg text -x 27 -y 65 World!
 tsvg write hello-world2.svg
 ```
 
+Since version 0.3.0 writing of PNG and PDF files is as well possible if the command line tool *cairosvg* is installed. You can install this tool either using your package manager, or if yo do not have administrator rights as ordinary user using the Python package installer like this:
+
+```
+pip3 install cairosvg --user 
+```  
+
+If *cairosvg* is installed you can as well write PNG and PDF files. As this is an HTML document let's create a PNG file and display it thereafter:
+
+```{.tsvg include=false}
+tsvg circle -cx 50 -cy 50 -r 42 -stroke red -stroke-width 7 -fill none
+tsvg write hello-world2.png
+```
+
+![](hello-world2.png)      
+ 
 To continue with an other image you have first to clean up the previous image:
 
 ```{.tsvg label=basic-shapes}
@@ -194,13 +212,15 @@ The documentation for this HTML file was created using the pandoc-tcl-filter and
  pandoc tsvg.md -s  \
     --metadata title="tsvg package documentation"  \
     -o tsvg.html  --filter pandoc-tcl-filter.tcl \
-    --css mini.css
+    --css mini.css --toc
  htmlark -o lib/tsvg/tsvg.html tsvg.html
 ```
 
 ## ChangeLog
 
 * 2021-08-28 Version 0.1 with docu uploaded to GitHub
+* 2021-08-31 Version 0.2 fix for the header line
+* 2021-12-01 Version 0.3.0 adding write option for PNG and PDF files using cairosvg 
     
 ## SEE ALSO
 

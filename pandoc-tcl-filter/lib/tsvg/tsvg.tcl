@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <210905.0957>
+#  Last Modified : <211201.0806>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -16,7 +16,8 @@
 #
 #  History       : 
 #                - 2021-08-28 - Version 0.1
-#                - 2021-08-30 - Version 0.2 automatic figures, error shown in document
+#                - 2021-08-30 - Version 0.2.0 automatic figures, error shown in document
+#                - 2021-12-01 - Version 0.3.0 adding export to png and pdf using cairosvg 
 #	
 ##############################################################################
 #
@@ -42,6 +43,8 @@
 #' tsvg text x 29 y 45 Hello
 #' tsvg text x 27 y 65 World!
 #' tsvg write hello-world.svg
+#' tsvg write hello-world.pdf # needs cairosvg
+#' tsvg write hello-world.png # needs cairosvg
 #' tsvg set code ""
 #' # Tcl like syntax with hyphens
 #' tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill salmon
@@ -99,7 +102,8 @@
 #' 
 #' __tsvg write__ _filename_
 #' 
-#' > writes the current svg code into the given filename with the current width and height settings.
+#' > Writes the current svg code into the given filename with the current width and height settings. 
+#'   Supported file extensions are *.svg* or if the tool *cairosvg* is installed as well *.png* and *.pdf*.
 #' 
 #' __tsvg tag__ tagname _args_
 #' 
@@ -137,6 +141,24 @@
 #' tsvg text -x 27 -y 65 World!
 #' tsvg write hello-world2.svg
 #' ```
+#' 
+#' Since version 0.3.0 writing of PNG and PDF files is as well possible if the command line tool *cairosvg* is installed. You can install this tool either using your package manager, or if yo do not have administrator rights as ordinary user using the Python package installer like this:
+#'
+#' ```
+#' pip3 install cairosvg --user 
+#' ```  
+#' 
+#' If *cairosvg* is installed you can as well write PNG and PDF files. 
+#' As this is an HTML document let's create a PNG file and display it thereafter, we add a red circle before:
+#' 
+#' ```{.tsvg include=false}
+#' tsvg circle -cx 50 -cy 50 -r 42 -stroke red -stroke-width 7 -fill none
+#' tsvg write hello-world2.png
+#' ```
+#' 
+#' ![](hello-world2.png)      
+#'  
+#' For inclusion of images into LaTeX documents I would recommend using the PDF output format.
 #' 
 #' To continue with an other image you have first to clean up the previous image:
 #' 
@@ -231,6 +253,7 @@
 #' 
 #' * 2021-08-28 Version 0.1 with docu uploaded to GitHub
 #' * 2021-08-31 Version 0.2 fix for the header line
+#' * 2021-12-01 Version 0.3.0 adding write option for PNG and PDF files using cairosvg 
 #'     
 #' ## SEE ALSO
 #' 
@@ -269,7 +292,7 @@
 #' 
 
 
-package provide tsvg 0.1
+package provide tsvg 0.3.0
 
 # minimal OOP
 proc thingy name {
@@ -405,13 +428,24 @@ tsvg proc write {filename} {
     variable header
     variable footer
     variable code
-    set out [open $filename w 0600]
+    set ext [file extension $filename]
+    if {$ext in [list .pdf .png]} {
+        if {[auto_execok cairosvg] eq ""} {
+            error "tsvg conversion to $ext needs the cairosvg tool"
+        }
+    } elseif {$ext ne ".svg"}  {
+        error "Unkown file extension, know file extensions are: .svg, .pdf, .png"
+    }
+    set out [open [file rootname ${filename}].svg w 0600]
     set head [regsub {__HEIGHT__} $header $height]
     set head [regsub {__WIDTH__} $head $width]
     puts $out $head
     puts $out $code
     puts $out $footer
     close $out
+    if {$ext in [list .pdf .png]} {
+       exec cairosvg [file rootname $filename].svg -o $filename -W $width -H $height
+    } 
 }
 
 # justify width and height without using set before
@@ -447,6 +481,10 @@ tsvg proc demo {} {
     $self path d="M20,230 Q40,205 50,230 T90,230" fill="none" stroke="blue" stroke-width="5"
     $self write basic-shapes.svg
     puts "Writing file basic-shapes.svg done!"
+    $self write basic-shapes.png
+    puts "Writing file basic-shapes.png done!"
+    $self write basic-shapes.pdf
+    puts "Writing file basic-shapes.pdf done!"
 }
 
                    
