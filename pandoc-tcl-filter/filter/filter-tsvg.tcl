@@ -14,7 +14,7 @@ proc filter-tsvg {cont dict} {
     global n
     incr n
     set def [dict create results hide eval true fig true width 100 height 100 \
-             include true label null imagepath images]
+             include true label null imagepath images ext svg]
     set dict [dict merge $def $dict]
     set ret ""
     set owd [pwd] 
@@ -40,10 +40,11 @@ proc filter-tsvg {cont dict} {
         set res2 ""
     }
     set img ""
+    set imgfile ${fname}.[dict get $dict ext]
     if {[dict get $dict fig]} {
-        tsvgi eval "tsvg write $fname.svg"
+        tsvgi eval "tsvg write $imgfile"
         if {[dict get $dict include]} {
-            set img $fname.svg
+            set img $imgfile
         } else {
             set img ""
         }
