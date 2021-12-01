@@ -2,7 +2,7 @@
 ##############################################################################
 #  Created By    : Dr. Detlef Groth
 #  Created       : Sat Aug 28 09:52:16 2021
-#  Last Modified : <211201.0806>
+#  Last Modified : <211201.1509>
 #
 #  Description	 : Minimal tcl package to write SVG code and write it to 
 #                  a file.
@@ -122,6 +122,8 @@
 #' > - _tsvg TagFix_
 #' 
 #' ## EXAMPLES
+#'  
+#' ### Hello World  
 #' 
 #' The typical Hello World example:
 #'
@@ -142,6 +144,8 @@
 #' tsvg write hello-world2.svg
 #' ```
 #' 
+#' ### Pdf and Png writing
+#' 
 #' Since version 0.3.0 writing of PNG and PDF files is as well possible if the command line tool *cairosvg* is installed. You can install this tool either using your package manager, or if yo do not have administrator rights as ordinary user using the Python package installer like this:
 #'
 #' ```
@@ -151,12 +155,12 @@
 #' If *cairosvg* is installed you can as well write PNG and PDF files. 
 #' As this is an HTML document let's create a PNG file and display it thereafter, we add a red circle before:
 #' 
-#' ```{.tsvg include=false}
+#' ```{.tsvg label=test results=hide fig=true ext=png}
 #' tsvg circle -cx 50 -cy 50 -r 42 -stroke red -stroke-width 7 -fill none
 #' tsvg write hello-world2.png
 #' ```
 #' 
-#' ![](hello-world2.png)      
+#' 
 #'  
 #' For inclusion of images into LaTeX documents I would recommend using the PDF output format.
 #' 
@@ -193,7 +197,7 @@
 #' tsvg write group-circles.svg
 #' ```
 #' 
-#' ## Embedding SVG code into HTML pages
+#' ### Embedding SVG code into HTML pages
 #' 
 #' The _tsvg_ object as well offers a _inline_ method which returns SVG code ready to be embed directly within HTML pages.
 #' 
@@ -206,7 +210,7 @@
 #' ![](inline.svg)
 #'
 #' 
-#' ## Extending
+#' ### Extending the tsvg command
 #' 
 #' If you need to extend the package or to fix nameclashes with other packages you can 
 #' just write your own procedures. For instance if one package you are working with would
@@ -236,7 +240,7 @@
 #' ```
 #' 
 #'
-#' ## Documentation
+#' ### Documentation extraction
 #' 
 #' The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:
 #'
@@ -249,7 +253,7 @@
 #'  htmlark -o lib/tsvg/tsvg.html tsvg.html
 #' ```
 #' 
-#' ## ChangeLog
+#' ## CHANGELOG
 #' 
 #' * 2021-08-28 Version 0.1 with docu uploaded to GitHub
 #' * 2021-08-31 Version 0.2 fix for the header line
@@ -264,7 +268,7 @@
 #' 
 #' Dr. Detlef Groth, Caputh-Schwielowsee, Germany, detlef(_at_)dgroth(_dot_).de
 #' 
-#' ## License
+#' ## LICENSE
 #' 
 #' ```
 #' MIT License
