@@ -67,7 +67,8 @@ if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
         puts "converting [lindex $argv 0] to [lindex $argv 1] done"
         exit 0
     } else {
-        puts else
+        exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end]
+        puts "converting [lindex $argv 0] to [lindex $argv 1] done"
     }
     exit 0
 }
