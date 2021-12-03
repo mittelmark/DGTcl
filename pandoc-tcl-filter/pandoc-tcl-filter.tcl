@@ -1,6 +1,6 @@
 #!/usr/bin/env tclsh
 
-package provide pandoc 0.3.3
+package provide pandoc 0.4.0
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
     puts "[package present pandoc]"
@@ -8,7 +8,7 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
 }   
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
-    puts "Usage:    pandoc \[arguments\] --filter $argv0 \[arguments\]"
+    puts "Usage (filter):    pandoc \[arguments\] --filter $argv0 \[arguments\]"
     puts "          This is the pandoc Tcl filter which should be run as filter"
     puts "          for the pandoc document converter with a syntax like shown above."
     puts "          This filter allows you to embed Tcl code within"
@@ -26,10 +26,51 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "       - ```{.pik}    Pikchr diagram code```"
     puts "       - ```{.rplot}  R plot code```"    
     puts "       - ```{.tsvg}   Tcl package tsvg code```\n"
+    puts "Usage (standalone): $argv0 infile outfile"
+    puts "                    converting infile to outfile"
+    puts "                    if infile is a source code file like .tcl .py"
+    puts "                    it is assumed that it contains mkdoc documentation"  
+    puts "                    mkdoc documentation is embedded Markdown markup after a #' comment" 
+    puts "                    in case pandoc is installed the pandoc-tcl-filter will be used after wards"
+    puts "Example: "
+    puts "         ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css"
+    puts "          will extract the documentation from itself and create a HTML file executing all filters available"
     puts "Author: Detlef Groth, University of Potsdam, Germany"
     exit 0
 }
 
+if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
+    if {[auto_execok pandoc] eq ""} {
+        puts "Error: Document conversion needs pandoc installed"
+        exit 0
+    }
+    if {[file extension [lindex $argv 0]] in [list .tcl .tm .py .R .r .c .cxx .cpp]} {
+        set tempfile [file tempfile].md 
+        set filename [lindex $argv 0]
+        set out [open $tempfile w 0600]
+        if [catch {open $filename r} infh] {
+            puts stderr "Cannot open $filename: $infh"
+            exit
+        } else {
+            while {[gets $infh line] >= 0} {
+                if {[regexp {^\s*#' ?} $line]} {
+                    set line [regsub {^\s*#' ?} $line ""]
+                    puts $out $line
+                }
+                
+            }
+            close $infh
+        }
+        close $out
+        exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end]
+        file delete $tempfile
+        puts "converting [lindex $argv 0] to [lindex $argv 1] done"
+        exit 0
+    } else {
+        puts else
+    }
+    exit 0
+}
 set appdir [file dirname [info script]]
 if {[file exists  [file join $appdir lib]]} {
     lappend auto_path [file normalize [file join $appdir lib]]
@@ -44,9 +85,9 @@ catch {
     package require tclfilters
 }
 #' ---
-#' title: pandoc-tcl-filter documentaion - 0.3.3
+#' title: pandoc-tcl-filter documentaion - 0.4.0
 #' author: Detlef Groth, Schwielowsee, Germany
-#' date: 2021-11-30
+#' date: 2021-12-04
 #' ---
 #'
 #' ## NAME
@@ -55,14 +96,15 @@ catch {
 #' application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown
 #' documentation and offers a plugin architecture to add other command line filters easily using Tcl
 #' and the `exec` command. As examples are given in the filter folder of the project:
-#' 
-#' * Graphviz dot filter plugin: `filter-dot.tcl`
-#' * tsvg package plugin: `filter-tsvg.tcl`
-#' * Math TeX filter plugin for single line equations: `filter-mtex.tcl`
-#' * Pikchr filter plugin for diagram creation: `filter-pik.tcl`
-#' * PIC filter plugin for diagram creation (older version): `filter-pic.tcl`
-#' * EQN filter plugin for equations written in the EQN language: `filter-eqn.tcl`
-#' * R plot filter plugin for displaying plots in the R statistical language: `filter-rplot.tcl`
+#'
+#' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
+#' * Graphviz dot filter {.dot}: `filter-dot.tcl`
+#' * tsvg package filter {.tsvg}: `filter-tsvg.tcl`
+#' * Math TeX filter for single line equations {.mtex}: `filter-mtex.tcl`
+#' * Pikchr filter plugin for diagram creation {.pikchr}: `filter-pik.tcl`
+#' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl`
+#' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn.tcl`
+#' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl`
 #'
 #' ## SYNOPSIS 
 #' 
@@ -83,14 +125,11 @@ catch {
 #' The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mtex}`, `{.pic}`,
 #' `{.pikchr}, `{.rplot} and `{.tsvg}`  
 #' 
-#' The Markdown document within this file could be processed as follows:
+#' The Markdown document within this file could be extracted and converted as follows:
 #' 
 #' ```
-#'  perl -ne "s/^#' ?(.*)/\$1/ and print " > pandoc-tcl-filter.md
-#'  pandoc pandoc-tcl-filter.md -s \
-#'    --metadata title="pandoc-tcl-filter.tcl documentation" \
-#'    -o pandoc-tcl-filter.html  --filter pandoc-tcl-filter.tcl  \
-#'    --css mini.css
+#'  ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html \
+#'    --css mini.css -s
 #' ```
 #' 
 #  pandoc -s -t json dgtools/test.md > dgtools/test.ast
@@ -98,7 +137,14 @@ catch {
 # pandoc dgtools/test.md -s --metadata title="test run with tcl filter" -o dgtools.html --filter dgtools/filter.tcl
 # read the JSON AST from stdin
 #'
-#' ## Plugins
+#' ## Example Tcl-filter
+#' 
+#' ```{.tcl}
+#' set x 1
+#' puts $x
+#' ```
+#'
+#' ## Filter - Plugins
 #' 
 #' The pandoc-tcl-filter.tcl application allows to create custom filters for other 
 #' command line application quite easily. The Tcl files has to be named `filter-NAME.tcl`
@@ -121,10 +167,10 @@ catch {
 #'    ` ``
 #' ```
 #' 
-#' The main script `pandoc-tcl-filter.tcl` looks if in the same folders as the script is,
-#' if there any other files named `filter-NAME.tcl` and source them. In case of the dot
+#' The main script `pandoc-tcl-filter.tcl` evaluates if in the same folder as the script is,
+#' if there any other files named `filter/filter-NAME.tcl` and sources them. In case of the dot
 #' filter the file is named `filter-dot.tcl` and its filter function `filter-dot` is 
-#' executed. Below is the code: of this file `filter-dot.tcl`:
+#' executed. Below is the simplified code: of this file `filter-dot.tcl`:
 #' 
 #' ```
 #' # a simple pandoc filter using Tcl
@@ -168,6 +214,55 @@ catch {
 #' We could create an image link and append this block after the `$cblock` part of the `$ret var`.
 #' As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.
 #' 
+#' ## Dot Example
+#' 
+#' Here a longer dot-example where the code is include in 
+#' 
+#' ```{.dot}
+#' digraph G {
+#'   margin=0.1;
+#'   node[fontname="Linux Libertine";fontsize=18];
+#'   node[shape=box,style=filled;fillcolor=skyblue,width=1.2,height=0.9];    
+#'   { rank=same; Rst[group=g0,fillcolor=salmon] ; 
+#'     Docx [group=g1,fillcolor=salmon]
+#'   }
+#'   { rank=same; Md[group=g0,fillcolor=salmon]  ; 
+#'     pandoc ; AST1 ; filter[fillcolor=cornsilk] ; AST2 ; pandoc2;  
+#'     Html[group=g1,fillcolor=salmon] 
+#'   }
+#'   { rank=same; Tex[group=g0,fillcolor=salmon] ; 
+#'     Pdf[group=g1,fillcolor=salmon]; filters[fillcolor=cornsilk]; 
+#'   }
+#'   node[fillcolor=cornsilk]; 
+#'   { rank=same; dot ; eqn; mtex; pic; pik; rplot; tsvg;}
+#'   Rst -> pandoc -> AST1 -> filter -> AST2 -> pandoc2 -> Html ;
+#'   Md -> pandoc;
+#'   Tex -> pandoc;
+#'   Rst -> Md -> Tex -> dot[style=invis] ;
+#'   pandoc2 -> Docx;
+#'   pandoc2 -> Pdf ;
+#'   Docx -> Html -> Pdf -> tsvg[style=invis];
+#'   pandoc2[label=pandoc];
+#'   filter[label="pandoc-\ntcl-\nfilter"];
+#'   filter->filters;
+#'   filters -> dot ;
+#'   filters -> eqn ;
+#'   filters -> mtex;
+#'   filters -> pic ;
+#'   filters -> pik ; 
+#'   filters -> rplot;
+#'   filters -> tsvg; 
+#' }
+#' ```
+#' 
+#' To use this pipeline and to create pandoc-tcl-filter.html out of the code documentation 
+#' in pandoc-tcl-filter.tcl your command in the terminal is still just:
+#' 
+#' ```
+#' ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css
+#' ```
+#' The result should be the file which you are looking currently.
+#' 
 #' ## ChangeLog
 #' 
 #' * 2021-08-22 Version 0.1
@@ -186,6 +281,10 @@ catch {
 #'     * filters for Pikchr, PIC and EQN
 #' * 2021-11-30 Version 0.3.3
 #'     * filter for R plots: `.rplot`
+#' * 2021-12-04 Version 0.4.0
+#'     * pandoc-tcl-filter can be as well directly used for conversion 
+#'       being then a frontend which calls pandoc internally with 
+#'       itself as a filter ...
 #'     
 #' ## SEE ALSO
 #' 

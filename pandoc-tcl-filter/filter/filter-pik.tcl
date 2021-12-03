@@ -1,27 +1,30 @@
 #' ---
-#' title: "filter-pik.tcl documentation"
-#' author: "Detlef Groth, Caputh-Schwielowsee, Germany"
-#' date: 2021-11-18
+#' title: filter-pik.tcl documentation for the Pikchr diaggram tool
+#' author: Detlef Groth, Caputh-Schwielowsee, Germany
+#' date: 2021-12-03
 #' pik:
 #'     app: fossil
 #'     imagepath: images
 #'     ext: svg
 #' ---
 # a simple pandoc filter using Tcl
-# the script pandoc-tcl-filter.tcl 
-# must be in the in the parent directory of the filter directory
+# the script _pandoc-tcl-filter.tapp_ must be execuable and in the PATH
+# or in case of using the unwrapped application _pandoc-tcl-filter.tcl_ must be
+# must be located in the in the parent directory of the filter directory
 #' 
 #' ## Name
 #' 
 #' _filter-pik.tcl_ - Filter which can be used to display Pikchr files within a Pandoc processed
-#' document using the Tcl filter driver `pandoc-tcl-filter.tcl`. 
+#' document using the Tcl filter driver `pandoc-tcl-filter.tcl` or the wrapped stand alone application
+#' _pandoc-tcl-filter.tapp_. 
 #' 
 #' ## Usage
 #' 
-#' The conversion of the Markdown documents via Pandoc should be done as follows:
+#' The conversion of the Markdown documents via Pandoc should be done as 
+#' follows:
 #' 
 #' ```
-#' pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html
+#' pandoc input.md --filter pandoc-tcl-filter.tapp -s -o output.html
 #' ```
 #' 
 #' The file `filter-pik.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
@@ -63,19 +66,20 @@
 #'
 #' ## Examples
 #' 
-#' Here an example for a simple neat undirected graph:
+#' Here an example for a simple example taken from the Pikchr homepage:
 #' 
 #' ```{.pik}
 #' arrow right 200% "Markdown" "Source"
-#'    box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
-#'    arrow right 200% "HTML+SVG" "Output"
-#'    arrow <-> down 70% from last box.s
-#'    box same "Pikchr" "Formatter" "(pikchr.c)" fit
+#' box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
+#' arrow right 200% "HTML+SVG" "Output"
+#' arrow <-> down 70% from last box.s
+#' box same "Pikchr" "Formatter" "(pikchr.c)" fit
 #' ```
 #' 
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [PIC filter](filter-pik.html)
 #' 
 
 proc filter-pikchr {cont dict} {
