@@ -39,6 +39,95 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     exit 0
 }
 
+set css {
+    html {
+        overflow-y: scroll;
+    }
+    body {
+        color: #444;
+        font-family: Georgia, Palatino, 'Palatino Linotype', Times, 'Times New Roman', serif;
+        line-height: 1.2;
+        padding: 1em;
+        margin: auto;
+        max-width:  900px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #111;
+        line-height: 115%;
+        margin-top: 1em;
+        font-weight: normal;
+    }
+    h1 {
+        text-align: center;
+        font-size: 120%;
+    }
+    a {
+        color: #0645ad;
+        text-decoration: none;
+    }
+    a:visited {  color: #0b0080; }
+    a:hover   {  color: #06e;    }
+    a:active  {  color: #faa700; }
+    a:focus   {  outline: thin dotted; }
+    
+    p {  margin: 0.5em 0;    }
+    p.author, p.date {
+        font-size: 110%;
+        text-align: center;
+    }
+    img {  max-width: 100%;    }
+    figure { text-align: center ; } 
+    pre, blockquote pre {
+        border-top: 0.1em #9ac solid;
+        background: #e9f6ff;
+        padding: 10px;
+        border-bottom: 0.1em #9ac solid;
+    }
+    pre, code, kbd, samp {
+        color: #000;
+        font-family: Monaco, 'courier new', monospace;
+        font-size: 90%; 
+    }
+    code.r {
+        color: #770000;
+    }
+    pre {
+        white-space: pre;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    code span.kw { color: #007020; font-weight: normal; }
+    pre.sourceCode {  background: #fff6f6;  } 
+    blockquote {
+        margin: 0;
+        padding-left: 3em; 
+    }
+    hr {
+        display: block;
+        height: 2px;
+        border: 0;
+        border-top: 1px solid #aaa;
+        border-bottom: 1px solid #eee;
+        margin: 1em 0;
+        padding: 0;
+    }
+    table {    
+        border-collapse: collapse;
+        border-bottom: 2px solid;
+    }
+    table thead tr th { 
+        background-color: #fde9d9;
+        text-align: left; 
+        padding: 10px;
+        border-top: 2px solid;
+        border-bottom: 2px solid;
+    }
+    table td { 
+        background-color: #fff9e9;
+        text-align: left; 
+        padding: 10px;
+    }
+}    
 if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
     if {[auto_execok pandoc] eq ""} {
         puts "Error: Document conversion needs pandoc installed"
@@ -62,12 +151,32 @@ if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
             close $infh
         }
         close $out
-        exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end]
+        if {[file extension [lindex $argv 1]] eq ".html" && [lsearch [lrange $argv 1 end] --css] == -1} {
+            if {![file exists pandoc-filter.css]} {
+                set out [open pandoc-filter.css w 0600]
+                puts $out $css
+                close $out
+            }
+            lappend argv --css
+            lappend argv pandoc-filter.css
+            exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end] 
+        } else {
+            exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end]
+        }
         file delete $tempfile
         puts "converting [lindex $argv 0] to [lindex $argv 1] done"
         exit 0
     } else {
-        exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end]
+        if {[file extension [lindex $argv 1]] eq ".html" && [lsearch [lrange $argv 1 end] --css] == -1} {
+            set out [open temp.css w 0600]
+            puts $out $css
+            close $out
+            exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end] --css temp.css
+            file delete temp.css
+            echo here!
+        } else {
+            exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end]
+        }
         puts "converting [lindex $argv 0] to [lindex $argv 1] done"
     }
     exit 0
