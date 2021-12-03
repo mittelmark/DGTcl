@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <211129.0619>
+#  Last Modified : <211203.1811>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -19,11 +19,9 @@ Readme.html : Readme.md mini.css header.md
 	mv Readme-ark.html Readme.html
 
 pandoc-tcl-filter.html: pandoc-tcl-filter.tcl
-	perl -ne "s/^#' ?(.*)/\$$1/ and print " pandoc-tcl-filter.tcl > pandoc-tcl-filter.md
-	pandoc pandoc-tcl-filter.md -s  \
-	    --metadata title="pandoc-tcl-filter.tcl documentation"  \
-	    -o pandoc-tcl-filter.html  --filter pandoc-tcl-filter.tcl \
-	    --css mini.css
+	chmod 755 ./pandoc-tcl-filter.tcl
+	./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter-out.html --css mini.css -s
+	htmlark -o pandoc-tcl-filter.html pandoc-tcl-filter-out.html
 filter/filter-dot.html: filter/filter-dot.tcl
 	perl -ne "s/^#' ?(.*)/\$$1/ and print " filter/filter-dot.tcl > filter/filter-dot.md
 	pandoc filter/filter-dot.md -s  \
