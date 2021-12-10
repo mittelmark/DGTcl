@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8"/>
+<meta content="pandoc" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<meta content="Detlef Groth, Caputh-Schwielowsee, Germany" name="author"/>
+<meta content="2021-12-10" name="dcterms.date"/>
+<title>Table tests for pandoc-tcl-filter</title>
+<style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%20900px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20%20%20font-size%3A%20120%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.author%2C%20p.date%20%7B%0A%20%20%20%20%20%20%20%20font-size%3A%20110%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20code.r%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23770000%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20%7B%20%20%20%20%0A%20%20%20%20%20%20%20%20border-collapse%3A%20collapse%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%202px%20solid%3B%0A%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%0A%20%20%20%20%7D%0A%20%20%20%20table%20thead%20tr%20th%20%7B%20%0A%20%20%20%20%20%20%20%20background-color%3A%20%23fde9d9%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20left%3B%20%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-top%3A%202px%20solid%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%202px%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20td%20%7B%20%0A%20%20%20%20%20%20%20%20background-color%3A%20%23fff9e9%3B%0A%0A%20%20%20%20%20%20%20%20text-align%3A%20left%3B%20%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
+<!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Table tests for pandoc-tcl-filter</h1>
+<p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<p class="date">2021-12-10</p>
+</header>
+<h2 id="test-normal-table-given-in-text">Test normal table given in text</h2>
+<p>A Markdown table:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Col1</th>
+<th>Col2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell 1,1</td>
+<td>cell 1,2</td>
+</tr>
+<tr class="even">
+<td>cell 2,1</td>
+<td>cell 2,2</td>
+</tr>
+</tbody>
+</table>
+<p>This is some text.</p>
+<h2 id="test-normal-tcl-code">Test normal Tcl code</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1"></a><span class="kw">set</span> <span class="ot">x</span> <span class="dv">1</span></span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2"></a><span class="kw">puts</span> <span class="dt">$x</span></span></code></pre></div>
+<pre class="tclout"><code>1
+</code></pre>
+<h2 id="test-resultsasis-with-normal-tcl-code">Test results=“asis” with normal Tcl code</h2>
+<div class="sourceCode" data-results="asis" id="cb3"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb3-1"><a aria-hidden="true" href="#cb3-1"></a><span class="kw">set</span> <span class="ot">y</span> <span class="dv">2</span></span>
+<span id="cb3-2"><a aria-hidden="true" href="#cb3-2"></a><span class="kw">puts</span> <span class="dt">$y</span></span></code></pre></div>
+<p>2</p>
+<h2 id="test-resultsasis-with-tcl-code-creating-a-markdown-table">Test results=“asis” with Tcl code creating a Markdown table</h2>
+<p>Let’s now create or own table in Tcl:</p>
+<div class="sourceCode" data-results="asis" id="cb4"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb4-1"><a aria-hidden="true" href="#cb4-1"></a><span class="kw">set</span> tab <span class="kw">{</span></span>
+<span id="cb4-2"><a aria-hidden="true" href="#cb4-2"></a>| Col1          | Col2          | Col3          | Col4          |</span>
+<span id="cb4-3"><a aria-hidden="true" href="#cb4-3"></a>| ------------- | ------------- | ------------- | ------------- |</span>
+<span id="cb4-4"><a aria-hidden="true" href="#cb4-4"></a><span class="kw">}</span></span>
+<span id="cb4-5"><a aria-hidden="true" href="#cb4-5"></a><span class="kw">foreach</span> i <span class="kw">[list</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span><span class="kw">]</span> <span class="kw">{</span></span>
+<span id="cb4-6"><a aria-hidden="true" href="#cb4-6"></a>    <span class="kw">append</span> tab <span class="st">"| cell </span><span class="dt">$</span><span class="st">i,1   | cell </span><span class="dt">$</span><span class="st">i,2 | cell </span><span class="dt">$</span><span class="st">i,3 | cell </span><span class="dt">$</span><span class="st">i,3 |</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb4-7"><a aria-hidden="true" href="#cb4-7"></a><span class="kw">}</span></span>
+<span id="cb4-8"><a aria-hidden="true" href="#cb4-8"></a><span class="kw">set</span> tab</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th>Col1</th>
+<th>Col2</th>
+<th>Col3</th>
+<th>Col4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell 1,1</td>
+<td>cell 1,2</td>
+<td>cell 1,3</td>
+<td>cell 1,3</td>
+</tr>
+<tr class="even">
+<td>cell 2,1</td>
+<td>cell 2,2</td>
+<td>cell 2,3</td>
+<td>cell 2,3</td>
+</tr>
+<tr class="odd">
+<td>cell 3,1</td>
+<td>cell 3,2</td>
+<td>cell 3,3</td>
+<td>cell 3,3</td>
+</tr>
+<tr class="even">
+<td>cell 4,1</td>
+<td>cell 4,2</td>
+<td>cell 4,3</td>
+<td>cell 4,3</td>
+</tr>
+<tr class="odd">
+<td>cell 5,1</td>
+<td>cell 5,2</td>
+<td>cell 5,3</td>
+<td>cell 5,3</td>
+</tr>
+</tbody>
+</table>
+<p>And the table is displayed!</p>
+<h2 id="test-resultsasis-with-tcl-code-creating-a-markdown-table-and-echofalse">Test results=“asis” with Tcl code creating a Markdown table and echo=false</h2>
+<p></p>
+<table>
+<thead>
+<tr class="header">
+<th>Col1</th>
+<th>Col2</th>
+<th>Col3</th>
+<th>Col4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cell 1,1</td>
+<td>cell 1,2</td>
+<td>cell 1,3</td>
+<td>cell 1,3</td>
+</tr>
+<tr class="even">
+<td>cell 2,1</td>
+<td>cell 2,2</td>
+<td>cell 2,3</td>
+<td>cell 2,3</td>
+</tr>
+<tr class="odd">
+<td>cell 3,1</td>
+<td>cell 3,2</td>
+<td>cell 3,3</td>
+<td>cell 3,3</td>
+</tr>
+<tr class="even">
+<td>cell 4,1</td>
+<td>cell 4,2</td>
+<td>cell 4,3</td>
+<td>cell 4,3</td>
+</tr>
+<tr class="odd">
+<td>cell 5,1</td>
+<td>cell 5,2</td>
+<td>cell 5,3</td>
+<td>cell 5,3</td>
+</tr>
+<tr class="even">
+<td>cell 6,1</td>
+<td>cell 6,2</td>
+<td>cell 6,3</td>
+<td>cell 6,3</td>
+</tr>
+<tr class="odd">
+<td>cell 7,1</td>
+<td>cell 7,2</td>
+<td>cell 7,3</td>
+<td>cell 7,3</td>
+</tr>
+<tr class="even">
+<td>cell 8,1</td>
+<td>cell 8,2</td>
+<td>cell 8,3</td>
+<td>cell 8,3</td>
+</tr>
+<tr class="odd">
+<td>cell 9,1</td>
+<td>cell 9,2</td>
+<td>cell 9,3</td>
+<td>cell 9,3</td>
+</tr>
+</tbody>
+</table>
+<p>The table above was extended by invisible Tcl code.</p>
+<h2 id="document-processing">Document processing</h2>
+<p>This document was created from the file <em>table.md</em> using the following terminal command line:</p>
+<pre><code>$ tclsh pandoc-tcl-filter.tcl tests/table.md table.html -s  --css mini.css</code></pre>
+<h2 id="end-of-file">End of file</h2>
+</body>
+</html><!--Generated by HTMLArk 2021-12-10 12:44:27.154310. Original URL table.html-->

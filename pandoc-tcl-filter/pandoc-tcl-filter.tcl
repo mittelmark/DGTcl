@@ -173,7 +173,6 @@ if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
             close $out
             exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end] --css temp.css
             file delete temp.css
-            echo here!
         } else {
             exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end]
         }
@@ -516,6 +515,8 @@ proc filter-tcl {cont a} {
             #rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
             #rl_json::json set cblock c 1 [rl_json::json string [regsub {\{(.+)\}} $eres "\\1"]]
             #set ret ",[::rl_json::json extract $cblock]"
+        } elseif {[dict get $a results] eq "asis" && $eres ne ""} { 
+            set eres $eres
         } else {
             set eres ""
         }
@@ -580,8 +581,10 @@ proc main {jsonData} {
             if {[dict get $a echo]} {
                 append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
             } else {
-                rl_json::json unset jsonData blocks $i
-                append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
+                #rl_json::json unset jsonData blocks $i
+                # add an empty paragraph instead
+                append blocks {{"t":"Para","c":[{"t":"Str","c":""}]}}
+                #append blocks [::rl_json::json extract $jsonData blocks $i]\n"
             }
             if {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {
@@ -591,9 +594,24 @@ proc main {jsonData} {
                     if {[llength $res] >= 1} {
                         set code [lindex $res 0]
                         if {$code ne ""} {
-                            rl_json::json set cblock c 0 1 [rl_json::json array [list string ${type}out]]
-                            rl_json::json set cblock c 1 [rl_json::json string $code]
-                            append blocks ",[::rl_json::json extract $cblock]"
+                            if {[dict get $a results] ne "asis"} {
+                                rl_json::json set cblock c 0 1 [rl_json::json array [list string ${type}out]]
+                                rl_json::json set cblock c 1 [rl_json::json string $code]
+                                append blocks ",[::rl_json::json extract $cblock]"
+                            } else {
+                                set res $code
+                                set mdfile [file tempfile].md
+                                set out [open $mdfile w 0600]
+                                puts $out $code
+                                close $out
+                                set res [exec pandoc -t json $mdfile]
+                                file delete $mdfile
+                                set res [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $res "\\1"]
+                                #puts stderr $res
+                                append blocks ,
+                                append blocks $res
+                                #append blocks {{"t":"Table","c":[[],[{"t":"AlignDefault"},{"t":"AlignDefault"}],[0,0],[[{"t":"Plain","c":[{"t":"Str","c":"Col1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"Col2"}]}]],[[[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"1,1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"1,2"}]}]],[[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"2,1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"2,2"}]}]]]]}}
+                            }
                         }
                         if {[llength $res] == 2} {
                             set img [lindex $res 1]

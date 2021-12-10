@@ -1,0 +1,69 @@
+---
+title: Table tests for pandoc-tcl-filter
+author: Detlef Groth, Caputh-Schwielowsee, Germany
+date: 2021-12-10
+---
+
+## Test normal table given in text
+
+A Markdown table:
+
+| Col1          | Col2          |
+| ------------- | ------------- |
+| cell 1,1      | cell 1,2      |
+| cell 2,1      | cell 2,2      |
+
+This is some text.
+
+## Test normal Tcl code
+
+```{.tcl}
+set x 1
+puts $x
+```
+
+## Test results="asis" with normal Tcl code
+
+```{.tcl results="asis"}
+set y 2
+puts $y
+```
+
+## Test results="asis" with  Tcl code creating a Markdown table
+
+Let's now create or own table in Tcl:
+
+```{.tcl results="asis"}
+set tab {
+| Col1          | Col2          | Col3          | Col4          |
+| ------------- | ------------- | ------------- | ------------- |
+}
+foreach i [list 1 2 3 4 5] {
+    append tab "| cell $i,1   | cell $i,2 | cell $i,3 | cell $i,3 |\n"
+}
+set tab
+```
+
+And the table is displayed!
+
+
+## Test results="asis" with  Tcl code creating a Markdown table and echo=false
+
+```{.tcl results="asis" echo=false}
+foreach i [list 6 7 8 9] {
+    append tab "| cell $i,1   | cell $i,2 | cell $i,3 | cell $i,3 |\n"
+}
+set tab
+```
+
+The table above was extended by invisible Tcl code. 
+
+## Document processing 
+
+This document was created from the file *table.md* using the following terminal command line:
+
+```
+$ tclsh pandoc-tcl-filter.tcl tests/table.md table.html -s  --css mini.css
+```
+
+## End of file
