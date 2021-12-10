@@ -56,6 +56,8 @@ if {[llength $argv] > 1 && [lsearch -regex $argv -tangle] > -1} {
             set flag false
             while {[gets $infh line] >= 0} {
                 if {[regexp "^\[> \]\{0,2\}```\{$mode" $line]} {
+                    set l [regsub {.+```} $line ""]
+                    puts stdout "# $l"
                     set flag true
                 } elseif {$flag && [regexp "^\[> \]\{0,2\}```" $line]} {
                     set flag false
