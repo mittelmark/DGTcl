@@ -1,12 +1,11 @@
 #!/usr/bin/env tclsh
 
-package provide pandoc 0.4.0
+package provide pandoc 0.5.0
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
     puts "[package present pandoc]"
     exit 0
 }   
-
 if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "Usage (filter):    pandoc \[arguments\] --filter $argv0 \[arguments\]"
     puts "          This is the pandoc Tcl filter which should be run as filter"
@@ -27,16 +26,47 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "       - ```{.rplot}  R plot code```"    
     puts "       - ```{.tsvg}   Tcl package tsvg code```\n"
     puts "Usage (standalone): $argv0 infile outfile"
-    puts "                    converting infile to outfile"
-    puts "                    if infile is a source code file like .tcl .py"
-    puts "                    it is assumed that it contains mkdoc documentation"  
-    puts "                    mkdoc documentation is embedded Markdown markup after a #' comment" 
-    puts "                    in case pandoc is installed the pandoc-tcl-filter will be used after wards"
+    puts "                       converting infile to outfile"
+    puts "                       if infile is a source code file like .tcl .py"
+    puts "                       it is assumed that it contains mkdoc documentation"  
+    puts "                       mkdoc documentation is embedded Markdown markup after a #' comment" 
+    puts "                       in case pandoc is installed the pandoc-tcl-filter will be used after wards"
+    puts "                    $argv0 --help               - display this help page"
+    puts "                    $argv0 --version            - display the version"
+    puts "                    $argv0 infile --tangle .tcl - extract all code from .tcl chunks"
     puts "Example: "
     puts "         ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css"
     puts "          will extract the documentation from itself and create a HTML file executing all filters available"
     puts "Author: Detlef Groth, University of Potsdam, Germany"
     exit 0
+}
+
+if {[llength $argv] > 1 && [lsearch -regex $argv -tangle] > -1} {
+    if {[file exists [lindex $argv 0]]} {
+        set filename [lindex $argv 0]
+        if {[llength $argv] == 3} {
+            set mode [lindex $argv 2]
+        } else {
+            set mode .tcl
+        }
+        if [catch {open $filename r} infh] {
+            puts stderr "Cannot open $filename: $infh"
+            exit
+        } else {
+            set flag false
+            while {[gets $infh line] >= 0} {
+                if {[regexp "^\[> \]\{0,2\}```\{$mode" $line]} {
+                    set flag true
+                } elseif {$flag && [regexp "^\[> \]\{0,2\}```" $line]} {
+                    set flag false
+                } elseif {$flag} {
+                    puts stdout $line
+                }
+            }
+            close $infh
+        }
+    }
+    return
 }
 
 set css {
@@ -194,9 +224,9 @@ catch {
     package require tclfilters
 }
 #' ---
-#' title: pandoc-tcl-filter documentaion - 0.4.0
+#' title: pandoc-tcl-filter documentaion - 0.5.0
 #' author: Detlef Groth, Schwielowsee, Germany
-#' date: 2021-12-04
+#' date: 2021-12-10
 #' ---
 #'
 #' ## NAME
@@ -394,6 +424,9 @@ catch {
 #'     * pandoc-tcl-filter can be as well directly used for conversion 
 #'       being then a frontend which calls pandoc internally with 
 #'       itself as a filter ...
+#' * 2021-12-10 Version 0.5.0
+#'    * support for Markdown tables which results="asis"
+#'    * support for pandoc-tcl-filter.tcl infile --tangle .tcl  to extract code chunks to the terminal
 #'     
 #' ## SEE ALSO
 #' 
@@ -521,7 +554,7 @@ proc filter-tcl {cont a} {
             set eres ""
         }
     }
-    return [list $eres $img]
+    return [list "$eres" $img]
 }
 
 # parse Meta data
