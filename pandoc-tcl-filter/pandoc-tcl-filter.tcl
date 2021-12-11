@@ -241,14 +241,14 @@ catch {
 #' and the `exec` command. As examples are given in the filter folder of the project:
 #'
 #' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
-#' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn.tcl`
-#' * Graphviz dot filter {.dot}: `filter-dot.tcl`
+#' * Graphviz dot filter {.dot}: `filter-dot.tcl` [filter/filter-dot.html](filter/filter-dot.html)
+#' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn` [filter/filter-eqn.html](filter/filter-eqn.html)
 #' * Math TeX filter for single line equations {.mtex}: `filter-mtex.tcl`
-#' * Mermaid filter for diagrams {.mmd}: `filter-mmd.tcl`
-#' * Pikchr filter plugin for diagram creation {.pikchr}: `filter-pik.tcl`
-#' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl`
-#' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl`
-#' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl`
+#' * Mermaid filter for diagrams {.mmd}: `filter-mmd.tcl` [filter/filter-mmd.html](filter/filter-mmd.html)
+#' * Pikchr filter plugin for diagram creation {.pikchr}: `filter-pik.tcl` [filter/filter-pik.html](filter/filter-pik.html)
+#' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl` [filter/filter-pic.html](filter/filter-pic.html)
+#' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl` [filter/filter-puml.html](filter/filter-puml.html)
+#' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl` [filter/filter-rplot.html](filter/filter-rplot.html)
 #' * tsvg package filter {.tsvg}: `filter-tsvg.tcl`
 #'
 #' ## SYNOPSIS 
