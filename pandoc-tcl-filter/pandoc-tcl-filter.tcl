@@ -428,6 +428,7 @@ catch {
 #'       itself as a filter ...
 #' * 2021-12-10 Version 0.5.0
 #'    * support for Markdown tables which results="asis"
+#'    * adding list2mdtab to the Tcl filter
 #'    * support for pandoc-tcl-filter.tcl infile --tangle .tcl  to extract code chunks to the terminal
 #'     
 #' ## SEE ALSO
