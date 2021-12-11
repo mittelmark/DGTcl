@@ -20,9 +20,11 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "       - ```{.tcl}    Tcl code```"
     puts "       - ```{.dot}    GraphViz dot/neato code```"
     puts "       - ```{.eqn}    EQN equations```"    
+    puts "       - ```{.mmd}    Mermaid diagram code```"            
     puts "       - ```{.mtex}   LaTeX equations```"        
     puts "       - ```{.pic}    PIC diagram code```"        
     puts "       - ```{.pik}    Pikchr diagram code```"
+    puts "       - ```{.puml}   PlantUML diagram code```"    
     puts "       - ```{.rplot}  R plot code```"    
     puts "       - ```{.tsvg}   Tcl package tsvg code```\n"
     puts "Usage (standalone): $argv0 infile outfile"
@@ -239,13 +241,15 @@ catch {
 #' and the `exec` command. As examples are given in the filter folder of the project:
 #'
 #' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
+#' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn.tcl`
 #' * Graphviz dot filter {.dot}: `filter-dot.tcl`
-#' * tsvg package filter {.tsvg}: `filter-tsvg.tcl`
 #' * Math TeX filter for single line equations {.mtex}: `filter-mtex.tcl`
+#' * Mermaid filter for diagrams {.mmd}: `filter-mmd.tcl`
 #' * Pikchr filter plugin for diagram creation {.pikchr}: `filter-pik.tcl`
 #' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl`
-#' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn.tcl`
+#' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl`
 #' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl`
+#' * tsvg package filter {.tsvg}: `filter-tsvg.tcl`
 #'
 #' ## SYNOPSIS 
 #' 
@@ -426,10 +430,12 @@ catch {
 #'     * pandoc-tcl-filter can be as well directly used for conversion 
 #'       being then a frontend which calls pandoc internally with 
 #'       itself as a filter ...
-#' * 2021-12-10 Version 0.5.0
-#'    * support for Markdown tables which results="asis"
+#' * 2021-12-11 Version 0.5.0
+#'    * support for Markdown tables with results="asis"
 #'    * adding list2mdtab to the Tcl filter
 #'    * support for pandoc-tcl-filter.tcl infile --tangle .tcl  to extract code chunks to the terminal
+#'    * support for Mermaid diagrams
+#'    * support for PlantUML diagrams 
 #'     
 #' ## SEE ALSO
 #' 

@@ -1,1 +1,1 @@
-package ifneeded tclfilters 0.2.1 [list source [file join $dir tclfilters.tcl]]
+package ifneeded tclfilters 0.3.0 [list source [file join $dir tclfilters.tcl]]

@@ -41,7 +41,7 @@
 #' compatibility reasons with the other filters.
 #' 
 #' To change the defaults the YAML header can be used. Here an example to change the 
-#' default layout engine to neator and the image output path to nfigures
+#' default layout engine to neato and the image output path to nfigures
 #' 
 #' ```
 #'  ----
@@ -70,6 +70,9 @@
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [Mermaid filter](filter-mmd.html)
+#' * [Pikchr filter](filter-pik.html)
+#' * [PlantUML filter](filter-puml.html)
 #' 
 
 

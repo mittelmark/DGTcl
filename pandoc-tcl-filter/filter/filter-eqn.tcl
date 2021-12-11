@@ -63,6 +63,8 @@
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [PIC filter](filter-pic.html)
+#' * [LaTeX Math filter](filter-mtex.html)
 #' 
 
 
