@@ -507,6 +507,45 @@ mdi eval {
             return ""
         }
     }
+    proc list2mdtab {header values} {
+        set ncol [llength $header]
+        set nval [llength $values]
+        if {[llength [lindex $values 0]] > 1 && [llength [lindex $values 0]] != [llength $header]} {
+            error "Error: list2table - number of values if first row is not a multiple of columns!"
+        } elseif {[expr {int(fmod($nval,$ncol))}] != 0} {
+            error "Error: list2table - number of values is not a multiple of columns!"
+        }
+        set res "|" 
+        foreach h $header {
+            append res " $h |"
+        }   
+        append res "\n|"
+        foreach h $header {
+            append res " ---- |"
+        }
+        append res "\n"
+        set c 0
+        foreach val $values {
+            if {[llength $val] > 1} {    
+                # nested list
+                append res "| "
+                foreach v $val {
+                    append res " $v |"
+                }
+                append res "\n"
+            } else {
+                if {[expr {int(fmod($c,$ncol))}] == 0} {
+                    append res "| " 
+                }    
+                append res " $val |"
+                incr c
+                if {[expr {int(fmod($c,$ncol))}] == 0} {
+                    append res "\n" 
+                }    
+            }
+        }
+        return $res
+    }
 }
 
 # load other tcl based filters
