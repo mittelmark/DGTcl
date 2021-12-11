@@ -67,6 +67,23 @@ proc add {x y} {
 add $x 7
 ```
 
+## Table examples
+
+Since version 0.5.0 the Tcl filter contains a prcedure *list2mdtab* which can
+be used to display easily nested and unnested lists. The function get's two
+arguments, first the column headers, second the values. Here two examples:
+First a unnested list:
+
+```{.tcl results="asis"}
+list2mdtab [list Col1 Col2 Col3] [list 1 2 3 4 5 6 7 8 9]
+```
+
+Thereafter let's show a nested list example.
+
+```{.tcl results="asis"}
+list2mdtab [list Col1 Col2 Col3] [list [list 11 12 13] [list 14 15 16] [list 17 18 19]]
+```
+
 
 ## Document creation
 
