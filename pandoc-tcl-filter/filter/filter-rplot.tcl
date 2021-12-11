@@ -59,7 +59,7 @@
 #' 
 #' ```{.rplot}
 #' data(iris)
-#' pairs(iris[,1:3],col=as.numeric(iris$species)+1)
+#' pairs(iris[,1:3],col=as.numeric(iris$Species)+1,pch=19)
 #' ```
 #' 
 #' ## See also:
