@@ -67,7 +67,7 @@ The table above was extended by invisible Tcl code.
 
 ## list2table example
 
-Below a method list2table method which can visualize flat and nested lists. Let's start with a nested list:
+Below a method list2table method which can visualize flat and nested lists. Let's start with a flat list:
 
 ```{.tcl results="asis"}
 proc list2table {header values} {

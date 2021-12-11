@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <211203.1811>
+#  Last Modified : <211211.0659>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -59,3 +59,7 @@ tcl-filter.tapp:
 	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.dot	
 	cd pandoc-tapp && tclsh ../../bin/tpack.tcl wrap pandoc-tcl-filter.tapp
 	cd pandoc-tapp && cp pandoc-tcl-filter.tapp ..
+tests-folder:
+	tclsh pandoc-tcl-filter.tcl tests/table.md tests/table.html -s --css mini.css
+	htmlark tests/table.html -o tests/table-out.html
+	cp tests/table-out.html tests/table.html
