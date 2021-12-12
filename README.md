@@ -9,6 +9,7 @@ The pandoc-tcl-filter folder contains two Pandoc filters for Tcl code and for Gr
 These filter allow you to directly embed Tcl code and Dot file code into your documents and produce code output or figures using these code chunks.
 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
+    * [abc filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-abc.html) 
     * [dot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-dot.html) 
     * [eqn filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-eqn.html)     
     * [mermaid filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-mmd.html) 

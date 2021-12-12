@@ -1,5 +1,6 @@
 
-filter-docs: filter-dot.html \
+filter-docs: filter-abc.html \
+	filter-dot.html \
 	 filter-eqn.html \
 	 filter-mmd.html \
  	 filter-mtex.html \

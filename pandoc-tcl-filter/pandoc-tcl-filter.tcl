@@ -18,6 +18,7 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "Readme:   http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html"
     puts "Filters:  "
     puts "       - ```{.tcl}    Tcl code```"
+    puts "       - ```{.abc}    ABC music notation code```"    
     puts "       - ```{.dot}    GraphViz dot/neato code```"
     puts "       - ```{.eqn}    EQN equations```"    
     puts "       - ```{.mmd}    Mermaid diagram code```"            
@@ -242,6 +243,7 @@ catch {
 #' and the `exec` command. As examples are given in the filter folder of the project:
 #'
 #' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
+#' * ABC music filter {.abc}: `filter-abc.tcl` [filter/filter-abc.html](filter/filter-abc.html)
 #' * Graphviz dot filter {.dot}: `filter-dot.tcl` [filter/filter-dot.html](filter/filter-dot.html)
 #' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn` [filter/filter-eqn.html](filter/filter-eqn.html)
 #' * Math TeX filter for single line equations {.mtex}: `filter-mtex.tcl`
