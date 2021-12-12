@@ -5,7 +5,7 @@
 <meta content="pandoc" name="generator"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
 <meta content="Detlef Groth, Caputh-Schwielowsee, Germany" name="author"/>
-<title>filter-pic.tcl documentation</title>
+<title>filter-sqlite.tcl documentation</title>
 <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -24,42 +24,205 @@
 <a href="filter-abc.html">filter-abc</a> - <a href="filter-dot.html">filter-dot</a> - <a href="filter-eqn.html">filter-eqn</a> - <a href="filter-mmd.html">filter-mmd</a> - <a href="filter-mtex.html">filter-mtex</a> - <a href="filter-pic.html">filter-pic</a> - <a href="filter-pik.html">filter-pik</a> - <a href="filter-puml.html">filter-puml</a> - <a href="filter-sqlite.html">filter-sqlite</a> - <a href="filter-rplot.html">filter-rplot</a>
 </center>
 <header id="title-block-header">
-<h1 class="title">filter-pic.tcl documentation</h1>
+<h1 class="title">filter-sqlite.tcl documentation</h1>
 <p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
 <p class="date">Dec 12, 2021</p>
 </header>
 <h2 id="name">Name</h2>
-<p><em>filter-pic.tcl</em> - Filter which can be used to display pic files within a Pandoc processed document using the Tcl filter driver <code>pandoc-tcl-filter.tcl</code>.</p>
+<p><em>filter-sqlite.tcl</em> - Filter which can be used to execute SQLite3 statements within a Pandoc processed document using the Tcl filter driver <code>pandoc-tcl-filter.tcl</code> and showing the output.</p>
 <h2 id="usage">Usage</h2>
 <p>The conversion of the Markdown documents via Pandoc should be done as follows:</p>
 <pre><code>pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html</code></pre>
-<p>The file <code>filter-pic.tcl</code> is not used directly but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.pic</code> marker are found, the contents in the code block is processed via the <em>pic2graph</em> diagram tool <a href="https://man7.org/linux/man-pages/man1/pic2graph.1.html">https://man7.org/linux/man-pages/man1/pic2graph.1.html</a> which converts PIC files, see <a href="https://en.wikipedia.org/wiki/PIC_(markup_language)">https://en.wikipedia.org/wiki/PIC_(markup_language)</a> into some graphics format like png or other file formats which can be converted by the the ImageMagick tool <em>convert</em>.</p>
+<p>The file <code>filter-sqlite.tcl</code> is not used directly but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.sqlite</code> marker are found, the contents in the code block is processed via the sqlite3 command line application which must be in the path.</p>
 <p>The following options can be given via code chunks or in the YAML header.</p>
+<blockquote>
 <ul>
-<li>app - the application to process the pic code, default: pic</li>
-<li>ext - file file extension, can be png or pdf, default: png</li>
-<li>imagepath - output imagepath, default: images</li>
-<li>include - should the created image be automatically included, default: true</li>
-<li>results - should the output of the command line application been shown, should be show or hide, default: hide</li>
+<li>app - the application to be called, such as sqlite3, default: sqlite3</li>
+<li>results - should the output of the command line application been shown, should be asis, show or hide, default: asis</li>
 <li>eval - should the code in the code block be evaluated, default: true</li>
-<li>fig - should a figure be created, default: true</li>
+<li>mode - the output mode, default: markdown</li>
 </ul>
-<p>To change the defaults the YAML header can be used. Here an example to change the default the image output path to nfigures, teh default file format to png.</p>
+</blockquote>
+<p>To change the defaults the YAML header can be used. Here an example to change the default command line application to sqlite3-35</p>
 <pre><code> ----
- title: "filter-pic example"
+ title: "filter-sqlite.tcl documentation"
  author: "Detlef Groth, Caputh-Schwielowsee, Germany"
- date: 2021-11-18
- pic:
-     imagepath: nfigures
-     ext: png
+ date: 2021-12-12
+ sqlite:
+     app: sqlite3-35
  ----</code></pre>
 <h2 id="examples">Examples</h2>
-<p>Here an example for a simple neat undirected graph:</p>
-<pre class="pic"><code>circle "A"; line; box "B"</code></pre>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAABrAQAAAADyDhJxAAAABGdBTUEAAYagMeiWXwAAAAJiS0dEAAHdihOkAAAACXBIWXMAAACWAAAAlgBxRv7wAAAAB3RJTUUH5QwMDAcv6PEg0gAAABBjYU52AAAFGQAABpAAAACVAAAAGCkG57wAAAFtSURBVEjH7daxTsMwEAZgIwbGvAF+E/xoZmRqXgCpr0LVoQxIfYUgBtZEXYIU7FLHJqlzuvslLLHEUodLv16Ss3o+5YE1qFWtilZKz6/2ar5ukmqUApTyzTzZ19X9vqPqK+9uRdVa73ei2l/yWUlVPx+nBTWCSlDjzfaCakPwLqjx+1ZQh3GzLK/qEDjDq1gDzaqUpC6g0mMfWNXH6INV6dqJVV2MOladFt9R6jNGA6vSu01bRKljjFwBlWo+bTeltiksoHQKNacuKUJlt9fKKZupjlD+ySBqozPVUKqeqVDMoI6SerWE2uTqjVKPJlPPpMpzhZ+9TJ2Ufi5aVZl60NQ75sogytkKqMRwf7dUTuWV8FTt45r20VP7+M9Kp1Bz6jeF+buqY8T/t1MxS3QTrH9hvRDrq1iPxvo9dnZg51DJkw87a8FzG5sBsHkCm02wOQebmbD5C5zlsLkQmzGxeRWcfbE5WlirWtVCnQGqb7Hf70MTFwAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMS0xMi0xMlQxMjowNzo0NyswMDowMFQDrpUAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjEtMTItMTJUMTI6MDc6NDcrMDA6MDAlXhYpAAAALXRFWHRpY2M6Y29weXJpZ2h0AENvcHlyaWdodCBBcnRpZmV4IFNvZnR3YXJlIDIwMTEIusW0AAAAMXRFWHRpY2M6ZGVzY3JpcHRpb24AQXJ0aWZleCBTb2Z0d2FyZSBzUkdCIElDQyBQcm9maWxlEwwBhgAAABV0RVh0cHM6TGV2ZWwAUFMtQWRvYmUtMy4wjEQbTwAAAABJRU5ErkJggg=="/><!--URL:/home/groth/workspace/DGTcl/pandoc-tcl-filter/filter/images/pic-1.png--></p>
+<p>Here an example for a new database created on the fly and the we check for the created table ({.sqlite results=“asis”}).</p>
+<pre class="sqlite" data-results="asis"><code>CREATE TABLE contacts (
+    contact_id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT NOT NULL UNIQUE
+        );
+INSERT INTO contacts (contact_id, first_name, last_name, email, phone)
+       VALUES       (1, "Max", "Musterman", "musterm@mail.de","1234");
+INSERT INTO contacts (contact_id, first_name, last_name, email, phone)
+       VALUES       (2, "Maxi", "Musterwoman", "musterw@mail.de","1235");
+select * from contacts;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>contact_id</th>
+<th>first_name</th>
+<th>last_name</th>
+<th>email</th>
+<th>phone</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Max</td>
+<td>Musterman</td>
+<td>musterm@mail.de</td>
+<td>1234</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Maxi</td>
+<td>Musterwoman</td>
+<td>musterw@mail.de</td>
+<td>1235</td>
+</tr>
+</tbody>
+</table>
+<p>And here an example for a existing database ({.sqlite results=“asis” file=“uni.sqlite”}):</p>
+<pre class="sqlite" data-file="uni.sqlite" data-results="asis"><code> select type,name from sqlite_master;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>type</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>table</td>
+<td>Student</td>
+</tr>
+<tr class="even">
+<td>index</td>
+<td>sqlite_autoindex_Student_1</td>
+</tr>
+<tr class="odd">
+<td>table</td>
+<td>Course</td>
+</tr>
+<tr class="even">
+<td>index</td>
+<td>sqlite_autoindex_Course_1</td>
+</tr>
+<tr class="odd">
+<td>table</td>
+<td>Faculty</td>
+</tr>
+<tr class="even">
+<td>index</td>
+<td>sqlite_autoindex_Faculty_1</td>
+</tr>
+<tr class="odd">
+<td>table</td>
+<td>Offering</td>
+</tr>
+<tr class="even">
+<td>table</td>
+<td>Enrollment</td>
+</tr>
+<tr class="odd">
+<td>index</td>
+<td>sqlite_autoindex_Enrollment_1</td>
+</tr>
+<tr class="even">
+<td>view</td>
+<td>vwExceptExample</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s query the Student table ({.sqlite results=“asis” file=“uni.sqlite”}):</p>
+<pre class="sqlite" data-file="uni.sqlite" data-results="asis"><code> select * from Student limit 5;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>stdNo</th>
+<th>stdFirstName</th>
+<th>stdLastName</th>
+<th>stdCity</th>
+<th>stdState</th>
+<th>stdZip</th>
+<th>stdMajor</th>
+<th>stdClass</th>
+<th>stdGPA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>123-45-6789</td>
+<td>HOMER</td>
+<td>WELLS</td>
+<td>SEATTLE</td>
+<td>WA</td>
+<td>98121-1111</td>
+<td>ACCT</td>
+<td>SO</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>124-56-7890</td>
+<td>BOB</td>
+<td>NORBERT</td>
+<td>BOTHELL</td>
+<td>WA</td>
+<td>98011-2121</td>
+<td>FIN</td>
+<td>JR</td>
+<td>2.7</td>
+</tr>
+<tr class="odd">
+<td>234-56-7890</td>
+<td>CANDY</td>
+<td>KENDALL</td>
+<td>TACOMA</td>
+<td>WA</td>
+<td>99042-3321</td>
+<td>ACCT</td>
+<td>JR</td>
+<td>3.5</td>
+</tr>
+<tr class="even">
+<td>456-78-9012</td>
+<td>JOE</td>
+<td>ESTRADA</td>
+<td>SEATTLE</td>
+<td>WA</td>
+<td>98121-2333</td>
+<td>FIN</td>
+<td>SR</td>
+<td>3.2</td>
+</tr>
+<tr class="odd">
+<td>567-89-0123</td>
+<td>MARIAH</td>
+<td>DODGE</td>
+<td>SEATTLE</td>
+<td>WA</td>
+<td>98114-0021</td>
+<td>IS</td>
+<td>JR</td>
+<td>3.6</td>
+</tr>
+</tbody>
+</table>
 <h2 id="see-also">See also:</h2>
 <ul>
 <li><a href="../Readme.html">pandoc-tcl-filter Readme</a></li>
+<li><a href="filter-pik.html">Pikchr filter</a></li>
+<li><a href="filter-puml.html">PlantUML filter</a></li>
 </ul>
 </body>
-</html><!--Generated by HTMLArk 2021-12-12 13:07:48.076018. Original URL temp.html-->
+</html><!--Generated by HTMLArk 2021-12-12 13:10:54.698573. Original URL temp.html-->

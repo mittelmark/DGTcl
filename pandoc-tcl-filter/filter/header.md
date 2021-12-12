@@ -7,6 +7,7 @@
 [filter-pic](filter-pic.html) -
 [filter-pik](filter-pik.html) -
 [filter-puml](filter-puml.html) -
+[filter-sqlite](filter-sqlite.html) -
 [filter-rplot](filter-rplot.html) 
 </center>
 

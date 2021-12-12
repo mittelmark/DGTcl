@@ -721,20 +721,19 @@ proc main {jsonData} {
                                 rl_json::json set cblock c 1 [rl_json::json string $code]
                                 append blocks ",[::rl_json::json extract $cblock]"
                             } else {
-                                set res $code
+                                set cres $code
                                 set mdfile [file tempfile].md
                                 set out [open $mdfile w 0600]
                                 puts $out $code
                                 close $out
-                                set res [exec pandoc -t json $mdfile]
+                                set cres [exec pandoc -t json $mdfile]
                                 file delete $mdfile
-                                set res [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $res "\\1"]
-                                #puts stderr $res
+                                set cres [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $cres "\\1"]
                                 append blocks ,
-                                append blocks $res
+                                append blocks $cres
                             }
                         }
-                        if {[llength $res] == 2} {
+                        if {[llength "$res"] == 2} {
                             set img [lindex $res 1]
                             if {$img ne ""} {
                                 rl_json::json set jsonImg c 0 c 2 0 "$img"
