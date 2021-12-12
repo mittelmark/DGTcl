@@ -12,6 +12,7 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
     * [dot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-dot.html) 
     * [eqn filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-eqn.html)     
     * [mermaid filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-mmd.html) 
+    * [latex equation filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-mtex.html)     
     * [pic filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-pic.html)         
     * [pikchr filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-pik.html)     
     * [PlantUML filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-puml.html)         
