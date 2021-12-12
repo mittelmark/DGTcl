@@ -2,6 +2,7 @@
 filter-docs: filter-dot.html \
 	 filter-eqn.html \
 	 filter-mmd.html \
+ 	 filter-mtex.html \
 	 filter-pic.html \
 	 filter-pik.html \
  	 filter-puml.html \

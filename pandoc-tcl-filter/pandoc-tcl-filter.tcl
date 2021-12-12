@@ -38,7 +38,8 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "                    $argv0 infile --tangle .tcl - extract all code from .tcl chunks"
     puts "Example: "
     puts "         ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css"
-    puts "          will extract the documentation from itself and create a HTML file executing all filters available"
+    puts "             will extract the documentation from itself and create a HTML file executing all filters available"
+    puts "             all pandoc options can be passed after the output file name" 
     puts "Author: Detlef Groth, University of Potsdam, Germany"
     exit 0
 }
@@ -253,21 +254,28 @@ catch {
 #'
 #' ## SYNOPSIS 
 #' 
-#' Embed code either inline or in form of code chunks like here (triple ticks without space):
-#' 
-#' ``` 
-#'   ` ``{.tcl}
-#'   # a code block
-#'   # remove the space between backticks
-#    # above and below, must be given here
-#'   # to avoid Pandoc confusion
-#'   set x 4
-#'   ` ```
-#'   
-#'   Hello this is Tcl `tcl package provide Tcl`!
+#' ```
+#' # standalone
+#' pandoc-tcl-filter.tcl infile outfile ?options?
+#' # as filter
+#' pandoc infile --filter pandoc-tcl-filter.tcl ?options?
 #' ```
 #' 
-#' The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mtex}`, `{.pic}`,
+#' Where options are the usual pandoc options.
+
+#' Embed code either inline or in form of code chunks like here (triple ticks):
+#' 
+#' ``` 
+#'     ```{.tcl}
+#'     set x 4
+#'     incr x
+#'     set x
+#'     ```
+#'   
+#'     Hello this is Tcl `tcl package provide Tcl`!
+#' ```
+#' 
+#' The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mmd}`, `{.mtex}`, `{.pic}`,
 #' `{.pikchr}, `{.rplot} and `{.tsvg}`  
 #' 
 #' The Markdown document within this file could be extracted and converted as follows:
@@ -277,12 +285,19 @@ catch {
 #'    --css mini.css -s
 #' ```
 #' 
-#  pandoc -s -t json dgtools/test.md > dgtools/test.ast
-# cat dgtools/test.ast | tclsh dgtools/filter.tcl
-# pandoc dgtools/test.md -s --metadata title="test run with tcl filter" -o dgtools.html --filter dgtools/filter.tcl
-# read the JSON AST from stdin
 #'
-#' ## Example Tcl-filter
+#' ## Example Tcl Filter
+#' 
+#' #### Tcl-filter
+#' 
+#' ```
+#'     ```{.tcl}
+#'     set x 1
+#'     puts $x
+#'     ```
+#' ```
+#'
+#' And here the output:
 #' 
 #' ```{.tcl}
 #' set x 1
@@ -492,6 +507,22 @@ proc luniq {L} {
     foreach i $L {if {[lsearch -exact $t $i]==-1} {lappend t $i}}
     return $t
 } 
+proc getTempDir {} {
+    if {[file exists /tmp]} {
+        # standard UNIX
+        return /tmp
+    } elseif {[info exists ::env(TMP)]} {
+        # Windows
+        return $::env(TMP)
+    } elseif {[info exists ::env(TEMP)]} {
+        # Windows
+        return $::env(TEMP)
+    } elseif {[info exists ::env(TMPDIR)]} {
+        # OSX
+        return $::env(TMPDIR)
+    }
+}
+
 mdi eval "set auto_path \[list [luniq $auto_path]\]"
 mdi eval {
     set res ""
@@ -691,7 +722,6 @@ proc main {jsonData} {
                                 #puts stderr $res
                                 append blocks ,
                                 append blocks $res
-                                #append blocks {{"t":"Table","c":[[],[{"t":"AlignDefault"},{"t":"AlignDefault"}],[0,0],[[{"t":"Plain","c":[{"t":"Str","c":"Col1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"Col2"}]}]],[[[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"1,1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"1,2"}]}]],[[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"2,1"}]}],[{"t":"Plain","c":[{"t":"Str","c":"cell"},{"t":"Space"},{"t":"Str","c":"2,2"}]}]]]]}}
                             }
                         }
                         if {[llength $res] == 2} {
