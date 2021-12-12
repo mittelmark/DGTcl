@@ -1,14 +1,14 @@
 #' ---
 #' title: "filter-dot.tcl documentation"
 #' author: "Detlef Groth, Caputh-Schwielowsee, Germany"
-#' date: 2021-08-31
+#' date: 2021-12-12
 #' dot:
 #'     app: neato
-#'     imagepath: nfigures
+#'     imagepath: images
 #'     ext: png
 #' ---
-# a simple pandoc filter using Tcl
-# the script pandoc-tcl-filter.tcl 
+#' 
+# a simple pandoc filter using Tcl the script pandoc-tcl-filter.tcl 
 # must be in the in the parent directory of the filter directory
 #' 
 #' ## Name
@@ -57,7 +57,7 @@
 #'
 #' ## Examples
 #' 
-#' Here an example for a simple neat undirected graph:
+#' Here an example for a simple undirected graph visualized using neato:
 #' 
 #' ```{.dot}
 #' graph G {

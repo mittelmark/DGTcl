@@ -59,13 +59,20 @@ if {[llength $argv] > 1 && [lsearch -regex $argv -tangle] > -1} {
         } else {
             set flag false
             while {[gets $infh line] >= 0} {
-                if {[regexp "^\[> \]\{0,2\}```\{$mode" $line]} {
+                if {[regexp "^\[> \]\{0,2\}``` {0,2}\{$mode" $line]} {
                     set l [regsub {.+```} $line ""]
                     puts stdout "# $l"
                     set flag true
                 } elseif {$flag && [regexp "^\[> \]\{0,2\}```" $line]} {
                     set flag false
+                } elseif {[regexp "^\s*#' \[> \]\{0,2\}``` {0,2}\{$mode" $line]} {
+                    set l [regsub {.+```} $line ""]
+                    puts stdout "# $l"
+                    set flag true
+                } elseif {$flag && [regexp "^\s*#' \[> \]\{0,2\}```" $line]} {
+                    set flag false
                 } elseif {$flag} {
+                    set line [regsub {^\s*#' } $line ""]
                     puts stdout $line
                 }
             }
@@ -447,12 +454,13 @@ catch {
 #'     * pandoc-tcl-filter can be as well directly used for conversion 
 #'       being then a frontend which calls pandoc internally with 
 #'       itself as a filter ...
-#' * 2021-12-11 Version 0.5.0
+#' * 2021-12-12 Version 0.5.0
 #'    * support for Markdown tables with results="asis"
 #'    * adding list2mdtab to the Tcl filter
 #'    * support for pandoc-tcl-filter.tcl infile --tangle .tcl  to extract code chunks to the terminal
 #'    * support for Mermaid diagrams
 #'    * support for PlantUML diagrams 
+#'    * support for ABC music notation
 #'     
 #' ## SEE ALSO
 #' 
