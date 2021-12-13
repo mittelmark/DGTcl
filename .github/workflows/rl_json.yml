@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: rl_json
       run: |
+        sudo apt-get install tcl-dev  
         git clone https://github.com/RubyLane/rl_json.git
         cd rl_json
         autoconf
