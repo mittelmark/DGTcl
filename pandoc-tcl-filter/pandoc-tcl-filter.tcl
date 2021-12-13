@@ -692,6 +692,8 @@ proc main {jsonData} {
             set type [rl_json::json get $jsonData blocks $i c 0 1] ;#type
             set attr [rl_json::json get $jsonData blocks $i c 0 2] ;# attributes
             set a [dict create echo true results show eval true] 
+            set d [getMetaDict $meta $type]
+            set a [dict merge $a $d]
             if {[llength $attr] > 0} {
                 foreach el $attr {
                     dict set a [lindex $el 0] [lindex $el 1]
@@ -710,8 +712,6 @@ proc main {jsonData} {
             }
             if {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {
-                    set d [getMetaDict $meta $type]
-                    set a [dict merge $a $d]
                     set res [filter-$type $cont $a]
                     if {[llength $res] >= 1} {
                         set code [lindex $res 0]
