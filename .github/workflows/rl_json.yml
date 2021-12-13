@@ -31,5 +31,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with: 
         name: rl_json-package
-        path: rl_json
+        path: rl_json/rl_json
 
