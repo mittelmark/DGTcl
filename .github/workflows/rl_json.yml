@@ -1,4 +1,4 @@
-name: rl_json build
+name: rl_json build Ubuntu
 
 on:
   workflow_dispatch:
