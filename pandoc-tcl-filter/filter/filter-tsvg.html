@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>file3</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="pandoc" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<meta content="Detlef Groth, Caputh-Schwielowsee, Germany" name="author"/>
+<title>filter-tsvg.tcl documentation</title>
+<style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     span.underline{text-decoration: underline;}
@@ -13,12 +14,71 @@
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
   </style>
-  <link rel="stylesheet" href="mini.css" />
-  <!--[if lt IE 9]>
+<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%0A%20%20%20%20%20%20%20%20%20%20%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%201200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20%7B%0A%20%20%20%20%20%20%20%20min-width%3A%20300px%3B%0A%20%20%20%20%20%20%20%20border-spacing%3A%200%3B%0A%20%20%20%20%20%20%20%20border-collapse%3A%20collapse%3B%0A%20%20%20%20%20%20%20%20cell-padding%3A%200px%3B%0A%20%20%20%20%20%20%20%20cell-spacing%3A%200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.header%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23dddddd%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.even%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23ddeeff%3B%0A%20%20%20%20%7D%0A%20%20%20%20td%2C%20th%20%7B%0A%20%20%20%20%20%20%20%20padding%3A%203px%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
+<!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
 </head>
 <body>
-
+<center>
+<a href="filter-abc.html">filter-abc</a> - <a href="filter-dot.html">filter-dot</a> - <a href="filter-eqn.html">filter-eqn</a> - <a href="filter-mmd.html">filter-mmd</a> - <a href="filter-mtex.html">filter-mtex</a> - <a href="filter-pic.html">filter-pic</a> - <a href="filter-pik.html">filter-pik</a> - <a href="filter-puml.html">filter-puml</a> - <a href="filter-sqlite.html">filter-sqlite</a> - <a href="filter-tsvg.html">filter-tsvg</a> - <a href="filter-rplot.html">filter-rplot</a>
+</center>
+<header id="title-block-header">
+<h1 class="title">filter-tsvg.tcl documentation</h1>
+<p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
+<p class="date">Dec 13, 2021</p>
+</header>
+<h2 id="name">Name</h2>
+<p><em>filter-tsvg.tcl</em> - Filter which can be used to display SVG graphics within a Pandoc processed document using the Tcl library <a href="https://github.com/mittelmark/DGTcl">tsvg</a>. together with the pandoc-tcl-filter application.</p>
+<h2 id="usage">Usage</h2>
+<p>The conversion of the Markdown documents via Pandoc should be done as follows:</p>
+<pre><code>pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html</code></pre>
+<p>The file <code>filter-tsvg.tcl</code> is not used directly but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.tsvg</code> marker are found, the contents in the code block is processed via the Tcl interpreter using the embedded tsvg library.</p>
+<p>The following options can be given via code chunks options or as defaults in the YAML header.</p>
+<blockquote>
+<ul>
+<li>eval - should the code in the code block be evaluated, default: true</li>
+<li>ext - file file extension, can be svg, png or pdf, teh latter two require the command application cairsvg to be installed default: svg</li>
+<li>fig - should a figure be created, default: true</li>
+<li>imagepath - output imagepath, default: images</li>
+<li>include - should the created image be automatically included, default: true</li>
+<li>label - the code chunk label used as well for the image name, default: null</li>
+<li>results - should the output of the command line application been shown, should be show or hide, default: show</li>
+</ul>
+</blockquote>
+<p>To change the defaults the YAML header can be used. Here an example to change the the image output path to nfigures and the file extension to pdf (useful for Pdf output of the document as in LaTeX mode of pandoc). You should usually always change the options results: to hide.</p>
+<pre><code> ----
+ title: "filter-rplot.tcl documentation"
+ author: "Detlef Groth, Caputh-Schwielowsee, Germany"
+ date: 2021-12-12
+ tsvg:
+     imagepath: nfigures
+     ext: pdf
+     results: hide
+ ----</code></pre>
+<h2 id="examples">Examples</h2>
+<p>Here an example for a simple hello world image:</p>
+<pre><code>    ```{.tsvg}
+    tsvg set code "" ;# clear 
+    tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
+    tsvg text -x 29 -y 45 Hello
+    tsvg text -x 27 -y 65 World!</code></pre>
+<p>And here is the output:</p>
+<pre class="tsvg"><code>tsvg set code "" ;# clear 
+tsvg circle -cx 50 -cy 50 -r 45 -stroke black -stroke-width 2 -fill green
+tsvg text -x 29 -y 45 Hello
+tsvg text -x 27 -y 65 World!</code></pre>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:/home/groth/workspace/DGTcl/pandoc-tcl-filter/filter/images/tsvg-1.svg--></p>
+<p>Creating a new image needs cleanup of the current image using <code>tsvg set code ""</code>, below we include a font which is only available on our local machine so we set the filetype to png like this: <code>{.tsvg ext=png}</code></p>
+<pre class="tsvg" data-ext="png"><code>tsvg set code ""
+tsvg set width 100
+tsvg set height 60
+tsvg rect -x 0 -y 0 -width 100 -height 100 -fill #F64935
+tsvg text -x 20 -y 40 -style "font-size:24px;fill:blue;font-family: Alegreya;" tSVG</code></pre>
+<p><img src="data:image/png;base64,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"/><!--URL:/home/groth/workspace/DGTcl/pandoc-tcl-filter/filter/images/tsvg-2.png--></p>
+<h2 id="see-also">See also:</h2>
+<ul>
+<li><a href="../Readme.html">pandoc-tcl-filter Readme</a></li>
+</ul>
 </body>
-</html>
+</html><!--Generated by HTMLArk 2021-12-13 15:08:38.590481. Original URL temp.html-->
