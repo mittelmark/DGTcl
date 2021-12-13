@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Fri Sep 3 04:27:29 2021
-#  Last Modified : <211001.0703>
+#  Last Modified : <211213.0739>
 #
 #  Description	
 #
@@ -540,7 +540,7 @@ tdot proc usage {} {
 #' 
 #' > And we can write to a Tk canvas widget, see here an example:
 #' 
-#' ```{.tcl}
+#' > ```{.tcl}
 #' # demo: write
 #' package require Tk
 #' pack [canvas .can -background white] -side top -fill both -expand true
@@ -557,7 +557,7 @@ tdot proc usage {} {
 #' # thereafter normal canvas commands can be added
 #' .can create rect 10 10 290 250 -outline red 
 #' destroy . ;# just to allow automatic document processing
-#' ```
+#' > ```
 #' 
 #' > ![](tdot-canvas.png)
 #' 
@@ -805,15 +805,13 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #' 
 #' ## DOCUMENTATION
 #' 
-#' The documentation for this HTML file was created using the pandoc-tcl-filter and the filter for the tsg package as follows:
+#' The documentation for this HTML file was created using the pandoc-tcl-filter.tapp standalone Tcl script as follows:
 #'
 #' ```
-#'  perl -ne "s/^#' ?(.*)/\$$1/ and print " lib/tsvg/tdot.tcl > tdot.md
-#'  pandoc tdot.md -s  \
-#'     --metadata title="tdot package documentation"  \
-#'     -o tdot.html  --filter pandoc-tcl-filter.tcl \
-#'     --css mini.css --toc
-#'  htmlark -o lib/tdot/tdot.html tdot.html
+#'  pandoc-tcl-filter.tapp tdot.tcl tdot.html --css mini.css --toc -s
+#'  # for display on github we include all images and styles
+#'  htmlark -o tdot.html tdot-ark.html
+#'  mv tdot-ark.html tdot.html
 #' ```
 #' 
 #' ## CHANGELOG
@@ -830,6 +828,7 @@ if {[info exists argv0] && $argv0 eq [info script] && [regexp ... $argv0]} {
 #'     * adding semikolon issue as note on top
 #' * 2021-09-30 Version 0.3.1
 #'     * adding file delete to tdot write procedure
+#' * 2021-12-13 - docu fixes
 #' 
 #' ## TODO
 #' 
