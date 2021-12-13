@@ -8,6 +8,7 @@
 [filter-pik](filter-pik.html) -
 [filter-puml](filter-puml.html) -
 [filter-sqlite](filter-sqlite.html) -
+[filter-tsvg](filter-tsvg.html) -
 [filter-rplot](filter-rplot.html) 
 </center>
 

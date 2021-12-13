@@ -8,6 +8,7 @@ filter-docs: filter-abc.html \
 	 filter-pik.html \
  	 filter-puml.html \
 	 filter-sqlite.html \
+	 filter-tsvg.html \
 	 filter-rplot.html 	 
 
 %.html: %.tcl mini.css
