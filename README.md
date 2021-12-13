@@ -17,13 +17,14 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
     * [pic filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-pic.html)         
     * [pikchr filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-pik.html)     
     * [PlantUML filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-puml.html)         
-    * [sqlite3 filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-sqlite.html)             
+    * [sqlite3 filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-sqlite.html)
+    * [tsvg filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-tsvg.html) 
     * [Rplot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-rplot.html)         
 * [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
 * [pandoc-tcl-filter Examples](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mittelmark/DGTcl/master/pandoc-tcl-filter/examples/example-dot.html)
 * [pandoc-tcl-filter Presentation](https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/doc/Groth-S-and-T-2021.pdf) 
 * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter).
-* [single file Tcl script pandoc-tcl-filter.tapp build with tpack (Linux only tested, Windows and MacOSX could work as rl_json is included)](https://github.com/mittelmark/DGTcl/suites/4635030927/artifacts/125559649)
+* [single file Tcl script pandoc-tcl-filter.tapp build with tpack (Linux only tested, Windows and MacOSX could work as rl_json is included)](https://github.com/mittelmark/DGTcl/suites/4639550189/artifacts/125745895)
 
 _Please note, that for the installation of this package you need as well the Tcl package [rl_json](https://github.com/RubyLane/rl_json) from Ruby Lane. I will try to make some binaries of this package available for Windows, Linux and OSX._ 
 In the single file Tcl script above this library is included for Linux and Windows for 64 bit platforms.
