@@ -93,7 +93,7 @@ proc filter-rplot {cont dict} {
     } else {
         set rplotx 0
     }
-    incr nrplot
+    incr n
     set def [dict create results show eval true fig true width 600 height 600 \
              include true imagepath images app Rscript label null ext png]
     set dict [dict merge $def $dict]
