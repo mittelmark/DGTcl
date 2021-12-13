@@ -1,0 +1,43 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: rl_json
+      run: |
+        git clone https://github.com/RubyLane/rl_json.git
+        cd rl_json
+        autoconf
+        ./configure
+        make
+        mkdir rl_json
+        cp librl* rl_json/
+        cp pkgIndex.tcl rl_json/
+        cp doc/json.* rl_json/
+    - name: Upload Artifact GitHub Action
+      uses: actions/upload-artifact@v2
+      with: 
+        name: rl_json-package
+        path: rl_json
+
+    - name: configure
+      run: ./configure
+      
+    - name: Install dependencies
+      run: make
+      
+    - name: Run check
+      run: make check
+      
+    - name: Run distcheck
+      run: make distcheck
