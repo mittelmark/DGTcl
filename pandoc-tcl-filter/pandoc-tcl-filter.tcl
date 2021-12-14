@@ -452,6 +452,14 @@ catch {
 #' 
 #' This can be as well used to include other Markup files. Here an example:
 #' 
+#' ```
+#'     ```{.tcl results="asis"}
+#'     include tests/inc.md
+#'     ```
+#' ```
+#'
+#' And here is the result:
+#' 
 #' ```{.tcl results="asis"}
 #' include tests/inc.md
 #' ```
@@ -459,6 +467,22 @@ catch {
 #' Please note, that currently no filters are applied on the included files. 
 #' You should process them before using the pandoc filters and choose output format Markdown to include them later
 #' in your master document.
+#' 
+#' To just show some file content as it is, remove the results="asis", 
+#' this can be as well useful to display some source code, let's here simply show here the content of *tests/inc.md* without interpreting it as Markdown in a source code block:
+#' 
+#' ```
+#'     ```{.tcl results="show"}
+#'     include tests/inc.md
+#'     ```
+#' ```
+#'
+#' And here is the result:
+#' 
+#' ```{.tcl results="show"}
+#' include tests/inc.md
+#' ```
+#' 
 #' 
 #' ## Documentation
 #' 

@@ -3,7 +3,6 @@
 
 Containing some useless text!
 
-## EOF
+## last header
 
-
-
+This is **bold text** and some other text.
