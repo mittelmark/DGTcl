@@ -484,12 +484,14 @@ catch {
 #'       being then a frontend which calls pandoc internally with 
 #'       itself as a filter ...
 #' * 2021-12-12 Version 0.5.0
-#'    * support for Markdown tables with results="asis"
+#'    * support for Markdown code creation in the Tcl filter with results="asis"
 #'    * adding list2mdtab to the Tcl filter
-#'    * support for pandoc-tcl-filter.tcl infile --tangle .tcl  to extract code chunks to the terminal
+#'    * support for `pandoc-tcl-filter.tcl infile --tangle .tcl`  to extract code chunks to the terminal
 #'    * support for Mermaid diagrams
 #'    * support for PlantUML diagrams 
 #'    * support for ABC music notation
+#'    * bug fix for Tcl filters for `eval=false`
+#'    * documentation improvements for the filters and for the pandoc-tcl-filter
 #'     
 #' ## SEE ALSO
 #' 
@@ -638,7 +640,8 @@ proc debug {jsonData} {
 
 proc filter-tcl {cont a} {
     set ret ""
-    set b [dict create fig false width 400 height 400 include true label null]
+    set b [dict create fig false width 400 height 400 include true \
+            label null]
     set a [dict merge $b $a]
     if {[dict get $a eval]} {
         mdi eval "set res {}; incr chunk"
@@ -671,6 +674,9 @@ proc filter-tcl {cont a} {
         } else {
             set eres ""
         }
+    } else {
+        set eres ""
+        set img ""
     }
     return [list "$eres" $img]
 }
