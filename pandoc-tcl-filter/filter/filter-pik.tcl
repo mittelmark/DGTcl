@@ -109,6 +109,11 @@ proc filter-pik {cont dict} {
     close $out
     # TODO: error catching
     if {[regexp {fossil} [dict get $dict app]]} {
+        set version [exec [dict get $dict app] version]
+        #puts stderr $version
+        if {[regexp {version 1} $version] || [regexp {version 2.[0-9] } $version] || [regexp {version 2.1[0-2]} $version]} {
+            return [list "Error: fossil version to low, fossil does not know the pikchr sub command, you need at least fossil version 2.13, please install!" ""]
+        }
         set res [exec [dict get $dict app] pikchr $fname.pik > $fname.svg]
     } else {
         set res [exec [dict get $dict app] --svg-only $fname.pik > $fname.svg]

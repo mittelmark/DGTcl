@@ -147,7 +147,7 @@ proc filter-puml {cont dict} {
     set dict [dict merge $def $dict]
     set ret ""
     if {[auto_execok [dict get $dict app]] == ""} {
-        error "Command line tool [dict get $dict app] is not installed!"
+        return [list "Error: Command line tool [dict get $dict app] is not installed!" ""]
     }
     set owd [pwd] 
     if {[dict get $dict label] eq "null"} {
