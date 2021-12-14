@@ -450,6 +450,16 @@ catch {
 #'
 #' ``` 
 #' 
+#' This can be as well used to include other Markup files. Here an example:
+#' 
+#' ```{.tcl results="asis"}
+#' include tests/inc.md
+#' ```
+#' 
+#' Please note, that currently no filters are applied on the included files. 
+#' You should process them before using the pandoc filters and choose output format Markdown to include them later
+#' in your master document.
+#' 
 #' ## Documentation
 #' 
 #' To use this pipeline and to create pandoc-tcl-filter.html out of the code documentation 
@@ -485,7 +495,8 @@ catch {
 #'       itself as a filter ...
 #' * 2021-12-12 Version 0.5.0
 #'    * support for Markdown code creation in the Tcl filter with results="asis"
-#'    * adding list2mdtab to the Tcl filter
+#'    * adding list2mdtab proc to the Tcl filter
+#'    * adding include proc to the Tcl filter with results='asis' other Markdown files can be included.
 #'    * support for `pandoc-tcl-filter.tcl infile --tangle .tcl`  to extract code chunks to the terminal
 #'    * support for Mermaid diagrams
 #'    * support for PlantUML diagrams 
@@ -624,6 +635,18 @@ mdi eval {
             }
         }
         return $res
+    }
+    proc include {filename} {
+        if [catch {open $filename r} infh] {
+            return "Cannot open $filename"
+        } else {
+            set res ""
+            while {[gets $infh line] >= 0} {
+                append res "$line\n"
+            }
+            close $infh
+            return $res
+        }
     }
 }
 
