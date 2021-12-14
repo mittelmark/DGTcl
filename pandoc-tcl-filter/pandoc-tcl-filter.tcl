@@ -259,7 +259,7 @@ catch {
 #' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl` [filter/filter-pic.html](filter/filter-pic.html)
 #' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl` [filter/filter-puml.html](filter/filter-puml.html)
 #' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl` [filter/filter-rplot.html](filter/filter-rplot.html)
-#' * tsvg package filter {.tsvg}: `filter-tsvg.tcl`
+#' * tsvg package filter {.tsvg}: `filter-tsvg.tcl` [filter/filter-tsvg.html](filter/filter-tsvg.html)
 #'
 #' ## SYNOPSIS 
 #' 
@@ -270,8 +270,12 @@ catch {
 #' pandoc infile --filter pandoc-tcl-filter.tcl ?options?
 #' ```
 #' 
-#' Where options are the usual pandoc options.
-
+#' Where options are the usual pandoc options. For HTML conversion you should use for instance:
+#' 
+#' ```
+#' pandoc-tcl-filter.tcl infile.md outfile.html --css style.css -s --toc
+#' ```
+#'
 #' Embed code either inline or in form of code chunks like here (triple ticks):
 #' 
 #' ``` 
@@ -284,8 +288,10 @@ catch {
 #'     Hello this is Tcl `tcl package provide Tcl`!
 #' ```
 #' 
-#' The markers for the other filters are `{.dot}`, `{.eqn}`, `{.mmd}`, `{.mtex}`, `{.pic}`,
-#' `{.pikchr}, `{.rplot} and `{.tsvg}`  
+#' The markers for the other filters are 
+#' `{.abc}, `{.dot}`, `{.eqn}`, `{.mmd}`, `{.mtex}`, `{.pic}`,
+#' `{.pikchr}, `{.puml}`, `{.rplot}`,`{.sqlite}` and `{.tsvg}`. 
+#' For details on how to use them have a look at the manual page links on top.
 #' 
 #' The Markdown document within this file could be extracted and converted as follows:
 #' 
@@ -341,15 +347,17 @@ catch {
 #' filter the file is named `filter-dot.tcl` and its filter function `filter-dot` is 
 #' executed. Below is the simplified code: of this file `filter-dot.tcl`:
 #' 
-#' ```
+#' ```{.tcl eval=false results="hide"}
 #' # a simple pandoc filter using Tcl
 #' # the script pandoc-tcl-filter.tcl 
 #' # must be in the same filter directoy of the pandoc-tcl-filter.tcl file
 #' proc filter-dot {cont dict} {
 #'     global n
 #'     incr n
-#'     set def [dict create results show eval true fig true width 400 height 400 \
-#'              include true fontsize Large envir equation imagepath images]
+#'     set def [dict create app dot results show eval true fig true 
+#'              label null ext svg width 400 height 400 \
+#'              include true imagepath images]
+#'     # fuse code chunk options with defaults
 #'     set dict [dict merge $def $dict]
 #'     set ret ""
 #'     if {[dict get $dict label] eq "null"} {
@@ -357,11 +365,12 @@ catch {
 #'     } else {
 #'         set fname [dict get $dict label]
 #'     }
+#'     # save dot file
 #'     set out [open $fname.dot w 0600]
 #'     puts $out $cont
 #'     close $out
 #'     # TODO: error catching
-#'     set res [exec dot -Tsvg $fname.dot -o $fname.svg]
+#'     set res [exec [dict get $dict app] -Tsvg $fname.dot -o $fname.svg]
 #'     if {[dict get $dict results] eq "show"} {
 #'         # should be usually empty
 #'         set res $res
@@ -378,10 +387,8 @@ catch {
 #' }
 #' ```
 #'
-#' Automatic inclusion of the image would require more effort and dealing with the `cblock`
-#' which is a copy of the current json block containing the source code. Using the label
-#' We could create an image link and append this block after the `$cblock` part of the `$ret var`.
-#' As an exercise you could create a filter for the neato application which creates graphics for undirected graphs.
+#' Using the label and the option `include=false` we could create an image link manually using Markdown syntax. The 
+#' The image filename should be then images/label.svg for instance.
 #' 
 #' ## Dot Example
 #' 
@@ -424,12 +431,34 @@ catch {
 #' }
 #' ```
 #' 
+#' ## Creating Markdown Code
+#' 
+#' Since version 0.5.0 it is as well possible to create Markup code within code blocks and to return it. 
+#' To achieve this you to set use code chunk option results like this: `results="asis"` -
+#' which should be usually used together with `echo=false`. Here an example:
+#' 
+#' ``` 
+#'      ```{.tcl echo=false results="asis"}
+#'      return "**this is bold** and _this is italic_ text!"
+#'      ```    
+#' ```
+#' 
+#' which gives this output:
+#' 
+#' ```{.tcl echo=false results="asis"}
+#' return "**this is bold** and _this is italic_ text!"
+#'
+#' ``` 
+#' 
+#' ## Documentation
+#' 
 #' To use this pipeline and to create pandoc-tcl-filter.html out of the code documentation 
 #' in pandoc-tcl-filter.tcl your command in the terminal is still just:
 #' 
 #' ```
 #' ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css
 #' ```
+#' 
 #' The result should be the file which you are looking currently.
 #' 
 #' ## ChangeLog
