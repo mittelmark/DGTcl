@@ -117,7 +117,7 @@
 #' @enduml
 #' ```
 #' 
-#' Let's finish the examples with a mindmap:
+#' Here an example for a mindmap:
 #' 
 #' ```{.puml}
 #' @startmindmap
@@ -129,7 +129,33 @@
 #' @endmindmap
 #' ```
 #' 
-#' For more themes have a look here: [https://the-lum.github.io/puml-themes-gallery/](https://the-lum.github.io/puml-themes-gallery/)
+#' There is as style handwritten which might look useful at some situations. 
+#' Here an example for a PlantUML mainframe.
+#' 
+#' ```{.puml}
+#' @startsalt
+#' skinparam handwritten true
+#' mainframe This is a **mainframe**
+#' {+
+#'   Login    | | "MyName   "
+#'   Password | | "****     "
+#'   [Cancel] | | [  OK   ]
+#' }
+#' @endsalt
+#' ```
+#' The handwritten style can be applied as well to other diagram types, here a sequence diagram:
+#' 
+#' ```{.puml}
+#' @startuml
+#' skinparam handwritten true
+#' skinparam monochrome  true
+#' Alice->Bob: Hello Bob, how are you?
+#' Note right of Bob: Bob thinks
+#' Bob-->Alice: I am good thanks!
+#' @enduml
+#' ```
+#' For more themes have a look here: [https://the-lum.github.io/puml-themes-gallery/](https://the-lum.github.io/puml-themes-gallery/) 
+#' and for the complete documentation of the different diagram types have a look at the [PDF manual](http://plantuml.com/guide).
 #' 
 #' ## See also:
 #' 
