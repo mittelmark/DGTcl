@@ -795,6 +795,7 @@ proc main {jsonData} {
             if {$type ne ""} {
                 if {[info command filter-$type] eq "filter-$type"} {
                     set res [filter-$type $cont $a]
+                    
                     if {[llength $res] >= 1} {
                         set code [lindex $res 0]
                         if {$code ne ""} {
@@ -803,6 +804,7 @@ proc main {jsonData} {
                                 rl_json::json set cblock c 1 [rl_json::json string $code]
                                 append blocks ",[::rl_json::json extract $cblock]"
                             } else {
+
                                 set cres $code
                                 set mdfile [file tempfile].md
                                 set out [open $mdfile w 0600]
@@ -810,7 +812,10 @@ proc main {jsonData} {
                                 close $out
                                 set cres [exec pandoc -t json $mdfile]
                                 file delete $mdfile
+                                # pandoc 2.9 (block first then meta)
                                 set cres [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $cres "\\1"]
+                                # pandoc 2.12++ (meta first, then block)
+                                set cres [regsub {^\{"pandoc-api-version".+"blocks":\[(.+)\]\}} $cres "\\1"]                                
                                 append blocks ,
                                 append blocks $cres
                             }
@@ -830,6 +835,7 @@ proc main {jsonData} {
         } elseif {$blockType in [list "Para"]} {
             # BulletList Header not working
             for {set j 0} {$j < [llength [::rl_json::json get $jsonData blocks $i c]]} {incr j} {
+                set type ""
                 set type [rl_json::json get $jsonData blocks $i c $j t] ;#type
                 if {$type eq "Code"} {
                     set code [rl_json::json get $jsonData blocks $i c $j c]
@@ -856,8 +862,13 @@ proc main {jsonData} {
         }
     }
     set ret "\"blocks\":\[$blocks\]"
+    
     append ret ",\"pandoc-api-version\":[::rl_json::json extract $jsonData pandoc-api-version]"
+    
     append ret ",\"meta\":[::rl_json::json extract $jsonData meta]"
+    set out [open out.json w 0600]
+    puts $out "{$ret}"
+    close $out
     return "{$ret}"
 }
 
