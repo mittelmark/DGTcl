@@ -1,5 +1,6 @@
 
 filter-docs: filter-abc.html \
+	filter-cmd.html \
 	filter-dot.html \
 	 filter-eqn.html \
 	 filter-mmd.html \
@@ -7,9 +8,11 @@ filter-docs: filter-abc.html \
 	 filter-pic.html \
 	 filter-pik.html \
  	 filter-puml.html \
+ 	 filter-rplot.html \
 	 filter-sqlite.html \
-	 filter-tsvg.html \
-	 filter-rplot.html 	 
+	 filter-tcrd.html \
+	 filter-tdot.html \
+	 filter-tsvg.html
 
 %.html: %.tcl mini.css
 	pandoc header.md -o header.html

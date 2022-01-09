@@ -5,7 +5,7 @@
 <meta content="pandoc" name="generator"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
 <meta content="Detlef Groth, Caputh-Schwielowsee, Germany" name="author"/>
-<title>filter-pik.tcl documentation for the Pikchr diaggram tool</title>
+<title>filter-tcrd.tcl documentation</title>
 <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -25,55 +25,142 @@
 <a href="filter-abc.html">filter-abc</a> - <a href="filter-cmd.html">filter-cmd</a> - <a href="filter-dot.html">filter-dot</a> - <a href="filter-eqn.html">filter-eqn</a> - <a href="filter-mmd.html">filter-mmd</a> - <a href="filter-mtex.html">filter-mtex</a> - <a href="filter-pic.html">filter-pic</a> - <a href="filter-pik.html">filter-pik</a> <br/> <a href="filter-puml.html">filter-puml</a> - <a href="filter-rplot.html">filter-rplot</a> - <a href="filter-sqlite.html">filter-sqlite</a> - <a href="filter-tcrd.html">filter-tcrd</a> - <a href="filter-tdot.html">filter-tdot</a> - <a href="filter-tsvg.html">filter-tsvg</a>
 </center>
 <header id="title-block-header">
-<h1 class="title">filter-pik.tcl documentation for the Pikchr diaggram tool</h1>
+<h1 class="title">filter-tcrd.tcl documentation</h1>
 <p class="author">Detlef Groth, Caputh-Schwielowsee, Germany</p>
 <p class="date">Jan 09, 2022</p>
 </header>
 <h2 id="name">Name</h2>
-<p><em>filter-pik.tcl</em> - Filter which can be used to display Pikchr files within a Pandoc processed document using the Tcl filter driver <code>pandoc-tcl-filter.tcl</code> or the wrapped stand alone application <em>pandoc-tcl-filter.tapp</em>.</p>
+<p><em>filter-tcrd.tcl</em> - Pandoc Tcl filter which can be used to display songs with chords with music chord names above the text where the chords are directly embedded within the song text.</p>
 <h2 id="usage">Usage</h2>
 <p>The conversion of the Markdown documents via Pandoc should be done as follows:</p>
-<pre><code>pandoc input.md --filter pandoc-tcl-filter.tapp -s -o output.html</code></pre>
-<p>The file <code>filter-pik.tcl</code> is not used directly but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.pik</code> or ‘.pikchr’ marker are found, the contents in the code block is processed via the fossil versioning system with support for Pikchr diagrams since version 2.13 <a href="https://fossil-scm.org">https://fossil-scm.org</a> or via the Pikchr diagram tool <a href="https://pikchr.org/home/doc/trunk/">https://pikchr.org/home/doc/trunk/</a>.</p>
-<p>The following options can be given via code chunks or in the YAML header.</p>
+<pre><code>pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html</code></pre>
+<p>The file <code>filter-tcrd.tcl</code> is not used directly but sourced automatically by the <code>pandoc-tcl-filter.tcl</code> file. If code blocks with the <code>.tcrd</code> marker are found, the contents in the code block is processed via the Tcl interpreter using the embedded Tcl code.</p>
+<p>The following options can be given via code chunks options or as defaults in the YAML header.</p>
+<blockquote>
 <ul>
-<li>app - the application to process the pikchr code, should be fossil or pikchr default: fossil</li>
-<li>ext - file file extension, can be svg, png, pdf, png and pdf needs the tool <em>cairosvg</em> <a href="https://cairosvg.org/">https://cairosvg.org/</a>, default: svg</li>
-<li>imagepath - output imagepath, default: images</li>
-<li>include - should the created image be automatically included, default: true</li>
-<li>results - should the output of the command line application been shown, should be show or hide, default: hide</li>
 <li>eval - should the code in the code block be evaluated, default: true</li>
-<li>fig - should a figure be created, default: true</li>
-<li>font - which alternative OTF font should be used, default: ‘default’</li>
-<li>fontsize - what should be the fontsize, 0 means that pikchr chooses the font size, default: 0</li>
+<li>label - the code chunk label used as well for the image name, default: null</li>
+<li>results - should the output, the song text be show(n) or hid(d)e(n), default: show</li>
+<li>transpose - how many steps up or down to transpose, can be negative or positive, 0 means no transpose default: 0</li>
 </ul>
-<p>To change the defaults the YAML header can be used. Here an example to change the default layout engine for <em>.pik</em> code blocks with to <em>pikchr</em> and the image output path to nfigures</p>
+</blockquote>
+<p>Options can be set globally in the YAML header for all chunks. below is an example which shows only the source but not the output.</p>
 <pre><code> ----
- title: "filter-pik example"
+ title: "filter-tcrd.tcl documentation"
  author: "Detlef Groth, Caputh-Schwielowsee, Germany"
- date: 2021-11-120
- pik:
-     app: pikchr
-     imagepath: nfigures
-     ext: png
- ## the .pikchr code blocks should be processed with fossil
- pikchr:
-     app: fossil-2.17
-     imagepath: nfigures
-     ext: png
+ date: 2021-12-22
+ tdot:
+     echo: true
+     results: hide
  ----</code></pre>
 <h2 id="examples">Examples</h2>
-<p>Here an example for a simple example taken from the Pikchr homepage:</p>
-<pre class="pik"><code>arrow right 200% "Markdown" "Source"
-box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
-arrow right 200% "HTML+SVG" "Output"
-arrow &lt;-&gt; down 70% from last box.s
-box same "Pikchr" "Formatter" "(pikchr.c)" fit</code></pre>
-<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIGNsYXNzPSJwaWtjaHIiIHZpZXdCb3g9IjAgMCA0MjMuODIxIDE5NS44NCI+Cjxwb2x5Z29uIHBvaW50cz0iMTQ2LDM3IDEzNCw0MSAxMzQsMzMiIHN0eWxlPSJmaWxsOnJnYigwLDAsMCkiLz4KPHBhdGggZD0iTTIsMzdMMTQwLDM3IiAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2Utd2lkdGg6Mi4xNjtzdHJva2U6cmdiKDAsMCwwKTsiIC8+Cjx0ZXh0IHg9Ijc0IiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0icmdiKDAsMCwwKSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPk1hcmtkb3duPC90ZXh0Pgo8dGV4dCB4PSI3NCIgeT0iNDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InJnYigwLDAsMCkiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj5Tb3VyY2U8L3RleHQ+CjxwYXRoIGQ9Ik0xNjEsNzJMMjU4LDcyQTE1IDE1IDAgMCAwIDI3MyA1N0wyNzMsMTdBMTUgMTUgMCAwIDAgMjU4IDJMMTYxLDJBMTUgMTUgMCAwIDAgMTQ2IDE3TDE0Niw1N0ExNSAxNSAwIDAgMCAxNjEgNzJaIiAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2Utd2lkdGg6Mi4xNjtzdHJva2U6cmdiKDAsMCwwKTsiIC8+Cjx0ZXh0IHg9IjIwOSIgeT0iMTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InJnYigwLDAsMCkiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj5NYXJrZG93bjwvdGV4dD4KPHRleHQgeD0iMjA5IiB5PSIzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0icmdiKDAsMCwwKSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPkZvcm1hdHRlcjwvdGV4dD4KPHRleHQgeD0iMjA5IiB5PSI1NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0icmdiKDAsMCwwKSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPihtYXJrZG93bi5jKTwvdGV4dD4KPHBvbHlnb24gcG9pbnRzPSI0MTcsMzcgNDA1LDQxIDQwNSwzMyIgc3R5bGU9ImZpbGw6cmdiKDAsMCwwKSIvPgo8cGF0aCBkPSJNMjczLDM3TDQxMSwzNyIgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlLXdpZHRoOjIuMTY7c3Ryb2tlOnJnYigwLDAsMCk7IiAvPgo8dGV4dCB4PSIzNDUiIHk9IjI1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJyZ2IoMCwwLDApIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+SFRNTCtTVkc8L3RleHQ+Cjx0ZXh0IHg9IjM0NSIgeT0iNDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InJnYigwLDAsMCkiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj5PdXRwdXQ8L3RleHQ+Cjxwb2x5Z29uIHBvaW50cz0iMjA5LDcyIDIxNCw4NCAyMDUsODQiIHN0eWxlPSJmaWxsOnJnYigwLDAsMCkiLz4KPHBvbHlnb24gcG9pbnRzPSIyMDksMTIzIDIwNSwxMTEgMjE0LDExMSIgc3R5bGU9ImZpbGw6cmdiKDAsMCwwKSIvPgo8cGF0aCBkPSJNMjA5LDc4TDIwOSwxMTciICBzdHlsZT0iZmlsbDpub25lO3N0cm9rZS13aWR0aDoyLjE2O3N0cm9rZTpyZ2IoMCwwLDApOyIgLz4KPHBhdGggZD0iTTE3NiwxOTNMMjQzLDE5M0ExNSAxNSAwIDAgMCAyNTggMTc4TDI1OCwxMzhBMTUgMTUgMCAwIDAgMjQzIDEyM0wxNzYsMTIzQTE1IDE1IDAgMCAwIDE2MSAxMzhMMTYxLDE3OEExNSAxNSAwIDAgMCAxNzYgMTkzWiIgIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlLXdpZHRoOjIuMTY7c3Ryb2tlOnJnYigwLDAsMCk7IiAvPgo8dGV4dCB4PSIyMDkiIHk9IjEzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0icmdiKDAsMCwwKSIgZG9taW5hbnQtYmFzZWxpbmU9ImNlbnRyYWwiPlBpa2NocjwvdGV4dD4KPHRleHQgeD0iMjA5IiB5PSIxNTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9InJnYigwLDAsMCkiIGRvbWluYW50LWJhc2VsaW5lPSJjZW50cmFsIj5Gb3JtYXR0ZXI8L3RleHQ+Cjx0ZXh0IHg9IjIwOSIgeT0iMTc4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJyZ2IoMCwwLDApIiBkb21pbmFudC1iYXNlbGluZT0iY2VudHJhbCI+KHBpa2Noci5jKTwvdGV4dD4KPC9zdmc+Cg=="/><!--URL:/home/groth/workspace/DGTcl/pandoc-tcl-filter/filter/images/pik-1.svg--></p>
+<p>Here an example for a simple hello world image:</p>
+<pre><code>     ```{.tcrd echo=false}
+     [Intro]
+      
+     [G] - [C] - [G] - [C] - [D7] - [G]
+      
+     [Verse]
+     I'[G]ve been a wild rover for many a ye[C]ar
+     I [G]spent all me m[C]oney on w[D7]hiskey and b[G]eer
+     But [G]now I'm returning with gold in great st[C]ore
+     And [G]I never will p[C]lay the wild r[D7]over no m[G]ore
+ 
+     [Chorus]
+     And it's no nay ne[D7]ver, no [G]nay never no m[C]ore
+     Will I p[G]lay the wild ro[C]ver, no n[D7]ever, no m[G]ore
+     ```</code></pre>
+<p>And here is the output:</p>
+<p></p>
+<pre class="tcrdout" data-echo="false"><code>[Intro]
+       
+       
+G - C - G - C - D7 - G 
+       
+       
+[Verse]
+  G                                 C  
+I've been a wild rover for many a year 
+  G             C        D7          G   
+I spent all me money on whiskey and beer 
+    G                                      C   
+But now I'm returning with gold in great store 
+    G             C             D7       G   
+And I never will play the wild rover no more 
+  
+  
+[Chorus]
+                  D7      G             C   
+And it's no nay never, no nay never no more 
+        G              C        D7        G   
+Will I play the wild rover, no never, no more 
+</code></pre>
+<p>To change the background color you just need to change the used style sheet.</p>
+<p>Let’s now tranpose the song by two steps from G to A. The chunk options are then just changed to: <code>{.tcrd echo=false transpose=2}</code>. Below the result:</p>
+<p></p>
+<pre class="tcrdout" data-echo="false" data-transpose="2"><code>[Intro]
+       
+       
+A - D - A - D - E7 - A 
+       
+       
+[Verse]
+  A                                 D  
+I've been a wild rover for many a year 
+  A             D        E7          A   
+I spent all me money on whiskey and beer 
+    A                                      D   
+But now I'm returning with gold in great store 
+    A             D             E7       A   
+And I never will play the wild rover no more 
+  
+  
+[Chorus]
+                  E7      A             D   
+And it's no nay never, no nay never no more 
+        A              D        E7        A   
+Will I play the wild rover, no never, no more 
+</code></pre>
+<p>Here an other song, Scarborough Fair:</p>
+<pre class="tcrd"><code>[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]lives there 
+[Dm]He once [C]was a true love of [Dm]mine</code></pre>
+<pre class="tcrdout"><code>Dm               C           Dm     
+Are you going to Scarborough Fair?  
+F        Dm         F    G   Dm     
+Parsley, sage, rose mary and thyme  
+         F             C            
+Remember me to one who lives there  
+Dm      C                  Dm   
+He once was a true love of mine 
+</code></pre>
+<p>The same but transposed by two halfsteps up:</p>
+<pre class="tcrd" data-transpose="2"><code>[Dm]Are you going to [C]Scarborough [Dm]Fair? 
+[F]Parsley, [Dm]sage, rose [F]mary [G]and [Dm]thyme 
+Remember [F]me to one who [C]lives there 
+[Dm]He once [C]was a true love of [Dm]mine</code></pre>
+<pre class="tcrdout" data-transpose="2"><code>Em               D           Em     
+Are you going to Scarborough Fair?  
+G        Em         G    A   Em     
+Parsley, sage, rose mary and thyme  
+         G             D            
+Remember me to one who lives there  
+Em      D                  Em   
+He once was a true love of mine 
+</code></pre>
 <h2 id="see-also">See also:</h2>
 <ul>
+<li><a href="https://chordseasy.com">https://chordseasy.com</a> (just use copy and paste of the chord song texts here)</li>
+<li><a href="https://ozbcoz.com/Songs/index.php">https://ozbcoz.com/Songs/index.php</a> again just copy and paste</li>
+<li><a href="https://www.mauimadison.com/songs.html">https://www.mauimadison.com/songs.html</a></li>
+<li><a href="filter-abc.html">ABC music notation filter</a></li>
 <li><a href="../Readme.html">pandoc-tcl-filter Readme</a></li>
-<li><a href="filter-pik.html">PIC filter</a></li>
+</ul>
+<h2 id="todo">TODO:</h2>
+<ul>
+<li>chord diagrams</li>
+<li>F# vs Gb etc due to key</li>
 </ul>
 </body>
-</html><!--Generated by HTMLArk 2022-01-09 19:00:50.398305. Original URL temp.html-->
+</html><!--Generated by HTMLArk 2022-01-09 19:16:31.032679. Original URL temp.html-->
