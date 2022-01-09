@@ -10,6 +10,7 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
 
 * [pandoc-tcl-filter Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/pandoc-tcl-filter.html) 
     * [abc filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-abc.html) 
+    * [cmd filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-cmd.html)     
     * [dot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-dot.html) 
     * [eqn filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-eqn.html)     
     * [mermaid filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-mmd.html) 
@@ -18,6 +19,8 @@ These filter allow you to directly embed Tcl code and Dot file code into your do
     * [pikchr filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-pik.html)     
     * [PlantUML filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-puml.html)         
     * [sqlite3 filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-sqlite.html)
+    * [tcrd filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-tcrd.html)
+    * [tdot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-tdot.html)
     * [tsvg filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-tsvg.html) 
     * [Rplot filter](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/filter/filter-rplot.html)         
 * [pandoc-tcl-filter Readme](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html) 
