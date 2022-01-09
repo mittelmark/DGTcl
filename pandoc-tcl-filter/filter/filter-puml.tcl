@@ -138,7 +138,7 @@
 #' mainframe This is a **mainframe**
 #' {+
 #'   Login    | | "MyName   "
-#'   Password | | "****     "
+#'   Passwod | | "****     "
 #'   [Cancel] | | [  OK   ]
 #' }
 #' @endsalt
@@ -157,6 +157,48 @@
 #' For more themes have a look here: [https://the-lum.github.io/puml-themes-gallery/](https://the-lum.github.io/puml-themes-gallery/) 
 #' and for the complete documentation of the different diagram types have a look at the [PDF manual](http://plantuml.com/guide).
 #' 
+#' Finlly an even simpler example in case all you want is just a set of nice handwritten buttons:
+#' 
+#' ```{.puml}
+#' @startuml
+#' <style>
+#' rectangle {
+#'   FontSize 24
+#'   FontStyle bold
+#'   FontColor blue
+#'   FontName Purisa
+#' }
+#' </style>
+#' scale 400 width
+#' skinparam handwritten true
+#' rectangle "  Bob   " #ccddee 
+#' rectangle " Alice  " #eeddcc 
+#' rectangle " Benny  " #eeeecc
+#' rectangle " <i>E=mc<sup>2</sup></i> " #eeeecc
+#' @enduml
+#' ```
+#' 
+#' And now a YAML visualization:
+#'
+#' ```{.puml}
+#' @startyaml
+#' <style>
+#' yamlDiagram {
+#'   FontSize 24
+#'   FontName Purisa
+#'   FontStyle bold
+#'   node {
+#'     Padding 20
+#'   }
+#' }
+#' </style>
+#' skinparam handwritten true
+#' Key: G
+#' Tempo: "96 BPM"
+#' Capo: "3rd Fret"
+#' @endyaml
+#' ```
+
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)

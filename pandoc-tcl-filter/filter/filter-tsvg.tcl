@@ -44,7 +44,7 @@
 #' 
 #' ```
 #'  ----
-#'  title: "filter-rplot.tcl documentation"
+#'  title: "filter-tsvg.tcl documentation"
 #'  author: "Detlef Groth, Caputh-Schwielowsee, Germany"
 #'  date: 2021-12-12
 #'  tsvg:
