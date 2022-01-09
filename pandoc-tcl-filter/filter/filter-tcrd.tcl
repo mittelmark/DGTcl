@@ -148,13 +148,13 @@ foreach d $auto_path {
 namespace eval tcrd {
     proc transpose {note step} {
         # check for chord
-        set note [string map [list A# Bb C# Db D# Eb F# Gb G# Ab] note]
+        set note [string map [list A# Bb C# Db D# Eb F# Gb G# Ab] $note]
         set tp [regsub {^[A-G]b?} $note ""]
         set note [regsub {^([A-G]b?).+} $note "\\1"]
         set notes [list Ab A Bb B C Db D Eb E F Gb G]
         set idx [lsearch $notes $note]
         if {$idx == -1} {
-            error "Error: Invalid note $note, valid ones are $notes!"
+            error "Error: Invalid idx=$idx note $note, valid ones are $notes!"
         }
         incr idx $step
         if {$idx < 0} {
