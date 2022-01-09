@@ -1,6 +1,6 @@
 #!/usr/bin/env tclsh
 
-package provide pandoc 0.5.0
+package provide pandoc 0.6.0
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
     puts "[package present pandoc]"
@@ -19,6 +19,7 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "Filters:  "
     puts "       - ```{.tcl}    Tcl code```"
     puts "       - ```{.abc}    ABC music notation code```"    
+    puts "       - ```{.cmd}    Command line application code```"        
     puts "       - ```{.dot}    GraphViz dot/neato code```"
     puts "       - ```{.eqn}    EQN equations```"    
     puts "       - ```{.mmd}    Mermaid diagram code```"            
@@ -27,7 +28,11 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "       - ```{.pik}    Pikchr diagram code```"
     puts "       - ```{.puml}   PlantUML diagram code```"    
     puts "       - ```{.rplot}  R plot code```"    
+    puts "       - ```{.sqlite} SQLite3 code code```\n"
+    puts "       - ```{.tcrd}   Songs with embedded chords```\n"        
+    puts "       - ```{.tdot}   Tcl package tdot code```\n"    
     puts "       - ```{.tsvg}   Tcl package tsvg code```\n"
+    
     puts "Usage (standalone): $argv0 infile outfile"
     puts "                       converting infile to outfile"
     puts "                       if infile is a source code file like .tcl .py"
@@ -237,9 +242,9 @@ catch {
     package require tclfilters
 }
 #' ---
-#' title: pandoc-tcl-filter documentaion - 0.5.0
+#' title: pandoc-tcl-filter documentaion - 0.6.0
 #' author: Detlef Groth, Schwielowsee, Germany
-#' date: 2021-12-10
+#' date: 2021-12-28
 #' ---
 #'
 #' ## NAME
@@ -251,6 +256,7 @@ catch {
 #'
 #' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
 #' * ABC music filter {.abc}: `filter-abc.tcl` [filter/filter-abc.html](filter/filter-abc.html)
+#' * command line application filter {.cmd}: `filter-cmd.tcl` [filter/filter-abc.html](filter/filter-cmd.html)
 #' * Graphviz dot filter {.dot}: `filter-dot.tcl` [filter/filter-dot.html](filter/filter-dot.html)
 #' * EQN filter plugin for equations written in the EQN language {.eqn}: `filter-eqn` [filter/filter-eqn.html](filter/filter-eqn.html)
 #' * Math TeX filter for single line equations {.mtex}: `filter-mtex.tcl` [filter/filter-mtex.html](filter/filter-mtex.html)
@@ -260,6 +266,8 @@ catch {
 #' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl` [filter/filter-puml.html](filter/filter-puml.html)
 #' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl` [filter/filter-rplot.html](filter/filter-rplot.html)
 #' * sqlite3 filter plugin to evaluate SQL code {.sqlite}: `filter-sqlite.tcl` [filter/filter-sqlite.html](filter/filter-sqlite.html)
+#' * tcrd filter for music songs with chords {.tcrd}: `filter-tcrd.tcl` [filter/filter-tcrd.html](filter/filter-tcrd.html)
+#' * tdot package filter {.tsvg}: `filter-tdot.tcl` [filter/filter-tdot.html](filter/filter-tdot.html)
 #' * tsvg package filter {.tsvg}: `filter-tsvg.tcl` [filter/filter-tsvg.html](filter/filter-tsvg.html)
 #'
 #' ## SYNOPSIS 
@@ -528,6 +536,11 @@ catch {
 #'    * support for ABC music notation
 #'    * bug fix for Tcl filters for `eval=false`
 #'    * documentation improvements for the filters and for the pandoc-tcl-filter
+#' * 2022-01-09 - version 0.6.0
+#'    * adding filter-cmd.tcl for shell scripts for all type of programming languages and tools
+#'    * filter-mtex.tcl with more examples for different LaTeX packages like tikz, pgfplot, skak, sudoku, etc.
+#'    * adding filter-tdot.tcl for tdot Tcl package
+#'    * adding filter-tcrd.tcl for writing music chords above song lyrics
 #'     
 #' ## SEE ALSO
 #' 
@@ -547,7 +560,7 @@ catch {
 #' 
 #' *MIT License*
 #' 
-#' Copyright (c) 2021 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
+#' Copyright (c) 2021-2022 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
 #' 
 #' Permission is hereby granted, free of charge, to any person obtaining a copy
 #' of this software and associated documentation files (the "Software"), to deal
