@@ -46,13 +46,13 @@
 #' 
 #' ### Line by line commands
 #' 
-#' Here an example for executing the `ls` command on a Unix system for all Tcl files in the current folder.
+#' Here an example for executing the `ls` command on a Unix system for all Tcl files in the current folder (chunk options: `{.cmd results="show"}`).
 #' 
 #' ```{.cmd results="show"}
 #' ls -l *.tcl
 #' ```
 #' 
-#' Here an example to execute the sqlite3 command line application.
+#' Here an example to execute the sqlite3 command line application (chunk options: `{.cmd results="asis"}`).
 #' 
 #' ```{.cmd results="asis"}
 #' sqlite3 -markdown uni.sqlite "select * from Student limit 5"
@@ -85,7 +85,7 @@
 #' 
 #' Let's save this script as an executbable shell script hwbutton.sh in 
 #' a directory beloning to our PATH. We can thereafter create a few image buttons
-#' in one go:
+#' in one go (`{.cmd results="hide"}`):
 #' 
 #' ```{.cmd results="hide"}
 #' hwbutton.sh 'rectangle "  Bob   " #ccddee' hw-bob.png 
@@ -93,7 +93,7 @@
 #' hwbutton.sh 'rectangle " <i>E=mc<sup>2</sup></i> " #ffaaaa' hw-emc2.png
 #' ```
 #' 
-#' So we created three png files in this directory:
+#' So we created three png files in this directory (`{.cmd}`):
 #' 
 #' ```{.cmd}
 #' ls -l hw-*png
@@ -218,7 +218,7 @@
 #' 
 #' ### Gnuplot scripts
 #' 
-#' Next a Gnuplot script:
+#' Next a Gnuplot script (`{.cmd file="sin.gp"}`):
 #' 
 #' ```{.cmd file="sin.gp"}
 #' #!/usr/bin/env gnuplot
@@ -236,6 +236,8 @@
 #' 
 #' ### GraphViz dot scripts
 #' 
+#' Here an example for a standalone dot-script (`{.cmd file="digraph.dot"}`): 
+#' 
 #' ```{.cmd file="digraph.dot"}
 #' #!/usr/bin/env -S dot -Tpng -odot.png
 #' digraph G {
@@ -248,7 +250,7 @@
 #' 
 #' ### Simple shell scripts
 #' 
-#' First a mathematical calculation:
+#' First a mathematical calculation (`{.cmd file="calc.sh"}`):
 #' 
 #' ```{.cmd file="calc.sh"}
 #' #!/bin/sh
@@ -257,7 +259,7 @@
 #' echo $(($x+$y))
 #' ```
 #' 
-#' Then a mathematical equation:
+#' Then a mathematical equation (`{.cmd file="math.eqn"}`):
 #' 
 #' ```{.cmd file="math.eqn"}
 #' #!/bin/sh
@@ -267,7 +269,7 @@
 #' 
 #' ![](eqn.png)
 #' 
-#' And here let's use this for the formula of the most important biochemical reaction on planet Earth:
+#' And here let's use this for the formula of the most important biochemical reaction on planet Earth (`{.cmd file="photo.eqn"}`):
 #' 
 #' ```{.cmd file="photo.eqn"}
 #' #!/bin/sh
@@ -281,6 +283,88 @@
 #' 
 #' For more information on how to typeset equations using the EQN syntax have a look here: [https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter09.html](https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter09.html).
 #'
+#' ### Lilypond example
+#' 
+#' A typical problem are programming languages which do not support the shebang line. 
+#' We can create for such languages a wrapper script which pipe the input of a script but not the very first 
+#' line into the interpreter. Here an example for the lilypond interpreter, a tool to process music notation. Here the wrapper script:
+#' 
+#' ```
+#' #!/usr/bin/env bash
+#' # file lilyscript.sh
+#' if [ -z $2 ]; then
+#'     out=out
+#'     ext=svg
+#' else
+#'     out=$2
+#'     ext=${out##*.}
+#'     out=`basename $out .$ext`
+#' fi
+#' # echo all lines bit not the shebang line and 
+#' # pipe this into lilypond
+#' perl -ne '$x++ >= 1 and print' $1 > temp.ly
+#' # crop page support for png and pdf output
+#' echo "
+#' \paper {
+#'   indent = 0\mm
+#'   line-width = 110\mm
+#'   oddHeaderMarkup = \"\"
+#'   evenHeaderMarkup = \"\"
+#'   oddFooterMarkup = \"\"
+#'   evenFooterMarkup = \"\"
+#' }
+#' " >> temp.ly
+#' lilypond -dbackend=eps -dresolution=300 --output=$out --$ext temp.ly
+#' if [ -e "$out-systems.texi" ]; then
+#'      rm $out-* 
+#' fi     
+#' # EOF
+#' ```
+#' 
+#' If we copy this file as lilyscript.sh into a folder belonging to our PATH variable we can then embed lilypond code into a executable script easily. Here an example (chunk options are: `{.cmd file="mini.ly" results="hide"}`):
+#' 
+#' ```{.cmd file="mini.ly" results="hide"}
+#' #!/usr/bin/env -S lilyscript.sh mini.ly mini.svg
+#' \version "2.14.1"
+#' % required for svg to manually crop the image
+#' #(set! paper-alist
+#'   (cons '("my size" . (cons (* 3 in) (* 1 in))) paper-alist))
+#' \paper {
+#'   #(set-paper-size "my size")
+#' }
+#' {
+#'   % middle tie looks funny here:
+#'   <c' d'' b''>8. ~ <c' d'' b''>8
+#' }
+#' ```
+#' 
+#' We then embed the image using Markdown syntax. Using the border-style we can
+#' as well adapt the width and height of the paper size see:
+#' 
+#' ```
+#' ![](mini.svg){#id width=240 style="border: 3px solid #ddd;"}
+#' ```
+#' 
+#' Gives:
+#' 
+#' ![](mini.svg){#id width=300 style="border: 3px solid #ddd;"}
+#'
+#' Png and Pdf images are automatically cropped, so we do not need to set the paper size (`{.cmd file="mini2.ly" results="hide"}`).
+#' 
+#' ```{.cmd file="mini2.ly" results="hide"}
+#' #!/usr/bin/env -S lilyscript.sh mini2.ly mini.png
+#' \version "2.14.1"
+#' {
+#'   % middle tie looks funny here:
+#'   <c' d'' b''>8. ~ <c' d'' b''>8
+#' }
+#' ```
+#' 
+#' We can then include the created 
+#' image using standard Markdown syntax with setting as well a width to scale the image (`![](mini.png){#id width=140}`):
+#' 
+#' ![](mini.png){#id width=140}
+#'
 #' ### Other programming languages
 #' 
 #' I left it as an exercise to embed Perl, Ruby, Julia scripts etc.
@@ -289,7 +373,7 @@
 #' 
 #' * compile option to embed C/C++/Java etc code
 #' * own Python filter with terminal mode and line by line interpretation
-#' * 
+#' * lilypond required version statement into liliscript.sh script
 #' 
 #' ## See also:
 #' 
@@ -297,7 +381,7 @@
 #' * [dot filter](filter-dot.html)
 #' * [Rplot filter](filter-rplot.html)
 #' * [Tcl filter](../pandoc-tcl-filter.html)
-#' * 
+#' * [Abc filter](filter-abc.html)
 #' 
 
 
