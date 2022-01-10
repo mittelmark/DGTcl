@@ -8,7 +8,7 @@
 #'     ext: svg
 #' ---
 #' 
-# a simple pandoc filter using Tclthe script pandoc-tcl-filter.tcl 
+# a simple pandoc filter using the script pandoc-tcl-filter.tcl 
 # must be in the in the parent directory of the filter directory
 #' 
 #' ## Name
@@ -19,13 +19,40 @@
 #' 
 #' ## Usage
 #' 
+#' ABC source code is embedded into Markup languages like Markdown like this 
+#' (remove the spaces at the beginning, they are here just for protecting the evaluation):
+#' 
+#' ```
+#'      # code chunk defaults (must be in fact not given):
+#'      ```{.abc eval=true echo=true ext=svg}
+#'      ABC music code
+#'      ```
+#'      # show only the output (as svg file):
+#'      ```{.abc echo=false}
+#'      ABC music code
+#'      ```
+#' ```
+#' 
+#' Where eval, echo and ext are so called chunk options.
+#' 
 #' The conversion of the Markdown documents via Pandoc should be done as follows:
 #' 
 #' ```
-#' pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html
+#' pandoc input.md --filter pandoc-tcl-filter.tapp -s -o output.html
 #' ```
 #' 
-#' The file `filter-abc.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
+#' The file *pandoc-tcl-filter.tapp* which contains the Tcl filter and all other filters has to be placed in the PATH and the 
+#' system has to support the Shebang, on Unix this is standard on Windows you need to use tools like Cygwin, Git-Bash or Cygwin. 
+#' 
+#' You can as well use the file *pandoc-tcl-filter.tapp* directly as command line application like this:
+#' 
+#' ```
+#' pandoc-tcl-filter.tapp input.md output.html -s -o 
+#' ```
+#' 
+#' The arguments after the output file are delegated to pandoc.
+#' 
+#' The internal file `filter-abc.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
 #' If code blocks with the `.abc` marker are found, the contents in the code block is processed via the abcm2ps command line tool.
 #' Conversion to png or pdf requires teh Python command line application cairosvg which can be usually installed as well with your package manager or using the Python package manager like this:
 #' 
@@ -35,7 +62,8 @@
 #' 
 #' The following options can be given via code chunks or in the YAML header.
 #' 
-#' > - app - the application to be called, usually abcm2ps, default: abcm2p
+#' > - app - the application to be called, usually abcm2ps, default: abcm2ps
+#'   - echo - should the ABC source code be shown, default: true
 #'   - eval - should the code in the code block be evaluated, default: true
 #'   - ext - file file extension, can be svg, png, pdf, default: svg
 #'   - fig - should a figure be created, default: true
@@ -43,7 +71,7 @@
 #'   - include - should the created image be automatically included, default: true
 #'   - results - should the output of the command line application been shown, should be show or hide, default: hide
 #' 
-#' The options results, evalm fig, should be normally not used, they are here just for 
+#' The options results, eval, fig, should be normally not used, they are here just for 
 #' compatibility reasons with the other filters.
 #' 
 #' To change the defaults the YAML header can be used. Here an example to change the 
@@ -63,7 +91,7 @@
 #'
 #' ## Examples
 #' 
-#' Here an example for a simple Jig score.
+#' Here an example for a simple Jig score, chunk starts with the defaults: `{.abc}`:.
 #' 
 #' ```{.abc}
 #' X:1
@@ -105,6 +133,48 @@
 #' f4 dB/A/|B4 G2|F6|F4||
 #' ```
 #' 
+#' Next an example with verse, chords and notes (`{.abc results="hide"}`):
+#' 
+#' ```{.abc results="hide"}
+#' X:1
+#' T:Am Brunnen vor dem Tore
+#' S:Wilhelm Müller und Franz Schubert
+#' M:3/4
+#' L:1/8
+#' K:G
+#' "D"d2 | "G"d3 B B B | B2 G3 G| "D"A3 B (3cB A| "G"B4 z d|
+#' w: Am Brun-nen vor dem To-re, da steht ein Lin - den-baum; Ich
+#' d3 B B B | "Em"B2 G3 G | "Am"A3 B "D"(3dc A | "G"G4 z G|
+#' w:träumt in sei-nem Schat-ten so man-chen sü - ßen Traum; ich
+#' "D"A3 A A A | "G"B>c d z d | "C"e3 d "G"B G| "D"A4 z A|
+#' w:schnitt in sei-ne Rin - de so man-ches lie-be Wort; es
+#' A3 A A A | "G"B>c d z d | g2 "D"dB c A| "G"d4 z d|
+#' w:zog in Freud und Lei - de zu ihm mich* im-mer fort, zu
+#' g2 dB "D"(3dc A | "G"G4||
+#' w:ihm mich* im- * mer fort.
+#' ```
+#' 
+#' We can as well, and we usually should, hide the ABC code using the chunk option: `{.abc echo=false results="hide"}`, here the output:
+#' 
+#' ```{.abc results="hide" echo=false}
+#' X:1
+#' T:Am Brunnen vor dem Tore
+#' S:Wilhelm Müller und Franz Schubert
+#' M:3/4
+#' L:1/8
+#' K:G
+#' "D"d2 | "G"d3 B B B | B2 G3 G| "D"A3 B (3cB A| "G"B4 z d|
+#' w: Am Brun-nen vor dem To-re, da steht ein Lin - den-baum; Ich
+#' d3 B B B | "Em"B2 G3 G | "Am"A3 B "D"(3dc A | "G"G4 z G|
+#' w:träumt in sei-nem Schat-ten so man-chen sü - ßen Traum; ich
+#' "D"A3 A A A | "G"B>c d z d | "C"e3 d "G"B G| "D"A4 z A|
+#' w:schnitt in sei-ne Rin - de so man-ches lie-be Wort; es
+#' A3 A A A | "G"B>c d z d | g2 "D"dB c A| "G"d4 z d|
+#' w:zog in Freud und Lei - de zu ihm mich* im-mer fort, zu
+#' g2 dB "D"(3dc A | "G"G4||
+#' w:ihm mich* im- * mer fort.
+#' ```
+#' 
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
@@ -134,7 +204,7 @@ proc filter-abc {cont dict} {
     puts $out $cont
     close $out
     # TODO: error catching
-    set res [exec [dict get $dict app] -g $fname.abc -O test.svg]
+    set res [exec -ignorestderr [dict get $dict app] -g $fname.abc -O test.svg]
     file rename -force test001.svg $fname.svg
     if {[dict get $dict ext] in [list "pdf" "png"]} {
         if {[auto_execok cairosvg] eq ""} {
