@@ -365,9 +365,91 @@
 #' 
 #' ![](mini.png){#id width=140}
 #'
+#' Alternativly you can as well create a shell script without the need of a wrapper script like this (`{.cmd file="mini4.ly" results="hide"}`):
+#' 
+#' ```{.cmd file="mini4.ly" results="hide"}
+#' #!/usr/bin/bash
+#' exec perl -ne '$x++ > 1 and print' $0 | lilypond --out=mini4 --png - && exit
+#' % now follows the Lilypond code
+#' \version "2.22.0"
+#' #(set! paper-alist
+#'   (cons '("my size" . (cons (* 3 in) (* 0.8 in))) paper-alist))
+#' \paper {  #(set-paper-size "my size") }
+#' \header { tagline="" }
+#' {
+#' c'4 c' g' g' a' a' g'2
+#' }
+#' ```
+#' 
+#' ![](mini4.png)
+#' 
+#' ### C and C++ code
+#' 
+#' Using the approach with the lilypond examples we can as well embed C code by creating a wrapper for the compiler.
+#' We here use the shebang script implementation for gcc found here: 
+#' [https://rosettacode.org/wiki/Native_shebang#2nd_version._Pure_C.2C_no_extra_bash_script](https://rosettacode.org/wiki/Native_shebang#2nd_version._Pure_C.2C_no_extra_bash_script)
+#' 
+#' Now an example (`{.cmd file="test.csr"}`):
+#' 
+#' ```{.cmd file="test.csr"}
+#' #!/usr/bin/env -S script_gcc -lm
+#' 
+#' #include <stdio.h>
+#' #include <math.h>
+#' 
+#' int main (int argc, char** argv) {
+#'     printf("Hello C World!\n");
+#'     float pi = 3.141492653;
+#'     printf("pi is: %f\n",pi);
+#'     printf("sin(pi) is: %f\n",sin(pi));
+#'     return(0);
+#' }
+#' ```
+#' 
+#' Again there is a simpler approach without a wrapper function using a pseudo-shebang line (`{.cmd file="hello2.c"}`): 
+#' ```{.cmd file="hello2.c"}
+#' ///usr/bin/cc -o "${0%.c}" "$0" -lm && exec "./${0%.c}"
+#' 
+#' #include <stdio.h>
+#' #include <math.h>
+#' 
+#' int main (int argc, char** argv) {
+#'     printf("Hello C Compiler World!\n");
+#'     float pi = 3.141492653;
+#'     printf("pi is: %f\n",pi);
+#'     printf("sin(pi) is: %f\n",sin(pi));
+#'     return(0);
+#' }
+#' ```
+#' 
+#' The same mechanism can be used for C++ code:
+#' 
+#' ```{.cmd file="hello.cxx"}
+#' ///usr/bin/g++ -o "${0%.cxx}" "$0" && exec "./${0%.cxx}"
+#' #include <iostream> 
+#' 
+#' int main(int argc, char** argv) {
+#'   using namespace std;
+#'   int ret = 0;
+#'   cout << "Hello C++ World!" << endl;
+#'   return ret;
+#' } 
+#' ```
+#' 
+#' And as well for the Go language:
+#' 
+#' ```{.cmd file="hello.go"}
+#' ///usr/bin/go run $0 $@  2>&1 && exit 0
+#' package main
+#' 
+#' func main() {
+#'     println("Hello Go World!")
+#' }
+#' ```
 #' ### Other programming languages
 #' 
-#' I left it as an exercise to embed Perl, Ruby, Julia scripts etc.
+#' I left it as an exercise to embed Perl, Ruby, Julia scripts using the standard Shebang mechanism. 
+#' 
 #' 
 #' ## TODO:
 #' 
