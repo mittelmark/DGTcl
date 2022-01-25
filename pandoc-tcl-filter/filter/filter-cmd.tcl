@@ -34,7 +34,7 @@
 #' 
 #' ```
 #'  ----
-#'  title: "filter-sqlite.tcl documentation"
+#'  title: "filter-cmd.tcl documentation"
 #'  author: "Detlef Groth, Caputh-Schwielowsee, Germany"
 #'  date: 2021-12-27
 #'  cmd:
