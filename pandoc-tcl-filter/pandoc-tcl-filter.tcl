@@ -817,7 +817,7 @@ package require rl_json
 #'    * filter-mtex.tcl with more examples for different LaTeX packages like tikz, pgfplot, skak, sudoku, etc.
 #'    * adding filter-tdot.tcl for tdot Tcl package
 #'    * adding filter-tcrd.tcl for writing music chords above song lyrics
-#' * 2022-01-XX - version 0.7.0
+#' * 2022-02-05 - version 0.7.0
 #'    * graphical user interface to the graphical filters (abc, dot, eqn, mmd, mtex, pic, pikchr, puml, rplot, tdot, tsvg) using the command line option *--gui*
 #'    * can now as well work without pandoc standalone for conversion of Markdown with code chunks into 
 #'      Markdown with evaluated code chunks and HTML code using the
