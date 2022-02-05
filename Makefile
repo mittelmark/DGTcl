@@ -25,10 +25,11 @@ pandoc-bin:
 	if [ ! -d  pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters ] ;  then mkdir pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters ; fi	
 	cp -r pandoc-tcl-filter/filter/*.tcl pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters/
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*~
+	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.html
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*md
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*lua
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.n	
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*.dot	
 	cd pandoc-tapp && tclsh ../bin/tpack.tcl wrap pandoc-tcl-filter.tapp
 	cp pandoc-tapp/pandoc-tcl-filter.tapp ../
-	rm -rf pandoc-tapp
+	#rm -rf pandoc-tapp

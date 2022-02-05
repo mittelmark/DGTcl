@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8"/>
+<meta content="pandoc" name="generator"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=yes" name="viewport"/>
+<meta content="Detlef Groth, Schwielowsee, Germany" name="author"/>
+<title>filter-tcl documentation</title>
+<style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+<link href="data:text/css,%20%20%20%20html%20%7B%0A%20%20%20%20%20%20%20%20overflow-y%3A%20scroll%3B%0A%20%20%20%20%7D%0A%20%20%20%20body%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23444%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Georgia%2C%20Palatino%2C%20%27Palatino%20Linotype%27%2C%20Times%2C%20%0A%20%20%20%20%20%20%20%20%20%20%20%27Times%20New%20Roman%27%2C%20serif%3B%0A%20%20%20%20%20%20%20%20line-height%3A%201.2%3B%0A%20%20%20%20%20%20%20%20padding%3A%201em%3B%0A%20%20%20%20%20%20%20%20margin%3A%20auto%3B%0A%20%20%20%20%20%20%20%20max-width%3A%20%201200px%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230645ad%3B%0A%20%20%20%20%20%20%20%20text-decoration%3A%20none%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Avisited%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%230b0080%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Ahover%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%2306e%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Aactive%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23faa700%3B%0A%20%20%20%20%7D%0A%20%20%20%20a%3Afocus%20%7B%0A%20%20%20%20%20%20%20%20outline%3A%20thin%20dotted%3B%0A%20%20%20%20%7D%0A%20%20%20%20p%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200.5em%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20p.date%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20img%20%7B%0A%20%20%20%20%20%20%20%20max-width%3A%20100%25%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h1%2C%20h2%2C%20h3%2C%20h4%2C%20h5%2C%20h6%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23111%3B%0A%20%20%20%20%20%20%20%20line-height%3A%20115%25%3B%0A%20%20%20%20%20%20%20%20margin-top%3A%201em%3B%0A%20%20%20%20%20%20%20%20font-weight%3A%20normal%3B%0A%20%20%20%20%7D%0A%20%20%20%20h1%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20h2%20%7B%0A%20%20%20%20%20%20%20%20text-transform%3A%20uppercase%3B%0A%20%20%20%20%7D%0A%20%20%20%20pre%2C%20blockquote%20pre%20%7B%0A%20%20%20%20%20%20%20%20border-top%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%20%20%20%20background%3A%20%23e9f6ff%3B%0A%20%20%20%20%20%20%20%20padding%3A%2010px%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%200.1em%20%239ac%20solid%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20blockquote%20%7B%0A%20%20%20%20%20%20%20%20margin%3A%200%3B%0A%20%20%20%20%20%20%20%20padding-left%3A%203em%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20hr%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20block%3B%0A%20%20%20%20%20%20%20%20height%3A%202px%3B%0A%20%20%20%20%20%20%20%20border%3A%200%3B%0A%20%20%20%20%20%20%20%20border-top%3A%201px%20solid%20%23aaa%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%201px%20solid%20%23eee%3B%0A%20%20%20%20%20%20%20%20margin%3A%201em%200%3B%0A%20%20%20%20%20%20%20%20padding%3A%200%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%2C%20code%2C%20kbd%2C%20samp%20%7B%0A%20%20%20%20%20%20%20%20color%3A%20%23000%3B%0A%20%20%20%20%20%20%20%20font-family%3A%20Monaco%2C%20%27courier%20new%27%2C%20monospace%3B%0A%20%20%20%20%20%20%20%20font-size%3A%2090%25%3B%20%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20pre%20%7B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre%3B%0A%20%20%20%20%20%20%20%20white-space%3A%20pre-wrap%3B%0A%20%20%20%20%20%20%20%20word-wrap%3A%20break-word%3B%0A%20%20%20%20%7D%0A%20%20%20%20/%2A%20fix%2C%20do%20not%20like%20bold%20for%20every%20keyword%20%2A/%0A%20%20%20%20code%20span.kw%20%7B%20color%3A%20%23007020%3B%20font-weight%3A%20normal%3B%20%7D%20/%2A%20Keyword%20%2A/%0A%20%20%20%20%20pre.sourceCode%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23fff6f6%3B%0A%20%20%20%20%7D%20%0A%20%20%20%20figure%2C%20p.author%20%7B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20table%20%7B%0A%20%20%20%20%20%20%20%20min-width%3A%20300px%3B%0A%20%20%20%20%20%20%20%20border-spacing%3A%200%3B%0A%20%20%20%20%20%20%20%20border-collapse%3A%20collapse%3B%0A%20%20%20%20%20%20%20%20cell-padding%3A%200px%3B%0A%20%20%20%20%20%20%20%20cell-spacing%3A%200px%3B%0A%20%20%20%20%20%20%20%20border-top%3A%202px%20solid%20black%3B%0A%20%20%20%20%20%20%20%20border-bottom%3A%202px%20solid%20black%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.header%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23dddddd%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A%20%20%20%20tr.even%20%7B%0A%20%20%20%20%20%20%20%20background%3A%20%23ddeeff%3B%0A%20%20%20%20%7D%0A%20%20%20%20td%2C%20th%20%7B%0A%20%20%20%20%20%20%20%20padding%3A%208px%3B%0A%20%20%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%7D%0A" rel="stylesheet"/><!--URL:mini.css-->
+<!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<center>
+<a href="filter-abc.html">filter-abc</a> - <a href="filter-cmd.html">filter-cmd</a> - <a href="filter-dot.html">filter-dot</a> - <a href="filter-eqn.html">filter-eqn</a> - <a href="filter-mmd.html">filter-mmd</a> - <a href="filter-mtex.html">filter-mtex</a> - <a href="filter-pic.html">filter-pic</a> - <a href="filter-pik.html">filter-pik</a> <br/> <a href="filter-pipe.html">filter-pipe</a> - <a href="filter-puml.html">filter-puml</a> - <a href="filter-rplot.html">filter-rplot</a> - <a href="filter-sqlite.html">filter-sqlite</a> - <a href="filter-tcl.html">filter-tcl</a> - <a href="filter-tcrd.html">filter-tcrd</a> - <a href="filter-tdot.html">filter-tdot</a> - <a href="filter-tsvg.html">filter-tsvg</a>
+</center>
+<header id="title-block-header">
+<h1 class="title">filter-tcl documentation</h1>
+<p class="author">Detlef Groth, Schwielowsee, Germany</p>
+<p class="date">Feb 05, 2022</p>
+</header>
+<h2 id="name">NAME</h2>
+<p><em>filter-tcl.tcl</em> - filter to embed Tcl code in documentation.</p>
+<p>The code for the Tcl filter is in pandoc-tcl-filter. It is to deeply involved into the main filter engine which drives the other Tcl and all other filters.</p>
+<h2 id="code-blocks">CODE BLOCKS</h2>
+<p>Here an example:</p>
+<pre><code>    # indentation just to avoid 
+    # interpretation
+    ```{.tcl}
+    set x 1
+    puts $x
+    ```</code></pre>
+<p>Here the output:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb2-1"><a aria-hidden="true" href="#cb2-1" tabindex="-1"></a><span class="kw">set</span> <span class="ot">x</span> <span class="dv">1</span></span>
+<span id="cb2-2"><a aria-hidden="true" href="#cb2-2" tabindex="-1"></a><span class="kw">puts</span> <span class="dt">$x</span></span></code></pre></div>
+<pre class="tclout"><code>1
+</code></pre>
+<h3 id="code-chunk-options">Code chunk options</h3>
+<p>The basic Tcl filter has three code chunk options:</p>
+<ul>
+<li><em>eval</em> - should the code be evaluated, default: true</li>
+<li><em>results</em> - should the code output be shown, either “show”, “hide” or “asis”, default: “show”</li>
+<li><em>echo</em> - should the code itself been shown, default: true</li>
+</ul>
+<p>Here an example where we hide the code itself and only show the output using the chunk argument <code>echo=false</code>:</p>
+<pre><code>    ```{.tcl echo=false}
+    puts "The sinus of 3 is [expr {round(sin(3))}]"
+    ```</code></pre>
+<p>And here the output where the code is as well hidden:</p>
+<p></p>
+<pre class="tclout" data-echo="false"><code>The sinus of 3 is 0.141
+</code></pre>
+<p>With the option eval we can just avoid interpretations of code chunks.</p>
+<pre><code>    ```{.tcl eval=false}
+    puts "The sinus of 3 is [format %0.3f [expr {sin(3)}]]"
+    ```</code></pre>
+<p>And here the “output”:</p>
+<div class="sourceCode" data-eval="false" id="cb7"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb7-1"><a aria-hidden="true" href="#cb7-1" tabindex="-1"></a><span class="kw">puts</span> <span class="st">"The sinus of 3 is [format %0.3f [expr {sin(3)}]]"</span></span></code></pre></div>
+<p>As we can use the <em>echo</em> chunk option to hide and show the code itself, we can as well do the same with the output. So if we combine <em>echo=“false”</em> and <em>results=“hide”</em> the code will be evaluated but we will not seen anything in the output. This option is useful if you like to hide the Tcl code and just use it in the background for some computations.</p>
+<p>But what does the code chunk option <em>results=“asis”</em> mean? It allows you to create Markup code, such as Markdown if we you are writing in Markdown, using the Tcl programmiong language.</p>
+<pre><code>    ```{.tcl results="asis"}
+    set md "This is **bold** and this is _italic_ text.\n"
+    append md "\nYou get the point?\n"
+    set md
+    ```</code></pre>
+<p>And here is the output:</p>
+<div class="sourceCode" data-results="asis" id="cb9"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb9-1"><a aria-hidden="true" href="#cb9-1" tabindex="-1"></a><span class="kw">set</span> md <span class="st">"This is **bold** and this is _italic_ text.</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb9-2"><a aria-hidden="true" href="#cb9-2" tabindex="-1"></a><span class="kw">append</span> md <span class="st">"</span><span class="ch">\n</span><span class="st">You get the point?</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb9-3"><a aria-hidden="true" href="#cb9-3" tabindex="-1"></a><span class="kw">set</span> md</span></code></pre></div>
+<p>This is <strong>bold</strong> and this is <em>italic</em> text.</p>
+<p>You get the point?</p>
+<p>Let’s create a table based on a nested Tcl list, code chunk options - <code>{.tcl results="show"}</code>:</p>
+<div class="sourceCode" data-results="show" id="cb10"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb10-1"><a aria-hidden="true" href="#cb10-1" tabindex="-1"></a><span class="kw">set</span> l <span class="kw">[list</span> <span class="kw">[list</span> A B C D E<span class="kw">]</span> \</span>
+<span id="cb10-2"><a aria-hidden="true" href="#cb10-2" tabindex="-1"></a>   <span class="kw">[list</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">5</span><span class="kw">]</span> \</span>
+<span id="cb10-3"><a aria-hidden="true" href="#cb10-3" tabindex="-1"></a>   <span class="kw">[list</span> <span class="dv">6</span> <span class="dv">7</span> <span class="dv">8</span> <span class="dv">9</span> <span class="dv">10</span><span class="kw">]</span> \</span>
+<span id="cb10-4"><a aria-hidden="true" href="#cb10-4" tabindex="-1"></a>   <span class="kw">[list</span> <span class="dv">11</span> <span class="dv">12</span> <span class="dv">13</span> <span class="dv">14</span> <span class="dv">15</span><span class="kw">]]</span></span>
+<span id="cb10-5"><a aria-hidden="true" href="#cb10-5" tabindex="-1"></a><span class="kw">set</span> md <span class="st">""</span></span>
+<span id="cb10-6"><a aria-hidden="true" href="#cb10-6" tabindex="-1"></a><span class="kw">set</span> <span class="ot">x</span> <span class="dv">0</span></span>
+<span id="cb10-7"><a aria-hidden="true" href="#cb10-7" tabindex="-1"></a><span class="kw">foreach</span> row <span class="dt">$l</span> <span class="kw">{</span></span>
+<span id="cb10-8"><a aria-hidden="true" href="#cb10-8" tabindex="-1"></a>    <span class="kw">incr</span> <span class="ot">x</span></span>
+<span id="cb10-9"><a aria-hidden="true" href="#cb10-9" tabindex="-1"></a>    <span class="kw">append</span> md <span class="st">"|"</span></span>
+<span id="cb10-10"><a aria-hidden="true" href="#cb10-10" tabindex="-1"></a>    <span class="kw">foreach</span> cell <span class="dt">$row</span> <span class="kw">{</span></span>
+<span id="cb10-11"><a aria-hidden="true" href="#cb10-11" tabindex="-1"></a>       <span class="kw">append</span> md <span class="st">" </span><span class="dt">$</span><span class="st">cell |"</span></span>
+<span id="cb10-12"><a aria-hidden="true" href="#cb10-12" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb10-13"><a aria-hidden="true" href="#cb10-13" tabindex="-1"></a>    <span class="kw">append</span> md <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb10-14"><a aria-hidden="true" href="#cb10-14" tabindex="-1"></a>    <span class="kw">if</span> <span class="kw">{</span><span class="dt">$x</span> == <span class="dv">1</span><span class="kw">}</span> <span class="kw">{</span></span>
+<span id="cb10-15"><a aria-hidden="true" href="#cb10-15" tabindex="-1"></a>      <span class="kw">append</span> md <span class="st">"|"</span></span>
+<span id="cb10-16"><a aria-hidden="true" href="#cb10-16" tabindex="-1"></a>      <span class="kw">foreach</span> cell <span class="dt">$row</span> <span class="kw">{</span></span>
+<span id="cb10-17"><a aria-hidden="true" href="#cb10-17" tabindex="-1"></a>          <span class="kw">append</span> md <span class="st">" ---- |"</span></span>
+<span id="cb10-18"><a aria-hidden="true" href="#cb10-18" tabindex="-1"></a>      <span class="kw">}</span></span>
+<span id="cb10-19"><a aria-hidden="true" href="#cb10-19" tabindex="-1"></a>      <span class="kw">append</span> md <span class="st">"</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb10-20"><a aria-hidden="true" href="#cb10-20" tabindex="-1"></a>    <span class="kw">}</span></span>
+<span id="cb10-21"><a aria-hidden="true" href="#cb10-21" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb10-22"><a aria-hidden="true" href="#cb10-22" tabindex="-1"></a><span class="kw">set</span> md</span></code></pre></div>
+<pre class="tclout" data-results="show"><code>| A | B | C | D | E |
+| ---- | ---- | ---- | ---- | ---- |
+| 1 | 2 | 3 | 4 | 5 |
+| 6 | 7 | 8 | 9 | 10 |
+| 11 | 12 | 13 | 14 | 15 |
+</code></pre>
+<p>If we now switch to <code>results="asis"</code> the output is this:</p>
+<div class="sourceCode" data-results="asis" id="cb12"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb12-1"><a aria-hidden="true" href="#cb12-1" tabindex="-1"></a><span class="co"># variable md still exists from the </span></span>
+<span id="cb12-2"><a aria-hidden="true" href="#cb12-2" tabindex="-1"></a><span class="co"># previous code chunk</span></span>
+<span id="cb12-3"><a aria-hidden="true" href="#cb12-3" tabindex="-1"></a><span class="kw">set</span> md <span class="st">"&lt;center&gt;</span><span class="ch">\n</span><span class="dt">$</span><span class="st">md&lt;/center&gt;</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb12-4"><a aria-hidden="true" href="#cb12-4" tabindex="-1"></a><span class="kw">set</span> md</span></code></pre></div>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+</center>
+<p>As the display of tabular data is quite a common problem, the Tcl filter comes with a helper function <em>list2mdtab</em>, so we do not need to write this manual loop:</p>
+<div class="sourceCode" data-results="asis" id="cb13"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb13-1"><a aria-hidden="true" href="#cb13-1" tabindex="-1"></a><span class="co"># syntax: list2mdtab header rows</span></span>
+<span id="cb13-2"><a aria-hidden="true" href="#cb13-2" tabindex="-1"></a><span class="co"># we need to flatten the row list</span></span>
+<span id="cb13-3"><a aria-hidden="true" href="#cb13-3" tabindex="-1"></a><span class="kw">set</span> r &lt;center&gt;<span class="ch">\n</span></span>
+<span id="cb13-4"><a aria-hidden="true" href="#cb13-4" tabindex="-1"></a><span class="kw">append</span> r <span class="kw">[</span>list2mdtab <span class="kw">[lindex</span> <span class="dt">$l</span> <span class="dv">0</span><span class="kw">]</span> <span class="kw">[concat</span> <span class="kw">{</span>*<span class="kw">}[lrange</span> <span class="dt">$l</span> <span class="dv">1</span> end<span class="kw">]]]</span></span>
+<span id="cb13-5"><a aria-hidden="true" href="#cb13-5" tabindex="-1"></a><span class="kw">append</span> r <span class="ch">\n</span>&lt;/center&gt;<span class="ch">\n</span></span></code></pre></div>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>D</th>
+<th>E</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>7</td>
+<td>8</td>
+<td>9</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+</center>
+<h3 id="graphics">Graphics</h3>
+<p>R has no default graphics engine for plotting etc. There is however the <em>tsvg</em> package which allows us to create SVG graphics. As this package is included in the pandoc-tcl-filter application we can use it here and later include the generated graphis using the Markdown image markup:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb14-1"><a aria-hidden="true" href="#cb14-1" tabindex="-1"></a><span class="kw">package</span> <span class="ot">require</span> tsvg</span>
+<span id="cb14-2"><a aria-hidden="true" href="#cb14-2" tabindex="-1"></a>tsvg <span class="kw">set</span> code <span class="st">""</span></span>
+<span id="cb14-3"><a aria-hidden="true" href="#cb14-3" tabindex="-1"></a>tsvg circle<span class="ot"> -cx</span> <span class="dv">50</span><span class="ot"> -cy</span> <span class="dv">50</span><span class="ot"> -r</span> <span class="dv">45</span><span class="ot"> -stroke</span> black \</span>
+<span id="cb14-4"><a aria-hidden="true" href="#cb14-4" tabindex="-1"></a>   -stroke-<span class="ot">width</span> <span class="dv">2</span><span class="ot"> -fill</span> green</span>
+<span id="cb14-5"><a aria-hidden="true" href="#cb14-5" tabindex="-1"></a>tsvg <span class="kw">text</span><span class="ot"> -x</span> <span class="dv">29</span><span class="ot"> -y</span> <span class="dv">45</span> Hello</span>
+<span id="cb14-6"><a aria-hidden="true" href="#cb14-6" tabindex="-1"></a>tsvg <span class="kw">text</span><span class="ot"> -x</span> <span class="dv">27</span><span class="ot"> -y</span> <span class="dv">65</span> World!</span>
+<span id="cb14-7"><a aria-hidden="true" href="#cb14-7" tabindex="-1"></a>tsvg write hw.svg</span></code></pre></div>
+<p><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiIHN0YW5kYWxvbmU9InllcyI/PgogICAgPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiPgoKPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0iZ3JlZW4iIC8+Cgo8dGV4dCB4PSIyOSIgeT0iNDUiPgpIZWxsbwo8L3RleHQ+Cgo8dGV4dCB4PSIyNyIgeT0iNjUiPgpXb3JsZCEKPC90ZXh0PgoKPC9zdmc+Cg=="/><!--URL:hw.svg--></p>
+<p>If <a href="https://cairosvg.org/">cairosvg</a> is installed as well png files can be created. Here an other example which creates a barplot and saves it as a PNG:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1" tabindex="-1"></a>tsvg <span class="kw">set</span> code <span class="st">""</span></span>
+<span id="cb15-2"><a aria-hidden="true" href="#cb15-2" tabindex="-1"></a>tsvg <span class="kw">set</span> <span class="ot">width</span> <span class="dv">400</span></span>
+<span id="cb15-3"><a aria-hidden="true" href="#cb15-3" tabindex="-1"></a>tsvg <span class="kw">set</span> <span class="ot">height</span> <span class="dv">400</span></span>
+<span id="cb15-4"><a aria-hidden="true" href="#cb15-4" tabindex="-1"></a>tsvg rect<span class="ot"> -x</span> <span class="dv">10</span><span class="ot"> -y</span> <span class="dv">10</span><span class="ot"> -width</span> <span class="dv">380</span><span class="ot"> -height</span> <span class="dv">380</span><span class="ot"> -fill</span> #eeeee</span>
+<span id="cb15-5"><a aria-hidden="true" href="#cb15-5" tabindex="-1"></a>tsvg rect<span class="ot"> -x</span> <span class="dv">20</span><span class="ot"> -y</span> <span class="dv">20</span><span class="ot"> -width</span> <span class="dv">360</span><span class="ot"> -height</span> <span class="dv">360</span><span class="ot"> -fill</span> #eeeee \</span>
+<span id="cb15-6"><a aria-hidden="true" href="#cb15-6" tabindex="-1"></a>   -<span class="kw">style</span> <span class="st">"stroke-width: 1px;stroke:black;"</span></span>
+<span id="cb15-7"><a aria-hidden="true" href="#cb15-7" tabindex="-1"></a><span class="kw">set</span> col <span class="kw">[list</span> #ffaaaa #ffccaa #ffaacc #aaffff<span class="kw">]</span></span>
+<span id="cb15-8"><a aria-hidden="true" href="#cb15-8" tabindex="-1"></a><span class="kw">set</span> labels <span class="kw">[list</span> A B C D<span class="kw">]</span></span>
+<span id="cb15-9"><a aria-hidden="true" href="#cb15-9" tabindex="-1"></a><span class="kw">foreach</span> i <span class="kw">[list</span>  <span class="dv">0</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">3</span><span class="kw">]</span> <span class="kw">{</span></span>
+<span id="cb15-10"><a aria-hidden="true" href="#cb15-10" tabindex="-1"></a>    <span class="kw">set</span> val <span class="kw">[expr</span> <span class="kw">{</span>round(rand()*<span class="dv">300</span>)<span class="kw">}]</span></span>
+<span id="cb15-11"><a aria-hidden="true" href="#cb15-11" tabindex="-1"></a>    tsvg rect<span class="ot"> -x</span> <span class="kw">[expr</span> <span class="kw">{</span>(<span class="dt">$i</span>+<span class="dv">1</span>)*<span class="dv">70</span><span class="kw">}]</span><span class="ot"> -y</span> <span class="kw">[expr</span> <span class="kw">{</span><span class="dv">340</span>-<span class="dt">$val</span><span class="kw">}]</span> \</span>
+<span id="cb15-12"><a aria-hidden="true" href="#cb15-12" tabindex="-1"></a>          -<span class="ot">width</span> <span class="dv">50</span><span class="ot"> -height</span> <span class="dt">$val</span> \</span>
+<span id="cb15-13"><a aria-hidden="true" href="#cb15-13" tabindex="-1"></a>          -fill <span class="kw">[lindex</span> <span class="dt">$col</span> <span class="dt">$i</span><span class="kw">]</span></span>
+<span id="cb15-14"><a aria-hidden="true" href="#cb15-14" tabindex="-1"></a>    tsvg <span class="kw">text</span><span class="ot"> -x</span> <span class="kw">[expr</span> <span class="kw">{</span>(<span class="dt">$i</span>+<span class="dv">1</span>)*<span class="dv">70</span>+<span class="dv">20</span><span class="kw">}]</span><span class="ot"> -y</span> <span class="dv">370</span> <span class="kw">[lindex</span> <span class="dt">$labels</span> <span class="dt">$i</span><span class="kw">]</span></span>
+<span id="cb15-15"><a aria-hidden="true" href="#cb15-15" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb15-16"><a aria-hidden="true" href="#cb15-16" tabindex="-1"></a>tsvg write barplot.png</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAABmJLR0QA/wD/AP+gvaeTAAALc0lEQVR4nO3dS4iVBR/H8X8vkhZmOTlYiXYPSkIxhMqpSbILmFBJYBuRoSI3EhiICVEEXaCgC7NpUlxUjhiGdkGpFsqxjYVtZtFCIXBhEDPN2M2p9F28JL1deH1/HefR8fOBA8qRhx/j4XzPc25TBQAAAAAAAAAAAAAAAAAAAL931on+w8HBwWMncwgAp4aOjo4TasO/TvYQAMYnAQEgIiAARAQEgIiAABAREAAiAgJAREAAiExo58FarVbt2bOnnYcEoE0WLFhQXV1dbTteW89A9uzZU61Wq52HBKANTsYD/LaegVRVdXV11Zo1a9p9WABOMV4DASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIhOaHgDjwdSPDzQ9oS2GFl3R9AROI85AAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABCZ0PQATi9TD3zc9IS2GLpiUdMT4LTnDASAiDOQvzH143HySHuRR9rAyeEMBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIgICQERAAIgICAARAQEgIiAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEJnQ9ABg/Pp46tSmJ7TFoqGhpieckpyBABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACI+DLFvzG0aFHTE05JQ1f4ufyVoUVXND3hlORLCMc3ZyAARAQEgIiAABAREAAiAgJAREAAiAgIABEBASAiIABEBASAiIAAEBEQACICAkBEQACICAgAEQEBICIgAEQEpCGrVq2qjo6OWrduXdNTGtfX11cdHR3HL9OmTavZs2fXQw89VAcOHGh6XuM+//zz6unpqWuvvbamT59eV111VT3wwAP13nvvNT2tEX+8vcyYMaPmzp1by5cvr+3bt9exY8eannjG8CttG/DTTz/Vtm3bqqrqnXfeqaeffromTPBf8dJLL9Ull1xSv/76a+3fv79ee+212rt3b+3Zs6cmT57c9LxG9PX11dq1a+uaa66plStX1qxZs2pkZKR27dpVPT099eabb9Zdd93V9MxG/HZ7GR0drYMHD9aOHTtqxYoVtXDhwnr77bdr4sSJTU8c99xrNeD999+vw4cP1x133FEfffRRffLJJ2fsncDvdXV11dVXX33879OnT69HH320Pvvss7rtttuaG9aQvXv31tq1a2vx4sW1fv36/3qQsXz58hoYGKiff/65wYXN+uPtZeXKlbVhw4Z6/PHH66mnnqrnnnuuwXVnBk9hNWDTpk11wQUXVG9vb02aNKn6+/ubnnRKmjp1alXVGXsn+eqrr9bZZ59dL7/88l+eoc6ePbvmzp3bwLJTV09PT3V3d9fGjRvrxx9/bHrOuCcgY+zQoUO1a9euuu+++2ratGm1ePHi2rFjR3377bdNT2vcDz/8UN9//32NjIzUvn376vnnn6+LL764FixY0PS0Ruzevbtuvvnm4yHlxNx999115MiR2rdvX9NTxj0BGWObN2+uo0eP1rJly6qq6sEHH6wjR47Uu+++2/Cy5i1cuLBmzpxZl112Wd1+++01ODhYW7ZsqXPPPbfpaWNuZGSkDh8+XJdeemnTU047M2fOrKqqr7/+uuEl45+AjLH+/v668sora/78+VVV1d3dXRdddJGnsarq9ddfrw8//LA++OCDeuONN6qzs7OWLl3qnVj8X44ePVpVVWeddVbDS8Y/ARlD+/btqy+//LLuueeeGh4eruHh4fruu+9qyZIltXfv3tq/f3/TExs1Z86cuvHGG+umm26q+++/v7Zs2VLDw8P14osvNj1tzE2ZMqXOO++8+uqrr5qecto5ePBgVf3nTRicXAIyhjZt2lRVVa+88kpdfvnlxy99fX1VVc5C/uD888+vGTNm1MDAQNNTGnHrrbfWp59+WkNDQ01POa3s3LmzJk6c6A0GY0BAxsjo6Ght3bq1brjhhtq+ffufLtdff31t3rzZh6B+55tvvqmDBw/WhRde2PSURqxatapGR0frscceq19++eVP1w8MDNQXX3zRwLJT14YNG45/Ruacc85pes6453MgY2Tnzp01ODhYzzzzTHV1df3p+hUrVtTq1aur1WrVLbfc0sDC5rVarTpw4EAdO3asDh06VOvXr6/R0dF6+OGHm57WiPnz59ezzz5bTzzxRHV3d9eyZctq1qxZNTw8XLt3765t27bVW2+91fTMxvx2e/ntg4Q7d+6s3bt318KFC+vJJ59set4ZQUDGSH9/f02ePLnuvffev7x+6dKltW7duurv7z9jA7J69erjf+7s7Kzrrruutm7dWt3d3Q2uatYjjzxS8+bNq97e3urt7a3BwcGaMmVKzZs3rzZu3Fh33nln0xMb89vtZdKkSdXZ2Vlz5sypjRs31pIlS7yAPkZO+Kc8ODj4P59beeGFF6qqas2aNf9gEgDt9v/cP3d0dJxQG7wGAkBEQACICAgAEQEBICIgAEQEBICIgAAQERAAIm3/JHqr1Wr3IQH4h1qt1l9+jdI/0daAnKm/OQ7gVNfV1dX2++i2fpUJAKc/X2UCwEklIABEBASAiIAAEBEQACICAkBEQACICAgAAAAAAAAAAAAAAAAAAAAA0Ab/Bj/Z3QU31z2tAAAAAElFTkSuQmCC"/><!--URL:barplot.png--></p>
+<p>PDF and PNG output might be prefered if your final document is a PDF document created via LaTeX.</p>
+<p>For more information about the tsvg package you might consult the <a href="http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/lib/tsvg/tsvg.html">tsvg package documentation</a>.</p>
+<h2 id="include-files">INCLUDE FILES</h2>
+<p>An other utility function is the include function where e can include other files, for instance some which contain as well Markdown markup. This can be used for instance to include common header and footers in your documents. Below an example we create an external file and the include this file afterwards, we would like to have links to all filters here in the document (chunk options - <code>{.tcl results="asis"})</code>.</p>
+<div class="sourceCode" data-results="asis" id="cb16"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb16-1"><a aria-hidden="true" href="#cb16-1" tabindex="-1"></a><span class="kw">set</span> md <span class="ch">\n</span></span>
+<span id="cb16-2"><a aria-hidden="true" href="#cb16-2" tabindex="-1"></a><span class="kw">foreach</span> html <span class="kw">[lsort</span> <span class="kw">[glob</span> filter*.html<span class="kw">]]</span> <span class="kw">{</span></span>
+<span id="cb16-3"><a aria-hidden="true" href="#cb16-3" tabindex="-1"></a>    <span class="kw">append</span> md <span class="st">"* </span><span class="ch">\[</span><span class="st">[regsub {.html} </span><span class="dt">$</span><span class="st">html {}]</span><span class="ch">\]</span><span class="st">(</span><span class="dt">$</span><span class="st">html)</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb16-4"><a aria-hidden="true" href="#cb16-4" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb16-5"><a aria-hidden="true" href="#cb16-5" tabindex="-1"></a><span class="kw">append</span> md <span class="ch">\n</span></span>
+<span id="cb16-6"><a aria-hidden="true" href="#cb16-6" tabindex="-1"></a><span class="kw">set</span> out <span class="kw">[open</span> links.md w <span class="dv">0600</span><span class="kw">]</span></span>
+<span id="cb16-7"><a aria-hidden="true" href="#cb16-7" tabindex="-1"></a><span class="kw">puts</span> <span class="dt">$out</span> <span class="dt">$md</span></span>
+<span id="cb16-8"><a aria-hidden="true" href="#cb16-8" tabindex="-1"></a><span class="kw">close</span> <span class="dt">$out</span></span>
+<span id="cb16-9"><a aria-hidden="true" href="#cb16-9" tabindex="-1"></a>include links.md</span></code></pre></div>
+<ul>
+<li><a href="filter-abc.html">filter-abc</a></li>
+<li><a href="filter-cmd.html">filter-cmd</a></li>
+<li><a href="filter-dot.html">filter-dot</a></li>
+<li><a href="filter-eqn.html">filter-eqn</a></li>
+<li><a href="filter-mmd.html">filter-mmd</a></li>
+<li><a href="filter-mtex.html">filter-mtex</a></li>
+<li><a href="filter-pic.html">filter-pic</a></li>
+<li><a href="filter-pik.html">filter-pik</a></li>
+<li><a href="filter-pipe.html">filter-pipe</a></li>
+<li><a href="filter-puml.html">filter-puml</a></li>
+<li><a href="filter-rplot.html">filter-rplot</a></li>
+<li><a href="filter-sqlite.html">filter-sqlite</a></li>
+<li><a href="filter-tcl.html">filter-tcl</a></li>
+<li><a href="filter-tcrd.html">filter-tcrd</a></li>
+<li><a href="filter-tdot.html">filter-tdot</a></li>
+<li><a href="filter-tsvg.html">filter-tsvg</a></li>
+</ul>
+<p>This allows in a nice way to create the same links for all documentation files such as these which are on top of this document visible.</p>
+<h2 id="inline-code">INLINE CODE</h2>
+<p>Short statements can be as well directy embedded into the main text. Here an example:</p>
+<pre><code>The current time of document creation is : `tcl clock format [clock seconds]`.</code></pre>
+<p>Here the output:</p>
+<p>The current time of document creation is : Sat Feb 05 20:52:11 CET 2022.</p>
+<h2 id="todo">TODO:</h2>
+<ul>
+<li>more flexible list2mdtab function</li>
+<li>res bug - fixed (vars are now in namespace filter)</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode tcl"><code class="sourceCode tcl"><span id="cb18-1"><a aria-hidden="true" href="#cb18-1" tabindex="-1"></a><span class="kw">set</span> <span class="ot">vars</span> <span class="kw">[lsort</span> <span class="kw">[info</span> <span class="ot">vars</span> ::*<span class="kw">]]</span></span>
+<span id="cb18-2"><a aria-hidden="true" href="#cb18-2" tabindex="-1"></a><span class="kw">set</span> <span class="ot">vars</span> </span></code></pre></div>
+<pre class="tclout"><code>::auto_execs ::auto_index ::auto_path ::cell ::col ::env ::errorCode ::errorInfo ::html ::i ::l ::labels ::md ::out ::r ::row ::tcl_interactive ::tcl_library ::tcl_patchLevel ::tcl_pkgPath ::tcl_platform ::tcl_version ::val ::x</code></pre>
+<h2 id="see-also">SEE ALSO</h2>
+<ul>
+<li><a href="../Readme.html">Readme</a> - more background</li>
+<li><a href="../pandoc-tcl-filter.html">pandoc-tcl-filter</a> - the main filter engine</li>
+<li><a href="filter-pipe.html">filter-pipe</a> - Embedding Python, R and Octave code in a similar way like Tcl in the Tcl filter</li>
+</ul>
+<h2 id="author">AUTHOR</h2>
+<ul>
+<li>Dr. Detlef Groth, Schwielowsee, Germany</li>
+</ul>
+<h2 id="license">LICENSE</h2>
+<p>MIT - License</p>
+</body>
+</html><!--Generated by HTMLArk 2022-02-05 20:52:12.132051. Original URL temp.html-->

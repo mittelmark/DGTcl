@@ -7,9 +7,11 @@ filter-docs: filter-abc.html \
  	 filter-mtex.html \
 	 filter-pic.html \
 	 filter-pik.html \
- 	 filter-puml.html \
+	 filter-pipe.html \
+  	 filter-puml.html \
  	 filter-rplot.html \
 	 filter-sqlite.html \
+	 filter-tcl.html \
 	 filter-tcrd.html \
 	 filter-tdot.html \
 	 filter-tsvg.html
