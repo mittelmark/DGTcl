@@ -96,6 +96,8 @@
         border-collapse: collapse;
         cell-padding: 0px;
         cell-spacing: 0px;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
     }
     tr.header {
         background: #dddddd;
@@ -105,6 +107,6 @@
         background: #ddeeff;
     }
     td, th {
-        padding: 3px;
+        padding: 8px;
         text-align: center;
     }
