@@ -1,9 +1,9 @@
 #' ---
 #' title: "filter-mtex.tcl documentation"
 #' author: "Detlef Groth, Caputh-Schwielowsee, Germany"
-#' date: 2021-12-12
-#' dot:
-#'     imagepath: nfigures
+#' date: 2022-0122
+#' mtex:
+#'     imagepath: images
 #'     ext: png
 #' ---
 # a simple pandoc filter using Tcl the script pandoc-tcl-filter.tcl 
@@ -19,45 +19,57 @@
 #' The conversion of the Markdown documents via Pandoc should be done as follows:
 #' 
 #' ```
-#' pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html
+#' pandoc input.md --filter pandoc-tcl-filter.tapp -s -o output.html
 #' ```
 #' 
 #' Alternatively since version 0.4.0 the filter comes as well as a stand alone 
-#' applicaion and can be used like this:
+#' application and can be used like this:
 #' 
 #' ```
 #' pandoc-tcl-filter.tapp input.md output.html -s --css mini.css
 #' ```
 #' 
+#' This can be used as well do extract Markdown code behind `#'' comments like in the source of this
+#' file - filter-mtex.tcl itself. The document can be processed like this:
 #' 
+#' ```
+#' pandoc-tcl-filter.tapp filter-mtex.tcl filter-mtex.html -s --css mini.css
+#' ```
+#'
 #' All arguments that pandoc accepts can be added after the output file.
 #' 
 #' The file `filter-mtex.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
-#' If code blocks with the `.mtex` marker are found, the contents in the code block is processed via one of the Graphviz tools.
+#' If code blocks with the `{.mtex}` marker are found, the contents 
+#' in the code block is processed via latex or if other latex engines are given, for instance xelatex using this
+#' latex engine. For pstricks related packages the option
 #' 
 #' The following options can be given via code chunks or in the YAML header.
 #' 
 #' > - eval - should the code in the code block be evaluated, default: true
 #'   - ext - file file extension, can be svg (needs texlive-dvisvgm - [https://dvisvgm.de/](https://dvisvgm.de/) or pdf2svg - [https://github.com/dawbarton/pdf2svg](https://github.com/dawbarton/pdf2svg)), png, pdf, default: png
 #'   - fig - should a figure be created, default: true
-#'   - header - file with LaTeX code to be included in the document preamble, default: null
+#'   - header - file with LaTeX code to be included in the document preamble, useful for embed more extensive package configurations and macros, default: null
 #'   - imagepath - output imagepath, default: images
 #'   - include - should the created image be automatically included, default: true
-#'   - packages - space separated list of packages which should be included in the LaTeX preamble if null, just amsmath and xcolor will be loaded, default: null
+#'   - latex - which latex engine should be used, latex (using dbipng, divisvgm or dvipdfm), xelatex (convert, pdf2svg) and and dvips (latex, dvips, ps2pdf, pdf2svg or convert) default: latex
+#'   - packages - space separated list of packages which should be included in the LaTeX preamble if null, 
+#'     just amsmath and xcolor will be loaded, default: null
 #'   - resize - if latex engine pdflatex or latex the percent to resize the final png image, default: 100%
 #'   - results - should the output of the command line application been shown, should be show or hide, default: hide
 #' 
-#' The  options results, eval, fif should be normally not used, they are here just for 
+#' The  options *results* and *eval* should be normally not used, they are here just for 
 #' compatibility reasons with the other filters.
-#' 
-#' To change the defaults the YAML header can be used. Here an example to change the 
-#' default image output path to nfigures and the filename to pdf and to use the chemformula LaTeX package
+#'
+#' To change the code chunk defaults for a complete document, 
+#' the YAML header can be used. Here an example to change the 
+#' default image output path to *nfigures* and the filename extension
+#' to *pdf* and to use the *chemformula* LaTeX package:
 #' 
 #' ```
 #'  ----
 #'  title: "filter-mtex.tcl documentation"
 #'  author: "Detlef Groth, Caputh-Schwielowsee, Germany"
-#'  date: 2022-01-06
+#'  date: 2022-01-22
 #'  mtex:
 #'      imagepath: nfigures
 #'      packages: chemformula
@@ -66,11 +78,21 @@
 #'  ----
 #' ```
 #'
-#' ## Installation
+#' ## Installation / Requirements
 #' 
-#' The filter needs an existing LaTeX installation and the LaTeX packages standalone and preview.
+#' The filter needs an existing LaTeX installation and the LaTeX packages *standalone* and *preview*.
+#' 
+#' In the background quite a set of different tools is used such as convert (conversion to png if first output is pdf), `pdf2svg` or if LaTeX engine is latex `dvi2svgm` for conversion into svg. Here a table with the require tools:
+#' 
+#' > | latex         | png           | pdf     | svg     |
+#' > | ------------- | ------------- | ------- | ------- |
+#' > | latex         | dvipng        | dvipdfm | dvisvgm |
+#' > | dvips         | convert       | ps2pdf  | pdf2svg |
+#' > | xelatex/pdflatex | convert    | -       | pdf2svg |
 #' 
 #' ## Examples
+#' 
+#' LaTeX Math
 #' 
 #' ```{.mtex}
 #' $ E=mc^2 $
@@ -145,6 +167,8 @@
 #' $$
 #' ```
 #'
+#' ### Chemical formulas
+#' 
 #' It is as well possible to use other LaTeX packages, here an example to use the
 #' *chemformula* package for displaying chemical equations.
 #' 
@@ -156,6 +180,8 @@
 #' }
 #' \end{align*}
 #' ```
+#' 
+#' ### Games and Hobby
 #' 
 #' Now demonstration of some game packages.
 #'
@@ -200,6 +226,8 @@
 #' |9| |3| | | |6| |4|.
 #' \end{sudoku}
 #' ```
+#' 
+#' ### Tikz package code
 #' 
 #' Let's now finally add examples using the famous *tikz* package or packages build on top of the *tkiz*
 #' package.
@@ -287,7 +315,7 @@
 #' include tikz-tree.tex
 #' ```
 #' 
-#' And now as well a calendar:
+#' And now as well a *tikz* based calendar (`{.mtex packages="[calendar]tikz" latex="pdflatex"}`):
 #' 
 #' ```{.mtex packages="[calendar]tikz" latex="pdflatex"}
 #' \tikz 
@@ -299,7 +327,7 @@
 #'     if (equals=2022-02-14) [blue];
 #' ```
 #' 
-#' The *tikz* library supports as well programming with LaTeX code:
+#' The *tikz* library supports as well programming with LaTeX code `({.mtex packages="tikz" latex="pdflatex"}`):
 #' 
 #' ```{.mtex packages="tikz" latex="pdflatex"}
 #' \scalebox{1.5}{
@@ -328,7 +356,29 @@
 #'    child[grow=60] {node[concept] {child 1}};
 #' ```
 #' 
-#' For more possibilites to use tikz graphics you should have a look at the *tikz* and at the *pgf* manual.
+#' There is as well the possibilty to create handwrite-like charts. Here an example (`{.mtex latex="xelatex" ext="svg" header="xkcd.tex"}`):
+#' 
+#' ```{.mtex latex="xelatex" ext="svg" header="xkcd.tex"}
+#'   \begin{tikzpicture}[xscale=4, yscale=0.05]
+#'     \node at (-0.65,100) {100};
+#'     \node at (-0.65, 50) { 50};
+#'     \node at (-0.65,  0) {  0};
+#'     \node at (0.5,115) {\large Claims of supernatural powers};
+#'     \begin{scope}[very thick, every path/.style={xkcd}]
+#'       \fill[fill=pltblue] (0.875,1) -- ++(0,99) -- ++(0.25,0) -- +(0,-99) -- cycle;
+#'       \draw (0.875,1) -- ++(0,99) -- ++(0.25,0) -- +(0,-99);
+#'       \draw[ultra thick] (0,3) -- (0,0) node[below, text width=3.4cm, align=center] {confirmed by\\ experiment};
+#'       \draw[ultra thick] (1,3) -- (1,0) node[below, text width=3cm, align=center] {refuted by\\ experiment};
+#'       \draw (-0.54,0) -- (1.5,0);
+#'       \draw (-0.5,0) -- (-0.5,110);
+#'       \draw (-0.54,100) -- (-0.46,100);
+#'       \draw (-0.54,50)  -- (-0.46,50);
+#'     \end{scope}
+#'   \end{tikzpicture}
+#' ```
+#' 
+#' For more possibilities to use tikz graphics you should have a look at 
+#' the *tikz* and at the *pgf* manual.
 #' 
 #' ## See also:
 #' 
@@ -430,7 +480,7 @@ set codeend {
     #exec -ignorestderr latex "\\def\\formula{$cnt}\\input{$tempfile.tex}" > /dev/null
     set res ""
     if {[dict get $dict latex] eq "latex"} {
-        if {[catch { set res [exec -ignorestderr latex $tempfile.tex]   } ]} {
+        if {[catch { set res [exec -ignorestderr latex -halt-on-error $tempfile.tex]   } ]} {
             append res "\n$::errorInfo"
             cd $owd
             return [list $res ""]
@@ -449,15 +499,23 @@ set codeend {
             exec -ignorestderr dvipdfm $tempfile.dvi -o $fname.pdf > /dev/null 2> /dev/null
         }
     } elseif {[dict get $dict latex] eq "dvips"} {
-        if {[catch { set res [exec -ignorestderr latex $tempfile.tex]   } ]} {
+        if {[catch { set res [exec -ignorestderr latex -halt-on-error $tempfile.tex]   } ]} {
             append res "\n$::errorInfo"
             cd $owd
             return [list $res ""]
         } else {
             set res ""
         }
-        exec -ignorestderr dvips $tempfile.dvi -o $tempfile.ps > /dev/null 2> /dev/null
-        exec -ignorestderr ps2pdf $tempfile.ps $tempfile.pdf > /dev/null 2> /dev/null        
+        if {[catch { 
+             exec -ignorestderr dvips -q $tempfile.dvi -o $tempfile.ps > /dev/null 2> /dev/null
+             exec -ignorestderr ps2pdf  -dALLOWPSTRANSPARENCY $tempfile.ps $tempfile.pdf > /dev/null 2> /dev/null        
+             }]} {
+                append res "\n$::errorInfo"
+                cd $owd
+                return [list $res ""]
+        } else {
+            set res ""
+        }
         if {[dict get $dict ext] eq "png"} {
             exec -ignorestderr convert $tempfile.pdf -trim -colorspace RGB -density [dict get $dict density] -resize [dict get $dict resize] $fname.png  > /dev/null 2> /dev/null
         } elseif {[dict get $dict ext] eq "svg"} {
@@ -471,7 +529,7 @@ set codeend {
         }
         
     } else {
-        if {[catch { set res [exec -ignorestderr [dict get $dict latex] $tempfile.tex]   } ]} {
+        if {[catch { set res [exec -ignorestderr [dict get $dict latex] -halt-on-error $tempfile.tex]   } ]} {
             append res "\n$::errorInfo"
             cd $owd
             return [list $res ""]

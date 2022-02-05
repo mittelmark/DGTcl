@@ -1,7 +1,7 @@
 #' ---
 #' title: "filter-cmd.tcl documentation"
 #' author: "Detlef Groth, Caputh-Schwielowsee, Germany"
-#' date: 2021-12-27
+#' date: 2022-01-15
 #' cmd:
 #'     results: show
 #' ---
@@ -46,20 +46,32 @@
 #' 
 #' ### Line by line commands
 #' 
-#' Here an example for executing the `ls` command on a Unix system for all Tcl files in the current folder (chunk options: `{.cmd results="show"}`).
+#' Here an example for executing the `ls` command on a Unix system for all Tcl files in the current folder:.
+#' 
+#' ```
+#'     ```{.cmd results="show"}
+#'     ls -l *.tcl
+#'     ```
+#' ```
+#' 
+#' Please remove the spaces at the beginning, they are just used to avoid the 
+#' the code evaluation here. Code chunk options will be given in parenthesis like this  (chunk options: `{.cmd results="show"}`) to explain them if necessary. Below now the output of the code block above:
 #' 
 #' ```{.cmd results="show"}
 #' ls -l *.tcl
 #' ```
 #' 
-#' Here an example to execute the sqlite3 command line application (chunk options: `{.cmd results="asis"}`).
+#' Here an example to execute the sqlite3 command line application with the 
+#' option of Markdown output, using the chunk option `results="asis"` 
+#' we can directly embed the result of the created Markdown table 
+#' (chunk options: `{.cmd results="asis"}`).
 #' 
 #' ```{.cmd results="asis"}
 #' sqlite3 -markdown uni.sqlite "select * from Student limit 5"
 #' ```
 #' 
 #' Let's now demonstrate a more extended example where we first create a 
-#' script which can createimage buttons. The script uses PlantUML and looks like this:
+#' script which can create image buttons. The script uses [PlantUML](https://plantuml.com)  and looks like this:
 #' 
 #' 
 #' ```
@@ -83,7 +95,7 @@
 #' mv out/temp.png $2
 #' ```
 #' 
-#' Let's save this script as an executbable shell script hwbutton.sh in 
+#' Let's save this script as an executable shell script hwbutton.sh in 
 #' a directory beloning to our PATH. We can thereafter create a few image buttons
 #' in one go (`{.cmd results="hide"}`):
 #' 
@@ -103,11 +115,18 @@
 #' 
 #' ![](hw-bob.png) ![](hw-alice.png) ![](hw-emc2.png)
 #' 
+#' BTW: The application *plantuml* is a shell script which looks like this:
+#' 
+#' ```
+#' #!/bin/sh
+#' java -jar /home/username/.local/bin/plantuml-1.2021.16.jar $@
+#' ```
+#'  
 #' ## Standalone scripts
 #' 
 #' ### Python scripts
 #' 
-#' The chunk option *file* allows as as well to embed code for other programming languages and interprete them. Here an example to execute a Python script.
+#' The chunk option *file* allows us as well to embed code for other programming languages and interprete them. Here an example to execute a Python script.
 #' 
 #' ```
 #'      ```{.cmd file="sample.py"}
@@ -136,7 +155,7 @@
 #'     ```{.cmd file="sample.m"}
 #'     #!/usr/bin/env octave
 #'     x = -10:0.1:10;
-#'     aux=figure();
+#'     aux=figure('visible','off');
 #'     plot (x, sin (x));
 #'     saveas(aux, 'octave.png', 'png');
 #'     ```
@@ -147,7 +166,7 @@
 #' ```{.cmd file="sample.m"}
 #' #!/usr/bin/env octave
 #' x = -10:0.1:10;
-#' aux=figure();
+#' aux=figure('visible','off');
 #' plot (x, sin (x));
 #' saveas(aux, 'octave.png', 'png');
 #' ```
@@ -453,16 +472,15 @@
 #' 
 #' ## TODO:
 #' 
-#' * compile option to embed C/C++/Java etc code
-#' * own Python filter with terminal mode and line by line interpretation
-#' * lilypond required version statement into liliscript.sh script
+#' * compile option to embed/Java etc code
+#' * own Python filter with terminal mode and line by line interpretation (see [filter-pipe](filter-pipe.html)
 #' 
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [Tcl filter](../pandoc-tcl-filter.html)
 #' * [dot filter](filter-dot.html)
 #' * [Rplot filter](filter-rplot.html)
-#' * [Tcl filter](../pandoc-tcl-filter.html)
 #' * [Abc filter](filter-abc.html)
 #' 
 

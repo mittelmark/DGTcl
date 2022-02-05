@@ -59,10 +59,17 @@
 #' 
 #' ```{.pic}
 #' circle "A"; line; box "B"
-#' ```
+#' circle "A"; line; box "B 2"
+#' move ; move ; move
+#' {arrow down; move; "S" }
+#' {arrow up; move; "N" }
+#' {arrow left; move; "W" }
+#' {arrow right; move; "E" }
+#' ``` 
 #' 
 #' ## See also:
 #' 
+#' * [Unix Text Processing](https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter10.html)
 #' * [pandoc-tcl-filter Readme](../Readme.html)
 #' 
 

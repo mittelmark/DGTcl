@@ -1,6 +1,10 @@
 #!/usr/bin/env tclsh
+# pandoc-tcl-filter - standalone application and pandoc filter
+#                     for literate programming
+# Author: Detlef Groth, Schwielowsee, Germany
+# Version: 0.7.0 - 2022-02-XX
 
-package provide pandoc 0.6.0
+package provide pandoc 0.7.0
 
 if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
     puts "[package present pandoc]"
@@ -26,6 +30,7 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "       - ```{.mtex}   LaTeX equations```"        
     puts "       - ```{.pic}    PIC diagram code```"        
     puts "       - ```{.pik}    Pikchr diagram code```"
+    puts "       - ```{.pipe}   Embed Python, R or Octave code```" 
     puts "       - ```{.puml}   PlantUML diagram code```"    
     puts "       - ```{.rplot}  R plot code```"    
     puts "       - ```{.sqlite} SQLite3 code code```\n"
@@ -42,6 +47,8 @@ if {[llength $argv] > 0 && [lsearch -regex $argv -h] >= 0} {
     puts "                    $argv0 --help               - display this help page"
     puts "                    $argv0 --version            - display the version"
     puts "                    $argv0 infile --tangle .tcl - extract all code from .tcl chunks"
+    puts "\nUsage (GUI)      : $argv0 --gui \[infile]"
+    puts "                     supported infiles: abc, dot, eqn, mmd, mtex, pic, pik, puml, rplot, tdot, tsvg"
     puts "Example: "
     puts "         ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css"
     puts "             will extract the documentation from itself and create a HTML file executing all filters available"
@@ -109,6 +116,10 @@ set css {
         text-align: center;
         font-size: 120%;
     }
+    h2.author, h2.date {
+        text-align: center;
+        font-size: 110%;
+    }
     a {
         color: #0645ad;
         text-decoration: none;
@@ -135,6 +146,12 @@ set css {
         color: #000;
         font-family: Monaco, 'courier new', monospace;
         font-size: 90%; 
+    }
+    pre code.tclinn {
+        color: #ff2222;
+    }
+    pre code.tclout {
+        color: #3366ff;
     }
     code.r {
         color: #770000;
@@ -176,14 +193,235 @@ set css {
         padding: 10px;
     }
 }    
+# some helper functions
+# some generic helper functions
+
+proc luniq {L} {
+    # removes duplicates without sorting the input list
+    set t {}
+    foreach i $L {if {[lsearch -exact $t $i]==-1} {lappend t $i}}
+    return $t
+} 
+
+# allow loading Tcl packages and filters
+set appdir [file dirname [info script]]
+if {[file exists  [file join $appdir lib]]} {
+    lappend auto_path [file normalize [file join $appdir lib]]
+    package require tsvg
+}
+
+interp create mdi
+
+mdi eval "set auto_path \[list [luniq $auto_path]\]"
+
+catch {
+    # if available load filters
+    package require tclfilters
+}
+
+# load other tcl based filters
+foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
+    catch {
+        source $file
+    }
+}
+
+proc debug {jsonData} {
+    puts [::rl_json::json keys $jsonData]
+}
+
+proc lineFilter {argv} {
+    set args [split $argv " "]
+    set infile [lindex $args 0]
+    set outfile [lindex $args 1]
+    set mode md
+    if {![regexp {.+\.[a-zA-Z]*md$} $outfile] && ![regexp -nocase {.+\.html} $outfile]} {
+        puts "Error: currently only conversion from Markdown to Markdown or to HTML is possible!"
+        exit 0
+    }
+    if {[regexp -nocase {.+\.html} $outfile]} {
+        set mode html
+        set outfile [regsub {\.html} $outfile "-out.md"]
+    }
+    if {![file exists $infile]} {
+        puts  "Error: $infile does not exists"
+        exit 0
+    }
+    if [catch {open $infile r} infh] {
+        puts stderr "Cannot open $infile: $infh"
+        exit
+    } else {
+        set out [open $outfile w 0600]
+        set i 0
+        set n 0
+        set flag false
+        set yamlflag false
+        set yamltext ""
+        set filt "xxx"
+        set ind ""
+        set ddef [dict create echo true results show eval true] 
+        set yamldict [dict create]
+        set pre false
+        while {[gets $infh line] >= 0} {
+            incr n
+            # TODO: simple YAML parsing
+            if {$n < 5 && !$yamlflag && [regexp {^---} $line]} {
+                set yamlflag true
+            } elseif {$yamlflag && [regexp {^---} $line]} {
+                set yamldict [yaml::yaml2dict $yamltext]
+                set yamlflag false
+                set yamltext ""
+            } elseif {$yamlflag} {
+                append yamltext "$line\n"
+            }
+            # TODO: indentation parsing "> ```"
+            if {[regexp {^>? ?\s{0,2}```} $line]} {
+                if {$pre} {
+                    set pre false
+                } else {
+                    set pre true
+                }
+            }
+            if {[regexp {^>? ?\s{0,2}```\{\.} $line]} {
+                set dchunk [dict create]    
+                set dchunk [dict merge $ddef $dchunk]                    
+                set ind ""
+                if {[regexp {^> } $line]} {
+                    set ind "> "
+                }
+                regexp {```\{\.([a-zA-Z0-9]+)\s*(.*).*\}.*} $line -> filt options    
+                if {[dict exists $yamldict $filt]} {
+                    set dchunk [dict merge $dchunk [dict get $yamldict $filt]]
+                }
+                foreach {op} [split $options " "] {
+                    foreach {key val} [split $op "="] {
+                        set val [regsub -all {"} $val ""] ;#"
+                        dict set dchunk $key $val         
+                    }
+                }
+                set flag true
+                set cont ""
+                
+            } elseif {$flag && [regexp {^>? ?\s{0,2}```} $line]} {
+                set flag false
+                #puts $cont
+                if {[info procs filter-$filt] ne ""} {
+                    puts "processing chunk filter[incr i] $filt $options"
+
+                    set res [filter-$filt $cont $dchunk]
+                    if {[dict get $dchunk echo]} {
+                        # TODO: indentation adding if was there"
+                        puts $out "$ind```${filt}inn\n$cont\n$ind```"
+                    }
+                    if {[lindex $res 0] ne ""} {
+                        if {[dict get $dchunk results] eq "show"} {
+                            # TODO: indentation adding if was there"
+                            # remove trailing newline as we add our own
+                            set r [regsub {\n$} [lindex $res 0] ""]
+                            puts $out "\n$ind```${filt}out\n$r\n$ind```"
+                        } elseif {[dict get $dchunk results] eq "asis"} {
+                            puts $out "\n[lindex $res 0]\n"
+                        }
+                    }
+                    if {[lindex $res 1] ne ""} {
+                        set title ""
+                        if {[dict exists $dchunk title]} {
+                            set title [dict get $dchunk title]
+                        }
+                        puts $out "\n!\[$title\]([lindex $res 1])"
+                    }
+                    
+                }
+                set cont ""
+            } elseif {$flag} {
+                append cont "$line\n"
+            } else {
+                # TODO: more than one inline code per line
+                if {!$pre} {
+                    if {[regexp {`\.?[a-z]{2,4} .+`} $line]} {
+                        set filt [regsub {.*`\.?([a-z]{2,4}) .+`.+} $line "\\1"]
+                        if {[info procs filter-$filt] eq "filter-$filt"} {
+                            set code [regsub {.*`\.?[a-z]{2,4} ([^`]+)`.+} $line "\\1"]
+                            puts "processing inline code $code"
+                            set res [lindex [filter-$filt $code [dict create eval true results show echo false]] 0]
+                            set line [regsub {(.*)`\.?[a-z]{2,4} ([^`]+)`(.+)} $line "\\1$res\\3"]
+                        }
+                    }
+                }
+                puts $out $line
+            }
+        }
+        close $infh
+    }
+    close $out
+    if {$mode eq "html"} {
+        mkdoc::mkdoc $outfile [regsub -- {-out.md} $outfile ".html"] {*}[lrange $argv 2 end]
+    }
+}
+
+# Gui mode
+if {[llength $argv] > 0 && [lsearch $argv --gui] > -1} {
+    package require fview
+    fview::gui
+    set file false
+    foreach arg $argv {
+        if {[file exists $arg]} {
+            set ext [string range [file extension $arg] 1 end]
+            #puts $ext
+            fview::fileOpen $arg
+            fview::fileSave $arg
+            set file true
+            break
+        }
+    }
+    if {!$file} {
+        set ftemp [file temp].tsvg
+        set out [open $ftemp w 0600]
+        puts $out {package require tsvg
+tsvg set code "" ;
+tsvg set width 400
+tsvg set height 400
+
+tsvg rect -x 10 -y 10 -width 380 -height 380 \
+        -fill cornsilk
+tsvg circle -cx 200 -cy 200 -r 120 -stroke black -stroke-width 2 -fill #eeffee
+tsvg text -x 155 -y 180 "Hello TSVG"
+tsvg text -x 135 -y 220 "Filter View World!"
+Hello
+}
+        close $out
+        fview::fileOpen $ftemp
+        fview::fileSave $ftemp
+        file delete $ftemp
+    }
+    return
+}
+# Standalone processing 
+# calling pandoc eventually itself
+
 if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
-    if {[auto_execok pandoc] eq ""} {
+    set pandoc true
+    if {[lsearch $argv --no-pandoc] > 1} {
+        package require yaml
+        package require mkdoc::mkdoc
+        set pandoc false
+    } elseif {[auto_execok pandoc] eq ""} {
         puts "Error: Document conversion needs pandoc installed"
         exit 0
     }
-    if {[file extension [lindex $argv 0]] in [list .tcl .tm .py .R .r .c .cxx .cpp]} {
+    if {[file extension [lindex $argv 1]] eq ".html" && [lsearch [lrange $argv 1 end] --css] == -1} {
+        if {![file exists pandoc-filter.css]} {
+            set out [open pandoc-filter.css w 0600]
+            puts $out $css
+            close $out
+        }
+        lappend argv --css
+        lappend argv pandoc-filter.css
+    }
+    if {[file extension [lindex $argv 0]] in [list .tcl .tm .py .R .r .c .cxx .cpp .m .pl .pm .h .hpp .hxx]} {
         set tempfile [file tempfile].md 
         set filename [lindex $argv 0]
+        set infile [lindex $argv 0]
         set out [open $tempfile w 0600]
         if [catch {open $filename r} infh] {
             puts stderr "Cannot open $filename: $infh"
@@ -199,52 +437,34 @@ if {[llength $argv] > 1 && [file exists [lindex $argv 0]]} {
             close $infh
         }
         close $out
-        if {[file extension [lindex $argv 1]] eq ".html" && [lsearch [lrange $argv 1 end] --css] == -1} {
-            if {![file exists pandoc-filter.css]} {
-                set out [open pandoc-filter.css w 0600]
-                puts $out $css
-                close $out
-            }
-            lappend argv --css
-            lappend argv pandoc-filter.css
+        if {$pandoc} {
             exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end] 
-        } else {
-            exec pandoc $tempfile --filter $argv0 -o {*}[lrange $argv 1 end]
+        }  else {
+            set argv [lset argv 0 $tempfile]
+            lineFilter $argv
         }
         file delete $tempfile
-        puts "converting [lindex $argv 0] to [lindex $argv 1] done"
+        puts "converting $infile to [lindex $argv 1] done"
         exit 0
     } else {
-        if {[file extension [lindex $argv 1]] eq ".html" && [lsearch [lrange $argv 1 end] --css] == -1} {
-            set out [open temp.css w 0600]
-            puts $out $css
-            close $out
-            exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end] --css temp.css
-            file delete temp.css
-        } else {
+        if {$pandoc} {
             exec pandoc [lindex $argv 0] --filter $argv0 -o {*}[lrange $argv 1 end]
+        }  else {
+            lineFilter $argv
         }
         puts "converting [lindex $argv 0] to [lindex $argv 1] done"
     }
     exit 0
 }
-set appdir [file dirname [info script]]
-if {[file exists  [file join $appdir lib]]} {
-    lappend auto_path [file normalize [file join $appdir lib]]
-    package require tsvg
-}
-if {[file exists  [file join $appdir filter]]} {
-    lappend auto_path [file join $appdir filter]
-}
 package require rl_json
-catch {
-    # if available load filters
-    package require tclfilters
-}
+
 #' ---
-#' title: pandoc-tcl-filter documentaion - 0.6.0
+#' title: pandoc-tcl-filter documentation - 0.7.0
 #' author: Detlef Groth, Schwielowsee, Germany
-#' date: 2021-12-28
+#' date: 2022-01-22
+#' tcl:
+#'    echo: "true"
+#'    results: show
 #' ---
 #'
 #' ## NAME
@@ -254,7 +474,7 @@ catch {
 #' documentation and offers a plugin architecture to add other command line filters easily using Tcl
 #' and the `exec` command. As examples are given in the filter folder of the project:
 #'
-#' * Tcl filter {.tcl} - implemented in this file pandoc-tcl-filter.tcl 
+#' * Tcl filter {.tcl}: `filter-tcl.tcl` [filter/filter-tcl.html](filter/filter-tcl.html)
 #' * ABC music filter {.abc}: `filter-abc.tcl` [filter/filter-abc.html](filter/filter-abc.html)
 #' * command line application filter {.cmd}: `filter-cmd.tcl` [filter/filter-abc.html](filter/filter-cmd.html)
 #' * Graphviz dot filter {.dot}: `filter-dot.tcl` [filter/filter-dot.html](filter/filter-dot.html)
@@ -263,6 +483,7 @@ catch {
 #' * Mermaid filter for diagrams {.mmd}: `filter-mmd.tcl` [filter/filter-mmd.html](filter/filter-mmd.html)
 #' * Pikchr filter plugin for diagram creation {.pikchr}: `filter-pik.tcl` [filter/filter-pik.html](filter/filter-pik.html)
 #' * PIC filter plugin for diagram creation (older version) {.pic}: `filter-pic.tcl` [filter/filter-pic.html](filter/filter-pic.html)
+#' * pipe filter for R, Python and Octave {.pipe}: `filter-pipe.tcl` [filter/filter-pipe.html](filter/filter-pipe.html)
 #' * PlantUMLfilter plugin for diagram creation {.puml}: `filter-puml.tcl` [filter/filter-puml.html](filter/filter-puml.html)
 #' * R plot filter plugin for displaying plots in the R statistical language {.rplot}: `filter-rplot.tcl` [filter/filter-rplot.html](filter/filter-rplot.html)
 #' * sqlite3 filter plugin to evaluate SQL code {.sqlite}: `filter-sqlite.tcl` [filter/filter-sqlite.html](filter/filter-sqlite.html)
@@ -274,15 +495,18 @@ catch {
 #' 
 #' ```
 #' # standalone application
-#' pandoc-tcl-filter.tcl infile outfile ?options?
+#' pandoc-tcl-filter.tapp infile outfile ?options?
 #' # as filter
-#' pandoc infile --filter pandoc-tcl-filter.tcl ?options?
+#' pandoc infile --filter pandoc-tcl-filter.tapp ?options?
+#' # as graphics user interface
+#' pandoc-tcl-filter.tapp --gui
 #' ```
 #' 
-#' Where options are the usual pandoc options. For HTML conversion you should use for instance:
+#' Where options for the filter and the standalone mode
+#' are the usual pandoc options. For HTML conversion you should use for instance:
 #' 
 #' ```
-#' pandoc-tcl-filter.tcl infile.md outfile.html --css style.css -s --toc
+#' pandoc-tcl-filter.tapp infile.md outfile.html --css style.css -s --toc
 #' ```
 #'
 #' Embed code either inline or in form of code chunks like here (triple ticks):
@@ -302,14 +526,42 @@ catch {
 #' `{.pikchr}, `{.puml}`, `{.rplot}`,`{.sqlite}` and `{.tsvg}`. 
 #' For details on how to use them have a look at the manual page links on top.
 #' 
+#' You can combine all filters in one document  just by using the appropiate markers. 
+#' 
+#' Here an overview about the required tools:
+#' 
+#' <center>
+#' 
+#' | filter | tool | svg | png | pdf | comment |
+#' | ------ | ----- | ---- | ---- | ---- | ---- |
+#' | .tcl   | tclsh   | tsvg | cairosvg | cairosvg | programming | 
+#' | .abc   | abcm2ps | abcm2ps | cairosvg | cairosvg | music |
+#' | .dot   | dot   | native | native | native | diagrams |
+#' | .eqn   | eqn2graph | no | convert | no | math | 
+#' | .mmd   | mermaid-cli (mmdc) | native | native | native | diagrams |
+#' | .mtex  | latex  | dvisgm | dvipng | dvipdfm | math, diagrams, games |
+#' | .pic   | pic2graph | no | convert | no | diagrams |
+#' | .pik   | fossil    |  native | cairosvg | cairosvg | diagrams |
+#' | .pipe  | R / python / octave |  native | native | native | Statistics, Programming |
+#' | .puml  | plantuml  |  native | native | native | diagrams |
+#' | .rplot | R         | native  | native | native | statistics, graphics |
+#' | .tcrd  | tclsh       | no      | no    |  no | music, songs with chords |
+#' | .tdot  | tclsh/dot   | native  | native |  native | diagrams |
+#' | .tsvg  | tclsh       | native  | cairosvg | cairosvg | graphics |
+#' 
+#' </center>
+#' 
 #' The Markdown document within this file could be extracted and converted as follows:
 #' 
 #' ```
-#'  ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html \
+#'  pandoc-tcl-filter.tapp pandoc-tcl-filter.tcl pandoc-tcl-filter.html \
 #'    --css mini.css -s
 #' ```
-#' 
 #'
+#' ## Required Tools
+#' 
+#' 
+#' 
 #' ## Example Tcl Filter
 #' 
 #' #### Tcl-filter
@@ -327,6 +579,31 @@ catch {
 #' set x 1
 #' puts $x
 #' ```
+#'
+#' Does indented code blocks works as well?
+#' 
+#' > ```{.tcl}
+#'   set x 2
+#'   puts $x
+#' >  ```
+#' 
+#' > Yes, since version 0.7.0!!
+#' 
+#' There is as well the possibility to inline Tcl code like here:
+#' 
+#' ```
+#' This document was processed using Tcl `tcl set tcl_patchLevel`!
+#' ```
+#' 
+#' will produce:
+#' 
+#' This document was processed using Tcl `tcl set tcl_patchLevel`!
+#' 
+#' This works as well in nested structures like lists or quotes.
+#' 
+#' > This document was processed using Tcl `tcl set tcl_patchLevel`!
+#' 
+#' > - This document was processed using Tcl `tcl set tcl_patchLevel`!
 #'
 #' ## Filter - Plugins
 #' 
@@ -492,14 +769,13 @@ catch {
 #' include tests/inc.md
 #' ```
 #' 
-#' 
 #' ## Documentation
 #' 
 #' To use this pipeline and to create pandoc-tcl-filter.html out of the code documentation 
-#' in pandoc-tcl-filter.tcl your command in the terminal is still just:
+#' in pandoc-tcl-filter.tapp your command in the terminal is still just:
 #' 
 #' ```
-#' ./pandoc-tcl-filter.tcl pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css
+#' pandoc-tcl-filter.tapp pandoc-tcl-filter.tcl pandoc-tcl-filter.html -s --css mini.css
 #' ```
 #' 
 #' The result should be the file which you are looking currently.
@@ -541,6 +817,20 @@ catch {
 #'    * filter-mtex.tcl with more examples for different LaTeX packages like tikz, pgfplot, skak, sudoku, etc.
 #'    * adding filter-tdot.tcl for tdot Tcl package
 #'    * adding filter-tcrd.tcl for writing music chords above song lyrics
+#' * 2022-01-XX - version 0.7.0
+#'    * graphical user interface to the graphical filters (abc, dot, eqn, mmd, mtex, pic, pikchr, puml, rplot, tdot, tsvg) using the command line option *--gui*
+#'    * can now as well work without pandoc standalone for conversion of Markdown with code chunks into 
+#'      Markdown with evaluated code chunks and HTML code using the
+#'      Markdown library of tcllib
+#'    * that way it deprecates the use of tmdoc::tmdoc and mkdoc::mkdoc as it contains now the same functionality
+#'    * support for inline code evaluations for Tcl, Python (pipe filter) and R (pipe filter) statements as well in nested paragraphs, lists and headers
+#'    * support for indented code blocks with evaluation
+#'    * new - filter-pipe:
+#'        * initial support for R code block features and inline evaluation and error catching
+#'        * initial support for Python with code block features and inline evaluation and error catching
+#'        * initial support for Octave with code block features and error checking
+#'    * more examples filter-mtex, filter-puml, filter-pikchr 
+#'    * fix for filter-tcl making variables chunk and res namespace variables, avoiding variable collisions
 #'     
 #' ## SEE ALSO
 #' 
@@ -590,157 +880,6 @@ set jsonData {}
 while {[gets stdin line] > 0} {
    append jsonData $line
 }
-interp create mdi
-proc luniq {L} {
-    # removes duplicates without sorting the input list
-    set t {}
-    foreach i $L {if {[lsearch -exact $t $i]==-1} {lappend t $i}}
-    return $t
-} 
-proc getTempDir {} {
-    if {[file exists /tmp]} {
-        # standard UNIX
-        return /tmp
-    } elseif {[info exists ::env(TMP)]} {
-        # Windows
-        return $::env(TMP)
-    } elseif {[info exists ::env(TEMP)]} {
-        # Windows
-        return $::env(TEMP)
-    } elseif {[info exists ::env(TMPDIR)]} {
-        # OSX
-        return $::env(TMPDIR)
-    }
-}
-
-mdi eval "set auto_path \[list [luniq $auto_path]\]"
-mdi eval {
-    set res ""
-    set chunk 0
-    rename puts puts.orig
-    package provide pandoc 0.3.2
-    proc puts {args} {
-        global res
-        if {[lindex $args 0] eq "stdout"} {
-            set args [lrange $args 1 end]
-        }
-        if {[regexp {^file} [lindex $args 0]]} {
-            puts.orig [lindex $args 0] {*}[lrange $args 1 end]
-        } else {
-            if {[lindex $args 0] eq "-nonewline"} {
-                append res "[lindex $args 1]"
-            } else {
-                append res "[lindex $args 0]\n"
-            }
-            return ""
-        }
-    }
-    proc list2mdtab {header values} {
-        set ncol [llength $header]
-        set nval [llength $values]
-        if {[llength [lindex $values 0]] > 1 && [llength [lindex $values 0]] != [llength $header]} {
-            error "Error: list2table - number of values if first row is not a multiple of columns!"
-        } elseif {[expr {int(fmod($nval,$ncol))}] != 0} {
-            error "Error: list2table - number of values is not a multiple of columns!"
-        }
-        set res "|" 
-        foreach h $header {
-            append res " $h |"
-        }   
-        append res "\n|"
-        foreach h $header {
-            append res " ---- |"
-        }
-        append res "\n"
-        set c 0
-        foreach val $values {
-            if {[llength $val] > 1} {    
-                # nested list
-                append res "| "
-                foreach v $val {
-                    append res " $v |"
-                }
-                append res "\n"
-            } else {
-                if {[expr {int(fmod($c,$ncol))}] == 0} {
-                    append res "| " 
-                }    
-                append res " $val |"
-                incr c
-                if {[expr {int(fmod($c,$ncol))}] == 0} {
-                    append res "\n" 
-                }    
-            }
-        }
-        return $res
-    }
-    proc include {filename} {
-        if [catch {open $filename r} infh] {
-            return "Cannot open $filename"
-        } else {
-            set res ""
-            while {[gets $infh line] >= 0} {
-                append res "$line\n"
-            }
-            close $infh
-            return $res
-        }
-    }
-}
-
-# load other tcl based filters
-foreach file [glob -nocomplain [file join [file dirname [info script]] filter filter*.tcl]]  {
-    catch {
-        source $file
-    }
-}
-
-proc debug {jsonData} {
-    puts [::rl_json::json keys $jsonData]
-}
-
-proc filter-tcl {cont a} {
-    set ret ""
-    set b [dict create fig false width 400 height 400 include true \
-            label null]
-    set a [dict merge $b $a]
-    if {[dict get $a eval]} {
-        mdi eval "set res {}; incr chunk"
-        if {[catch {
-             set eres [mdi eval $cont]
-             set eres "[mdi eval {set res}]$eres"
-        }]} {
-             set eres "Error: [regsub {\n +invoked.+} $::errorInfo {}]"
-        }
-        if {[dict get $a fig]} {
-            # figure command there?
-            if {[mdi eval {info command figure}] eq "figure"} {
-                if {[dict get $a label] eq "null"} {
-                    set lab fig-[mdi eval { set chunk }]
-                } else {
-                    set lab [dict get $a label]
-                }
-                set filename [mdi eval "figure $lab [dict get $a width] [dict get $a height]"]
-                set eres ""
-            }
-        }
-        set img ""
-        if {[dict get $a results] eq "show" && $eres ne ""} {
-            set eres [regsub {\{(.+)\}} $eres "\\1"]
-            #rl_json::json set cblock c 0 1 [rl_json::json array [list string tclout]]
-            #rl_json::json set cblock c 1 [rl_json::json string [regsub {\{(.+)\}} $eres "\\1"]]
-            #set ret ",[::rl_json::json extract $cblock]"
-        } elseif {[dict get $a results] eq "asis" && $eres ne ""} { 
-            set eres $eres
-        } else {
-            set eres ""
-        }
-    } else {
-        set eres ""
-        set img ""
-    }
-    return [list "$eres" $img]
-}
 
 # parse Meta data
 proc getMetaDict {meta fkey} {
@@ -753,6 +892,124 @@ proc getMetaDict {meta fkey} {
     return $d    
 }
 
+# walk and search for inlineCodes
+set inlineCodes [list]
+proc walk {key {ind 1}} {
+    global jsonData
+    global inlineCodes
+    #puts "key: {*}$key"
+    set sind [string repeat " " [expr {$ind*4}]] 
+    set type [::rl_json::json type $jsonData blocks {*}$key]
+    set l 0 
+    if {$type eq "array"} {
+        set l [llength [rl_json::json get $jsonData blocks {*}$key]]
+    } elseif {$type eq "object"} {
+        set l [llength [rl_json::json get $jsonData blocks {*}$key]]
+    } 
+ 
+    #puts "$sind type: $type length $l"
+    #puts "$sind cnt:   [::rl_json::json get $jsonData blocks {*}$key]"
+    incr ind
+    if {$type eq "array"} {
+        for {set j 0} {$j < $l} {incr j} {
+            set nkey $key
+            lappend nkey $j
+            walk $nkey $ind
+        }
+    }
+    if {$type eq "object"} {
+        set tkey $key
+        set ckey $key
+        if {$l > 2} {
+            lappend tkey t
+            lappend ckey c
+            set t [::rl_json::json get $jsonData blocks {*}$tkey]
+            if {$t eq "Code"} {
+                lappend ckey 1
+                #lappend ckey
+                set code [::rl_json::json get $jsonData blocks {*}$ckey]
+                #puts "$sind  code: $code" 
+                if {[regexp {^[a-zA-Z0-9]{1,3} .+} $code]} {
+                    lappend inlineCodes [list $ckey $code]
+                }
+            } else {
+                walk $ckey $ind 
+            }
+        }
+    }
+    return
+}
+
+proc codeBlock {} {
+    uplevel 1 {
+        set type [rl_json::json get $jsonData blocks {*}$tkey] ;#type
+        set attr [rl_json::json get $jsonData blocks {*}$akey] ;# attributes
+        set a [dict create echo true results show eval true] 
+        set d [getMetaDict $meta $type]
+        set a [dict merge $a $d]
+        if {[llength $attr] > 0} {
+            foreach el $attr {
+                dict set a [lindex $el 0] [lindex $el 1]
+            }
+            #puts [dict keys $a]
+        }
+        set cont [rl_json::json get $jsonData blocks {*}$ckey]
+        set cblock "[::rl_json::json extract $jsonData blocks {*}$bkey]"
+        
+        if {[dict get $a echo]} {
+            append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
+        } else {
+            #rl_json::json unset jsonData blocks $i
+            # add an empty paragraph instead
+            append blocks {{"t":"Para","c":[{"t":"Str","c":""}]}}
+            #append blocks [::rl_json::json extract $jsonData blocks $i]\n"
+        }
+        if {$type ne ""} {
+            if {[info command filter-$type] eq "filter-$type"} {
+                set res [filter-$type $cont $a]
+                
+                if {[llength $res] >= 1} {
+                    set code [lindex $res 0]
+                    if {$code ne ""} {
+                        if {[dict get $a results] ne "asis"} {
+                            if {$blockType eq "CodeBlock"} {
+                                rl_json::json set cblock c 0 1 [rl_json::json array [list string ${type}out]]
+                                rl_json::json set cblock c 1 [rl_json::json string $code]
+                                append blocks ",[::rl_json::json extract $cblock]"
+                            } elseif {$blockType eq "BlockQuote"} {
+                                rl_json::json set cblock c 0 c 0 1 [rl_json::json array [list string ${type}out]]
+                                rl_json::json set cblock c 0 c 1 [rl_json::json string $code]
+                                append blocks ",[::rl_json::json extract $cblock]"
+                            }
+                        } else {
+                            set cres $code
+                            set mdfile [file tempfile].md
+                            set out [open $mdfile w 0600]
+                            puts $out $code
+                            close $out
+                            set cres [exec pandoc -t json $mdfile]
+                            file delete $mdfile
+                            # pandoc 2.9 (block first then meta)
+                            set cres [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $cres "\\1"]
+                            # pandoc 2.12++ (meta first, then block)
+                            set cres [regsub {^\{"pandoc-api-version".+"blocks":\[(.+)\]\}} $cres "\\1"]                                
+                            append blocks ,
+                            append blocks $cres
+                        }
+                    }
+                    if {[llength "$res"] == 2} {
+                        set img [lindex $res 1]
+                        if {$img ne ""} {
+                            rl_json::json set jsonImg c 0 c 2 0 "$img"
+                            append blocks ",[::rl_json::json extract $jsonImg]"
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+}
 # the main method parsing the json data
 proc main {jsonData} {
     set blocks ""
@@ -785,93 +1042,70 @@ proc main {jsonData} {
         }
         set blockType [::rl_json::json get $jsonData blocks $i t]
         if {$blockType eq "CodeBlock"} {
-            set type [rl_json::json get $jsonData blocks $i c 0 1] ;#type
-            set attr [rl_json::json get $jsonData blocks $i c 0 2] ;# attributes
-            set a [dict create echo true results show eval true] 
-            set d [getMetaDict $meta $type]
-            set a [dict merge $a $d]
-            if {[llength $attr] > 0} {
-                foreach el $attr {
-                    dict set a [lindex $el 0] [lindex $el 1]
-                }
-                #puts [dict keys $a]
+            set tkey [list $i c 0 1]
+            set akey [list $i c 0 2]
+            set ckey [list $i c 1]
+            set bkey [list $i]
+            codeBlock
+        } elseif {$blockType in [list BulletList Header Para BlockQuote]}  {
+            if {$blockType eq "BlockQuote" && [::rl_json::json get $jsonData blocks $i c 0 t] eq "CodeBlock"} {
+                set tkey [list $i c 0 c 0 1]
+                set akey [list $i c 0 c 0 2]
+                set ckey [list $i c 0 c 1]
+                set bkey [list $i]
+                codeBlock
+                continue
             }
-            set cont [rl_json::json get $jsonData blocks $i c 1]
-            set cblock "[::rl_json::json extract $jsonData blocks $i]"
-            if {[dict get $a echo]} {
-                append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
+            set ::inlineCodes [list]
+            set k [llength [::rl_json::json get $jsonData blocks $i c]]
+            #puts stderr $blockType
+            #puts stderr [::rl_json::json get $jsonData blocks $i c]
+            if {$blockType eq "Header" && $k == 3} {
+                walk [list $i c 2]
             } else {
-                #rl_json::json unset jsonData blocks $i
-                # add an empty paragraph instead
-                append blocks {{"t":"Para","c":[{"t":"Str","c":""}]}}
-                #append blocks [::rl_json::json extract $jsonData blocks $i]\n"
-            }
-            if {$type ne ""} {
-                if {[info command filter-$type] eq "filter-$type"} {
-                    set res [filter-$type $cont $a]
-                    
-                    if {[llength $res] >= 1} {
-                        set code [lindex $res 0]
-                        if {$code ne ""} {
-                            if {[dict get $a results] ne "asis"} {
-                                rl_json::json set cblock c 0 1 [rl_json::json array [list string ${type}out]]
-                                rl_json::json set cblock c 1 [rl_json::json string $code]
-                                append blocks ",[::rl_json::json extract $cblock]"
-                            } else {
-
-                                set cres $code
-                                set mdfile [file tempfile].md
-                                set out [open $mdfile w 0600]
-                                puts $out $code
-                                close $out
-                                set cres [exec pandoc -t json $mdfile]
-                                file delete $mdfile
-                                # pandoc 2.9 (block first then meta)
-                                set cres [regsub {^.+"blocks":\[(.+)\],"pandoc-api-version".+} $cres "\\1"]
-                                # pandoc 2.12++ (meta first, then block)
-                                set cres [regsub {^\{"pandoc-api-version".+"blocks":\[(.+)\]\}} $cres "\\1"]                                
-                                append blocks ,
-                                append blocks $cres
-                            }
-                        }
-                        if {[llength "$res"] == 2} {
-                            set img [lindex $res 1]
-                            if {$img ne ""} {
-                                rl_json::json set jsonImg c 0 c 2 0 "$img"
-                                append blocks ",[::rl_json::json extract $jsonImg]"
-                            }
-                        }
-
-                    }
+                for {set j 0} {$j < $k} {incr j} {
+                    walk [list $i c $j]
                 }
             }
-     
-        } elseif {$blockType in [list "Para"]} {
-            # BulletList Header not working
-            for {set j 0} {$j < [llength [::rl_json::json get $jsonData blocks $i c]]} {incr j} {
-                set type ""
-                set type [rl_json::json get $jsonData blocks $i c $j t] ;#type
-                if {$type eq "Code"} {
-                    set code [rl_json::json get $jsonData blocks $i c $j c]
-                    set code [lindex $code 1]
+            foreach item $::inlineCodes {
+                foreach {key code} $item {
+                    set ckey [lrange $key 0 end-1]
+                    set tkey [lrange $key 0 end-2]
+                    lappend tkey t
+                    set c [regsub {^[^ ]+} $code ""]
                     if {[regexp {\.?tcl } $code]} {
-                        set c [regsub {^[^ ]+} $code ""]
                         if {[catch {
                              set ::errorInfo {}
                              set res [interp eval mdi $c]
                          }]} {
                                 set res "error: $c"
                                 set res "Error: [regsub {\n +invoked.+} $::errorInfo {}]"
-                        }
-
-                        #set res [interp eval mdi $c]
-                        set jsonData [rl_json::json set jsonData blocks $i c $j c [rl_json::json string "$res"]]
-                        set jsonData [rl_json::json set jsonData blocks $i c $j t Str]
-                    }
-                }
+                         }
+                         set jsonData [rl_json::json set jsonData blocks {*}$ckey [rl_json::json string "$res"]]
+                         set jsonData [rl_json::json set jsonData blocks {*}$tkey Str]
+                     } elseif {[regexp -nocase {\.?R } $code]} {
+                         set d [dict create results show echo false pipe R]
+                         set res [lindex [filter-pipe $c $d] 0]
+                         set res [regsub {^>.+\[1\]} $res ""]
+                         set jsonData [rl_json::json set jsonData blocks {*}$ckey [rl_json::json string "$res"]]
+                         set jsonData [rl_json::json set jsonData blocks {*}$tkey Str]
+                     } elseif {[regexp -nocase {\.?oc } $code]} {
+                         set d [dict create results show echo false pipe octave]
+                         set res [regsub {.+?> } [lindex [filter-pipe "$c\n" $d] 0] ""]
+                         set jsonData [rl_json::json set jsonData blocks {*}$ckey [rl_json::json string "$res"]]
+                         set jsonData [rl_json::json set jsonData blocks {*}$tkey Str]
+                     } elseif {[regexp {\.?py } $code]} {
+                         # this does not work (yet)
+                         set d [dict create pipe python3 terminal true]
+                         set res [regsub {.+> } [lindex [filter-pipe [string trim $c] $d] 0] ""]
+                         #set res [regsub {^>.+\[1\]} $res ""]
+                         set jsonData [rl_json::json set jsonData blocks {*}$ckey [rl_json::json string "$res"]]
+                         set jsonData [rl_json::json set jsonData blocks {*}$tkey Str]
+                     }
+                 }
             }
             append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
-        } else {
+        } else  {
             append blocks "[::rl_json::json extract $jsonData blocks $i]\n"
         }
     }

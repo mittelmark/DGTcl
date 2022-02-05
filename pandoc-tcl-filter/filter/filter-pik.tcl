@@ -69,12 +69,44 @@
 #' Here an example for a simple example taken from the Pikchr homepage:
 #' 
 #' ```{.pik}
+#' scale = 0.8
+#' fill  = cornsilk
 #' arrow right 200% "Markdown" "Source"
 #' box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
 #' arrow right 200% "HTML+SVG" "Output"
 #' arrow <-> down 70% from last box.s
 #' box same "Pikchr" "Formatter" "(pikchr.c)" fit
 #' ```
+#' 
+#' Now to other larger examples from the Pikchr website - [https://pikchr.org/home/doc/trunk/doc/examples.md](https://pikchr.org/home/doc/trunk/doc/examples.md):
+#' 
+#' ```{.pik}
+#'   scale = 0.9
+#'             filewid *= 1.2
+#'   Src:      file "pikchr.y" fill 0xc6ffe2; move
+#'   LemonSrc: file "lemon.c" fill 0xc6ffe2; move
+#'   Lempar:   file "lempar.c" fill 0xc6ffe2; move
+#'             arrow down from LemonSrc.s
+#'   CC1:      oval "C-Compiler" ht 50% fill 0xffffe2
+#'             arrow " generates" ljust above
+#'   Lemon:    oval "lemon" ht 50% fill 0xffffe2
+#'             arrow from Src chop down until even with CC1 \
+#'               then to Lemon.nw rad 20px
+#'             "Pikchr source " rjust "code input " rjust \
+#'               at 2nd vertex of previous
+#'             arrow from Lempar chop down until even with CC1 \
+#'               then to Lemon.ne rad 20px
+#'             " parser template" ljust " resource file" ljust \
+#'               at 2nd vertex of previous
+#'   PikSrc:   file "pikchr.c" fill 0xffffe2 with .n at lineht below Lemon.s
+#'             arrow from Lemon to PikSrc chop
+#'             arrow down from PikSrc.s
+#'   CC2:      oval "C-Compiler" ht 50% fill 0xffffe2
+#'             arrow
+#'   Out:      file "pikchr.o" "or" "pikchr.exe" wid 110% \
+#'             fill 0xc6e2ff 
+#' ```
+#' 
 #' 
 #' ## See also:
 #' 

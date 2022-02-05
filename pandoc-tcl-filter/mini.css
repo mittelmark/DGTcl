@@ -99,8 +99,8 @@
     table {    
         border-collapse: collapse;
         border-bottom: 2px solid;
-        min-width: 300px;
-        
+        border-spacing: 5px;
+        min-width: 400px;
     }
     table thead tr th { 
         background-color: #fde9d9;

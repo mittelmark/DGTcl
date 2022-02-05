@@ -143,6 +143,7 @@
 #' }
 #' @endsalt
 #' ```
+#' 
 #' The handwritten style can be applied as well to other diagram types, here a sequence diagram:
 #' 
 #' ```{.puml}
@@ -154,10 +155,70 @@
 #' Bob-->Alice: I am good thanks!
 #' @enduml
 #' ```
+#' 
+#' ```{.puml}
+#' @startuml
+#' skinparam handwritten true
+#' skinparam monochrome true
+#' skinparam DefaultFontName xkcd Script
+#' skinparam classFontSize 16
+#' skinparam DefaultTextAlignment center
+#'  
+#'  
+#' node Master [
+#'     Master
+#'     Node
+#' ]
+#'  
+#' node Node_1 {
+#'     rectangle container_1
+#' }
+#'  
+#' node Node_2 {
+#'     rectangle container_64
+#' }
+#'  
+#' node Node_N {
+#'     rectangle container_N
+#' }
+#'  
+#' database Metadata [
+#'     Survey
+#'     Metadata
+#' ]
+#'  
+#' database surveys [ 
+#'     STANDARDIZED
+#'     SURVEY DATA
+#'     ----
+#'     LSST
+#'     ....
+#'     Euclid
+#'     ....
+#'     WFIRST
+#' ]
+#'  
+#' Master -- Node_1
+#' Master -- Node_2
+#' Master -- Node_N
+#'  
+#' Metadata .. Node_1
+#' Metadata .. Node_2
+#' Metadata .. Node_N
+#'  
+#' surveys -up-> container_1
+#' surveys -up-> container_64
+#' surveys -up-> container_N
+#' @enduml
+#' ```
+#' 
+#' This example needs an installed xkcd-scripts font which can be found
+#' for instance here [https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf](https://github.com/ipython/xkcd-font/blob/master/xkcd-script/font/xkcd-script.ttf).
 #' For more themes have a look here: [https://the-lum.github.io/puml-themes-gallery/](https://the-lum.github.io/puml-themes-gallery/) 
+#' 
 #' and for the complete documentation of the different diagram types have a look at the [PDF manual](http://plantuml.com/guide).
 #' 
-#' Finlly an even simpler example in case all you want is just a set of nice handwritten buttons:
+#' Finally an even simpler example in case all you want is just a set of nice handwritten buttons:
 #' 
 #' ```{.puml}
 #' @startuml

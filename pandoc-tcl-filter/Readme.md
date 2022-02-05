@@ -1,9 +1,9 @@
 ---
 title: "Readme for the Pandoc Tcl filter"
-shorttitle: "tcl-filter"
+shorttitle: "pandoc-tcl-filter Readme"
 author: 
 - Detlef Groth
-date: 2021-08-25
+date: 2022-01-25
 standalone: true
 toc: true
 css: mini.css
@@ -12,7 +12,7 @@ monofont: Monaco
 
 abstract: >
     The pandoc-tcl-filter allows you the embed Tcl code in code blocks
-    and short Tcl statements as wekk in the normal text of a Markdown 
+    and short Tcl statements as well in the normal text of a Markdown 
     document. The code fragments will be executed dynamically and the output
     of the Tcl commands can be shown in an extra code block or can replace
     the code block as well.
@@ -20,42 +20,55 @@ abstract: >
 
 ## Name
 
-_pandoc-tcl-filter_ - filter to execute code within Markdown documents and use code results for documentation.
+_Readme pandoc-tcl-filter_ - Tcl based pandoc filter to execute programming and other 
+    Markup code within Markdown documents and use code results for documentation.
 
 ## Usage
 
+
+* works as filter for pandoc or just standalone (then only conversion to HTML or Markdown is possible)
+* evaluation of Tcl and other programming language code with textual Markup files like Markdown or Asciidoc and adding the results, figures, tables etc from the code evaluation to a resulting document like HTML, PDF, DOCX, Markdown etc
+* easy to extend, many filters for other programming languages like (Python, Octave, R) are already embedded
+* filters for many graphical tools such as GraphViz, Pikchr, PlantUML, mermaid, LaTeX like
+* generic filter for all type of terminal applications such as LilyPond, C/C++ compilers etc. where examples are given
+* all tools and filters can be applied within a single document
+* can be used to extract and process embedded Markdown documentation in source code of different programming languages, such as C/C++, Tcl, Python, etc. 
+* the packed Tcl script with these features has a size of just around 900kb
+
+Here some call syntax examples:
+  
 ```
- pandoc input.md -s --filter pandoc-tcl-filter.tcl -o output.html
- # or using the standalone application
- pandoc input.md -s  --filter pandoc-tcl-filter.tapp -o output.html
+ pandoc input.md -s --filter pandoc-tcl-filter.tapp -o output.html
+ # or using the Tcl script from the unpacked application
+ pandoc input.md -s  --filter pandoc-tcl-filter.tcl -o output.html
+ # code documentation tool for extracting Markdown based documentation
+ # and evaluating code within code chunks as in standard Markdown documents
+ pandoc-tcl-filter.tapp sourcefile.tcl sourcfile.html --css file.css -s
+ #  the same but not using pandoc but the internal Markdown library
+ # only conversion to HTML is possible
+ pandoc-tcl-filter.tapp sourcefile.tcl sourcfile.html --css file.css --no-pandoc
 ```
 
 ## Installation
 
-The pandoc-tcl-filter can be installed locally by placing it in a folder belonging to
-your personal PATH and making the file executable or alternatively you can
-just use it by specifying the correct path to the Tcl script in your pandoc
-command line call. The direct link to the github repository folder is:
-[https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter)
-Just unpack the Tcl script from the download and make the file executable.
+The easiest way to install the pandoc-tcl-filter application is by using the standalone executable from the Github repository [https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp).
+Download this file, make it executable and place it a directory belonging to your PATH variable. Windows user should use a Bash like environment like the Git-Bash to make files executable.
+The only prerequisite the application has is a working Tcl installation. The required Tcl libraries are all wrapped into the standalone exectuable.
 
-The filter requires the Tcl package *rl_json* which is available from Github: [https://github.com/RubyLane/rl_json](https://github.com/RubyLane/rl_json).
-Unix users should be able to install the package via the standard configure/make pipeline. A Linux binary, complied on a recent Fedora system is included in the download
+Alternatively the application can be installed by specifying the correct path to the Tcl script in your pandoc
+command line call. Programmers which like to add their own filters can as well download and modify the filters or add new filters in the filter directory. The direct link to the github repository folder is:
+[https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/pandoc-tcl-filter)
+Just unpack the folder and make the Tcl script `pandoc-tcl-filter.tcl` executable. Your pandoc call should then point to this directory.
+
+The filter requires the Tcl package *rl_json* which is available from Github: [https://github.com/RubyLane/rl_json](https://github.com/RubyLane/rl_json). 
+The standalone application already contains precompiled binaries for 64bit Linu, Windows and Mac-OSX.
+Unix users should be able to install the *rl_json* package via the standard configure/make pipeline. A Linux binary, complied on a recent Fedora system is included in the download
 link at the GitHub page as well to simplify the use of the Pandoc filter.
 Windows users should install the *rl_json* package via the Magicplats Tcl-Installer: [https://www.magicsplat.com/tcl-installer](https://www.magicsplat.com/tcl-installer/index.html)
 
-## Standalone application
-
-Alternatively the application is released as packed application where all the
-filters and the rl_json package are added, the file just requires and exiting
-Tcl installation and can be downloaded from here: [https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp). Just download the file, make it executable and place it in a folder belonging to your PATH.
-
-
-
 ## Tcl filter
 
-The HTML version of this file contains as well the output results and can be
-seen on [GitHub](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/pandoc-tcl-filter/Readme.html).
+Below some basic information about the Tcl filter, more examples are given in the pandoc-tcl-filter documentation file here: [pandoc-tcl-filter.html](pandoc-tcl-filter.html).
 
 Tcl code can be embedded either within single backtick marks where the first
 backtick is immediately followed by the string tcl and the the tcl code such
@@ -65,7 +78,6 @@ as in the following example:
 The variable is now `tcl set x 5` or five times three is `tcl expr {3*5}`.
 
 This document was processed using Tcl `tcl package provide Tcl`.
-
 ```
 
 Here the output:
@@ -83,15 +95,15 @@ Larger chunks of code can be placed within triple backticks such as in the
 example below.
 
 ```
-` ``{.tcl}
- # please remove the space after the first backtick above
- set x 3
- proc add {x y} {
-       return [expr {$x+$y}]
- }
- add $x 7
- # please remove the space after the first backtick below
-` ``
+     ```{.tcl}
+     # please remove the spaces before these lines 
+     #  they are used to guard against code evaluation
+     set x 3
+     proc add {x y} {
+         return [expr {$x+$y}]
+     }
+     add $x 7
+     ```
 ```
 
 In the code above a space was added to avoid confusing the pandoc interpreter

@@ -21,7 +21,7 @@
 #' The conversion of the Markdown documents via Pandoc should be done as follows:
 #' 
 #' ```
-#' pandoc input.md --filter pandoc-tcl-filter.tcl -s -o output.html
+#' pandoc input.md --filter pandoc-tcl-filter.tapp -s -o output.html
 #' ```
 #' 
 #' The file `filter-dot.tcl` is not used directly but sourced automatically by the `pandoc-tcl-filter.tcl` file.
@@ -57,19 +57,93 @@
 #'
 #' ## Examples
 #' 
-#' Here an example for a simple undirected graph visualized using neato:
+#' Below are a few samples for embedding code for the GraphViz tools dot and
+#' neato into Markdown documents. The examples should work as well in other text
+#' markup languages like LaTeX, Asciidoc etc. This filter requires a installation of the command line tools of the GraphViz tools.
 #' 
-#' ```{.dot}
-#' graph G {
-#'   node [shape=box,style=filled,fillcolor=salmon];
-#'   A -- C -- D -- E -- F ;
-#'   B -- C ; D -- F; 
+#' Links: 
+#' 
+#' * GraphViz Homepage: [https://graphviz.org/](https://graphviz.org/)
+#' * Dot guide: [https://graphviz.org/pdf/dotguide.pdf](https://graphviz.org/pdf/dotguide.pdf)
+#' * Neato guide: [https://graphviz.org/pdf/neatoguide.pdf](https://graphviz.org/pdf/neatoguide.pdf)
+#' 
+#' ## Dot graph
+#' 
+#' ```
+#'      ```{.dot label=digraph echo=true}
+#'      digraph G {
+#'        main -> parse -> execute;
+#'        main -> init [dir=none];
+#'        main -> cleanup;
+#'        execute -> make_string;
+#'        execute -> printf
+#'        init -> make_string;
+#'        main -> printf;
+#'        execute -> compare;
+#'      }
+#'      ```
+#' ```
+#' 
+#' Which will produce the following output:
+#' 
+#' ```{.dot label=digraph echo=true}
+#' digraph G {
+#'   main -> parse -> execute;
+#'   main -> init [dir=none];
+#'   main -> cleanup;
+#'   execute -> make_string;
+#'   execute -> printf
+#'   init -> make_string;
+#'   main -> printf;
+#'   execute -> compare;
 #' }
+#' ```
+#' 
+#' ## Neato graphs
+#' 
+#' By using the argument `app=neato` in the code chunk header you can as well
+#' create *neato* graphs. Here an example:
+#' 
+#' ```
+#'       ```{.dot label=neato-sample app=neato}
+#'       graph G {
+#'           node [shape=box,style=filled,fillcolor=skyblue,
+#'               color=black,width=0.4,height=0.4];
+#'           n0 -- n1 -- n2 -- n3 -- n0;
+#'       }
+#'       ```
+#' ```
+#' 
+#' Here the output.
+#' 
+#' ```{.dot label=neato-sample app=neato}
+#' graph G {
+#'     node [shape=box,style=filled,fillcolor=skyblue,
+#'         color=black,width=0.4,height=0.4];
+#'     n0 -- n1 -- n2 -- n3 -- n0;
+#' }
+#' ```
+#' 
+#' ## Document creation
+
+#' Assuming that the file pandoc-tcl-filter.tapp is in your PATH, 
+#' this document, a Tcl file with embedded Markdown and dot code
+#' can be converted into a HTML file for instance using the command line:
+#' 
+#' ```
+#' pandoc-tcl-filter.tapp filter-dot.tcl filter-dot.html -s --css mini.css
+#' ```
+#' 
+#' Standard Markdown files with embedded dot code can be converted with the same command line:
+#' 
+#' ```
+#' pandoc-tcl-filter.tapp sample.md sample.html -s 
 #' ```
 #' 
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [pandoc-tcl-filter documentation](../pandoc-tcl-filter.html)
 #' * [Mermaid filter](filter-mmd.html)
 #' * [Pikchr filter](filter-pik.html)
 #' * [PlantUML filter](filter-puml.html)
