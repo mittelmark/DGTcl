@@ -2,7 +2,7 @@
 #
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Aug 24 08:52:58 2021
-#  Last Modified : <220109.1949>
+#  Last Modified : <220206.0917>
 #
 #  Description	 - Makefile for pandoc-tcl-filter
 #
@@ -52,7 +52,8 @@ tcl-filter.tapp:
 	echo "lappend auto_path [file normalize [file join [file dirname [info script]] lib]]" > pandoc-tapp/pandoc-tcl-filter.vfs/main.tcl
 	cp -r lib pandoc-tapp/pandoc-tcl-filter.vfs/
 	-rm -rf pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
-	cp  -r filter pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
+	mkdir pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
+	cp  -r filter/*.tcl pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
 	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*~
 	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*md
 	-rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*lua

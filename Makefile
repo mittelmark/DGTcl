@@ -22,6 +22,7 @@ pandoc-bin:
 	if [ ! -d  pandoc-tapp/pandoc-tcl-filter.vfs ] ;  then mkdir  pandoc-tapp/pandoc-tcl-filter.vfs ; fi
 	echo "lappend auto_path [file normalize [file join [file dirname [info script]] lib]]" > pandoc-tapp/pandoc-tcl-filter.vfs/main.tcl
 	cp -r pandoc-tcl-filter/lib pandoc-tapp/pandoc-tcl-filter.vfs/
+	rm -rf pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters
 	if [ ! -d  pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters ] ;  then mkdir pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters ; fi	
 	cp -r pandoc-tcl-filter/filter/*.tcl pandoc-tapp/pandoc-tcl-filter.vfs/lib/tclfilters/
 	rm -f pandoc-tapp/pandoc-tcl-filter.vfs/lib/*/*~
