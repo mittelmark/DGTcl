@@ -6,7 +6,7 @@
 
 package provide pandoc 0.7.0
 
-if {[llength $argv] > 0 && [lsearch -exact $argv -v] >= 0} {
+if {[llength $argv] > 0 && ([lsearch -exact $argv -v] >= 0 || [lsearch -exact $argv --version] >= 0)} {
     puts "[package present pandoc]"
     exit 0
 }   
