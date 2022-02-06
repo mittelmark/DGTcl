@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Dr. Detlef Groth" />
+  <meta name="dcterms.date" content="2022-02-07" />
+  <title>filter-view manual</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="mini.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">filter-view manual</h1>
+<p class="author">Dr. Detlef Groth</p>
+<p class="date">2022-02-07</p>
+</header>
+<h2 id="name">NAME</h2>
+<p><em>filter-view</em> - graphical interface for various diagram and graphics generating tools like R, Octave, Python with Matplotlib for instance, fossil pikchr, PIC, mermaid, GraphViz dot and neato, PlantUML, ABC music, the Tcl libraries tsvg and tdot, equation system EQN and LaTeX math as well as to LaTeX graphical libraries such as TikZ.</p>
+<h2 id="synopsis">SYNOPSIS</h2>
+<pre><code>pandoc-tcl-filter.tapp --gui ?FILENAME?</code></pre>
+<h2 id="description">DESCRIPTION</h2>
+<p><em>filter-view</em> is a graphical user interface to the filters embedded in the <em>pandoc-tcl-filter</em> application. The <em>filter-view</em> application can be used independent of pandoc by providing the command line option <code>--gui</code> and an optional filename to be loaded directly. The type of filter to be used is recognized by the file name extension. So if the file extension is <em>.abc</em> the the ABC filter is used, if the file extension is <em>.tsvg</em> the tsvg filter is used. Below a list of the currently supported filters:</p>
+<center>
+<table>
+<thead>
+<tr class="header">
+<th>filter</th>
+<th>tool</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>.abc</td>
+<td>abcm2ps / cairosvg</td>
+<td>music</td>
+</tr>
+<tr class="even">
+<td>.dot</td>
+<td>dot</td>
+<td>diagrams</td>
+</tr>
+<tr class="odd">
+<td>.eqn</td>
+<td>eqn2graph / convert</td>
+<td>math</td>
+</tr>
+<tr class="even">
+<td>.mmd</td>
+<td>mermaid-cli (mmdc)</td>
+<td>diagrams</td>
+</tr>
+<tr class="odd">
+<td>.mtex</td>
+<td>latex / dvipgn</td>
+<td>math, diagrams, games</td>
+</tr>
+<tr class="even">
+<td>.pic</td>
+<td>pic2graph / convert</td>
+<td>diagrams</td>
+</tr>
+<tr class="odd">
+<td>.pik</td>
+<td>fossil / cairosvg</td>
+<td>diagrams</td>
+</tr>
+<tr class="even">
+<td>.pipe</td>
+<td>R / python / octave</td>
+<td>Statistics, Programming</td>
+</tr>
+<tr class="odd">
+<td>.puml</td>
+<td>plantuml</td>
+<td>diagrams</td>
+</tr>
+<tr class="even">
+<td>.rplot</td>
+<td>R</td>
+<td>statistics, graphics</td>
+</tr>
+<tr class="odd">
+<td>.tdot</td>
+<td>tclsh / dot</td>
+<td>diagrams</td>
+</tr>
+<tr class="even">
+<td>.tsvg</td>
+<td>tclsh / cairosvg</td>
+<td>graphics</td>
+</tr>
+</tbody>
+</table>
+</center>
+<p>As Tcl/Tk has currently no native support to display SVG graphics with text, the <em>cairosvg</em> application is used in cases where the native output is SVG.</p>
+<h2 id="requirememts-and-installation">REQUIREMEMTS AND INSTALLATION</h2>
+<p>You need an existing installation of Tcl/Tk. The <em>tclsh</em> application must be in the PATH:</p>
+<pre><code>$ echo &#39;puts $tcl_patchLevel&#39; | tclsh
+8.6.10</code></pre>
+<p>Ok, if tclsh is installed properly, download the standalone file <code>pandoc-tcl-filter.tapp</code> from here <a href="https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp">https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp</a>. Make the file exexutable and copy this file to a folder belonging to your PATH like <code>~/bin</code>. Check if the file is executable directly:</p>
+<pre><code>$ pandoc-tcl-filter.tapp --version
+0.7.0</code></pre>
+<p>You should then install <em>cairosvg</em>. Let’s check if it is there:</p>
+<pre><code>$ cairosvg --version
+2.5.2</code></pre>
+<p>Ok, that works as well. You must now install the tools for creating the graphics:</p>
+<p>Here some suggestions which worked for me on my Fedora Linux system:</p>
+<ul>
+<li>cairosvg - <code>sudo dnf install python3-cairosvg</code></li>
+<li>ABC music - <code>sudo dnf install abcm2ps python3-cairosvg</code></li>
+<li>EQN and PIC - <code>sudo dnf install groff</code></li>
+<li>GraphViz dot - <code>sudo dnf install graphviz</code></li>
+<li>Mermaid-cli - <code>npm install -g mermaid-cli</code></li>
+<li>LaTeX mtex - <code>sudo dnf install texlive-standalone</code></li>
+<li>Pikchr - <code>sudo dnf install fossil python3-cairosvg</code></li>
+<li>PlantUML - <code>sudo dnf install plantuml</code></li>
+<li>Rplot - <code>sudo dnf install R</code></li>
+<li>tdot - <code>sudo dnf install graphviz</code></li>
+<li>tsvg - <code>sudo dnf install python3-cairosvg</code></li>
+</ul>
+<p>Ubuntu users usually use <code>sudo apt-get install package-name</code>. On MacOSX probably the <em>brew</em> package manager should be used. On Windows I would recommend a Unix like system, for instance <em>msys2</em> but I have not yet tested this.</p>
+<h2 id="interface">INTERFACE</h2>
+<p>The interface is simple, it provides the file dialogs to open and save your files, a simple text editor widget with basic highlighting, an image (label) widget to display the result. Based on the extension the filter will be choosen and the graphic will be generated..</p>
+<p>After saving the file the image should be updated automatically. The following keybings are provided:</p>
+<ul>
+<li>Ctrl-o - open a file</li>
+<li>Ctrl-s - save the file</li>
+<li>Ctrl-Plus - increase font-size</li>
+<li>Ctrl-Minus - decrease font-size</li>
+<li>Ctrl-x - cut text</li>
+<li>Ctrl-v - insert text</li>
+<li>Ctrl-c - copy text</li>
+<li>Ctrl-u - edit undo</li>
+<li>Ctrl-Shift-/ - select all text</li>
+<li>Ctrl-Shift-h - swith to horizontal layout, left image, right editor</li>
+<li>Ctrl-Shift-v - swith to vertical layout, top image, bottom editor</li>
+</ul>
+<h2 id="dot-example">DOT example</h2>
+<p>The GraphViz tools have native PNG output, so we just need to install the GraphViz tools, see above. Let’s check our installation in the terminal by using the <code>-V command line flag</code>:</p>
+<pre><code>$ dot -V
+dot - graphviz version 2.48.0 (0)</code></pre>
+<p>Ok, we are ready to go, start the user interface:</p>
+<pre><code>$ pandoc-tcl-filter.tapp --gui &amp;</code></pre>
+<p>If you have installed <em>cairosvg</em> a sample tsvg script is shown and visualized. Delete the content and enter some dot code like this:</p>
+<pre><code>digraph G {
+   rankdir=LR;
+   node[shape=box,style=filled,fillcolor=skyblue];
+   A -&gt; B -&gt; C;
+}</code></pre>
+<p>Save this file as <em>digraph.dot</em>. You should immediatly see the output in the image on top. Add the line: <code>C -&gt; D;</code> below the ABC line and use <code>Ctrl-s</code> to save the file. You should see immediately the changes in the image. See below for the output:</p>
+<p><img src="filter-view/demo-dot.png" /></p>
+<p>If you prefere having the image on the left and the editor on the right you can switch the layout using the Ctrl-Shift-h shortcut, to go back use the Ctrl-Shift-v shortcut.</p>
+<p><img src="filter-view/demo-dot2.png" /> You can continue to change the graph, every time you save the file, the image will be updated. The image you see will be stored in a folder images in parallel to your current working directory. In a future version explicit saving as PNG, SVG or PDF might be supported.</p>
+<p>For more information about the GraphViz tools you should consult the GraphViz documentation at: <a href="https://graphviz.org/">https://graphviz.org/</a>.</p>
+<h2 id="fossil-example">Fossil example</h2>
+<p>In contrast to GraphViz <em>fossil pikchr</em> allows more explicit layout mechanism. Let’s install fossil, you can either download the last recent binary from the fossil site: <a href="https://fossil-scm.org/home/uv/download.html">https://fossil-scm.org/home/uv/download.html</a> and unpack and install the single file binary to a folder belonging to your PATH. Usually you should install it using your package manager as described above.</p>
+<p>The fossil application since version 2.13 has a <em>pikchr</em> subcommand which allows us to create SVG images based on the Pikchr language. For a manual about the Pikchr language look here: <a href="https://pikchr.org/home/doc/trunk/doc/userman.md">https://pikchr.org/home/doc/trunk/doc/userman.md</a>.</p>
+<p>Let’s first check if our fossil has pikchr support:</p>
+<pre><code>$ fossil version
+This is fossil version 2.17 [f48180f2ff] 2021-10-09 14:43:10 UTC
+$ fossil help pikchr | head -n 1
+Usage: fossil pikchr [options] ?INFILE? ?OUTFILE?</code></pre>
+<p>Ok, we have <em>pikchr</em> support. Let’s create a new file in our editor and let’s enter some <em>pikchr</em> commands:</p>
+<pre><code>down
+    line
+    box  &quot;Hello,&quot;  &quot;World!&quot; fill salmon;
+    arrow
+    box &quot;filter-view&quot; &quot;pik-demo&quot; fill cornsilk</code></pre>
+<p>If we save this file as <em>test2.pik</em> we should see the following output:</p>
+<p><img src="filter-view/demo-pik.png" /></p>
+<p>In case you made an error, the text widget will be shortly marked as salmon and a more ore less useful error message will be displayed in the statusbar at the bottom. More examples could be fount at the Pikchr filter manual page: <a href="filter/filter-pik.html">filter/filter-pik.html</a>.</p>
+<h2 id="latex-example">LaTeX example</h2>
+<p>The LaTeX filter needs at least two LaTeX packages, the package <em>standalone</em> and the package <em>amsmath</em>, the latter should be installed per default, the former should be installed using your package manager as described above (Fedora: <code>sudo dnf install texlive-standalone</code>).</p>
+<p>Here an example for visualizing an equation:</p>
+<pre><code>$ E = mc^2 $</code></pre>
+<p>Should, after saving the text as for instance as <em>einstein.mtex</em> immediately display the equation.</p>
+<p>If you create graphics with other packages you must load the packages explicity, that will be done like in the code chunks within Markdown documents. Let’s install the sudoku package: <code>sudo dnf install texlive-sudoku</code>. And enter the following code:</p>
+<pre><code>%```{.mtex packages=&quot;sudoku&quot;}
+\begin{sudoku}
+|2|5| | |3| |9| |1|.
+| |1| | | |4| | | |.
+|4| |7| | | |2| |8|.
+| | |5|2| | | | | |.
+| | | | |9|8|1| | |.
+| |4| | | |3| | | |.
+| | | |3|6| | |7|2|.
+| |7| | | | | | |3|.
+|9| |3| | | |6| |4|.
+\end{sudoku}
+%```</code></pre>
+<p>The comment character is required to protect the chunk options against LaTeX interpretation. After saving the file for instance as <em>sudoku.mtex</em> you should see the following output:</p>
+<p><img src="filter-view/demo-mtex.png" /></p>
+<p>More examples can be found in the filter-mtex manual <a href="%5Bfilter/filter-mtex.html%5D">filter/filter-mtex.html</a></p>
+</body>
+</html>

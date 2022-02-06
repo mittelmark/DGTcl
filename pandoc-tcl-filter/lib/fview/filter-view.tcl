@@ -1,10 +1,30 @@
+#!/usr/bin/env tclsh
+#' ---
+#' title: filter-view manual
+#' author: Dr. Detlef Groth
+#' date: 2022-02-07
+#' ---
+#' 
+#' ## NAME
+#' 
+#' *filter-view* - graphical interface for various diagram and graphics generating tools like R, Octave, 
+#' Python with Matplotlib for instance, fossil pikchr, PIC, mermaid, GraphViz dot and neato, PlantUML, 
+#' ABC music, the Tcl libraries tsvg and tdot, equation system EQN and LaTeX math as well as to LaTeX 
+#' graphical libraries such as TikZ.
+#' 
+#' ## SYNOPSIS
+#' 
+#' ```
+#' pandoc-tcl-filter.tapp --gui ?FILENAME?
+#' ```
+#' 
 ##############################################################################
 #  Created By    : Detlef Groth
 #  Created       : Fri Feb 4 05:49:13 2022
-#  Last Modified : <220205.0858>
+#  Last Modified : <220206.0900>
 #
 #  Description	 : Graphical user interface to display
-#'                 results from graphical tools created based with simple text.
+#                 results from graphical tools created based with simple text.
 #
 #  Notes
 #
@@ -75,7 +95,9 @@ proc ::fview::gui {} {
     dgw::txmixin $t dgw::txhighlight
     dgw::txmixin $t dgw::txpopup
     dgw::txmixin $t dgw::txfontsize
-    dgw::txmixin $t dgw::txtabbind
+    dgw::txmixin $t dgw::txtabspace
+    $t configure -borderwidth 10 -relief flat 
+
     $t configure -highlights {
         {dot comment ^\s*(@|#|%|//).+}
         {dot keyword {(digraph|node)}}
@@ -94,8 +116,8 @@ proc ::fview::gui {} {
     dgw::txmixin $t dgw::txhighlight
     dgw::txmixin $t dgw::txpopup   
     dgw::txmixin $t dgw::txfontsize
-    dgw::txmixin $t dgw::txtabbind
-    
+    dgw::txmixin $t dgw::txtabspace
+    $t configure -borderwidth 10 -relief flat 
     $t configure -highlights {
         {dot comment ^\s*(@|#|%|//).+}
         {dot keyword {(digraph|node)}}
@@ -116,46 +138,6 @@ proc ::fview::gui {} {
     set ::fview::text2 $tf2.text    
     set ::fview::filename ""
     app status "Press Control-Shift H or V to change layout!" 100
-}
-
-snit::widgetadaptor dgw::txfontsize {
-    delegate option * to hull
-    delegate method * to hull
-    constructor {args} {
-        installhull $win
-        set textw $win
-        $self configurelist $args
-        $self configure -borderwidth 10 -relief flat 
-        bind $win <Control-plus>  [mymethod changeFontSize +2]
-        bind $win <Control-minus> [mymethod changeFontSize -2]
-    }
-    method changeFontSize {x} {
-        set font [$win cget -font]
-        font configure $font -size [expr {[font configure $font -size] + $x}]
-    }
-}
-    
-snit::widgetadaptor dgw::txtabbind {
-    delegate option * to hull
-    delegate method * to hull
-    constructor {args} {
-        installhull $win
-        set textw $win
-        $self configurelist $args
-        $self configure -borderwidth 10 -relief flat 
-        bind $self <Tab> { if { [string equal [%W cget -state] "normal"] } {
-                tk::TextInsert %W "    "
-                focus %W
-                break
-            }
-        }
-        bind $self <Key-F2> { if { [string equal [%W cget -state] "normal"] } {
-                tk::TextInsert %W \t
-                focus %W
-                break
-            }
-        }
-    }
 }
 
 proc ::fview::fileNew {} {
@@ -251,12 +233,10 @@ proc ::fview::fileSave {{savefile ""} } {
     }
 }
 proc ::fview::paneVertical {} {
-    puts vertical
     pack forget $::fview::pwd1
     pack $::fview::pwd2 -side top -fill both -expand yes
 }
 proc ::fview::paneHorizontal {} {
-    puts horizontal
     pack forget $::fview::pwd2
     pack $::fview::pwd1 -side top -fill both -expand yes
 }
@@ -269,3 +249,230 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 
     }
 }
+
+#' ## DESCRIPTION
+#' 
+#' *filter-view* is a graphical user interface to the filters embedded in the *pandoc-tcl-filter* application.
+#' The *filter-view* application can be used independent of pandoc by providing the command line option `--gui` 
+#' and an optional filename to be loaded directly. The type of filter to be used is recognized by the file name extension. 
+#' So if the file extension is *.abc* the the ABC filter is used, if the file extension is *.tsvg* 
+#' the tsvg filter is  used. Below a list of the currently supported filters:
+#' 
+#' <center>
+#' | filter | tool | comment |
+#' | ------ | ----- | ---- | 
+#' | .abc   | abcm2ps / cairosvg| music |
+#' | .dot   | dot   |  diagrams |
+#' | .eqn   | eqn2graph / convert | math | 
+#' | .mmd   | mermaid-cli (mmdc) | diagrams |
+#' | .mtex  | latex / dvipgn | math, diagrams, games |
+#' | .pic   | pic2graph / convert | diagrams |
+#' | .pik   | fossil  / cairosvg | diagrams |
+#' | .pipe  | R / python / octave |  Statistics, Programming |
+#' | .puml  | plantuml  |  diagrams |
+#' | .rplot | R         | statistics, graphics |
+#' | .tdot  | tclsh / dot   | diagrams |
+#' | .tsvg  | tclsh / cairosvg | graphics |
+#' </center>
+#' 
+#' As Tcl/Tk has currently no native support to display SVG graphics with text, 
+#' the *cairosvg* application is used in cases where the native output is SVG. 
+#' 
+#' ## REQUIREMEMTS AND INSTALLATION
+#' 
+#' You need an existing installation of Tcl/Tk. The *tclsh* application must be in the PATH:
+#' 
+#' ```
+#' $ echo 'puts $tcl_patchLevel' | tclsh
+#' 8.6.10
+#' ```
+#' 
+#' Ok, if tclsh is installed properly, download the standalone file `pandoc-tcl-filter.tapp` from here [https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp](https://github.com/mittelmark/DGTcl/releases/download/latest/pandoc-tcl-filter.tapp).
+#' Make the file exexutable and copy this file to a folder belonging to your PATH like `~/bin`. Check if the file is executable directly:
+#' 
+#' ```
+#' $ pandoc-tcl-filter.tapp --version
+#' 0.7.0
+#' ```
+#' 
+#' You should then install *cairosvg*. Let's check if it is there:
+#' 
+#' ```
+#' $ cairosvg --version
+#' 2.5.2
+#' ```
+#' 
+#' Ok, that works as well. You must now install the tools for creating the graphics:
+#' 
+#' Here some suggestions which worked for me on my Fedora Linux system:
+#' 
+#' * cairosvg - `sudo dnf install python3-cairosvg`
+#' * ABC music - `sudo dnf install abcm2ps python3-cairosvg`
+#' * EQN and PIC - `sudo dnf install groff`
+#' * GraphViz dot - `sudo dnf install graphviz`
+#' * Mermaid-cli - `npm install -g mermaid-cli`
+#' * LaTeX mtex - `sudo dnf install texlive-standalone`
+#' * Pikchr     - `sudo dnf install fossil python3-cairosvg`
+#' * PlantUML   - `sudo dnf install plantuml`
+#' * Rplot      - `sudo dnf install R`
+#' * tdot       - `sudo dnf install graphviz`
+#' * tsvg       - `sudo dnf install python3-cairosvg`
+#' 
+#' Ubuntu users usually use `sudo apt-get install package-name`. On MacOSX probably the *brew* package manager should be used.
+#' On Windows I would recommend a Unix like system, for instance *msys2* but I have not yet tested this.
+#' 
+#' ## INTERFACE
+#' 
+#' The interface is simple, it provides the file dialogs to open and save your files, 
+#' a simple text editor widget with basic highlighting, an image (label) widget to display the result. 
+#' Based on the extension the filter will be choosen and the graphic will be generated..
+#' 
+#' After saving the file the image should be updated automatically.
+#' The following keybings are provided:
+#' 
+#' - Ctrl-o - open a file
+#' - Ctrl-s - save the file
+#' - Ctrl-Plus - increase font-size
+#' - Ctrl-Minus - decrease font-size
+#' - Ctrl-x - cut text
+#' - Ctrl-v - insert text
+#' - Ctrl-c - copy text
+#' - Ctrl-u - edit undo
+#' - Ctrl-Shift-/ - select all text
+#' - Ctrl-Shift-h - swith to horizontal layout, left image, right editor
+#' - Ctrl-Shift-v - swith to vertical layout, top image, bottom editor
+#' 
+#' ## DOT example
+#' 
+#' The GraphViz tools have native PNG output, so we just need 
+#' to install the GraphViz tools, see above. Let's check our installation in the terminal by using the
+#' `-V command line flag`:
+#' 
+#' ```
+#' $ dot -V
+#' dot - graphviz version 2.48.0 (0)
+#' ```
+#'
+#' Ok, we are ready to go, start the user interface:
+#' 
+#' ```
+#' $ pandoc-tcl-filter.tapp --gui &
+#' ```
+#' 
+#' If you have installed *cairosvg* a sample tsvg script is shown and visualized.
+#' Delete the content and enter some dot code like this:
+#' 
+#' ```
+#' digraph G {
+#'    rankdir=LR;
+#'    node[shape=box,style=filled,fillcolor=skyblue];
+#'    A -> B -> C;
+#' }
+#' ```
+#' 
+#' Save this file as *digraph.dot*. 
+#' You should immediatly see the output in the image on top.
+#' Add the line: `C -> D;` below the ABC line and use `Ctrl-s` to save the file.
+#' You should see immediately the changes in the image. See below for the output:
+#' 
+#' ![](filter-view/demo-dot.png)
+#' 
+#' If you prefere having the image on the left and the editor on the right you can switch the layout using the Ctrl-Shift-h shortcut, to go back use the Ctrl-Shift-v shortcut.
+#' 
+#' ![](filter-view/demo-dot2.png)
+
+#' You can continue to change the graph, every time you save the file, the image will be updated.
+#' The image you see will be stored in a folder images in parallel to your current working directory. In a future version explicit saving as PNG, SVG or PDF might be supported.
+#' 
+#' For more information about the GraphViz tools you should consult the GraphViz documentation at:
+#' [https://graphviz.org/](https://graphviz.org/).
+#' 
+#' ## Fossil example
+#' 
+#' In contrast to GraphViz *fossil pikchr* allows more explicit layout mechanism. Let's install fossil, 
+#' you can either download the last recent binary from the fossil site: 
+#' [https://fossil-scm.org/home/uv/download.html](https://fossil-scm.org/home/uv/download.html) 
+#' and unpack and install the single file binary to a folder belonging to your PATH. 
+#' Usually you should install it using your package manager as described above.
+#' 
+#' The fossil application since version 2.13 has a *pikchr* subcommand which allows us to create
+#' SVG images based on the Pikchr language. For a manual about the Pikchr language look here:
+#' [https://pikchr.org/home/doc/trunk/doc/userman.md](https://pikchr.org/home/doc/trunk/doc/userman.md).
+#' 
+#' Let's first check if our fossil has pikchr support:
+#' 
+#' ```
+#' $ fossil version
+#' This is fossil version 2.17 [f48180f2ff] 2021-10-09 14:43:10 UTC
+#' $ fossil help pikchr | head -n 1
+#' Usage: fossil pikchr [options] ?INFILE? ?OUTFILE?
+#' ```
+#' 
+#' Ok, we have *pikchr* support. Let's create a new file in our editor and let's enter some *pikchr* commands:
+#' 
+#' ```
+#' down
+#'     line
+#'     box  "Hello,"  "World!" fill salmon;
+#'     arrow
+#'     box "filter-view" "pik-demo" fill cornsilk
+#' ```
+#' 
+#' If we save this file as *test2.pik* we should see the following output:
+#' 
+#' ![](filter-view/demo-pik.png)
+#' 
+#' In case you made an error, the text widget will be shortly marked as salmon and a
+#' more ore less useful error message will be displayed in the
+#' statusbar at the bottom. More examples could be fount at the Pikchr filter manual page: [filter/filter-pik.html](filter/filter-pik.html).
+#' 
+#' ## LaTeX example
+#' 
+#' The LaTeX filter needs at least two LaTeX packages, 
+#' the package *standalone* and the package *amsmath*, the latter should
+#' be installed per default, the former should be installed using your package manager as 
+#' described above (Fedora: `sudo dnf install texlive-standalone`).
+#' 
+#' Here an example for visualizing an equation:
+#' 
+#' ```
+#' $ E = mc^2 $
+#' ```
+#' 
+#' Should, after saving the text as for instance as *einstein.mtex*
+#' immediately display the equation.
+#'  
+#' If you create graphics with other packages you must load the packages explicity, that will be done like in the code chunks within Markdown documents. Let's install the sudoku package: `sudo dnf install texlive-sudoku`. And enter the following code:
+#' 
+#' ```
+#' %```{.mtex packages="sudoku"}
+#' \begin{sudoku}
+#' |2|5| | |3| |9| |1|.
+#' | |1| | | |4| | | |.
+#' |4| |7| | | |2| |8|.
+#' | | |5|2| | | | | |.
+#' | | | | |9|8|1| | |.
+#' | |4| | | |3| | | |.
+#' | | | |3|6| | |7|2|.
+#' | |7| | | | | | |3|.
+#' |9| |3| | | |6| |4|.
+#' \end{sudoku}
+#' %```
+#' ```
+#' 
+#' The comment character is required to protect the chunk options
+#' against LaTeX interpretation. After saving the file for instance as
+#' *sudoku.mtex* you should see the following output:
+#' 
+#' ![](filter-view/demo-mtex.png)
+#' 
+#' More examples can be found in the filter-mtex manual [filter/filter-mtex.html]([filter/filter-mtex.html])
+#' 
+#' ## Other examples
+#' 
+#' TODO - R, Graphviz neato, tsvg, tdot
+#' 
+#' ## AUTHOR
+#' 
+#' Dr. Detlef Groth, Schwielowsee, Germany.
+#' 

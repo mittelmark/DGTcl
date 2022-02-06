@@ -6,7 +6,7 @@
 
 package provide pandoc 0.7.0
 
-if {[llength $argv] > 0 && [lsearch -regex $argv -v] >= 0} {
+if {[llength $argv] > 0 && [lsearch -exact $argv -v] >= 0} {
     puts "[package present pandoc]"
     exit 0
 }   
@@ -509,6 +509,8 @@ package require rl_json
 #' pandoc-tcl-filter.tapp infile.md outfile.html --css style.css -s --toc
 #' ```
 #'
+#' ## Code embedding
+
 #' Embed code either inline or in form of code chunks like here (triple ticks):
 #' 
 #' ``` 
@@ -521,14 +523,18 @@ package require rl_json
 #'     Hello this is Tcl `tcl package provide Tcl`!
 #' ```
 #' 
-#' The markers for the other filters are 
+#' ## Filter Overview 
+#' 
+#' The markers for the other filters are:
+#' 
 #' `{.abc}, `{.dot}`, `{.eqn}`, `{.mmd}`, `{.mtex}`, `{.pic}`,
 #' `{.pikchr}, `{.puml}`, `{.rplot}`,`{.sqlite}` and `{.tsvg}`. 
+#' 
 #' For details on how to use them have a look at the manual page links on top.
 #' 
 #' You can combine all filters in one document  just by using the appropiate markers. 
 #' 
-#' Here an overview about the required tools:
+#' Here an overview about the required tools to use a filter:
 #' 
 #' <center>
 #' 
@@ -558,10 +564,6 @@ package require rl_json
 #'    --css mini.css -s
 #' ```
 #'
-#' ## Required Tools
-#' 
-#' 
-#' 
 #' ## Example Tcl Filter
 #' 
 #' #### Tcl-filter
