@@ -889,6 +889,9 @@ Please look at the source Markdown file to see which Markdown code was the input
 * 2021-08-31 - adding mtex filter example, images now in images folder, Lua filter example
 * 2021-11-23 - adding pikchr, pik, eqn filters, extending documentation
 * 2021-11-30 - adding rplot filter for embedding R code
+* 2021-12-21 - results="asis" for Markdown inclusion, filters for PlantUML and Mermaid diagrams, sqlite3, ABC music
+* 2022-01-09 - generic shell filter (filter-cmd), tdot filter for Tcl/dot   
+* 2022-02-07 - graphical user interface and pipe filter for embedding R, Python and Octave
 
 ## Author
 
