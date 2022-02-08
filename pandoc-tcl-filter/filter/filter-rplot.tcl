@@ -8,6 +8,14 @@
 #'     ext: png
 #' ---
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-rplot.tcl_ - Filter which can be used to display R plots

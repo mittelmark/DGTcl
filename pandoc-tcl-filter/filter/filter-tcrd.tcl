@@ -6,6 +6,14 @@
 #'     results: show
 #' ---
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-tcrd.tcl_ - Pandoc Tcl filter which can be used to display songs with chords

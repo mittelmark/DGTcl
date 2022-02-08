@@ -11,6 +11,14 @@
 # the script pandoc-tcl-filter.tcl 
 # must be in the in the parent directory of the filter directory
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-pic.tcl_ - Filter which can be used to display pic files within a Pandoc processed
@@ -40,7 +48,7 @@
 #'   - fig - should a figure be created, default: true
 #' 
 #' To change the defaults the YAML header can be used. Here an example to change the 
-#' default the image output path to nfigures, teh default file format to png.
+#' default the image output path to nfigures, the default file format to png.
 #' 
 #' ```
 #'  ----
@@ -67,10 +75,24 @@
 #' {arrow right; move; "E" }
 #' ``` 
 #' 
+#' Let's finish with an example for filled grey backgrounds:
+#' 
+#' ```{.pic}
+#' circle "circle" rad 0.5 fill 0.3; arrow ;
+#' ellipse "ellipse" wid 1.4 ht 1 fill 0.1 ; line;
+#' box wid 1 ht 1 fill 0.05 "A";
+#' spline;
+#' box wid 0.4 ht 0.4 fill 0.05 "B";
+#' arc;
+#' box wid 0.2 ht 0.2 fill 0.05 "C";
+#' ```
+#' 
 #' ## See also:
 #' 
 #' * [Unix Text Processing](https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter10.html)
+#' * [Pikchr filter](filter-pik.html)
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [pandoc-tcl-filter documentation](../pandoc-tcl-filter.html)
 #' 
 
 

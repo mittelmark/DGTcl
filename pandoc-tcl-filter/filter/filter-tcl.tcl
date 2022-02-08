@@ -4,6 +4,14 @@
 #' date: 2022-02-04
 #' ---
 #'
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## NAME
 #' 
 #' _filter-tcl.tcl_ - filter to embed Tcl code in documentation.
@@ -242,6 +250,22 @@
 #' 
 #' MIT - License
 #' 
+proc luniq {L} {
+    # removes duplicates without sorting the input list
+    set t {}
+    foreach i $L {if {[lsearch -exact $t $i]==-1} {lappend t $i}}
+    return $t
+} 
+
+set appdir [file dirname [info script]]
+if {[file exists  [file join $appdir .. lib]]} {
+    puts here
+    lappend auto_path [file normalize [file join $appdir lib]]
+}
+
+interp create mdi
+
+mdi eval "set auto_path \[list [luniq $auto_path]\]"
 
 mdi eval {
     namespace eval filter { 

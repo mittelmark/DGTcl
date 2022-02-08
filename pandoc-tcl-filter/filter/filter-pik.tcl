@@ -12,6 +12,14 @@
 # or in case of using the unwrapped application _pandoc-tcl-filter.tcl_ must be
 # must be located in the in the parent directory of the filter directory
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-pik.tcl_ - Filter which can be used to display Pikchr files within a Pandoc processed
@@ -68,6 +76,22 @@
 #' 
 #' Here an example for a simple example taken from the Pikchr homepage:
 #' 
+#' ```
+#'     # remove indentation it is just to 
+#'     # protect against interpretation
+#'     ```{.pik}
+#'     scale = 0.8
+#'     fill  = cornsilk
+#'     arrow right 200% "Markdown" "Source"
+#'     box rad 10px "Markdown" "Formatter" "(markdown.c)" fit
+#'     arrow right 200% "HTML+SVG" "Output"
+#'     arrow <-> down 70% from last box.s
+#'     box same "Pikchr" "Formatter" "(pikchr.c)" fit
+#'     ```
+#' ```
+#' 
+#' And here the output:
+#' 
 #' ```{.pik}
 #' scale = 0.8
 #' fill  = cornsilk
@@ -78,7 +102,7 @@
 #' box same "Pikchr" "Formatter" "(pikchr.c)" fit
 #' ```
 #' 
-#' Now to other larger examples from the Pikchr website - [https://pikchr.org/home/doc/trunk/doc/examples.md](https://pikchr.org/home/doc/trunk/doc/examples.md):
+#' Now to an other larger examples from the Pikchr website - [https://pikchr.org/home/doc/trunk/doc/examples.md](https://pikchr.org/home/doc/trunk/doc/examples.md):
 #' 
 #' ```{.pik}
 #'   scale = 0.9
@@ -107,10 +131,15 @@
 #'             fill 0xc6e2ff 
 #' ```
 #' 
+#' For more examples look here [example-pik.html](../examples/example-pik.html).
 #' 
 #' ## See also:
 #' 
-#' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [pandoc-tcl-filter documentaion](../pandoc-tcl-filter.html)
+#' * Fossil Homepage: [https://fossil-scm.org](https://fossil-scm.org)
+#' * Pikchr Homepage: [https://pikchr.org](https://pikchr.org)
+#' * Pikchr Manual: [https://pikchr.org/home/doc/trunk/doc/userman.md](https://pikchr.org/home/doc/trunk/doc/userman.md)
+#' * Pikchr Grammar: [https://pikchr.org/home/doc/trunk/doc/grammar.md](https://pikchr.org/home/doc/trunk/doc/grammar.md)
 #' * [PIC filter](filter-pik.html)
 #' 
 

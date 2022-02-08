@@ -6,6 +6,14 @@
 #'     results: show
 #' ---
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-pipe.tcl_ - Filter which can be used to execute various programming

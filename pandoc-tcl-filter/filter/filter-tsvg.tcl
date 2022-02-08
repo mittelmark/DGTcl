@@ -8,6 +8,14 @@
 #'     results: hide
 #' ---
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-tsvg.tcl_ - Filter which can be used to display SVG graphics

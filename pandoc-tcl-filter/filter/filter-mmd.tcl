@@ -11,6 +11,14 @@
 # the script pandoc-tcl-filter.tcl 
 # must be in the in the parent directory of the filter directory
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#'
 #' ## Name
 #' 
 #' _filter-mmd.tcl_ - Filter which can be used to display [Mermaid](https://mermaid-js.github.io) 
