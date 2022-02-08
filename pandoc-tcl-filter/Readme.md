@@ -423,7 +423,7 @@ and programming languages using the Tcl programming language. The standalone app
 |.cmd   | Bash scripts         |                      |
 |.dot   | dot/neato (GraphViz) | [https://graphviz.org/](https://graphviz.org/) |
 |.eqn   | eqn2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
-|.mmd   | mmdc     (Mermaid-cli)  | [https://www.npmjs.com/package/@mermaid-js/mermaid-cli](https://www.npmjs.com/package/@mermaid-js/mermaid-cli) |
+|.mmd   | mmdc     (Mermaid-cli)  | [https://www.npmjs.com/package/mermaid.cli](https://www.npmjs.com/package/mermaid.cli) |
 |.mtex  | LaTex                | [https://www.latex-project.org/](https://www.latex-project.org/) |
 |.pic   | pic2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
 |.pik   | pikchr/fossil pikchr | [https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md](https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md) |
