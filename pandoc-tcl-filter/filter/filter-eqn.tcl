@@ -68,9 +68,55 @@
 #' x = {-b +- sqrt{b sup 2 - 4ac}} over 2a
 #' ```
 #' 
+#' Here some more simple examples:
+#' 
+#' ```{.eqn}
+#' x = 1 over 2
+#' ```
+#' 
+#' ```{.eqn}
+#' y = 2 x sup 2 + 4x - 2 
+#' ```
+#' 
+#' ```{.eqn}
+#' y = 4 times sin(x) - cos sup 2 (x) 
+#' ```
+#' 
+#' Size can be changed using density: {.eqn density=144}:
+#'
+#' ```{.eqn density=144}
+#' s = sqrt { { sum from i=1 to inf ( x sub i - x bar ) sup 2 } over { N - 1 } } 
+#' ```
+#' 
+#' Higher density: {.eqn density=300}:
+#'
+#' ```{.eqn density=300}
+#' s = sqrt { { sum from i=1 to inf ( x sub i - x bar ) sup 2 } over { N - 1 } } 
+#' ```
+#' 
+#' Slightly vetter quality can be achieved by using high density and rescaling the image using Markdown syntax rescaling back to a smaller figure:
+#' 
+#' ```
+#'     ```{.eqn label=highq density=600 include=false}
+#'     s = sqrt { { sum from i=1 to inf ( x sub i - x bar ) sup 2 } over { N - 1 } } 
+#'     ```
+#' 
+#'     ![](images/highq.png){#id width=200px}
+#' ```
+#' 
+#' Here the results:
+#' 
+#' ```{.eqn label=highq density=600 include=false}
+#' s = sqrt { { sum from i=1 to inf ( x sub i - x bar ) sup 2 } over { N - 1 } } 
+#' ```
+#' 
+#' ![](images/highq.png){#id width=200px}
+#' 
 #' ## See also:
 #' 
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [pandoc-tcl-filter documentation](../pandoc-tcl-filter.html)
+#' * [Unix Text Processing - EQN chapter](https://www.oreilly.com/library/view/unix-text-processing/9780810462915/Chapter09.html#ch9)
 #' * [PIC filter](filter-pic.html)
 #' * [LaTeX Math filter](filter-mtex.html)
 #' 
