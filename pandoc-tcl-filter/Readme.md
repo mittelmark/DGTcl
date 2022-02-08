@@ -1,9 +1,8 @@
 ---
-title: "Readme for the Pandoc Tcl filter"
-shorttitle: "pandoc-tcl-filter Readme"
-author: 
-- Detlef Groth
-date: 2022-01-25
+title: Readme for the Pandoc Tcl filter
+shorttitle: pandoc-tcl-filter Readme
+author: Detlef Groth
+date: 2022-02-07
 standalone: true
 toc: true
 css: mini.css
@@ -18,6 +17,14 @@ abstract: >
     the code block as well.
 ---
 
+------
+
+```{.tcl results="asis" echo=false}
+include header.md
+```
+    
+------
+
 ## Name
 
 _Readme pandoc-tcl-filter_ - Tcl based pandoc filter to execute programming and other 
@@ -25,28 +32,36 @@ _Readme pandoc-tcl-filter_ - Tcl based pandoc filter to execute programming and 
 
 ## Usage
 
-
 * works as filter for pandoc or just standalone (then only conversion to HTML or Markdown is possible)
+* embedded graphical user interface, see [filter-view.html](filter-view.html) 
 * evaluation of Tcl and other programming language code with textual Markup files like Markdown or Asciidoc and adding the results, figures, tables etc from the code evaluation to a resulting document like HTML, PDF, DOCX, Markdown etc
 * easy to extend, many filters for other programming languages like (Python, Octave, R) are already embedded
 * filters for many graphical tools such as GraphViz, Pikchr, PlantUML, mermaid, LaTeX like
 * generic filter for all type of terminal applications such as LilyPond, C/C++ compilers etc. where examples are given
 * all tools and filters can be applied within a single document
 * can be used to extract and process embedded Markdown documentation in source code of different programming languages, such as C/C++, Tcl, Python, etc. 
-* the packed Tcl script with these features has a size of just around 900kb
+* the packed Tcl script with these features has a size of just around 1Mb
 
 Here some call syntax examples:
   
 ```
  pandoc input.md -s --filter pandoc-tcl-filter.tapp -o output.html
- # or using the Tcl script from the unpacked application
+
+ # or using the Tcl script from the unpacked application (not recommended)
  pandoc input.md -s  --filter pandoc-tcl-filter.tcl -o output.html
+
  # code documentation tool for extracting Markdown based documentation
  # and evaluating code within code chunks as in standard Markdown documents
  pandoc-tcl-filter.tapp sourcefile.tcl sourcfile.html --css file.css -s
+
  #  the same but not using pandoc but the internal Markdown library
  # only conversion to HTML is possible
  pandoc-tcl-filter.tapp sourcefile.tcl sourcfile.html --css file.css --no-pandoc
+
+ # graphical user interface 
+ # files must have filter name extensions like 
+ # .abc, .dot, .eqn, .mmd, .pic, .pik etc
+ pandoc-tcl-filter.tapp --gui somefile   
 ```
 
 ## Installation

@@ -14,7 +14,8 @@ software installations, just a working Tcl installation.
 
 Links: 
 
-* TclTk Homepage: [https://www.tcl.tk/](https://www.tcl.tk/)
+* Tcl/Tk Homepage: [https://www.tcl.tk/](https://www.tcl.tk/)
+* Tcl filter documentation: [../filter/filter-tcl.html]  
 
 ## Tcl examples
 
