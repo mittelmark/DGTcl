@@ -418,13 +418,22 @@ The *pandoc-tcl-filter* supports as well generation of filters for other tools
 and programming languages using the Tcl programming language. The standalone application *pandoc-tcl-filter.tapp* comes with the following filters:
 
 |filter | Tool                 | URL                  |
----     | ---                  | ---                  | 
+---     | ---                  | ---                  |
+|.abc   | ABC music            | [http://moinejf.free.fr/](http://moinejf.free.fr/)   | 
+|.cmd   | Bash scripts         |                      |
 |.dot   | dot/neato (GraphViz) | [https://graphviz.org/](https://graphviz.org/) |
 |.eqn   | eqn2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
+|.mmd   | mmdc     (Mermaid-cli)  | [https://www.npmjs.com/package/@mermaid-js/mermaid-cli](https://www.npmjs.com/package/@mermaid-js/mermaid-cli) |
 |.mtex  | LaTex                | [https://www.latex-project.org/](https://www.latex-project.org/) |
 |.pic   | pic2graph  (groff)   | [https://www.gnu.org/software/groff/](https://www.gnu.org/software/groff/) |
 |.pik   | pikchr/fossil pikchr | [https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md](https://www.fossil-scm.org/home/doc/trunk/www/pikchr.md) |
+|.pipe  | R, python, octave    |  |
+|.puml  | plantuml             | [https://plantuml.com/](https://plantuml.com/) |
 |.rplot | Rscript              | [https://www.r-project.org](https://www.r-project.org) |
+|.sqlite | sqlite3            | [https://www.sqlite.org](https://www.sqlite.org/index.html) |
+|.tcl    | tclsh              | [https://www.tcl.tk](https://www.tcl.tk) |
+|.tcrd  | Tcl (chords for songs) | |
+|.tdot  | Tcl tdot package     | [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl) |
 |.tsvg  | Tcl tsvg package     | [https://github.com/mittelmark/DGTcl](https://github.com/mittelmark/DGTcl) |
 
 Let's finish our small tutorial with the implementation of a filter for a
