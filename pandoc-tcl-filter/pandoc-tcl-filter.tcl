@@ -210,9 +210,9 @@ if {[file exists  [file join $appdir lib]]} {
     package require tsvg
 }
 
-interp create mdi
-
-mdi eval "set auto_path \[list [luniq $auto_path]\]"
+# interp create mdi
+# 
+# mdi eval "set auto_path \[list [luniq $auto_path]\]"
 
 catch {
     # if available load filters
@@ -466,6 +466,13 @@ package require rl_json
 #'    echo: "true"
 #'    results: show
 #' ---
+#'
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' ------
 #'
 #' ## NAME
 #' 

@@ -90,6 +90,14 @@
 <p class="author">Detlef Groth, Schwielowsee, Germany</p>
 <p class="date">2022-01-22</p>
 </header>
+<hr/>
+<p></p>
+<center>
+<p>Filters: <a href="filter/filter-abc.html">filter-abc</a> - <a href="filter/filter-cmd.html">filter-cmd</a> - <a href="filter/filter-dot.html">filter-dot</a> - <a href="filter/filter-eqn.html">filter-eqn</a> - <a href="filter/filter-mmd.html">filter-mmd</a> - <a href="filter/filter-mtex.html">filter-mtex</a> - <a href="filter/filter-pic.html">filter-pic</a> - <a href="filter/filter-pik.html">filter-pik</a> - <a href="filter/filter-pipe.html">filter-pipe</a> - <a href="filter/filter-puml.html">filter-puml</a> - <a href="filter/filter-rplot.html">filter-rplot</a> - <a href="filter/filter-sqlite.html">filter-sqlite</a> - <a href="filter/filter-tcrd.html">filter-tcrd</a> - <a href="filter/filter-tcl.html">filter-tcl</a> - <a href="filter/filter-tdot.html">filter-tdot</a> - <a href="filter/filter-tsvg.html">filter-tsvg</a> <br/></p>
+<p>More examples: <a href="examples/example-dot.html">dot</a> - <a href="examples/example-mtex.html">mtex</a> - <a href="examples/example-pic.html">pic</a> - <a href="examples/example-pik.html">pikchr</a> - <a href="examples/example-rplot.html">rplot</a> - <a href="examples/example-tcl.html">tcl</a> - <a href="examples/example-tsvg.html">tsvg</a></p>
+Documentation: <a href="pandoc-tcl-filter.html">pandoc-tcl-filter</a> - <a href="Readme.html">this Readme</a> - <a href="filter-view.html">GUI filter-view.html</a>
+</center>
+<hr/>
 <h2 id="name">NAME</h2>
 <p><em>pandoc-tcl-filter.tcl</em> - filter application for the pandoc command line application to convert Markdown files into other formats. The filter allows you to embed Tcl code into your Markdown documentation and offers a plugin architecture to add other command line filters easily using Tcl and the <code>exec</code> command. As examples are given in the filter folder of the project:</p>
 <ul>
@@ -119,6 +127,7 @@ pandoc infile --filter pandoc-tcl-filter.tapp ?options?
 pandoc-tcl-filter.tapp --gui</code></pre>
 <p>Where options for the filter and the standalone mode are the usual pandoc options. For HTML conversion you should use for instance:</p>
 <pre><code>pandoc-tcl-filter.tapp infile.md outfile.html --css style.css -s --toc</code></pre>
+<h2 id="code-embedding">Code embedding</h2>
 <p>Embed code either inline or in form of code chunks like here (triple ticks):</p>
 <pre><code>    ```{.tcl}
     set x 4
@@ -127,9 +136,12 @@ pandoc-tcl-filter.tapp --gui</code></pre>
     ```
   
     Hello this is Tcl `tcl package provide Tcl`!</code></pre>
-<p>The markers for the other filters are <code class="sourceCode dot"><span class="ot">{</span><span class="co">.</span><span class="va">abc</span><span class="ot">}</span>,</code><code class="eqn">,</code><code class="sourceCode markdown">,</code><code class="mtex">,</code><code class="pic">,</code><code class="pikchr">,</code>, <code>{.puml}</code>, <code>{.rplot}</code>,<code>{.sqlite}</code> and <code>{.tsvg}</code>. For details on how to use them have a look at the manual page links on top.</p>
+<h2 id="filter-overview">Filter Overview</h2>
+<p>The markers for the other filters are:</p>
+<p><code class="sourceCode dot"><span class="ot">{</span><span class="co">.</span><span class="va">abc</span><span class="ot">}</span>,</code><code class="eqn">,</code><code class="sourceCode markdown">,</code><code class="mtex">,</code><code class="pic">,</code><code class="pikchr">,</code>, <code>{.puml}</code>, <code>{.rplot}</code>,<code>{.sqlite}</code> and <code>{.tsvg}</code>.</p>
+<p>For details on how to use them have a look at the manual page links on top.</p>
 <p>You can combine all filters in one document just by using the appropiate markers.</p>
-<p>Here an overview about the required tools:</p>
+<p>Here an overview about the required tools to use a filter:</p>
 <center>
 <table>
 <thead>
@@ -261,7 +273,6 @@ pandoc-tcl-filter.tapp --gui</code></pre>
 <p>The Markdown document within this file could be extracted and converted as follows:</p>
 <pre><code> pandoc-tcl-filter.tapp pandoc-tcl-filter.tcl pandoc-tcl-filter.html \
    --css mini.css -s</code></pre>
-<h2 id="required-tools">Required Tools</h2>
 <h2 id="example-tcl-filter">Example Tcl Filter</h2>
 <h4 id="tcl-filter">Tcl-filter</h4>
 <pre><code>    ```{.tcl}
@@ -515,4 +526,4 @@ This is **bold text** and some other text.
 <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
 <p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
 </body>
-</html><!--Generated by HTMLArk 2022-02-05 20:56:44.398564. Original URL pandoc-tcl-filter-out.html-->
+</html><!--Generated by HTMLArk 2022-02-08 06:35:25.500245. Original URL pandoc-tcl-filter-out.html-->
