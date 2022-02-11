@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Fri Nov 15 10:20:22 2019
-#  Last Modified : <220211.0639>
+#  Last Modified : <220211.0646>
 #
 #  Description	 : Command line utility and package to extract Markdown documentation 
 #                  from programming code if embedded as after comment sequence #' 
@@ -157,10 +157,10 @@ variable htmlstart {
     <h2 class="date">$document(date)</h2>
 }
 variable style {
-    <style>
     body {
         margin-left: 5%; margin-right: 5%;
         font-family: Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+        max-width: 900px;
     }
 pre {
 padding-top:	1ex;
@@ -239,7 +239,6 @@ color:		#005A9C;
 background: 	transparent;
 text-align:		left;
 }
-</style>
 }
 } 
 
