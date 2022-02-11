@@ -1,12 +1,4 @@
 
-# mkdoc::mkdoc 0.4
-    
-### Dr. Detlef Groth, Schwielowsee, Germany
-    
-### 2020-11-09
-
-
-
 ## NAME
 
 **mkdoc::mkdoc**  - Tcl package and command line application to extract and format 
@@ -33,22 +25,22 @@ optionally converts them into HTML.
 
 Usage as package:
 
-
-    package require mkdoc::mkdoc
-    mkdoc::mkdoc inputfile outputfile ?-html|-md|-pandoc -css file.css?
-
+```
+package require mkdoc::mkdoc
+mkdoc::mkdoc inputfile outputfile ?-html|-md|-pandoc -css file.css?
+```
 
 Usage as command line application for extraction of Markdown comments prefixed with `#'`:
 
-
-    mkdoc inputfile outputfile ?--html|--md|--pandoc --css file.css?
-
+```
+mkdoc inputfile outputfile ?--html|--md|--pandoc --css file.css?
+```
 
 Usage as command line application for conversion of Markdown to HTML:
 
-
-    mkdoc inputfile.md outputfile.html ?--css file.css?
-
+```
+mkdoc inputfile.md outputfile.html ?--css file.css?
+```
 
 ## <a name='description'>DESCRIPTION</a>
 
@@ -94,10 +86,10 @@ mkdoc::mkdoc mkdoc.tcl mkdoc.rmd -md
 
 ## <a name="example">EXAMPLE</a>
 
-
-    puts "Hello mkdoc package"
-    puts "I am in the example section"
-
+```
+puts "Hello mkdoc package"
+puts "I am in the example section"
+```
 
 
 ## <a name='format'>BASIC FORMATTING</a>
@@ -113,27 +105,27 @@ This header will be as well used by the document converter [pandoc](https://pand
 
 A YAML header starts and ends with three hyphens. Here is the YAML header of this document:
 
-
-    #' ---
-    #' title: mkdoc - Markdown extractor and formatter
-    #' author: Dr. Detlef Groth, Schwielowsee, Germany
-    #' ---
-
+```
+#' ---
+#' title: mkdoc - Markdown extractor and formatter
+#' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' ---
+```
 
 Those four lines produce the two lines on top of this document. You can extend the header if you would like to process your document after extracting the Markdown with other tools, for instance with Pandoc.
 
 You can as well specify an other style sheet, than the default by adding
 the following style information:
 
-
-    #' ---
-    #' title: mkdoc - Markdown extractor and formatter
-    #' author: Dr. Detlef Groth, Schwielowsee, Germany
-    #' output:
-    #'   html_document:
-    #'     css: tufte.css
-    #' ---
-
+```
+#' ---
+#' title: mkdoc - Markdown extractor and formatter
+#' author: Dr. Detlef Groth, Schwielowsee, Germany
+#' output:
+#'   html_document:
+#'     css: tufte.css
+#' ---
+```
 
 Please note, that the indentation is required and it is two spaces.
 
@@ -143,11 +135,12 @@ Headers are prefixed with the hash symbol, single hash stands for level 1 headin
 Please note, that the embedded style sheet centers level 1 and level 3 headers, there are intended to be used
 for the page title (h1), author (h3) and date information (h3) on top of the page.
 
-    #' ## <a name="sectionname">Section title</a>
-    #'
-    #' Some free text that follows after the required empty 
-    #' line above ...
-
+```
+  #'  ## <a name="sectionname">Section title</a>
+  #'    
+  #'  Some free text that follows after the required empty 
+  #'  line above ...
+```
 
 This produces a level 2 header. Please note, if you have a section name `synopsis` the code fragments thereafer will be hilighted different than the other code fragments. You should only use level 2 and 3 headers for the documentation. Level 1 header are reserved for the title.
 
@@ -155,11 +148,11 @@ This produces a level 2 header. Please note, if you have a section name `synopsi
 
 Lists can be given either using hyphens or stars at the beginning of a line.
 
-
-    #' - item 1
-    #' - item 2
-    #' - item 3
-
+```
+#' - item 1
+#' - item 2
+#' - item 3
+```
 
 Here the output:
 
@@ -169,35 +162,36 @@ Here the output:
 
 A special list on top of the help page could be the table of contents list. Here is an example:
 
-
-    #' ## Table of Contents
-    #'
-    #' - [Synopsis](#synopsis)
-    #' - [Description](#description)
-    #' - [Command](#command)
-    #' - [Example](#example)
-    #' - [Authors](#author)
-
+```
+#' ## Table of Contents
+#'
+#' - [Synopsis](#synopsis)
+#' - [Description](#description)
+#' - [Command](#command)
+#' - [Example](#example)
+#' - [Authors](#author)
+```
 
 This will produce in HTML mode a clickable hyperlink list. You should however create
 the name targets using html code like so:
 
-
-    ## <a name='synopsis'>Synopsis</a> 
-
+```
+## <a name='synopsis'>Synopsis</a> 
+```
 
 **Hyperlinks**
 
 Hyperlinks are written with the following markup code:
 
-
-    [Link text](URL)
-
+```
+[Link text](URL)
+```
 
 Let's link to the Tcler's Wiki:
 
-    [Tcler's Wiki](https://wiki.tcl-lang.org/)
-
+```
+[Tcler's Wiki](https://wiki.tcl-lang.org/)
+```
 
 produces: [Tcler's Wiki](https://wiki.tcl-lang.org/)
 
@@ -205,13 +199,13 @@ produces: [Tcler's Wiki](https://wiki.tcl-lang.org/)
 
 Indentations are achieved using the greater sign:
 
-
-    #' Some text before
-    #'
-    #' > this will be indented
-    #'
-    #' This will be not indented again
-
+```
+#' Some text before
+#'
+#' > this will be indented
+#'
+#' This will be not indented again
+```
 
 Here the output:
 
@@ -223,11 +217,11 @@ This will be not indented again
 
 Also lists can be indented:
 
-
-    > - item 1
-      - item 2
-      - item 3
-
+```
+> - item 1
+  - item 2
+  - item 3
+```
 
 produces:
 
@@ -242,9 +236,9 @@ and at the end of the text. Bold is achieved by dublicating those symbols:
 Monospace font appears within backticks.
 Here an example:
 
-
-    I am _italic_ and I am __bold__! But I am programming code: `ls -l`
-
+```
+#' > I am _italic_ and I am __bold__! But I am programming code: `ls -l`
+```
 
 > I am _italic_ and I am __bold__! But I am programming code: `ls -l`
 
@@ -253,26 +247,26 @@ Here an example:
 Code blocks can be started using either three or more spaces after the #' sequence 
 or by embracing the code block with triple backticks on top and on bottom. Here an example:
 
-
-    #' ```
-    #' puts "Hello World!"
-    #' ```
-
+```
+#' ```
+#' puts "Hello World!"
+#' ```
+```
 
 Here the output:
 
-
-    puts "Hello World!"
-
+```
+puts "Hello World!"
+```
 
 **Images**
 
 If you insist on images in your documentation, images can be embedded in Markdown with a syntax close to links.
 The links here however start with an exclamation mark:
 
-
-    ![image caption](filename.png)
-
+```
+#' ![image caption](filename.png)
+```
 
 The source code of mkdoc.tcl is a good example for usage of this source code 
 annotation tool. Don't overuse the possibilities of Markdown, sometimes less is more. 
@@ -286,24 +280,27 @@ header or a footer in a set of related files.
 
 ## <a name='install'>INSTALLATION</a>
 
-The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the Markdown package from tcllib to be installed.
+The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the markdown, cmdline, yaml and textutils packages from tcllib to be installed.
 
-Installation as command line application can be done by copying the `mkdoc.tcl` as 
-`mkdoc` to a directory which is in your executable path. You should make this file executable using `chmod`. There exists as well a standalone script which does not need already installed tcllib package.  You can download this script named: `mkdoc-version.app` from the [chiselapp release page](https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases).
+Installation as command line application is easiest by downloading the file [mkdoc-0.6.bin](https://raw.githubusercontent.com/mittelmark/DGTcl/master/bin/mkdoc-0.6.bin), which
+contains the main script file and all required libraries, to your local machine. Rename this file to mkdoc, make it executable and coy it to a folder belonging to your PATH variable.
 
-Installation as Tcl module is achieved by copying the file `mkdoc.tcl` to a place 
-which is your Tcl module path as `mkdoc/mkdoc-0.1.tm` for instance. See the [tm manual page](https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm)
+Installation as command line application can be as well done by copying the `mkdoc.tcl` as 
+`mkdoc` to a directory which is in your executable path. You should make this file executable using `chmod`. 
+
+Installation as Tcl package by copying the mkdoc folder to a folder 
+which is in your library path for Tcl. Alternatively you can install it as Tcl mode by copying it 
+in your module path as `mkdoc-0.6.0.tm` for instance. See the [tm manual page](https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm)
 
 ## <a name='see'>SEE ALSO</a>
 
 - [tcllib](https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md) for the Markdown and the textutil packages
-- [dgtools](https://chiselapp.com/user/dgroth/repository/tclcode) project for example help page
 - [pandoc](https://pandoc.org) - a universal document converter
 - [Ruff!](https://github.com/apnadkarni/ruff) Ruff! documentation generator for Tcl using Markdown syntax as well
 
 ## <a name='changes'>CHANGES</a>
 
-- 2019-11-19 Relase 0.1
+- 2019-11-19 Release 0.1
 - 2019-11-22 Adding direct conversion from Markdown files to HTML files.
 - 2019-11-27 Documentation fixes
 - 2019-11-28 Kit version
@@ -319,12 +316,20 @@ which is your Tcl module path as `mkdoc/mkdoc-0.1.tm` for instance. See the [tm 
 - 2020-09-01 Roxygen2 plugin
 - 2020-11-09 argument --run supprt
 - 2020-11-10 Release 0.4
-
+- 2020-11-11 command line option  --run with seconds
+- 2020-12-30 Release 0.5 (rox2md @section support with preformatted, emph and strong/bold)
+- 2022-02-11 Release 0.6.0 
+     - parsing yaml header
+     - workaround for images
+     - making standalone using tpack.tcl [mkdoc-0.6.bin](https://github.com/mittelmark/DGTcl/blob/master/bin/mkdoc-0.6.bin)
+     - terminal help update and cleanup
+     - moved to Github in Wiki
+     - code cleanup
 
 ## <a name='todo'>TODO</a>
 
 - extract Roxygen2 documentation codes from R files (done)
-- standalone files using mk_tm module maker (done, just using cat ;)
+- standalone files using something like mk_tm module maker (done, just using tpack ;)
 - support for \_\_PKGVERSION\_\_ and \_\_PKGNAME\_\_ replacements at least in Tcl files and via command line for other file types (done)
 
 ## <a name='authors'>AUTHOR(s)</a>
@@ -333,9 +338,9 @@ The **mkdoc::mkdoc** package was written by Dr. Detlef Groth, Schwielowsee, Germ
 
 ## <a name='license'>LICENSE AND COPYRIGHT</a>
 
-Markdown extractor and converter mkdoc::mkdoc, version 0.4
+Markdown extractor and converter mkdoc::mkdoc, version 0.6.0
 
-Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
+Copyright (c) 2019-22  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
 
 This library is free software; you can use, modify, and redistribute it
 for any purpose, provided that existing copyright notices are retained

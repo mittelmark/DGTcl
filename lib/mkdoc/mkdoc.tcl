@@ -4,7 +4,7 @@ exec tclsh "$0" "$@"
 ##############################################################################
 #  Author        : Dr. Detlef Groth
 #  Created       : Fri Nov 15 10:20:22 2019
-#  Last Modified : <201109.1919>
+#  Last Modified : <220211.0639>
 #
 #  Description	 : Command line utility and package to extract Markdown documentation 
 #                  from programming code if embedded as after comment sequence #' 
@@ -14,10 +14,13 @@ exec tclsh "$0" "$@"
 #  History       : 2019-11-08 version 0.1
 #                  2019-11-28 version 0.2
 #                  2020-02-26 version 0.3
+#                  2020-11-10 Release 0.4
+#                  2020-12-30 Release 0.5 (rox2md)
+#                  2022-02-09 Release 0.6
 #	
 ##############################################################################
 #
-# Copyright (c) 2019  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
+# Copyright (c) 2019-2022  Dr. Detlef Groth, E-mail: detlef(at)dgroth(dot)de
 # 
 # This library is free software; you can use, modify, and redistribute it
 # for any purpose, provided that existing copyright notices are retained
@@ -28,7 +31,6 @@ exec tclsh "$0" "$@"
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-#'
 #' ---
 #' title: mkdoc::mkdoc __PKGVERSION__
 #' author: Dr. Detlef Groth, Schwielowsee, Germany
@@ -122,8 +124,17 @@ package require Tcl 8.4
 if {[package provide Markdown] eq ""} {
     package require Markdown
 }
-package provide mkdoc::mkdoc 0.4
+if {![package vsatisfies [package provide Tcl] 8.6]} {
+    proc lmap {_var list body} {
+        upvar 1 $_var var
+        set res {}
+        foreach var $list {lappend res [uplevel 1 $body]}
+        set res
+    }
+}
+package provide mkdoc::mkdoc 0.6.0
 package provide mkdoc [package present mkdoc::mkdoc]
+package require yaml
 namespace eval mkdoc {
     variable mkdocfile [info script]
     variable htmltemplate {
@@ -135,24 +146,16 @@ namespace eval mkdoc {
 <meta name="title" content="$document(title)">
 <meta name="author" content="$document(author)">
 <title>$document(title)</title>
-$document(style)
+<link rel="stylesheet" href="$document(css)">
 </head>
 <body>
-}
 
-variable htmltitle {
-    <div class="title"><h1>$document(title)</h1></div>
-    <div class="author"><h3>$document(author)</h3></div>
-    <div class="date"><h3>$document(date)</h3></div>
 }
-variable mdheader {
-# $document(title)
-    
-### $document(author)
-    
-### $document(date)
+variable htmlstart {
+    <h1 class="title">$document(title)</h1>
+    <h2 class="author">$document(author)</h2>
+    <h2 class="date">$document(date)</h2>
 }
-
 variable style {
     <style>
     body {
@@ -166,15 +169,23 @@ padding-left:	2ex;
 padding-right:	1ex;
 width:		100%;
 color: 		black;
-background: 	#ffefdf;
+background: 	#fff4e4;
 border-top:		1px solid black;
 border-bottom:		1px solid black;
 font-family: Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
 }
+a { text-decoration: none }
 pre.synopsis {
     background: #cceeff;
 }
+pre.code code.tclin {
+    background-color: #ffeeee;
+}
+pre.code code.tclout {
+    background-color: #ffffee;
+}
+
 code {
     font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
@@ -184,6 +195,12 @@ h1,h2, h3,h4 {
 }
 h1 {
     font-size: 120%;
+    text-align: center;
+}
+
+h2.author, h2.date {
+    text-align: center;
+    color: black;
 }
 h2 {
     font-size: 110%;
@@ -226,7 +243,7 @@ text-align:		left;
 }
 } 
 
-proc mkdoc::pfirst {varname arglist} {
+proc ::mkdoc::pfirst {varname arglist} {
     upvar $varname x
     set varval $x
     if {[regexp {^-} $varval]} {
@@ -242,7 +259,7 @@ proc mkdoc::pfirst {varname arglist} {
 # places all --options or -options in an array given with arrayname
 # recognises
 # -option2 value -flag1 -flag2 -option2 value
-proc mkdoc::pargs {arrayname defaults args} {
+proc ::mkdoc::pargs {arrayname defaults args} {
     upvar $arrayname arga
     array set arga $defaults
     set args {*}$args
@@ -269,7 +286,7 @@ proc mkdoc::pargs {arrayname defaults args} {
     
 }
 
-proc mkdoc::getPackageInformation {filename} {
+proc ::mkdoc::getPackageInformation {filename} {
     set basename [file rootname [file tail $filename]]
     if {[file extension $filename] in [list .tm .tcl]} {
         if [catch {open $filename r} infh] {
@@ -290,8 +307,7 @@ proc mkdoc::getPackageInformation {filename} {
 proc mkdoc::mkdoc {filename outfile args} {
     variable mkdocfile
     variable htmltemplate
-    variable mdheader
-    variable htmltitle
+    variable htmlstart
     variable style
     # prepare sorting methods and options
     set dmeths [dict create]
@@ -301,7 +317,7 @@ proc mkdoc::mkdoc {filename outfile args} {
     if {[llength $args] == 1} {
         set args {*}$args
     }
-    ::mkdoc::pargs arg [list mode "" css ""] $args
+    ::mkdoc::pargs arg [list mode "" css "mkdoc.css"] $args
     set mode $arg(mode)
     if {$mode ni [list "" html markdown man pandoc]} {
         set file [file join [file dirname $mkdocfile] ${mode}.tcl]
@@ -375,57 +391,36 @@ proc mkdoc::mkdoc {filename outfile args} {
             }
         }
         close $infh
-        set titleflag false
-        array set document [list title "Documentation [file tail [file rootname $filename]]" author "NN" date  [clock format [clock seconds] -format "%Y-%m-%d"] style $style]
-        if {$arg(css) eq ""} {
-            set document(style) $style
-        } else {
-            set document(style) "<link rel='stylesheet' href='$arg(css)' type='text/css'>"
-        }
+        set yamldict [dict create title "Documentation [file tail [file rootname $filename]]" author "NN" date  [clock format [clock seconds] -format "%Y-%m-%d"] author NN css mkdoc.css]
+        if {$arg(css) ne ""} {
+            dict set yamldict css $arg(css)
+        } 
         set mdhtml ""
-        set YAML ""
+        set yamlflag false
+        set yamltext ""
+        set hasyaml false
         set indent ""
         set header $htmltemplate
+        set lnr 0
         foreach line [split $markdown "\n"] {
+            incr lnr 
             # todo document pkgversion and pkgname
-            #set line [regsub {__PKGVERSION__} $line [package provide mkdoc::mkdoc]]
-            #set line [regsub -all {__PKGNAME__} $line mkdoc::mkdoc]
-            if {$titleflag && [regexp {^---} $line]} {
-                set titleflag false
-                set header [subst -nobackslashes -nocommands $header]
-                set htmltitle [subst -nobackslashes -nocommands $htmltitle]
-                set mdheader [subst -nobackslashes -nocommands $mdheader]
-                append YAML "$line\n"
-            } elseif {$titleflag} {
-                if {$pkg(name) ne ""} {
-                    set line [regsub -all {__PKGNAME__} $line $pkg(name)]
-                } 
-                if {$pkg(version) ne ""} {
-                    set line [regsub -all {__PKGVERSION__} $line $pkg(version)]
+            set line [regsub {__PKGVERSION__} $line [package provide mkdoc::mkdoc]]
+            set line [regsub -all {__PKGNAME__} $line mkdoc::mkdoc]
+            if {$lnr < 5 && !$yamlflag && [regexp {^---} $line]} {
+                set yamlflag true
+            } elseif {$yamlflag && [regexp {^---} $line]} {
+                set hasyaml true
+                set yamldict [dict merge $yamldict [yaml::yaml2dict $yamltext]]
+                set yamlflag false
+                if {$arg(mode) ne "pandoc"} {
+                    set yamltext ""
+                } else {
+                    set yamltext "---\n$yamltext---"
                 }
-                set line [regsub -all {__DATE__} $line [clock format [clock seconds] -format "%Y-%m-%d"]] 
-                set line [regsub -all {__BASENAME__} $line $pkg(basename)]
                 
-                append YAML "$line\n"
-                if {[regexp {^\s*([a-z]+): +(.+)} $line -> key value]} {
-                    if {$key eq "style"} {
-                        set document($key) "<link rel='stylesheet' href='$value' type='text/css'>"
-                        if {$arg(css) ne ""} {
-                            append document($key) "\n<link rel='stylesheet' href='$arg(css)' type='text/css'>"
-                        } 
-                    } elseif {$key in [list title date author]} {
-                        set document($key) $value
-                    }
-                }
-            } elseif {[regexp {^---} $line]} {
-                append YAML "$line\n"
-                set titleflag true
-            } elseif {[regexp {^```} $line] && $indent eq ""} {
-                append mdhtml "\n"
-                set indent "    "
-            } elseif {[regexp {^```} $line] && $indent eq "    "} {
-                set indent ""
-                append mdhtml "\n"
+            } elseif {$yamlflag} {
+                append yamltext "$line\n"
             } else {
                 if {$pkg(name) ne ""} {
                     set line [regsub -all {__PKGNAME__} $line $pkg(name)]
@@ -466,7 +461,7 @@ proc mkdoc::mkdoc {filename outfile args} {
                     dict set dmeths $dkey "$ometh$indent$line\n"
                     continue
                 }
-                
+                set line [regsub -all {!\[\]\((.+?)\)} $line "<image src=\"\\1\"></img>"]
                 append mdhtml "$indent$line\n"
             }
         }
@@ -488,26 +483,35 @@ proc mkdoc::mkdoc {filename outfile args} {
                 append html "$line\n"
             }
             set out [open $outfile w 0644]
-            if {$extract} {
-                puts $out $header
-                puts $out $htmltitle
-            } else {
-                set header [subst -nobackslashes -nocommands $header]
-                puts $out $header
+            foreach key [dict keys $yamldict] {
+                set document($key) [dict get $yamldict $key]
             }
+            if {![dict exists $yamldict date]} {
+                dict set yamldict date [clock format [clock seconds]]
+            }
+            set header [subst -nobackslashes -nocommands $header]
+            if {$hasyaml} {
+                set start [subst -nobackslashes -nocommands $htmlstart]            
+                puts $out $start
+            }
+            puts $out $header
             puts $out $html
             puts $out "</body>\n</html>"
             close $out
+            if {[dict get $yamldict css] eq "mkdoc.css" && ![file exists "mkdoc.css"]} {
+                set out [open mkdoc.css w 0600]
+                puts $out $style
+                close $out
+            }
             puts stderr "Success: file $outfile was written!"
         } elseif {$mode eq "pandoc"} {
             set out [open $outfile w 0644]
-            puts $out $YAML
+            puts $out $yamltext
             puts $out $mdhtml
             close $out
             
         } else {
             set out [open $outfile w 0644]
-            puts $out $mdheader
             puts $out $mdhtml
             close $out
         }
@@ -528,8 +532,13 @@ proc mkdoc::mkdoc {filename outfile args} {
 #' puts "I am in the example section"
 #' ```
 #' 
-proc mkdoc::run {argv} {
+proc ::mkdoc::run {argv} {
     set filename [lindex $argv 0]
+    if {[llength $argv] == 3} {
+        set t [lindex $argv 2]
+    } else {
+        set t 1
+    }
     source $filename
     set extext ""
     set example false
@@ -558,14 +567,67 @@ proc mkdoc::run {argv} {
             }
         }
         close $infh
-        catch {
-            update idletasks
-            after 1000 
-            destroy .
+        if {$t > -1} {
+            catch {
+                update idletasks
+                after [expr {$t*1000}]
+                destroy .
+            }
         }
     }
 }
+
+
 if {[info exists argv0] && $argv0 eq [info script]} {
+    
+set Usage {
+Usage: __APP__ INFILE OUTFILE [--html] [--md] [--pandoc] 
+           [--css file.css] [--help] [--version]
+           
+mkdoc - code documentation tool to process embedded Markdown markup
+        given after "#'" comments
+        
+Positional arguments (required):
+
+    INFILE - input file with:
+               - embedded Markdown comments: #' Markdown markup
+               - pure Markdown code (file.md)
+    OUTFILE - output file usually HTML or Markdown file,
+              file format is deduced on file extension .html or .md,
+              if other file extensions are used, give the 
+              --html, --md or --pandoc flags
+            
+Optional arguments:
+
+    --help   - display this help page
+    
+    --html   - output file format is HTML              
+    --md     - output file format is Markdown
+    --pandoc - output file format is Markdown with YAML header
+    
+    --css  CSSFILE  - use the given CSSFILE instead of default mkdoc.css
+    
+    --version - display version number
+    
+Examples:
+    
+    # create manual page for mkdoc.tcl itself 
+    __APP__ mkdoc.tcl mkdoc.html
+    
+    # create manual code for a CPP file using an own style sheet
+    __APP__ sample.cpp sample.html --css manual.css
+    
+    # extract code documentation as simple Markdown
+    # ready to be processed further with pandoc
+    __APP__ sample.cpp sample.md --pandoc
+    
+    # convert a Markdown file to HTML
+    __APP__ sample.md sample.html
+    
+Author: @ Dr. Detlef Groth, Schwielowsee, 2019-2022
+    
+License: MIT
+}
     if {[lsearch $argv {--version}] > -1} {
         puts "[package provide mkdoc::mkdoc]"
         return
@@ -574,29 +636,9 @@ if {[info exists argv0] && $argv0 eq [info script]} {
         return
     }
     if {[llength $argv] < 2 || [lsearch $argv {--help}] > -1} {
-        puts "mkdoc - extract documentation in Markdown and convert it optionally into HTML"
-        puts "        Author/Copyright: @ Detlef Groth, Caputh, Germany, 2019-2020"
-        puts "        License: MIT"
-        puts "\nUsage:  [info script] inputfile outputfile ?--html|--md|--pandoc --version --run --css file.css?\n"
-        puts "     inputfile: the inputfile with embedded Markdown text after #' comments"
-        puts "     outputfile: should have either the extension html or md "
-        puts "        for automatic selection of the correct output format."  
-        puts "        Deduction of output format can be suppressed by given mode flags:"
-        puts "     --html, --md or --pandoc"
-        puts "        --html give HTML output even if outputfile extension is not html"
-        puts "        --md   give Markdown output event if outputfile extension is not md"
-        puts "        --pandoc command line argument will emmit as well the YAML header"
-        puts "          header which is a Markdown extension."
-        puts "     --css file.css: use the given stylesheet filename instead of the"
-        puts "           inbuild default on"
-        puts "     --help: shows this help page"        
-        puts "     --version: returns the package version"
-        puts "     --run: runs the example section in the inout file"        
-        puts "  Example: extract mkdoc's own embedded documentation as html:"
-        puts "       tclsh mkdoc.tcl mkdoc.tcl mkdoc.html" 
-        #        puts "        The -rox2md flag extracts roxygen2 R documentation from R script files"
-        #        puts "        and converts them into markdown"
-    } elseif {[llength $argv] == 2 && [lsearch $argv {--run}] == 1} {
+        set usage [regsub -all {__APP__} $Usage [info script]]
+        puts $usage
+    } elseif {[llength $argv] >= 2 && [lsearch $argv {--run}] == 1} {
         mkdoc::run $argv 
     } elseif {[llength $argv] == 2} {
         mkdoc::mkdoc [lindex $argv 0] [lindex $argv 1]
@@ -648,11 +690,12 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' Headers are prefixed with the hash symbol, single hash stands for level 1 heading, double hashes for level 2 heading, etc.
 #' Please note, that the embedded style sheet centers level 1 and level 3 headers, there are intended to be used
 #' for the page title (h1), author (h3) and date information (h3) on top of the page.
+#' 
 #' ```
-#' #' ## <a name="sectionname">Section title</a>
-#' #'
-#' #' Some free text that follows after the required empty 
-#' #' line above ...
+#'   #'  ## <a name="sectionname">Section title</a>
+#'   #'    
+#'   #'  Some free text that follows after the required empty 
+#'   #'  line above ...
 #' ```
 #'
 #' This produces a level 2 header. Please note, if you have a section name `synopsis` the code fragments thereafer will be hilighted different than the other code fragments. You should only use level 2 and 3 headers for the documentation. Level 1 header are reserved for the title.
@@ -701,6 +744,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' ```
 #' 
 #' Let's link to the Tcler's Wiki:
+#' 
 #' ```
 #' [Tcler's Wiki](https://wiki.tcl-lang.org/)
 #' ```
@@ -749,7 +793,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' Here an example:
 #' 
 #' ```
-#' I am _italic_ and I am __bold__! But I am programming code: `ls -l`
+#' #' > I am _italic_ and I am __bold__! But I am programming code: `ls -l`
 #' ```
 #'
 #' > I am _italic_ and I am __bold__! But I am programming code: `ls -l`
@@ -777,7 +821,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' The links here however start with an exclamation mark:
 #' 
 #' ```
-#' ![image caption](filename.png)
+#' #' ![image caption](filename.png)
 #' ```
 #' 
 #' The source code of mkdoc.tcl is a good example for usage of this source code 
@@ -792,25 +836,28 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #'
 #' ## <a name='install'>INSTALLATION</a>
 #' 
-#' The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the Markdown package from tcllib to be installed.
+#' The mkdoc::mkdoc package can be installed either as command line application or as a Tcl module. It requires the markdown, cmdline, yaml and textutils packages from tcllib to be installed.
 #' 
-#' Installation as command line application can be done by copying the `mkdoc.tcl` as 
-#' `mkdoc` to a directory which is in your executable path. You should make this file executable using `chmod`. There exists as well a standalone script which does not need already installed tcllib package.  You can download this script named: `mkdoc-version.app` from the [chiselapp release page](https://chiselapp.com/user/dgroth/repository/tclcode/wiki?name=releases).
+#' Installation as command line application is easiest by downloading the file [mkdoc-0.6.bin](https://raw.githubusercontent.com/mittelmark/DGTcl/master/bin/mkdoc-0.6.bin), which
+#' contains the main script file and all required libraries, to your local machine. Rename this file to mkdoc, make it executable and coy it to a folder belonging to your PATH variable.
 #' 
-#' Installation as Tcl module is achieved by copying the file `mkdoc.tcl` to a place 
-#' which is your Tcl module path as `mkdoc/mkdoc-0.1.tm` for instance. See the [tm manual page](https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm)
+#' Installation as command line application can be as well done by copying the `mkdoc.tcl` as 
+#' `mkdoc` to a directory which is in your executable path. You should make this file executable using `chmod`. 
+#' 
+#' Installation as Tcl package by copying the mkdoc folder to a folder 
+#' which is in your library path for Tcl. Alternatively you can install it as Tcl mode by copying it 
+#' in your module path as `mkdoc-0.6.0.tm` for instance. See the [tm manual page](https://www.tcl.tk/man/tcl8.6/TclCmd/tm.htm)
 #'
 #' ## <a name='see'>SEE ALSO</a>
 #' 
 #' - [tcllib](https://core.tcl-lang.org/tcllib/doc/trunk/embedded/index.md) for the Markdown and the textutil packages
-#' - [dgtools](https://chiselapp.com/user/dgroth/repository/tclcode) project for example help page
 #' - [pandoc](https://pandoc.org) - a universal document converter
 #' - [Ruff!](https://github.com/apnadkarni/ruff) Ruff! documentation generator for Tcl using Markdown syntax as well
 
 #' 
 #' ## <a name='changes'>CHANGES</a>
 #'
-#' - 2019-11-19 Relase 0.1
+#' - 2019-11-19 Release 0.1
 #' - 2019-11-22 Adding direct conversion from Markdown files to HTML files.
 #' - 2019-11-27 Documentation fixes
 #' - 2019-11-28 Kit version
@@ -826,12 +873,20 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' - 2020-09-01 Roxygen2 plugin
 #' - 2020-11-09 argument --run supprt
 #' - 2020-11-10 Release 0.4
-#' 
+#' - 2020-11-11 command line option  --run with seconds
+#' - 2020-12-30 Release 0.5 (rox2md @section support with preformatted, emph and strong/bold)
+#' - 2022-02-11 Release 0.6.0 
+#'      - parsing yaml header
+#'      - workaround for images
+#'      - making standalone using tpack.tcl [mkdoc-0.6.bin](https://github.com/mittelmark/DGTcl/blob/master/bin/mkdoc-0.6.bin)
+#'      - terminal help update and cleanup
+#'      - moved to Github in Wiki
+#'      - code cleanup
 #'
 #' ## <a name='todo'>TODO</a>
 #'
 #' - extract Roxygen2 documentation codes from R files (done)
-#' - standalone files using mk_tm module maker (done, just using cat ;)
+#' - standalone files using something like mk_tm module maker (done, just using tpack ;)
 #' - support for \_\_PKGVERSION\_\_ and \_\_PKGNAME\_\_ replacements at least in Tcl files and via command line for other file types (done)
 #'
 #' ## <a name='authors'>AUTHOR(s)</a>
@@ -842,7 +897,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #'
 #' Markdown extractor and converter mkdoc::mkdoc, version __PKGVERSION__
 #'
-#' Copyright (c) 2019-20  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
+#' Copyright (c) 2019-22  Dr. Detlef Groth, E-mail: <detlef(at)dgroth(dot)de>
 #' 
 #' This library is free software; you can use, modify, and redistribute it
 #' for any purpose, provided that existing copyright notices are retained
