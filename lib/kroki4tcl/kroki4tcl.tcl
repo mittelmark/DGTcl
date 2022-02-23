@@ -3,7 +3,7 @@
 #
 #  Created By    : Detlef Groth
 #  Created       : Fri Feb 18 05:50:50 2022
-#  Last Modified : <220223.1828>
+#  Last Modified : <220223.1944>
 #
 #  Description	 : Using the kroki webservice to create diagram charts
 #
@@ -379,7 +379,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
     proc usage {} {
         puts "Usage: kroki4tcl.tcl ?--gui? ?INFILE? ?OUTFILE?"
         puts "  Convert diagram code to SVG, PNG or PDF graphics."
-        puts "  Possible  INFILE  file extensions are  [join [dict keys $::kroki4tcl::maps] ,]"e
+        puts "  Possible  INFILE  file extensions are  [join [dict keys $::kroki4tcl::maps] ,]"
         puts "  Possible  OUTFILE file extensions are svg (default), png, pdf!"
     }
     if {[llength $argv] > 0} {

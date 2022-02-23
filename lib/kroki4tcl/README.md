@@ -6,6 +6,8 @@ date: 2022-02-23
 
 ## kroki4tcl - README
 
+The HTML version of this README is here: [README.html](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/kroki4tcl/README.html)
+
 [Kroki](https://kroki.io/) is a webservice provides a unified API with support for BlockDiag
 (BlockDiag, SeqDiag, ActDiag, NwDiag, PacketDiag, RackDiag), BPMN, Bytefield,
 C4 (with PlantUML), Ditaa, Erd, Excalidraw, GraphViz, Mermaid, Nomnoml,
@@ -83,10 +85,9 @@ Possible input file extensions are:  adia, bdia, ditaa, dot, erd, puml, mmd, nml
 
 Possible output file extensions are: svg, png or pdf
 
+## License
 
-
-
-## EOF
+MIT
 
 
 
