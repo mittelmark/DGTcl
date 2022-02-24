@@ -3,13 +3,15 @@
 #
 #  Created By    : Detlef Groth
 #  Created       : Fri Feb 18 05:50:50 2022
-#  Last Modified : <220223.1944>
+#  Last Modified : <220224.0746>
 #
 #  Description	 : Using the kroki webservice to create diagram charts
 #
 #  Notes 
 #
-#  History       : 2022-02-18 - initial version
+#  History       : 
+#                - 2022-02-18 - initial version
+#                - 2022-02-23 - Github release with extended GUI and Markdown code chunk support 
 #	
 ##############################################################################
 #

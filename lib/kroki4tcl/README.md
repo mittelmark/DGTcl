@@ -81,9 +81,28 @@ will be translated to an image. See below for an example:
 
 Usage: `kroki4tcl.tcl infile outfile` 
 
-Possible input file extensions are:  adia, bdia, ditaa, dot, erd, puml, mmd, nml, ndia, pik, sbob or sdia.
+Possible input file extensions are:  
 
-Possible output file extensions are: svg, png or pdf
+-  adia ([ActDiag](http://blockdiag.com/en/)) 
+-  bdia ([BlockDiag](http://blockdiag.com/en/)) 
+-  ditaa ([Ditaa](http://ditaa.sourceforge.net/)) 
+-  dot ([GraphViz](https://www.graphviz.org/)) 
+-  erd ([ERD](https://github.com/BurntSushi/erd)) 
+-  mmd ([Mermaid](https://mermaid-js.github.io/mermaid/#/)) 
+-  nml ([Nomnoml](https://www.nomnoml.com/)) 
+-  ndia ([NwDiag](http://blockdiag.com/en/)) 
+-  pik ([Pikchr](https://pikchr.org/home/doc/trunk/homepage.md)) 
+-  puml ([PlantUML](https://github.com/plantuml/plantuml)) 
+-  sbob ([Svgbob](https://ivanceras.github.io/svgbob-editor/) or 
+-  sdia ([SeqDiag](http://blockdiag.com/en/))
+
+Possible output file extensions are: svg, png or pdf, the latter two might
+require an installation of the `cairosvg` package which can be achieved on
+Unix platforms like this `pip3 install cairosvg --user`.. 
+
+## Changelog
+
+- 2022-02-23 - first version 0.2.0
 
 ## License
 
