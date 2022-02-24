@@ -51,6 +51,9 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
 
 ## Tcl Libraries / Applications    
 
+* kroki4tcl - translation of diagram code into [kroki URL's](https://kroki.io).
+  * [kroki4tcl readme](https://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/kroki4tcl/README.html)
+  * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/kroki4tcl)
 * tdot - the Thingy DOT writer. Create DOT files and images for DOT graphs with ease. Syntax is very close to the Graphviz DOT language.
   * [tdot manual](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/tdot/tdot.html)
   * [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/tdot)
