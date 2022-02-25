@@ -101,7 +101,7 @@ if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
 }   
 package require Tk
 package require snit
-package provide shtmlview::shtmlview 0.9.1
+package provide shtmlview::shtmlview 0.9.2
 catch {
     package require tile
 }
@@ -281,7 +281,7 @@ namespace eval shtmlview {
         %W tag remove sel 1.0 end
     }
     bind HelpText <<Copy>> {
-        tk::_textCopy %W
+        tk_textCopy %W
     }
     # Additional emacs-like bindings:
     
