@@ -56,7 +56,7 @@ Convert a diagram text to an embeddedable URL.
 
 > Convert a given URL back to diagram text.
 
-> - url - a krokio URL
+> - url - a kroki URL
 
 > Example:
 
@@ -79,7 +79,10 @@ will be translated to an image. See below for an example:
 
 ### Command line application
 
-Usage: `kroki4tcl.tcl infile outfile` 
+
+Usage (conversion): `kroki4tcl.tcl infile outfile` 
+
+Usage (URL): `kroki4tcl.tcl infile` (shows the kroki URL on the terminal
 
 Possible input file extensions are:  
 
@@ -93,20 +96,23 @@ Possible input file extensions are:
 -  ndia ([NwDiag](http://blockdiag.com/en/)) 
 -  pik ([Pikchr](https://pikchr.org/home/doc/trunk/homepage.md)) 
 -  puml ([PlantUML](https://github.com/plantuml/plantuml)) 
--  sbob ([Svgbob](https://ivanceras.github.io/svgbob-editor/) or 
+-  sbob ([Svgbob](https://ivanceras.github.io/svgbob-editor/))
 -  sdia ([SeqDiag](http://blockdiag.com/en/))
 
 Possible output file extensions are: svg, png or pdf, the latter two might
 require an installation of the `cairosvg` package which can be achieved on
 Unix platforms like this `pip3 install cairosvg --user`.. 
 
-## Changelog
+## ChangeLog
 
 - 2022-02-23 - first version 0.2.0
+- 2022-02-25 - 0.3.0 some fixes for Markdown mode
 
 ## License
 
 MIT
+
+
 
 
 

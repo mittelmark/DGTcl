@@ -3,7 +3,7 @@
 #
 #  Created By    : Detlef Groth
 #  Created       : Fri Feb 18 05:50:50 2022
-#  Last Modified : <220224.0746>
+#  Last Modified : <220225.0710>
 #
 #  Description	 : Using the kroki webservice to create diagram charts
 #
@@ -72,7 +72,26 @@ proc ::kroki4tcl::kroki2dia {url} {
     set text [regsub {.+/} $url ""]
     set dia [encoding convertfrom utf-8 [zlib decompress [binary decode base64 [string map {- + _ /} $text]]]]
 }
-
+proc ::kroki4tcl::file2kroki {filename} {
+    variable maps
+    set ext [string range [file extension $filename] 1 end]
+    if {!($ext in [dict keys $maps])} {
+        puts "Error: known file extension `$ext`, valid extensions are `[join [dict keys $maps]`, {`, `}]!"
+    }
+    if [catch {open $filename r} infh] {
+        puts stderr "Cannot open $filename: $infh"
+        exit
+    } else {
+        set code ""
+        while {[gets $infh line] >= 0} {
+            append code "$line\n"
+            
+        }
+        close $infh
+        return [::kroki4tcl::dia2kroki $code [dict get $maps $ext] svg]
+    }
+    return "Error"
+}
 proc ::kroki4tcl::gui {{path ""}} {
     package require Tk
     variable txt
@@ -89,7 +108,7 @@ proc ::kroki4tcl::gui {{path ""}} {
     # does not work
     set cb [ttk::combobox $path.top.ent -values $l -textvariable ::kroki4tcl::type]
     pack $path.top.ent -side left -padx 5 -pady 5
-    #  Reload
+    #   Reload
     foreach btn [list New Open Save SaveAs Dia2Url Url2Dia Help Exit] {
         ttk::button "$path.top.[string tolower $btn]" -width 8 -text $btn -command ::kroki4tcl::file$btn
         pack "$path.top.[string tolower $btn]" -side left -padx 5 -pady 5
@@ -158,9 +177,9 @@ proc ::kroki4tcl::fileDia2Url {} {
     set text [$txt get 1.0 end]
     set ext [string range [file extension $lastfile] 1 end]
     # trial
-    if {$ext eq "ditaa"} {
-        set text [regsub {;} $text "\u2B24"]
-    }
+    #if {$ext eq "ditaa"} {
+    #    set text [regsub {;} $text "\u2B24"]
+    #}
     if {$ext eq "txt"} {
         set ext ::kroki4tcl::getExtension $::kroki4tcl::type
     }
@@ -187,17 +206,18 @@ proc ::kroki4tcl::getExtension {type} {
 proc ::kroki4tcl::extractChunk {} {
     variable txt
     set ins [$txt index insert]
-    set start [$txt search -regexp -backwards {^>?\s?```\{.+\}} $ins]
-    set end [$txt search -regexp -forwards {^>?\s?```\s*$} "$start lineend"]
+    set start [$txt search -regexp -backwards {^>?\s*```\{.+\}} $ins]
+    set end [$txt search -regexp -forwards {^>?\s*```\s*$} "$start lineend"]
     if {!([$txt compare $ins < $end] && [$txt compare $ins > $start])} {
         return
     }
     set code [$txt get "$start linestart" "$end lineend"]
-    set fext [regsub {^```\{\.([a-z]+).*\}.+} $code "\\1"]
+    set fext [regsub {^>?\s*```\{\.([a-z]+).*\}.*} $code "\\1"]
     if {$fext eq "kroki"} {
-        set fext {^```\{.kroki\s.*dia="?([a-z]+)"?.*\}.*} $code "\\1"]
+        set fext {^>?\s*```\{.kroki\s.*dia="?([a-z]+)"?.*\}.*} $code "\\1"]
     }
     set code [$txt get "$start lineend + 1c" "$end linestart - 1c"]
+    set code [regsub {^>?\s*```\{[^\}]+\}} $code ""]
     return [list $fext $code]
 }
 proc ::kroki4tcl::dia2file {infile outfile} {
@@ -379,10 +399,15 @@ proc ::kroki4tcl::fileExit {} {
 }
 if {[info exists argv0] && $argv0 eq [info script]} {
     proc usage {} {
-        puts "Usage: kroki4tcl.tcl ?--gui? ?INFILE? ?OUTFILE?"
-        puts "  Convert diagram code to SVG, PNG or PDF graphics."
-        puts "  Possible  INFILE  file extensions are  [join [dict keys $::kroki4tcl::maps] ,]"
+        puts "Usage: kroki4tcl.tcl ?--gui? ?INFILE? ?OUTFILE?\n"
+        puts "  Convert diagram code to URL's or SVG, PNG or PDF graphics using kroki.\n"
+        puts "  Possible  INFILE  file extensions are:\n   '[join [dict keys $::kroki4tcl::maps] {', '}]'!"
         puts "  Possible  OUTFILE file extensions are svg (default), png, pdf!"
+        puts "\nExamples:\n"
+        puts "   kroki4tcl.tcl infile.ditaa             -> print kroki URL to terminal"
+        puts "   kroki4tcl.tcl infile.ditaa outfile.svg -> convert diagram to svg file"
+        puts "   kroki4tcl.tcl --gui infile.ditaa       -> open file in GUI"
+        puts "   kroki4tcl.tcl infile.md                -> open Markdown file in GUI"
     }
     if {[llength $argv] > 0} {
         if {"--help" in $argv || "-h" in $argv} {
@@ -395,18 +420,25 @@ if {[info exists argv0] && $argv0 eq [info script]} {
                 ::kroki4tcl::fileOpen [lindex $argv 1]
                 ::kroki4tcl::fileSave
             }
-        } else {
-            if {[file exists [lindex $argv 0]]} {
-                if {[llength $argv] == 2} {
-                    ::kroki4tcl::dia2file [lindex $argv 0] [lindex $argv 1]
-                } else {
-                    ::kroki4tcl::dia2file [lindex $argv 0] [file rootname [lindex $argv 0].svg]
-                }
+        } elseif {[llength $argv] == 1} {
+            if {[file exists [lindex $argv 0]] && [file extension [lindex $argv 0]] in [list .md .Rmd .Tmd]} {
+                ::kroki4tcl::gui 
+                ::kroki4tcl::fileOpen [lindex $argv 0]
+            } elseif {[file exists [lindex $argv 0]]} {
+                puts [::kroki4tcl::file2kroki [lindex $argv 0]]
             } else {
                 puts "Error: File [lindex $argv 0] does not exists!"
             }
+        } elseif {[llength $argv] == 2} {
+            if {[file exists [lindex $argv 0]]} {
+                ::kroki4tcl::dia2file [lindex $argv 0] [lindex $argv 1]
+            } else {
+                puts "Error: File [lindex $argv 0] does not exists!"
+            }
+        } else {
+            usage
         }
     } else {
-        ::kroki4tcl::gui
+        usage
     }
 }
