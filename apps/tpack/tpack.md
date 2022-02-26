@@ -14,13 +14,13 @@ _tpack_ - create single or two file Tcl applications based on libraries in tar/l
 $ tpack --help               # display usage information
 $ tpack wrap app.tapp        # wraps app.tcl and app.vfs into app.tapp 
                              # where app.vfs is attached as tar archive
+$ tpack wrap app.tapp --lz4  # as above but use tar and lz4 for compression
 $ tpack wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
 $ tpack wrap app             #            as above
-$ tpack wrap app.tapp --lz4  # as above but use tar and lz4 for compression
 $ tpack init app.tcl app.vfs # creates initial file app.tcl and folder app.vfs
 $ tpack init app             #            as above
 $ tpack init app.vfs         # create initial folder app.vfs
-$ tpack unwrap app.tapp      # extracts app.tcl and app.ttar out of app.tapp
+$ tpack unwrap app.tapp      # extracts app.tcl and app.ttar/lz4 out of app.tapp
 ```
 
 ## DESCRIPTION

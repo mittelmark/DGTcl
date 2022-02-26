@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <220226.1219>
+#  Last Modified : <220226.1247>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
@@ -14,11 +14,12 @@
 #  History       : 2021-09-10 - release 0.1   (two file applications)
 #                  2021-11-09 - release 0.2.0 (single file application)
 #                  2021-11-26 - release 0.2.1 (tar package fix)
+#                  2022-02-16 - release 0.3.0 (lz4 compression support)
 #                  
 #	
 ##############################################################################
 #
-#  Copyright (c) 2021 Dr. Detlef Groth.
+#  Copyright (c) 2021-2022 Dr. Detlef Groth.
 # 
 #  License:      MIT
 # 
@@ -855,13 +856,13 @@ proc ::lz4::unzip {infile outfile {verify false}} {
 #' $ tpack --help               # display usage information
 #' $ tpack wrap app.tapp        # wraps app.tcl and app.vfs into app.tapp 
 #'                              # where app.vfs is attached as tar archive
+#' $ tpack wrap app.tapp --lz4  # as above but use tar and lz4 for compression
 #' $ tpack wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
 #' $ tpack wrap app             #            as above
-#' $ tpack wrap app.tapp --lz4  # as above but use tar and lz4 for compression
 #' $ tpack init app.tcl app.vfs # creates initial file app.tcl and folder app.vfs
 #' $ tpack init app             #            as above
 #' $ tpack init app.vfs         # create initial folder app.vfs
-#' $ tpack unwrap app.tapp      # extracts app.tcl and app.ttar out of app.tapp
+#' $ tpack unwrap app.tapp      # extracts app.tcl and app.ttar/lz4 out of app.tapp
 #' ```
 #' 
 #' ## DESCRIPTION
