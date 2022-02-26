@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <211126.1637>
+#  Last Modified : <220226.1219>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
@@ -572,16 +572,282 @@ proc ::tar::HandleLongLink {fh hv} {
     return
 }
 ## EOF tar.tcl
+
+# lz4unpack.tcl -- take lz4unpack from wiki
+namespace eval ::lz4 {
+    variable version 0.2.4
+    # The following variable will be true in Jim Tcl and false in Tcl 8.x.
+    variable jim [expr {![catch {info version}]}]
+}
+
+if {$::lz4::jim} {
+    proc ::lz4::byte-range {bytes start end} {
+        tailcall string byterange $bytes $start $end
+    }
+} else {
+    # Benchmarking shows this version to be faster than a tailcall in Tcl 8.6.7.
+    proc ::lz4::byte-range {bytes start end} {
+        return [string range $bytes $start $end]
+    }
+}
+
+proc ::lz4::decode-block {data ptr endPtr window} {
+    set result {}
+    while 1 {
+        if {![binary scan $data "@$ptr cu" token]} {
+            error {data truncated}
+        }
+        incr ptr 1
+        set litLen   [expr {($token >> 4) & 0x0F}]
+        set matchLen [expr {$token & 0x0F}]
+        if {$litLen == 15} {
+            while 1 {
+                if {![binary scan $data "@$ptr cu" byte]} {
+                    error {data truncated}
+                }
+                incr ptr 1
+                incr litLen $byte
+                if {$byte < 255} break
+            }
+        }
+        if {![binary scan $data "@$ptr a$litLen" literals]} {
+            error {data truncated}
+        }
+        incr ptr $litLen
+        append window $literals
+        append result $literals
+        # The last sequence is incomplete.
+        if {$ptr < $endPtr} {
+            if {![binary scan $data "@$ptr su" offset]} {
+                error {data truncated}
+            }
+            incr ptr 2
+            if {$matchLen == 15} {
+                while 1 {
+                    if {![binary scan $data "@$ptr cu" byte]} {
+                        error {data truncated}
+                    }
+                    incr ptr 1
+                    incr matchLen $byte
+                    if {$byte < 255} break
+                }
+            }
+            incr matchLen 4
+            incr offset -1
+            set endOffset [expr {
+                $offset - $matchLen > 0 ? $offset - $matchLen : 0
+            }]
+            set overlapLen [expr {
+                $offset - $matchLen > 0 ? 0 : $matchLen - $offset
+            }]
+            set match [byte-range $window end-$offset end-$endOffset]
+            set matchRepeated [string repeat $match [expr {
+                ($overlapLen / ($offset - $endOffset + 1)) + 2
+            }]]
+            set matchWithOverlap [byte-range $matchRepeated 0 $matchLen-1]
+            append window $matchWithOverlap
+            append result $matchWithOverlap
+        }
+        if {$ptr == $endPtr} break
+        if {$ptr > $endPtr} {
+            error {read beyond block end}
+        }
+    }
+    return [list $ptr $window $result]
+}
+
+proc ::lz4::decode-frame {data ptr verify} {
+    # Decode and validate the header.
+    if {![binary scan $data "@$ptr i" magic]} {
+        error {data truncated}
+    }
+    incr ptr 4
+    set fieldsStartPtr $ptr
+    if {$magic == 0x184D2204} {
+        # Normal frame.
+    } elseif {(0x184D2A50 <= $magic) && ($magic <= 0x184D2A5F)} {
+        # Skippable frame.
+        if {![binary scan $data "@$ptr iu" frameSize]} {
+            error {data truncated}
+        }
+        incr ptr 4
+        incr ptr $frameSize
+        return [list $ptr {}]
+    } else {
+        error "unexpected magic number: $magic"
+    }
+    set flags {}
+    if {![binary scan $data "@$ptr cu cu" flags blockDescr]} {
+        error {data truncated}
+    }
+    incr ptr 2
+    set flagsReserved      [expr {($flags & 0b00000011) == 0}]
+    set hasContentChecksum [expr {($flags & 0b00000100) == 0b00000100}]
+    set hasContentSize     [expr {($flags & 0b00001000) == 0b00001000}]
+    set hasBlockChecksums  [expr {($flags & 0b00010000) == 0b00010000}]
+    set blockIndep         [expr {($flags & 0b00100000) == 0b00100000}]
+    set version            [expr {($flags & 0b11000000) == 0b01000000}]
+    if {!$flagsReserved} {
+        error {FLG reserved bits aren't zero}
+    }
+    if {!$version} {
+        error {frame version isn't "01"}
+    }
+    set blockDescrReserved [expr {($blockDescr & 0b10001111) == 0}]
+    set blockMaxSize       [expr {$blockDescr >> 4}]
+    if {!$blockDescrReserved} {
+        error {BD reserved bits aren't zero}
+    }
+    if {$blockMaxSize < 4} {
+        error "invalid block maximum size ($blockMaxSize < 4)"
+    }
+    if {$hasContentSize} {
+        if {![binary scan $data "@$ptr wu" uncompressedSize]} {
+            error {data truncated}
+        }
+        incr ptr 8
+    }
+    if {![binary scan $data "@$ptr cu" headerChecksum]} {
+        error {data truncated}
+    }
+    if {$verify} {
+        if {![binary scan $data \
+                          "@$fieldsStartPtr a[expr {$ptr - $fieldsStartPtr}]" \
+                          header]} {
+            error {can't scan header fields to verify checksum\
+                   (this shouldn't happen)}
+        }
+        if {(([::xxhash::xxhash32 $header 0] >> 8) & 0xff) != $headerChecksum} {
+            error {frame header doesn't match checksum}
+        }
+    }
+    incr ptr 1
+
+    # Decode the blocks.
+    set window {}
+    while 1 {
+        if {![binary scan $data "@$ptr iu" blockSize]} {
+            error {data truncated}
+        }
+        incr ptr 4
+        set compressed [expr {!($blockSize >> 31)}]
+        set blockSize [expr {$blockSize & 0x7fffffff}] ;# Zero the highest bit.
+        if {$blockSize == 0} break
+
+        if {$compressed} {
+            lassign [decode-block $data \
+                                  $ptr \
+                                  [expr {$ptr + $blockSize}] $window] \
+                    ptr \
+                    window \
+                    decodedBlock
+            if {$blockIndep} {
+                set window {}
+            } else {
+                set window [string range $window end-0xFFFF end]
+            }
+        } else {
+            if {![binary scan $data "@$ptr a$blockSize" decodedBlock]} {
+                error {data truncated}
+            }
+            incr ptr $blockSize
+        }
+        append result $decodedBlock
+    }
+
+    # Decode the checksum.
+    if {$hasContentChecksum} {
+        if {![binary scan $data "@$ptr iu" contentChecksum]} {
+            error {data truncated}
+        }
+        incr ptr 4
+        if {$verify && ([::xxhash::xxhash32 $result 0] != $contentChecksum)} {
+            error {decoded data doesn't match checksum}
+        }
+    }
+
+    return [list $ptr $result]
+}
+
+proc ::lz4::decode {data verify} {
+    if {$verify && ([info commands ::xxhash::xxhash32] eq {})} {
+        error {asked to verify checksums but [::xxhash::xxhash32] is absent}
+    }
+    set ptr 0
+    set result {}
+    set len [string length $data]
+    while {$ptr < $len} {
+        lassign [decode-frame $data $ptr $verify] ptr frame
+        append result $frame
+    }
+    return $result
+}
+
+proc ::lz4::assert-equal {actual expected} {
+    if {$actual ne $expected} {
+        if {[string length $actual] > 200} {
+            set actual [string range $actual 0 199]...
+        }
+        if {[string length $expected] > 200} {
+            set expected [string range $expected 0 199]...
+        }
+        error "expected \"$expected\",\n\
+               but got \"$actual\""
+    }
+}
+
+proc ::lz4::file-test {path canHash} {
+    if {![file exists $path]} {
+        puts stderr "can't find file \"$path\" -- skipping test"
+        return
+    }
+    # Can't use -ignorestderr because Jim Tcl doesn't support it.
+    if {[catch {exec lz4 --version 2>@1}]} {
+        puts stderr {can't run lz4 -- skipping test}
+        return
+    }
+    set ch [open $path rb]
+    set data [read $ch]
+    close $ch
+    set ch [open [list |lz4 -c -9 $path]]
+    fconfigure $ch -translation binary
+    set dataCompressed [read $ch]
+    close $ch
+    assert-equal [decode $dataCompressed 0] $data
+    if {$canHash} {
+        assert-equal [decode $dataCompressed 1] $data
+    }
+}
+
+proc ::lz4::value-test {compressed original canHash} {
+    assert-equal [decode $compressed 0] $original
+    if {$canHash} {
+        assert-equal [decode $compressed 1] $original
+    }
+}
+
+proc ::lz4::unzip {infile outfile {verify false}} {
+    set ch [open $infile rb]
+    set data [read $ch]
+    close $ch
+    set out [open $outfile w 0600]
+    fconfigure $out -translation binary
+    puts -nonewline $out [::lz4::decode $data $verify]
+    close $out
+}
+
+## EOF lz4unpack.tcl
+
 ## File tpack.tcl
 #' ---
-#' title: tpack 0.2.1 - Tcl application deployment
+#' title: tpack 0.3.0 - Tcl application deployment
 #' author: Detlef Groth, Caputh-Schwielowsee, Germany
-#' date: 2021-11-26
+#' date: 2022-02-17
 #' ---
 #' 
 #' ## NAME 
 #' 
-#' _tpack_ - create single or two file Tcl applications based on libraries in tar archives
+#' _tpack_ - create single or two file Tcl applications based on libraries in tar/lz4 archives
 #' 
 #' ## SYNOPSIS
 #' 
@@ -591,6 +857,7 @@ proc ::tar::HandleLongLink {fh hv} {
 #'                              # where app.vfs is attached as tar archive
 #' $ tpack wrap app.tcl app.vfs # wraps app.tcl into app.ttcl and app.vfs into app.ttar
 #' $ tpack wrap app             #            as above
+#' $ tpack wrap app.tapp --lz4  # as above but use tar and lz4 for compression
 #' $ tpack init app.tcl app.vfs # creates initial file app.tcl and folder app.vfs
 #' $ tpack init app             #            as above
 #' $ tpack init app.vfs         # create initial folder app.vfs
@@ -603,7 +870,8 @@ proc ::tar::HandleLongLink {fh hv} {
 #' The application can create single and two file applications. 
 #' Single file applications, called tapp-files contain at the top the tar extraction code, the main tcl script and an attached tar archive
 #' containing the libraries required by this application file. At startup the tar file is detached from the file and 
-#' unpacked into a temporary folder from where the libraries are loaded. 
+#' unpacked into a temporary folder from where the libraries are loaded. The compression with lz4 needs an installed lz4 executable, the decompression of
+#' the build executable is embedded into the final application but requires a Tcl installation of at least 8.5.
 #' 
 #' The single file approach create as _app.tapp_ file out of _app.vfs_ and _app.tcl_.
 #' 
@@ -615,7 +883,7 @@ proc ::tar::HandleLongLink {fh hv} {
 #' > - _app.ttcl_ - text file containing the application code from _app.tcl_ and some code from the tar library to extract tar files
 #'   - _app.ttar_ - the library files from _app.vfs_
 #' 
-#' The file _main.tcl_ should contain at least the following line:
+#' The file _main.tcl_ in the vfs-folder should contain at least the following line:
 #' 
 #' ```
 #' lappend auto_path [file join [file dirname [info script]] lib]
@@ -648,7 +916,7 @@ proc ::tar::HandleLongLink {fh hv} {
 #' 
 #' 
 #' That way you should be able to use your vfs-folder for creating tpacked applications
-#' as well as for creating starkits.
+#' as well for creating starkits.
 #'
 #' ## INSTALLATION
 #' 
@@ -701,13 +969,13 @@ proc ::tar::HandleLongLink {fh hv} {
 #' You can as well rename _appname.ttcl_ to _appname_ but your tar-file should always have the same 
 #' basename.
 #' 
-#' Attention: if mini.ttcl is execute directly in the directory where mini.vfs is 
+#' Attention: if mini.ttcl is executed directly in the directory where mini.vfs is 
 #' located not the tar file but the folder will be used for the libraries. That can simplify the development.
 #' 
 #' You can rename mini.ttcl to what every you like so `mini.bin` or even `mini`, 
 #' but the extension for the tar file must stay unchanged and must be in the same folder as the mini application file.
 #' 
-#' The tpack.tcl script, the minimal application and this Readme are as well packed together in a Zip archive which is available here: TODO
+#' The tpack.tcl script, the minimal application and this Readme are as well packed together in a Zip archive which is available here: [tpack.zip](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/apps/tpack)
 #' 
 #' ## CHANGELOG
 #' 
@@ -718,6 +986,8 @@ proc ::tar::HandleLongLink {fh hv} {
 #'     - build sample apps tknotepad, pandoc-tcl-filter, 
 #' - 2021-11-26 - release 0.2.1 
 #'     - bugfix: adding `package forget tar` after tar file loading to catch users `package require tar`
+#' - 2022-02-16 - release 0.3.0
+#'     - support for lz4 compression/decompression
 #'  
 #' ## TODO
 #' 
@@ -729,22 +999,23 @@ proc ::tar::HandleLongLink {fh hv} {
 #' - tpack unwrap napp.ttar - create napp.vfs  (just an untar, done) 
 #' - tpack unwrap napp.tapp - create napp.tcl and napp.ttar  (done)
 #' - using ttar.gz files with Tcl 8.6 and zlib and with Tcl 8.5/8.4 gunzip terminal app
-#' - using Tcl only lz4 compression, option for Tcl 8.6
+#' - using Tcl only lz4 compression, option for Tcl 8.5/8.6 (done)
 #' - nsis installer for Windows, to deploy minimal Tcl/Tk with the application
 #'
 #' ## AUTHOR
 #' 
-#'   - Copyright (c) 2021 Detlef Groth, Caputh-Schwielowsee, Germany, detlef(at)dgroth(dot)de (tpack code)
+#'   - Copyright (c) 2021-2022 Detlef Groth, Caputh-Schwielowsee, Germany, detlef(at)dgroth(dot)de (tpack code)
+#'   - Copyright (c) 2017 dbohdan pur Tcl lz4 decompression code
 #'   - Copyright (c) 2013 Andreas Kupries andreas_kupries(at)users.sourceforge(dot)net (tar code)
 #'   - Copyright (c) 2004 Aaron Faupell afaupell(at)users.sourceforge(sot)net (tar code)
 #' 
 #' ## LICENSE
 #'
 #' MIT - License
- 
+#'  
 package require Tcl
 package require tar
-package provide tpack 0.2.1
+package provide tpack 0.3.0
 
 namespace eval tpack {
     proc usage { } {
@@ -798,6 +1069,10 @@ proc getTempDir {} {
     }
 }
 set rname [file rootname [info script]]
+set lzmode false
+if {[llength [info commands ::lz4::*]] > 0}  {
+    set lzmode true
+}
 if {[file exists $rname.vfs]} {
     catch {
         package forget tar
@@ -819,25 +1094,34 @@ if {[file exists $rname.vfs]} {
         set archive [string range $data [incr ctrlz] end]
         set scriptfile [file join $tmpdir [file rootname $appname].ttcl]
         set tarfile [file join $tmpdir [file tail [file rootname $appname]].ttar]
+        set lzfile [file join $tmpdir [file tail [file rootname $appname]].ttar.lz4]
+        set untar false
         if {[file exists $tarfile]} {
             set ttime [file mtime $tarfile]
             if {$ttime < $time} {
                 # script is newer than tar file
+                set untar true
+            }
+        } else {
+            set untar true
+        }
+        if {$untar} {
+            if {$lzmode} {
+                if {[file exists $lzfile]} {
+                    file delete $lzfile
+                }
+                set tmp [open $lzfile w 6000]
+                fconfigure $tmp -translation binary
+                puts -nonewline $tmp $archive
+                close $tmp
+                lz4::unzip $lzfile $tarfile
+            } else {
                 set tmp [open $tarfile w 0600]
                 fconfigure $tmp -translation binary
                 puts -nonewline $tmp $archive
                 close $tmp
             }
-        } else {
-            set tmp [open $tarfile w 0600]
-            fconfigure $tmp -translation binary
-            puts -nonewline $tmp $archive
-            close $tmp
         }
-        #set tmp [open $scriptfile w 0600]
-        #fconfigure $tmp -translation binary
-        #puts -nonewline $tmp $script
-        #close $tmp
     } else {
         set tarfile [file rootname [info script]].ttar
         if {![file exists $tarfile]} {
@@ -854,7 +1138,6 @@ if {[file exists $rname.vfs]} {
     }
     if {![file exists $appdir]} {
         file mkdir $appdir
-        #tar::untar $tarfile -dir $appdir
         tar::untar $tarfile -dir $appdir
     }
     set vfspath [lindex [glob [file join $appdir *]] 0]
@@ -899,6 +1182,7 @@ proc untarfile {file} {
     }   
 }
 proc unwraptapp {tappfile} {
+    # TODO check first line for main.tcl
     set appname $tappfile
     set rname [file rootname [file tail $appname]]
     set ttarfile $rname.ttar
@@ -927,7 +1211,7 @@ proc unwraptapp {tappfile} {
     close $out
     puts stdout "Done: unwrapped $appname to $ttarfile and $tclfile"
 }
-proc wrapfile {tclfile ttclfile scriptfile} {
+proc wrapfile {tclfile ttclfile scriptfile {lz4 false}} {
     set infile $tclfile
     set ttcl $ttclfile
     set out [open $ttcl w 0600]
@@ -943,7 +1227,9 @@ proc wrapfile {tclfile ttclfile scriptfile} {
         set flag  true
         set pflag false
         while {[gets $infh line] >= 0} {
-            if {[regexp {^proc ::tar::skip} $line]} {
+            if {[regexp {^## EOF lz4unpack.tcl} $line]} {
+                break
+            } elseif {[regexp {^proc ::tar::skip} $line]} {
                 set flag false
             } elseif {[regexp {proc ::tar::(readHeader|untar|HandleLongLink)} $line]} {
                 set pflag true
@@ -954,8 +1240,11 @@ proc wrapfile {tclfile ttclfile scriptfile} {
             } elseif {$flag || $pflag} {
                  puts $out $line
             } elseif {[regexp {## EOF tar.tcl} $line]} {
-                break
-            }
+                 if {!$lz4} {
+                     break
+                 }
+                 set flag true
+            } 
         }
         close $infh
     }
@@ -1010,12 +1299,21 @@ if {[info exists argv0] && $argv0 eq [info script]} {
     }
     # create variables
     set mode wrap
+    set lz4 false
     set tclfile ""
     set ttclfile ""
     set basename ""
     set vfsfolder ""
     set ttarfile ""
     set scriptfile [info script]
+    if {[lindex $argv end] eq "--lz4"} {
+        if {[auto_execok lz4] eq ""} {
+            puts "Error: lz4 compression needs lz4 executable, please install!"
+            exit 0
+        }
+        set argv [lrange $argv 0 end-1]
+        set lz4 true
+    }
     if {[lindex $argv 0] eq "wrap"} {
         set argv [lrange $argv 1 end]
     } elseif {[lindex $argv 0] eq "init"} {
@@ -1056,6 +1354,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
             set ttclfile  [file rootname $arg].ttcl
             set vfsfolder [file rootname $arg].vfs
             set ttarfile [file rootname $arg].ttar
+            set lz4file [file rootname $arg].ttar.lz4
             set tapp true
         } elseif {[file extension $arg] eq ".ttcl"} { 
             set ttclfile $arg
@@ -1072,9 +1371,15 @@ if {[info exists argv0] && $argv0 eq [info script]} {
         if {$tapp} {
             set t1 [clock seconds]
             puts -nonewline "wrapping $tclfile into $vfsfolder into $tappfile ..."            
-            wrapfile $tclfile $ttclfile $scriptfile
+            puts "\nlz4: $lz4"
+            wrapfile $tclfile $ttclfile $scriptfile $lz4
             tardir $vfsfolder $ttarfile
-            wraptapp $ttclfile $ttarfile $tappfile
+            if {$lz4} {
+                exec -ignorestderr lz4 -f $ttarfile $lz4file
+                wraptapp $ttclfile $lz4file $tappfile
+            } else {
+                wraptapp $ttclfile $ttarfile $tappfile
+            }
             set t2 [expr {[clock seconds]-$t1}]
             puts " in $t2 seconds done!"
             exit 0
