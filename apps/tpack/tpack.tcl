@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <220226.1247>
+#  Last Modified : <220303.0616>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
@@ -1023,13 +1023,14 @@ namespace eval tpack {
         puts "tar application packer [package present tpack]\n\n"
         puts "Usage: tpack \[OPTIONS\] \[CMD\] \[BASENAME\] \[TCLFILE\] \[VFSFOLDER\]\n\n"
         puts "Commands:\n"
-        puts "    init file     - creates file.tcl and file.vfs with initial files and code"
-        puts "    init file.tcl - creates file.vfs  directory with initial files"
-        puts "    wrap file     - creates file.ttcl and file.ttar out of file.tcl and file.vfs"        
-        puts "    wrap file.tapp - creates standalone file.tapp out of file.tcl and folder.vfs"        
-        puts "    wrap file.tcl - creates file.ttcl and file.ttar out of file.tcl and file.vfs"
+        puts "    init file            - creates file.tcl and file.vfs with initial files and code"
+        puts "    init file.tcl        - creates file.vfs  directory with initial files"
+        puts "    wrap file            - creates file.ttcl and file.ttar out of file.tcl and file.vfs"        
+        puts "    wrap file.tapp       - creates standalone file.tapp out of file.tcl and folder.vfs"        
+        puts "    wrap file.tapp --lz4 - creates standalone file.tapp out of file.tcl and folder.vfs\n[string repeat { } 26] using lz4 compression (requires Tcl8.5+ at runtime)"        
+        puts "    wrap file.tcl        - creates file.ttcl and file.ttar out of file.tcl and file.vfs"
         puts "    wrap file.tcl folder.vfs - creates file.ttcl and file.ttar out of file.tcl and folder.vfs"
-        puts "    unwrap file.ttar - just unpack the file.ttar into the file.vfs without overwriting existing files"
+        puts "    unwrap file.ttar     - just unpack the file.ttar into the file.vfs without overwriting\n[string repeat { } 26] existing files"
         puts "    --help        - display this help page"
         puts "    --version     - display version number"
         puts "==========================================="
