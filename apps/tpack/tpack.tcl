@@ -4,7 +4,7 @@
 #  Author        : Dr. Detlef Groth
 #  Created By    : Dr. Detlef Groth
 #  Created       : Tue Sep 7 17:58:32 2021
-#  Last Modified : <220303.0616>
+#  Last Modified : <220303.0625>
 #
 #  Description	 : Standalone deployment tool for Tcl apps using uncompressed tar archives.
 #
@@ -1372,8 +1372,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
     if {$mode eq "wrap"} {
         if {$tapp} {
             set t1 [clock seconds]
-            puts -nonewline "wrapping $tclfile into $vfsfolder into $tappfile ..."            
-            puts "\nlz4: $lz4"
+            puts -nonewline "wrapping $tclfile into $vfsfolder into $tappfile ..."
             wrapfile $tclfile $ttclfile $scriptfile $lz4
             tardir $vfsfolder $ttarfile
             if {$lz4} {
