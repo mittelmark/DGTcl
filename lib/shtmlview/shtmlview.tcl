@@ -101,7 +101,7 @@ if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
 }   
 package require Tk
 package require snit
-package provide shtmlview::shtmlview 0.9.2
+package provide shtmlview::shtmlview 0.9.3
 catch {
     package require tile
 }
@@ -120,6 +120,16 @@ namespace eval shtmlview {
     #        Robert Heller \<heller\@deepsoft.com\>,
     #        and Detlef Groth \<detlef\@dgroth.de\>.
     #
+    catch {
+        bind all <Button-4> \
+              {event generate [focus -displayof %W] <MouseWheel> -delta  120}
+        
+        bind all <Button-5> \
+              {event generate [focus -displayof %W] <MouseWheel> -delta -120}
+        bind HelpText <MouseWheel> {
+            %W yview scroll [expr {- (%D)}] units
+        }
+    }
     bind HelpText <1> {
         tk::TextButton1 %W %x %y
         %W tag remove sel 0.0 end
@@ -1426,6 +1436,10 @@ namespace eval shtmlview {
             # a source
             
             if {[HMextract_param $param href]} {
+                if {[regexp {^http} $href]} {
+                    # ignore weblinks
+                    return
+                }
 		set var(Tref) [list L:$href]
 		HMstack $win "" "Tlink link"
 		HMlink_setup $win $href
