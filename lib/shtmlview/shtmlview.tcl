@@ -1,5 +1,5 @@
 #* shtmlview HTML-Viewer
-#* Cleanud up version of Robert Heller's HTMLHelp tool
+#* Cleaned up version of Robert Heller's HTMLHelp tool
 #* Detlef Groth's one just can load and display htmlpages
 #* ToDo:
 #*     - remove BWidget: break LabelEntry into entry and label ok
@@ -435,7 +435,7 @@ namespace eval shtmlview {
         # @author Stephen Uhler \<stephen.uhler\@sun.com\>, 
         #	    Clif Flynt \<clif\@cflynt.com\>, 
         #         Robert Heller \<heller\@deepsoft.com\>,
-        #         Dr. Detlef Groth \<detlef\@dgroth.com\>.
+        #         Detlef Groth \<detlef\@dgroth.com\>.
         #
         
         option -tablesupport -configuremethod configureTableSupport
@@ -864,6 +864,12 @@ namespace eval shtmlview {
             HMset_state $win -stop 1       ;# stop rendering previous page if busy
             set t [expr {([clock milliseconds] - $t1)/1000.0}]
             $status configure -text [format "[file tail $url] loaded in %0.3f sec" $t]
+            regexp {([^#]*)#(.+)} $url dummy url fragment
+            if {$url != "" && $fragment != ""} {
+                HMgoto $selfns $win $fragment
+                return
+            }
+
             if {$options(-browsecmd) ne ""} {
                 $options(-browsecmd) $url
             }
