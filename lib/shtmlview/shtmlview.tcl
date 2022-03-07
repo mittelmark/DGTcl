@@ -1470,7 +1470,6 @@ namespace eval shtmlview {
             # to cause the display to go to this spot.
             # If the target exists, go there (and do the callback),
             # otherwise schedule the goto to happen when we see the reference.
-            
             if {{HMwent_to} eq "$callback"} {
                 set callback [myproc HMwent_to $selfns]
             }
@@ -2415,6 +2414,10 @@ namespace eval shtmlview {
             HMset_state $win -stop 1
             update idle
             if {[string match #* $href]} {
+                if {$href eq "#"} {
+                    $win see 1.0
+                    return
+                }
 		render $selfns $win $href
 		return
             }
