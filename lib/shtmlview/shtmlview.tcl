@@ -475,7 +475,6 @@ namespace eval shtmlview {
             # @param ... Option value pairs.
             set options(-toolbar) true
             set options(-tablesupport) true
-            $self configurelist $args
             if {$options(-home) ne ""} {
                 lappend topicstack $options(-home)
                 incr curtopicindex
@@ -553,6 +552,7 @@ namespace eval shtmlview {
             bind $helptext <Control-plus> [mymethod setSize 1]
             bind $helptext <Control-minus> [mymethod setSize -1]
             $helptext tag configure hilite -background orange
+            $self configurelist $args
             if {!$options(-toolbar)} {
                 pack forget $win.toolbar
             }
