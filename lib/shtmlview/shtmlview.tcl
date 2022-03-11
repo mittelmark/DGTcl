@@ -459,6 +459,7 @@ namespace eval shtmlview {
         variable Size 1
         variable Url
         variable topicstack {}
+        variable lasturl ""
         ##
         variable curtopicindex -1
         ##
@@ -639,8 +640,9 @@ namespace eval shtmlview {
             # @param topic The topic text to display help for.
             # we call this before rendering just to allow different 
             # instances of shtmlview
+            set lasturl $url
             $self configureTableSupport -tablesupport $options(-tablesupport)
-            render $selfns $helptext $url
+            render $selfns $helptext [file normalize $url]
             #$hull draw $helptext
             set current "[::grab current $win]"
             #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
@@ -729,7 +731,7 @@ namespace eval shtmlview {
                 
             }
             if {"$url" eq {}} {return}
-            render $selfns $helptext $url no
+            render $selfns $helptext [file normalize $url] no
             
         }
 
@@ -814,8 +816,6 @@ namespace eval shtmlview {
             ##
             $w tag remove hilite 0.0 end
             set lastsearch [$command get]
-            #set lastsearch [$command getText] ;
-            #puts lastsearch$lastsearch        
             set pos [$w search -backwards -nocase "$lastsearch" insert]
             if {"$pos" eq "[$w index insert]"} {
                 set pos [$w search -backwards -nocase "$lastsearch" "$pos-1c"]
@@ -834,12 +834,17 @@ namespace eval shtmlview {
             ##
             set t1 [clock milliseconds]
             set fragment ""
+            if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
             regexp {([^#]*)#(.+)} $url dummy url fragment
             if {$url == "" && $fragment != ""} {
-                HMgoto $selfns $win $fragment
+                set url $lasturl
+                render $selfns $win $url#$fragment
+                #HMgoto $selfns $win $fragment
+                #if {$win eq $helptext} {pushcurrenttopic $selfns $url}
                 return
             }
-            if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
+            set lasturl $url
+            #if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
             #if {[regexp {^/} $url] < 1} {
             #set url [file join $options(-helpdirectory) $url]
             #}
@@ -2414,7 +2419,10 @@ namespace eval shtmlview {
             HMset_state $win -stop 1
             update idle
             if {[string match #* $href]} {
+                puts "link matched"
                 if {$href eq "#"} {
+                    set lasturl $url
+                    pushcurrenttopic $selfns $url
                     $win see 1.0
                     return
                 }
