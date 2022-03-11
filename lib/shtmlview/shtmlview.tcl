@@ -30,6 +30,7 @@
 #*                      - importing tile scrollbar if available
 #*                      - 2018-10-20 removed bwidget dependency
 #*                      - tablesupport option
+#*                      - 2022-03-XX bugfixes for anchor links and copy operation, support for Markdown files and inline base encoded images
 #* ------------------------------------------------------------------
 #* Contents:
 #* 
@@ -833,6 +834,7 @@ namespace eval shtmlview {
         }
         proc render {selfns win url {push yes}} {
             ##
+            set url [file normalize $url]
             set t1 [clock milliseconds]
             set fragment ""
             if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
@@ -1625,8 +1627,8 @@ namespace eval shtmlview {
             HMextract_param $param src
             #	puts stderr "*** HMtag_img: src = $src"
             #	puts stderr "*** HMtag_img: alt = $alt"
-            if {[regexp {data:image/png;base64,} $src]} {
-                set img [image create photo -data [string range $src 22 end]]
+            if {[regexp -nocase {^.*data:image/png.*base64,} $src]} {
+                set img [image create photo -data [regsub {.*base64,\s*} $src ""]]
                 $label configure -image $img
             } else {
                 HMset_image $selfns $win $label $src

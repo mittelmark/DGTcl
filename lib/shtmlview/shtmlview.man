@@ -18,9 +18,9 @@
 [description]
 
 The [package shtmlview::shtmlview] package provides the shtmlview::shtmlview widget which
-is a standard tk text widget with support for rendering a reasonable subset of html tags. It
+is a standard tk text widget with support for rendering a reasonable subset of html tags and if the tcllib library Markdown is available as well for Markdown files. It
 is tought as a fallback widget in cases where no other possibilities exists to
-display html markup inside a Tk application. The widget does not provides style sheet support and is not a web browser, so it can't retrieve web pages.
+display HTML or Markdown markup inside a Tk application. The widget does not provides style sheet support and is not a web browser, so it can't retrieve web pages.
 The widget is intended to be used for instance as a help viewer
 or in other cases where the developer has control about the used html tags.
 Comments and feedbacks are welcome. The [cmd shtmlview::shtmlview] widget overloads the text 
@@ -58,10 +58,11 @@ Instead, it is the subset of that API that is expected not to change.
 
 [section INSTALLATION]
 
+The widget requires the tcllib *snit* package and optional if desired to display Markdown files the tcllib Markdown library.
 The [cmd shtmlview::shtmlview] package is delivered as a normal Tcl package
 folder which can be placed anywhere on your file system or in a folder
-belonging to your TCL library path. In case you installed it into a non-standard folder
-just use append your autopath variable as shown below:
+belonging to your Tcl library path. In case you installed it into a non-standard folder
+just use append your *auto_path* variable as shown below:
 
 [example {
 lappend auto_path /path/to/parent-folder ;# of shtmlview folder
@@ -94,7 +95,7 @@ Displays the previous htmlpage in the browsing history if any.
 
 [call [arg pathName] [method browse] [arg filename]]
 
-Displays the htmlpage given by filename.
+Displays the HTML or Markdown page given by filename.
 
 [call [arg pathName] [method dosearch] [arg string] [arg direction]]
 
@@ -177,13 +178,14 @@ facilities for the widget.
 [section "BINDINGS FOR THE WIDGET"]
 
 The widget contain standard navigation key bindings to browse the content of
-an html page. Furthermore the keypress s and r are bound to the start of
+an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
 forward and reverse searches in the content. The keys b and f are bound to
 browsing forward and backward in the browse history.
 
 [section EXAMPLE]
 [example {
     package require Tk
+    package require snit
     package require shtmlview::shtmlview
     proc browsed {url} {
         puts "You browsed $url"
@@ -192,6 +194,8 @@ browsing forward and backward in the browse history.
         -browsecmd browsed]
     $help browse index.html
     pack $help -fill both -expand true -side left
+    package require Markdown
+    $help browser test.md
 }]
 
 Further examples are in the source package for [package shtmlview::shtmlview].
