@@ -205,6 +205,12 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [para]
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
+[para]
+- 2022-03-XX version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files
+
+[section TODO]
+[para]
+- Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
 
 [section Thanks]
 

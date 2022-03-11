@@ -723,6 +723,7 @@ namespace eval shtmlview {
             set url ""
             set types {
                 {{HTML Files}       {.htm .html}}
+                {{Markdown Files}   {.md .Rmd .Tmd}}                
                 {{All Files}        *          }
             }
             set filename [tk_getOpenFile -filetypes $types -initialdir [file normalize [lindex $topicstack 0]]]
@@ -860,7 +861,27 @@ namespace eval shtmlview {
             }
             HMset_state $win -stop 0
             set err no
-            if {[catch {HMparse_html [get_html $url] [myproc HMrender $selfns $win]} error]} {
+            if {[regexp {[Mm][Dd]$} $url]} {
+                if {[info commands ::Markdown::convert] eq ""} {
+                    catch { package require Markdown }
+                    if {[info commands ::Markdown::convert] eq ""} {
+                        error "package Markdown can't be loaded!"
+                    }
+                }
+                if [catch {open $url r} infh] {
+                    error "Cannot open $url: $infh"
+                } else {
+                    set md ""
+                    while {[gets $infh line] >= 0} {
+                        append md "$line\n"
+                    }
+                    close $infh
+                }
+                set html [Markdown::convert $md]
+            } else {
+                set html [get_html $url]
+            }
+            if {[catch {HMparse_html $html [myproc HMrender $selfns $win]} error]} {
                 set _errorInfo $::errorInfo
                 set _errorCode $::errorCode
                 set err yes
@@ -1556,7 +1577,7 @@ namespace eval shtmlview {
             set alt [HMmap_esc $alt]
             
             # get the border width
-            set border 1
+            set border 0
             HMextract_param $param border
             
             # see if we have an image size hint
@@ -1575,7 +1596,7 @@ namespace eval shtmlview {
 		label $label 
             }
 
-            $label configure -relief ridge -fg orange -text $alt
+            $label configure -relief flat -fg orange -text $alt
             catch {$label configure -bd $border}
             $win window create $var(S_insert) -align $align -window $item -pady 2 -padx 2
             
@@ -1604,7 +1625,12 @@ namespace eval shtmlview {
             HMextract_param $param src
             #	puts stderr "*** HMtag_img: src = $src"
             #	puts stderr "*** HMtag_img: alt = $alt"
-            HMset_image $selfns $win $label $src
+            if {[regexp {data:image/png;base64,} $src]} {
+                set img [image create photo -data [string range $src 22 end]]
+                $label configure -image $img
+            } else {
+                HMset_image $selfns $win $label $src
+            }
             #	puts stderr "*** HMtag_img: after HMset_image, label = $label"
             return $label	;# used by the forms package for input_image types
         }
@@ -2419,7 +2445,6 @@ namespace eval shtmlview {
             HMset_state $win -stop 1
             update idle
             if {[string match #* $href]} {
-                puts "link matched"
                 if {$href eq "#"} {
                     set lasturl $url
                     pushcurrenttopic $selfns $url
