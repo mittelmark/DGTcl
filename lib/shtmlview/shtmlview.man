@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin shtmlview n 0.9.3]
+[manpage_begin shtmlview n 1.0.0]
 [see_also text]
 [keywords text]
 [keywords html]
@@ -219,7 +219,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 
 [section Thanks]
 
-Stephen Uhler, Clif Flynt and Robert Heller.
+Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget.
 
 [section "Bugs, Ideas, Feedback"]
 
