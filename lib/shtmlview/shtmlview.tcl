@@ -102,7 +102,7 @@ if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
 }   
 package require Tk
 package require snit
-package provide shtmlview::shtmlview 0.9.3
+package provide shtmlview::shtmlview 1.0.0
 catch {
     package require tile
 }

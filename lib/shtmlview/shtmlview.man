@@ -10,10 +10,11 @@
 [copyright {2009, Robert Heller}]
 
 [moddesc   {basic html viewer widget}]
-[titledesc {text widget with basic support for html markup rendering}]
+[titledesc {text widget with basic support for HTML and Markdown markup rendering}]
 [require Tk]
 [require snit]
-[require shtmlview::shtmlview [opt 0.9.3]]
+[require Markdown]
+[require shtmlview::shtmlview [opt 1.0.0]]
 
 [description]
 
@@ -210,7 +211,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
 [para]
-- 2022-03-XX version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files
+- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files
 
 [section TODO]
 [para]
