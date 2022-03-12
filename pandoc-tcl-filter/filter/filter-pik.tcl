@@ -1,5 +1,5 @@
 #' ---
-#' title: filter-pik.tcl documentation for the Pikchr diaggram tool
+#' title: filter-pik.tcl - Pikchr diagrams
 #' author: Detlef Groth, Caputh-Schwielowsee, Germany
 #' date: 2021-12-03
 #' pik:

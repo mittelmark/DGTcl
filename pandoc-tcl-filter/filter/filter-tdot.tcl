@@ -97,9 +97,37 @@
 #' tdot addEdge A -> B
 #' ```
 #' 
+#' You might argue what is the advantage of the tdot package in contrast to writing directly dot code. 
+#' The reason to use tdot would be to create dynamically your graphs using Tcl as the scripting language to do so. 
+#' Here is an example:
+#' 
+#' ```{.tdot}
+#' package require tdot
+#' tdot set code ""
+#' tdot set type "strict graph G"
+#' 
+#' tdot graph margin=0.2 
+#' tdot node width=0.5 height=0.5 \
+#'   style=filled fillcolor=salmon shape=circle
+#' tdot node Hello fillcolor=salmon
+#' tdot node fillcolor=skyblue
+#' foreach a [list A B C D E F] {
+#'    tdot addEdge Hello -- $a
+#'    foreach b [list a b c] {
+#'        tdot node $a$b fillcolor=cornsilk
+#'        tdot addEdge $a -- $a$b
+#'    }
+#' }
+#' ```
+#' 
+#' Image you would to have the dot-code by hand ...
+#' 
 #' ## See also:
 #' 
+#' * [dot filter](filter-dot.html)
 #' * [pandoc-tcl-filter Readme](../Readme.html)
+#' * [pandoc-tcl-filter docu](../pandoc-tcl-filter.html)
+#' * [filter-view docu](../filter-view.html)
 #' 
 
 package require tdot

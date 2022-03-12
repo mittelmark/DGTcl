@@ -3,9 +3,10 @@
 [filter-cmd](filter-cmd.html) -
 [filter-dot](filter-dot.html) -
 [filter-eqn](filter-eqn.html) -
+[filter-kroki](filter-mmd.html) -
 [filter-mmd](filter-mmd.html) -
 [filter-mtex](filter-mtex.html) -
-[filter-pic](filter-pic.html) -
+[filter-pic/dpic](filter-pic.html) -
 [filter-pik](filter-pik.html) <br/>
 [filter-pipe](filter-pipe.html) -
 [filter-puml](filter-puml.html) -

@@ -5,6 +5,14 @@
 #' date: 2022-02-07
 #' ---
 #' 
+#' ------
+#' 
+#' ```{.tcl results="asis" echo=false}
+#' include header.md
+#' ```
+#' 
+#' ------
+#' 
 #' ## NAME
 #' 
 #' *filter-view* - graphical interface for various diagram and graphics generating tools like R, Octave, 
@@ -21,7 +29,7 @@
 ##############################################################################
 #  Created By    : Detlef Groth
 #  Created       : Fri Feb 4 05:49:13 2022
-#  Last Modified : <220206.0900>
+#  Last Modified : <220222.1550>
 #
 #  Description	 : Graphical user interface to display
 #                 results from graphical tools created based with simple text.
@@ -48,7 +56,7 @@ if {[file isdir lib]} {
 package require dgw::basegui
 package require dgw::txmixins
 package require tclfilters
-package provide fview 0.1
+package provide fview 0.2
 namespace eval fview { 
     variable filetypes 
     set filetypes {
@@ -63,6 +71,7 @@ namespace eval fview {
         {{Rplot Files}     {.rplot}      }                
         {{Tdot  Files}     {.tdot}       }                        
         {{Tsvg  Files}     {.tsvg}       }                                
+        {{Markdown Files}  {.md .Tmd .Rmd}       }                                        
         {{All Files}        *            }
     }
 
@@ -130,6 +139,7 @@ proc ::fview::gui {} {
     $pwd2 add $f0
     $pwd2 add $tf2
     pack $pwd2 -side top -fill both -expand yes
+    set ::fview::current txt2
     set ::fview::pwd1 $pwd
     set ::fview::pwd2 $pwd2
     set ::fview::lab1 $pwd.f0.img
@@ -184,17 +194,59 @@ proc ::fview::fileSaveAs { } {
         ::fview::fileSave $savefile
     }
 }
+proc ::fview::extractChunk {} {
+    if {$::fview::current eq "txt1"} {
+        set txt $::fview::text
+    } else {
+        set txt $::fview::text2
+    }
+    set ins [$txt index insert]
+    if {$ins eq ""} {
+        set start [$txt search -forwards ``` 1.0]
+        set end [$txt search -forwards ``` "$start lineend"]
+    } else {
+        set start [$txt search -backwards ``` $ins]
+        set end [$txt search -forwards ``` $ins]
+    }
+    if {$start eq "" || $end eq ""} {
+        return [list "" ""]
+    }
+    set code [$txt get "$start linestart" "$end lineend"]
+    if {[string length $code] > 5} {
+        set fext [regsub {^```\{\.([a-z]+).*\}.+} $code "\\1"]
+        set code [$txt get "$start lineend + 1c" "$end linestart - 1c"]
+        return [list $fext $code]
+    }
+    return [list "" ""]
+    
+}
 proc ::fview::fileSave {{savefile ""} } {
     if {$::fview::filename in [list "" "*new*"]} {
         ::fview::fileSaveAs
     } else {
         set savefile $::fview::filename
     }
+    set tempfile ""
     if {$savefile ne ""} {
         set label [file tail [file rootname $savefile]]
         set d [dict create echo true results hide eval true fig true ext png label $label]
-        
+        set ext [string range [file extension $savefile] 1 end]
         set cnt [$::fview::text get 1.0 end]
+
+        if {$ext in [list md Rmd Tmd]} {
+            set res [::fview::extractChunk]
+            set next [lindex $res 0]
+            if {$next eq ""} {
+                return
+            }
+            set out [open $savefile w 0600]
+            puts $out $cnt
+            close $out
+            set cnt [lindex $res 1]
+            set savefile [file tempfile].$next
+            set tempfile $savefile
+            set ext $next
+        }
         set out [open $savefile  w 0600]
         foreach line [split $cnt \n] {
             if {[regexp {^.?```\{.+\}} $line]} {
@@ -204,7 +256,9 @@ proc ::fview::fileSave {{savefile ""} } {
             puts $out $line
         }
         close $out
-        set ext [string range [file extension $savefile] 1 end]
+        if {$tempfile ne ""} {
+            file delete $tempfile
+        }
         set label [file rootname [file tail $savefile]]
         if {[info procs ::filter-$ext] ne ""} {
             if {[catch {
@@ -234,10 +288,12 @@ proc ::fview::fileSave {{savefile ""} } {
 }
 proc ::fview::paneVertical {} {
     pack forget $::fview::pwd1
+    set ::fview::current txt2
     pack $::fview::pwd2 -side top -fill both -expand yes
 }
 proc ::fview::paneHorizontal {} {
     pack forget $::fview::pwd2
+    set ::fview::current txt1
     pack $::fview::pwd1 -side top -fill both -expand yes
 }
 if {[info exists argv0] && $argv0 eq [info script]} {
@@ -295,7 +351,11 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' 0.7.0
 #' ```
 #' 
-#' You should then install *cairosvg*. Let's check if it is there:
+#' You should then install *cairosvg* for instance using your package manager. 
+#' On Fedora you would write `sudo dnf install python3-cairosvg` on Ubunti/Debian `sudo apt-get install cairosvg`. On most systems you could as well use the Python package manager and 
+#' use it for you as an user only: `pip3 install cairosvg --user`.
+#' 
+#' Let's check if it is there:
 #' 
 #' ```
 #' $ cairosvg --version
@@ -304,7 +364,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' 
 #' Ok, that works as well. You must now install the tools for creating the graphics:
 #' 
-#' Here some suggestions which worked for me on my Fedora Linux system:
+#' Here some install suggestions which worked for me on my Fedora Linux system:
 #' 
 #' * cairosvg - `sudo dnf install python3-cairosvg`
 #' * ABC music - `sudo dnf install abcm2ps python3-cairosvg`
@@ -339,8 +399,8 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' - Ctrl-c - copy text
 #' - Ctrl-u - edit undo
 #' - Ctrl-Shift-/ - select all text
-#' - Ctrl-Shift-h - swith to horizontal layout, left image, right editor
-#' - Ctrl-Shift-v - swith to vertical layout, top image, bottom editor
+#' - Ctrl-Shift-h - switch to horizontal layout, left image, right editor
+#' - Ctrl-Shift-v - switch to vertical layout, top image, bottom editor
 #' 
 #' ## DOT example
 #' 
@@ -380,7 +440,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' If you prefere having the image on the left and the editor on the right you can switch the layout using the Ctrl-Shift-h shortcut, to go back use the Ctrl-Shift-v shortcut.
 #' 
 #' ![](filter-view/demo-dot2.png)
-
+#'
 #' You can continue to change the graph, every time you save the file, the image will be updated.
 #' The image you see will be stored in a folder images in parallel to your current working directory. In a future version explicit saving as PNG, SVG or PDF might be supported.
 #' 
@@ -389,7 +449,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' 
 #' ## Fossil example
 #' 
-#' In contrast to GraphViz *fossil pikchr* allows more explicit layout mechanism. Let's install fossil, 
+#' In contrast to the GraphViz tools, *fossil pikchr* allows more explicit layout mechanism. Let's install fossil, 
 #' you can either download the last recent binary from the fossil site: 
 #' [https://fossil-scm.org/home/uv/download.html](https://fossil-scm.org/home/uv/download.html) 
 #' and unpack and install the single file binary to a folder belonging to your PATH. 
@@ -424,7 +484,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' 
 #' In case you made an error, the text widget will be shortly marked as salmon and a
 #' more ore less useful error message will be displayed in the
-#' statusbar at the bottom. More examples could be fount at the Pikchr filter manual page: [filter/filter-pik.html](filter/filter-pik.html).
+#' statusbar at the bottom. More examples could be found at the Pikchr filter manual page: [filter/filter-pik.html](filter/filter-pik.html).
 #' 
 #' ## LaTeX example
 #' 
@@ -471,6 +531,7 @@ if {[info exists argv0] && $argv0 eq [info script]} {
 #' ## Other examples
 #' 
 #' TODO - R, Graphviz neato, tsvg, tdot
+#' 
 #' 
 #' ## AUTHOR
 #' 

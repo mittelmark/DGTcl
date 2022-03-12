@@ -3,6 +3,7 @@ filter-docs: filter-abc.html \
 	filter-cmd.html \
 	filter-dot.html \
 	 filter-eqn.html \
+	 filter-kroki.html \
 	 filter-mmd.html \
  	 filter-mtex.html \
 	 filter-pic.html \

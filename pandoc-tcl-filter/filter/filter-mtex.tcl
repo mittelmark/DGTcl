@@ -496,7 +496,7 @@ set codeend {
             set res ""
         }
         if {[dict get $dict ext] eq "png"} {
-            exec -ignorestderr dvipng $tempfile.dvi -o $fname.png > /dev/null 2> /dev/null
+            exec -ignorestderr dvipng $tempfile.dvi -D[dict get $dict density] -o $fname.png -bg transparent > /dev/null 2> /dev/null
         } elseif {[dict get $dict ext] eq "svg"} {
             if {[auto_execok dvisvgm] eq ""} {
                 set res "Error: install texlive-dvisvgm"

@@ -226,7 +226,7 @@
 #' 
 #' and for the complete documentation of the different diagram types have a look at the [PDF manual](http://plantuml.com/guide).
 #' 
-#' Finally an even simpler example in case all you want is just a set of nice handwritten buttons:
+#' Now an even simpler example in case all you want is just a set of nice handwritten buttons:
 #' 
 #' ```{.puml}
 #' @startuml
@@ -247,7 +247,7 @@
 #' @enduml
 #' ```
 #' 
-#' And now a YAML visualization:
+#' And here a YAML visualization:
 #'
 #' ```{.puml}
 #' @startyaml
@@ -267,6 +267,68 @@
 #' Capo: "3rd Fret"
 #' @endyaml
 #' ```
+#'
+#' PlantUML supports as well other diagram types, for instance GraphViz diagrams:
+#' 
+#' ```{.puml}
+#' @startuml
+#' digraph G {
+#'    node[shape=box,style=filled,fillcolor=skyblue];
+#'    rankdir=LR;
+#'    A->B->C;
+#' }
+#' @enduml
+#' ```
+#' 
+#' Also Ditaa diagrams are supported:
+#' 
+#' ```{.puml}
+#' @startditaa
+#' +---------------------------------------------+
+#' | File | Help   cEEE                          |
+#' +---------------+-----------------------------+
+#' |               |                             |
+#' |  tk.Listbox   |         tk.Listbox          |
+#' |               |                             |
+#' |   UniProtIds  |                             |
+#' |               |                             |
+#' |               |      (UniProt-Entry)        |
+#' |              <+>                            |
+#' |               |                             |
+#' |               |                             |
+#' |               |                             |
+#' |               |                             |
+#' |               |                             |
+#' +---------------+---------------------------+-+
+#' |                                             |
+#' |  +--- SeqSearch (labelframe) --------+      |
+#' |  |  /---------\    /-----------\ cFEE|      | 
+#' |  |  |ttk.Entry|    | ttk.Button|     |      |
+#' |  |  \---------/    \-----------/     |      |
+#' |  +-----------------------------------+      |
+#' |                                             |
+#' +-------------------------------------------+-+
+#' | ttk.Label (Fileinfo) cEFF| ttk.Progressbar  | 
+#' +-------------------------+-------------------+
+#' @endditaa
+#' ```
+#' 
+#' As well as AsciiMath and LaTeX math. To use this example see for the installation instructions of JLatexMath here [https://plantuml.com/ascii-math](https://plantuml.com/ascii-math): 
+#' 
+#' ```{.puml}
+#' @startlatex
+#' \sum_{i=0}^{n-1} (a_i + b_i^2)
+#' @endlatex
+#' ```
+#' 
+#' Here an example for AsciiMath:
+#' 
+#' ```{.puml}
+#' @startmath
+#' f(t)=(a_0)/2 + sum_(n=1)^ooa_ncos((npit)/L)+sum_(n=1)^oo b_n\ sin((npit)/L)
+#' @endmath
+#' ```
+#' 
 
 #' ## See also:
 #' 
