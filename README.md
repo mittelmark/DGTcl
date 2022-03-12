@@ -47,7 +47,7 @@ For other filters have a look at the Pandoc topic list [https://github.com/topic
   Here the link to the [chesschart tutorial](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/chesschart/doc/intro.html) and the 
   [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/chesschart).
 * [shtmlview::shtmlview](http://htmlpreview.github.io/?https://github.com/mittelmark/DGTcl/blob/master/lib/shtmlview/shtmlview.html) - 
-    a pure Tcl/Tk widget to render a reasonable subset of HTML and via Tcllibs Markdown library Markdown,   [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/shtmlview).
+    a pure Tcl/Tk widget to render a reasonable subset of HTML and via Tcllibs Markdown library Markdown into a Tk text widget,  [Gitdown-Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/DGTcl/tree/master/lib/shtmlview).
 
 ## Tcl Libraries / Applications    
 
