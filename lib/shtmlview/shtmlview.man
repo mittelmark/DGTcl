@@ -9,8 +9,8 @@
 [copyright {2000, Clif Flynt}]
 [copyright {2009, Robert Heller}]
 
-[moddesc   {basic html viewer widget}]
-[titledesc {text widget with basic support for HTML and Markdown markup rendering}]
+[moddesc   {basic HTML and Markdown viewer widget}]
+[titledesc {pur Tcl/Tk text widget with basic support for HTML and Markdown markup rendering}]
 [require Tk]
 [require snit]
 [require Markdown]
