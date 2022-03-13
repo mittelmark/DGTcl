@@ -3127,6 +3127,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
 
             } else {
                 # standard html
+                $help configure -home [lindex $argv 0] 
                 $help browse [lindex $argv 0] 
             }
         } else {
