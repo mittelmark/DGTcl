@@ -104,6 +104,11 @@ package require Tk
 package require snit
 package provide shtmlview::shtmlview 1.0.0
 catch {
+    # optional
+    package require img::jpeg
+}
+catch {
+    # optional
     package require tile
 }
 
@@ -1627,10 +1632,15 @@ namespace eval shtmlview {
             HMextract_param $param src
             #	puts stderr "*** HMtag_img: src = $src"
             #	puts stderr "*** HMtag_img: alt = $alt"
-            if {[regexp -nocase {^.*data:image/png.*base64,} $src]} {
+            if {[regexp -nocase {^.*data:image/.*base64,} $src]} {
                 set img [image create photo -data [regsub {.*base64,\s*} $src ""]]
                 $label configure -image $img
             } else {
+                if {[regexp -nocase {(jpg|jpeg)$} $src]} {
+                    if {[package version img::jpeg] eq ""} {
+                        puts "please install package tkimg to supprt jpeg files"
+                    }
+                }
                 HMset_image $selfns $win $label $src
             }
             #	puts stderr "*** HMtag_img: after HMset_image, label = $label"
