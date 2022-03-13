@@ -1470,7 +1470,7 @@ namespace eval shtmlview {
             # a source
             
             if {[HMextract_param $param href]} {
-                if {[regexp {^http} $href]} {
+                if {[regexp {^https?:} $href]} {
                     # ignore weblinks
                     return
                 }
@@ -2447,13 +2447,17 @@ namespace eval shtmlview {
             HMset_state $win -stop 1
             update idle
             if {[string match #* $href]} {
+                set lurl [regsub {#.*} $lasturl ""]
                 if {$href eq "#"} {
-                    set lasturl $url
-                    pushcurrenttopic $selfns $url
+                    pushcurrenttopic $selfns $lurl
                     $win see 1.0
                     return
                 }
-		render $selfns $win $href
+                if {[regexp {^#} $href]} {
+                    render $selfns $win $lurl$href
+                } else {
+                    render $selfns $win $href
+                }
 		return
             }
             if {[string match /* $href]} {
