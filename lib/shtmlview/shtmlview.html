@@ -201,14 +201,14 @@ package require shtmlview::shtmlview
 commands and options:</p>
 <dl class="doctools_definitions">
 <dt><a name="2"><i class="arg">pathName</i> <b class="method">back</b></a></dt>
-<dd><p>Displays the previous htmlpage in the browsing history if any.</p></dd>
+<dd><p>Displays the previous HTML and Markdown page in the browsing history if any.</p></dd>
 <dt><a name="3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i></a></dt>
 <dd><p>Displays the HTML or Markdown page given by filename.</p></dd>
 <dt><a name="4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></dt>
 <dd><p>Search and hilights the given string from the current index either
 in the given direction either forward (default) or backwards.</p></dd>
 <dt><a name="5"><i class="arg">pathName</i> <b class="method">forward</b></a></dt>
-<dd><p>Displays the next htmlpage in the browsing history if any.</p></dd>
+<dd><p>Displays the next HTML or Markdown page in the browsing history if any.</p></dd>
 <dt><a name="6"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></dt>
 <dd><p>This commands returns the internal pathname of the text widget. The developer
 can that way thereafter deal directly with the internal text widget if
@@ -222,11 +222,11 @@ required. Alternatively the <b class="method">helptext</b> command can be used. 
 </pre>
 </dd>
 <dt><a name="8"><i class="arg">pathName</i> <b class="method">home</b></a></dt>
-<dd><p>Displays the first htmlpage which was called by <i class="arg">pathName</i> <b class="method">browse</b> or set by <b class="option">-home</b>.</p></dd>
+<dd><p>Displays the first HTML or Markdown page which was called by <i class="arg">pathName</i> <b class="method">browse</b> or set by <b class="option">-home</b>.</p></dd>
 <dt><a name="9"><i class="arg">pathName</i> <b class="method">open</b></a></dt>
-<dd><p>Displays a standard file dialog to open a htmlpage to be displayed in the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
+<dd><p>Displays a standard file dialog to open a HTML or Markdown page to be displayed in the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
 <dt><a name="10"><i class="arg">pathName</i> <b class="method">reload</b></a></dt>
-<dd><p>Reloads and redisplays the current htmlpage visible inside the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
+<dd><p>Reloads and redisplays the current HTML or Markdown page visible inside the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
 <dt><a name="11"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
 <dd><p>Returns the current URL displayed in the <b class="cmd">::shtmlview::shtmlview</b> widget.</p></dd>
 </dl>
@@ -235,7 +235,7 @@ required. Alternatively the <b class="method">helptext</b> command can be used. 
 <p>To configure the internal text widget the helptext command courld be used directly.</p>
 <dl class="doctools_options">
 <dt><b class="option">-browsecmd</b> cmd</dt>
-<dd><p>Each time a htmlpage is rendered the given <b class="option">-browsecmd</b> is invoked. The actual URL is appended as first argument to the command.</p></dd>
+<dd><p>Each time a HTML or Markdown page is rendered the given <b class="option">-browsecmd</b> is invoked. The actual URL is appended as first argument to the command.</p></dd>
 <dt><b class="option">-home</b> string</dt>
 <dd><p>Set's the homepage filename of the shtmlview widget. If not set, the first page browsed
 will be automatically set as the home page.</p></dd>

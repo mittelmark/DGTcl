@@ -91,7 +91,7 @@ commands and options:
 
 [call [arg pathName] [method back]]
 
-Displays the previous htmlpage in the browsing history if any.
+Displays the previous HTML and Markdown page in the browsing history if any.
 
 
 [call [arg pathName] [method browse] [arg filename]]
@@ -105,7 +105,7 @@ in the given direction either forward (default) or backwards.
 
 [call [arg pathName] [method forward]]
 
-Displays the next htmlpage in the browsing history if any.
+Displays the next HTML or Markdown page in the browsing history if any.
 
 [call [arg pathName] [method getTextWidget]]
 
@@ -126,15 +126,15 @@ This command exposes the internal text widget. See the following example:
 
 [call [arg pathName] [method home]]
 
-Displays the first htmlpage which was called by [arg pathName] [method browse] or set by [option -home].
+Displays the first HTML or Markdown page which was called by [arg pathName] [method browse] or set by [option -home].
 
 [call [arg pathName] [method open]]
 
-Displays a standard file dialog to open a htmlpage to be displayed in the [cmd shtmlview::shtmlview] widget.
+Displays a standard file dialog to open a HTML or Markdown page to be displayed in the [cmd shtmlview::shtmlview] widget.
 
 [call [arg pathName] [method reload]]
 
-Reloads and redisplays the current htmlpage visible inside the [cmd shtmlview::shtmlview] widget.
+Reloads and redisplays the current HTML or Markdown page visible inside the [cmd shtmlview::shtmlview] widget.
 
 
 [call [arg pathName] [method url]]
@@ -153,7 +153,7 @@ To configure the internal text widget the helptext command courld be used direct
 
 [opt_def -browsecmd cmd]
 
-Each time a htmlpage is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
+Each time a HTML or Markdown page is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
 
 [opt_def -home string]
 
