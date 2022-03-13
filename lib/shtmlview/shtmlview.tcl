@@ -842,13 +842,17 @@ namespace eval shtmlview {
             set url [file normalize $url]
             set t1 [clock milliseconds]
             set fragment ""
+            #puts "fetching1 $url"
             if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
             regexp {([^#]*)#(.+)} $url dummy url fragment
-            if {$url == "" && $fragment != ""} {
+            #puts "fetching2 $url"
+            if {$url eq [regsub {#.+} $lasturl ""] && $fragment ne ""} {
                 set url $lasturl
-                render $selfns $win $url#$fragment
-                #HMgoto $selfns $win $fragment
-                #if {$win eq $helptext} {pushcurrenttopic $selfns $url}
+                #render $selfns $win $url#$fragment
+                HMgoto $selfns $win $fragment
+                set lasturl $url#$fragment
+                #puts "fetching $lasturl done"
+                #pushcurrenttopic $selfns $lasturl
                 return
             }
             set lasturl $url
@@ -3117,7 +3121,8 @@ if {[info exists argv0] && [info script] eq $argv0} {
             if {[file extension [lindex $argv 0]] eq ".tcl" || [file extension [lindex $argv 0]] eq ".tm" } {
                 # guess we have mkdoc format
                 if { [ catch {  package require mkdoc::mkdoc } ] } {
-                    puts "Error:\nFor extracting mkdoc documentation from Tcl source code files\npackage mkdoc::mkdoc must be present!# error handling
+                    # error handling
+                    puts "Error:\nFor extracting mkdoc documentation from Tcl source code files\npackage mkdoc::mkdoc must be present!"
                 } else {
                     set tmpfile [file tempfile]
                     mkdoc::mkdoc [lindex $argv 0] ${tmpfile}.html -html
