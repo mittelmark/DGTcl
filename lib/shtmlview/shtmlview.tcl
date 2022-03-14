@@ -3073,7 +3073,6 @@ namespace eval shtmlview {
 #package provide shtmlview::shtmlview 0.9.0
 
 if {[info exists argv0] && [info script] eq $argv0} {
-    catch {font create TkDefaultFont -family Alegreya -size 12}
     option add *Font			TkDefaultFont
     option add *selectBackground	#678db2
     option add *selectForeground	white
@@ -3081,7 +3080,20 @@ if {[info exists argv0] && [info script] eq $argv0} {
         puts "Found $url and it was loaded"
     }
     proc usage {} {
-        puts "Usage: $::argv0 htmlfile|test|docu"
+        puts "shtmlview: Markdown and HTML file viewer\n"
+        puts "Usage as application: $::argv0 \[OPTION\] \[FILENAME\]\n"
+        puts "  FILENAME: HTML file or Markdown file"
+        puts "  OPTION:"
+        puts "    --help    - display this help message"
+        puts "    --version - display current version of the package/application"
+        puts "    --install - create a Tcl module file ready for install"
+        puts "    --test    - run a test with two widgets in one toplevel"
+        puts "    --docu    - display the package documentation"
+        puts "\nUsage as Tcl package:"
+        puts "\n  package require shtmlview"
+        puts "  shtmlview::shtmlview .help"
+        puts "  .help browse filename"
+        puts "  pack .help -fill both -expand true\n"
         exit
     }
     proc atExit {} {
@@ -3089,11 +3101,26 @@ if {[info exists argv0] && [info script] eq $argv0} {
         exit 0
     }
     if {[llength $argv] > 0} {
-        if {[llength $argv] == 1 && [lindex $argv 0] eq "--version"} {    
+        if {[llength $argv] >= 1 && [lsearch -regexp $argv --help] > -1} {    
+            usage
+            destroy .
+        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--version"} {    
             #package require shtmlview::shtmlview
             puts [package present shtmlview::shtmlview]
             destroy .
-        } elseif {[lindex $argv 0] eq "test"} {
+        } elseif {[llength $argv] == 1 && [lindex $argv 0] eq "--install"} {    
+            set outname shtmlview-[package present shtmlview::shtmlview]
+            set tmfile ${outname}.tm
+            set tm [open $tmfile w]
+            set in [open [info script] r]
+            puts $tm [read $in]
+            close $in
+            close $tm
+            puts "\nFile $tmfile created!\n\nMove $tmfile it to a folder belonging your Tcl module path or in your Tcl script"
+            puts "add the folder to your module path where the tm-file(s) are like this: \n"
+            puts "tcl::tm::path add /home/username/path/to/tmfiles\n"
+            destroy .
+        } elseif {[lindex $argv 0] eq "--test"} {
             set help [::shtmlview::shtmlview .help -browsecmd found \
                       -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
             ::shtmlview::shtmlview .help2 
@@ -3108,7 +3135,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
             $help dosearch the forward
             after 1000
             puts [$help helptext yview moveto 0.1]
-        } elseif {[lindex $argv 0] eq "docu"} {
+        } elseif {[lindex $argv 0] eq "--docu"} {
             set docu [file join [file dirname [info script]] shtmlview.html]
             set help [::shtmlview::shtmlview .help \
                       -tablesupport true -home $docu]

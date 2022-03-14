@@ -13,13 +13,15 @@
 [titledesc {pur Tcl/Tk text widget with basic support for HTML and Markdown markup rendering}]
 [require Tk]
 [require snit]
-[require Markdown]
+[require "Markdown ;# optional Markdown support"]
+[require "img::jpeg ;# optional jpeg image support"]
 [require shtmlview::shtmlview [opt 1.0.0]]
 
 [description]
 
 The [package shtmlview::shtmlview] package provides the shtmlview::shtmlview widget which
-is a standard tk text widget with support for rendering a reasonable subset of html tags and if the tcllib library Markdown is available as well for Markdown files. It
+is a standard tk text widget with support for rendering a reasonable subset of html tags and,
+if the tcllib library Markdown is available, as well for Markdown files. It
 is tought as a fallback widget in cases where no other possibilities exists to
 display HTML or Markdown markup inside a Tk application. The widget does not provides style sheet support and is not a web browser, so it can't retrieve web pages.
 The widget is intended to be used for instance as a help viewer
@@ -28,7 +30,13 @@ Comments and feedbacks are welcome. The [cmd shtmlview::shtmlview] widget overlo
 widget and provides new commands, named [method back], [method browse],
 [method dosearch], [method forward], [method home], [method open], [method reload],
 [method url] and new options, named [option -browsecmd], [option -home], [option -tablesupport], 
-[option -toolbar]
+[option -toolbar]. 
+
+[para]
+
+Furthermore the file shtmlview.tcl can be used as standalone application to
+render Markdown and HTML files by executing [cmd "shtmlview.tcl filename"] in
+the terminal.
 
 [para]
 
@@ -40,7 +48,7 @@ named pathName, but pathName's parent must exist.
 
 [para]
 
-[cmd ::shtmlview::shtmlview]
+Background: [cmd ::shtmlview::shtmlview]
 is a pure Tcl/Tk widget based on the library htmllib developed in the 90ties
 by Stephen Uhler and Clif Flynt. This library was wrapped into the excellent
 mega-widget framework snit by Robert Heller in 2009. His widget however was
@@ -53,17 +61,17 @@ buttons in the toolbar. Also a rudimentary display of data tables was added.
 An [cmd ::shtmlview::shtmlview] widget is not a web-browser. It can be
 used in cases where the developer has control over the used subset of HTML
 markup or as a fallback mechanism where no other possibilities exists to
-display html documents. The API described in this document is not the whole
+display HTML or Markdown documents. The API described in this document is not the whole
 API offered by the snit object [cmd ::shtmlview::shtmlview].
-Instead, it is the subset of that API that is expected not to change. 
+Instead, it is the subset of that API that is expected not to change in future versions. 
 
 [section INSTALLATION]
 
-The widget requires the tcllib *snit* package and optional if desired to display Markdown files the tcllib Markdown library.
+The widget requires the tcllib [cmd snit] package and optional if desired to display Markdown files the tcllib [cmd Markdown] library.
 The [cmd shtmlview::shtmlview] package is delivered as a normal Tcl package
 folder which can be placed anywhere on your file system or in a folder
 belonging to your Tcl library path. In case you installed it into a non-standard folder
-just use append your *auto_path* variable as shown below:
+just use append your [cmd auto_path] variable as shown below:
 
 [example {
 lappend auto_path /path/to/parent-folder ;# of shtmlview folder
@@ -211,7 +219,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
 [para]
-- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images
+- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option
 
 [section TODO]
 [para]
