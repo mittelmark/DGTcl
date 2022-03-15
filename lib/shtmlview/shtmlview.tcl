@@ -1006,10 +1006,13 @@ namespace eval shtmlview {
             
             HMinit_state $win
             $win tag configure underline -underline 1
+            $win tag configure sub -offset -5p
+            $win tag configure sup -offset +5p            
             $win tag configure center -justify center
             $win tag configure nowrap -wrap none
             $win tag configure rindent -rmargin $var(S_tab)c
             $win tag configure strike -overstrike 1
+            $win tag configure s -overstrike 1            
             $win tag configure mark -foreground red		;# list markers
             $win tag configure list -spacing1 3p -spacing3 3p		;# regular lists
             $win tag configure compact -spacing1 0p		;# compact lists
@@ -1032,7 +1035,6 @@ namespace eval shtmlview {
             # generic link enter callback
             
             $win tag bind link <1> "[myproc HMlink_hit $selfns $win %x %y]"
-            #$win tag bind link <Return> "[myproc HMlink_hit $selfns $win %x %y]"
         }
         
         proc HMset_indent {win cm} {
@@ -2548,7 +2550,6 @@ namespace eval shtmlview {
             # callback to library for display
             
             #	puts stderr "*** HMset_image: src = $src, Url = $Url"
-            puts "image: $src"
             if {[string match /* $src]} {
 		set image $src
             } elseif {[string match http* $src]} {
@@ -3009,13 +3010,12 @@ namespace eval shtmlview {
 		samp   {family courier}		
 		strong {weight bold}		
 		tt     {family courier}
-		u	 {Tunderline underline}
+		u      {Tunderline underline}
 		ul     {indent 1}
 		var    {style i}	
 	}
 
 	# These are in common(?) use, but not defined in html2.0
-
 	array set HMtag_map {
 		center {Tcenter center}
 		strike {Tstrike strike}
@@ -3023,14 +3023,22 @@ namespace eval shtmlview {
         }
         # some special addons for Sweave reports    
 	array set HMtag_map {
-                xmp   {fill 0 family courier Tnowrap nowrap}
+            xmp   {fill 0 family courier Tnowrap nowrap}
 	}
-
+        # HTML 3.2
+        array set HMtag_map {
+            sub    {size 10 Tsub sub}
+            sup    {size 10 Tsup sup}                
+            big    {size 16 Tbig big}                
+            small  {size 10 Tsmall small}                
+            s      {Ts s}
+        }
 	# initial values
 
 	set HMtag_map(hmstart) {
 		family times   weight medium   style r   size 14
 		Tcenter ""   Tlink ""   Tnowrap ""   Tunderline "" 
+                Tsub "" Tsup "" Tsmall "" Tbig ""
 		Toverstrike ""  list list
 		fill 1   indent "" counter 0 adjust 0
 	}
