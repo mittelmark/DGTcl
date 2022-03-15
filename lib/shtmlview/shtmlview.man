@@ -19,11 +19,22 @@
 
 [description]
 
-The [package shtmlview::shtmlview] package provides the shtmlview::shtmlview widget which
-is a standard tk text widget with support for rendering a reasonable subset of html tags and,
-if the tcllib library Markdown is available, as well for Markdown files. It
-is tought as a fallback widget in cases where no other possibilities exists to
-display HTML or Markdown markup inside a Tk application. The widget does not provides style sheet support and is not a web browser, so it can't retrieve web pages.
+The [package shtmlview::shtmlview] package provides the shtmlview::shtmlview
+widget which is a standard tk text widget with support for rendering a
+reasonable subset of html tags and, if the tcllib library Markdown is
+available, as well for Markdown files. It is a pure Tcl/Tk widget which does
+not need any compilation.
+
+[para]
+The widget is not(!) to be intended to be used as a web browser. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images. 
+It is tought as a fallback widget in cases where no other possibilities exists to
+display HTML or Markdown markup inside a Tk application. So it can be
+used in cases where the developer has control over the used subset of HTML
+markup or as a fallback mechanism where no other possibilities exists to
+display HTML or Markdown documents. 
+
+[para]
+
 The widget is intended to be used for instance as a help viewer
 or in other cases where the developer has control about the used html tags.
 Comments and feedbacks are welcome. The [cmd shtmlview::shtmlview] widget overloads the text 
@@ -44,26 +55,24 @@ The [cmd ::shtmlview::shtmlview] command creates creates a new window (given
 by the pathName argument) and makes it into [cmd ::shtmlview::shtmlview]
 widget. The [package ::shtmlview::shtmlview] command returns its pathName
 argument. At the time this command is invoked, there must not exist a window
-named pathName, but pathName's parent must exist. 
-
-[para]
-
-Background: [cmd ::shtmlview::shtmlview]
-is a pure Tcl/Tk widget based on the library htmllib developed in the 90ties
-by Stephen Uhler and Clif Flynt. This library was wrapped into the excellent
-mega-widget framework snit by Robert Heller in 2009. His widget however was
-tied directly into a help system. The author of this document just isolated
-the display part and added some functions such as changing font size and a few
-buttons in the toolbar. Also a rudimentary display of data tables was added.
-
-[para]
-
-An [cmd ::shtmlview::shtmlview] widget is not a web-browser. It can be
-used in cases where the developer has control over the used subset of HTML
-markup or as a fallback mechanism where no other possibilities exists to
-display HTML or Markdown documents. The API described in this document is not the whole
+named pathName, but pathName's parent must exist. The API described in this document is not the whole
 API offered by the snit object [cmd ::shtmlview::shtmlview].
 Instead, it is the subset of that API that is expected not to change in future versions. 
+
+
+[para]
+
+Background: [cmd ::shtmlview::shtmlview] is a pure Tcl/Tk widget based on the
+library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt. This
+library was wrapped into the excellent mega-widget framework snit by Robert
+Heller in 2009. His widget however was tied directly into a help system. The
+author of this document just isolated the display part and added some
+functions such as changing font size and a few buttons in the toolbar. Also a
+rudimentary display of data tables was added. Later as well support for inline
+images and extended keybindings and Markdown support was added.
+
+[para]
+
 
 [section INSTALLATION]
 

@@ -149,12 +149,18 @@
 </div>
 </div>
 <div id="section1" class="doctools_section"><h2><a name="section1">Description</a></h2>
-<p>The <b class="package">shtmlview::shtmlview</b> package provides the shtmlview::shtmlview widget which
-is a standard tk text widget with support for rendering a reasonable subset of html tags and,
-if the tcllib library Markdown is available, as well for Markdown files. It
-is tought as a fallback widget in cases where no other possibilities exists to
-display HTML or Markdown markup inside a Tk application. The widget does not provides style sheet support and is not a web browser, so it can't retrieve web pages.
-The widget is intended to be used for instance as a help viewer
+<p>The <b class="package">shtmlview::shtmlview</b> package provides the shtmlview::shtmlview
+widget which is a standard tk text widget with support for rendering a
+reasonable subset of html tags and, if the tcllib library Markdown is
+available, as well for Markdown files. It is a pure Tcl/Tk widget which does
+not need any compilation.</p>
+<p>The widget is not(!) to be intended to be used as a web browser. It only supports relative links on a local filesystem, it does not(!) support style sheets, it does not support any http(s) or webserver like links or images. 
+It is tought as a fallback widget in cases where no other possibilities exists to
+display HTML or Markdown markup inside a Tk application. So it can be
+used in cases where the developer has control over the used subset of HTML
+markup or as a fallback mechanism where no other possibilities exists to
+display HTML or Markdown documents.</p>
+<p>The widget is intended to be used for instance as a help viewer
 or in other cases where the developer has control about the used html tags.
 Comments and feedbacks are welcome. The <b class="cmd">shtmlview::shtmlview</b> widget overloads the text 
 widget and provides new commands, named <b class="method">back</b>, <b class="method">browse</b>,
@@ -168,20 +174,17 @@ the terminal.</p>
 by the pathName argument) and makes it into <b class="cmd">::shtmlview::shtmlview</b>
 widget. The <b class="package">::shtmlview::shtmlview</b> command returns its pathName
 argument. At the time this command is invoked, there must not exist a window
-named pathName, but pathName's parent must exist.</p>
-<p>Background: <b class="cmd">::shtmlview::shtmlview</b>
-is a pure Tcl/Tk widget based on the library htmllib developed in the 90ties
-by Stephen Uhler and Clif Flynt. This library was wrapped into the excellent
-mega-widget framework snit by Robert Heller in 2009. His widget however was
-tied directly into a help system. The author of this document just isolated
-the display part and added some functions such as changing font size and a few
-buttons in the toolbar. Also a rudimentary display of data tables was added.</p>
-<p>An <b class="cmd">::shtmlview::shtmlview</b> widget is not a web-browser. It can be
-used in cases where the developer has control over the used subset of HTML
-markup or as a fallback mechanism where no other possibilities exists to
-display HTML or Markdown documents. The API described in this document is not the whole
+named pathName, but pathName's parent must exist. The API described in this document is not the whole
 API offered by the snit object <b class="cmd">::shtmlview::shtmlview</b>.
 Instead, it is the subset of that API that is expected not to change in future versions.</p>
+<p>Background: <b class="cmd">::shtmlview::shtmlview</b> is a pure Tcl/Tk widget based on the
+library htmllib developed in the 90ties by Stephen Uhler and Clif Flynt. This
+library was wrapped into the excellent mega-widget framework snit by Robert
+Heller in 2009. His widget however was tied directly into a help system. The
+author of this document just isolated the display part and added some
+functions such as changing font size and a few buttons in the toolbar. Also a
+rudimentary display of data tables was added. Later as well support for inline
+images and extended keybindings and Markdown support was added.</p>
 </div>
 <div id="section2" class="doctools_section"><h2><a name="section2">INSTALLATION</a></h2>
 <p>The widget requires the tcllib <b class="cmd">snit</b> package and optional, if desired to display Markdown files, the tcllib <b class="cmd">Markdown</b> library.

@@ -3044,8 +3044,8 @@ namespace eval shtmlview {
 		dl	"\n" /dl	"\n"
 		dt	"\n"
 		form "\n"	/form "\n"
-		h1	"\n"	/h1	"\n"
-		h2	"\n"	/h2	"\n"
+		h1	"\n\n"	/h1	"\n"
+		h2	"\n\n"	/h2	"\n"
 		h3	"\n"	/h3	"\n"
 		h4	"\n"	/h4	"\n"
 		h5	"\n"	/h5	"\n"
@@ -3055,7 +3055,7 @@ namespace eval shtmlview {
 		/ul "\n"
 		/ol "\n"
 		/menu "\n"
-		p	"\n"
+		p	"\n"    /p ""
 		pre "\n"	/pre "\n"
 	}
 
