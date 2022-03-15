@@ -397,6 +397,9 @@ namespace eval shtmlview {
 
         # End of Mac only bindings
     }
+    bind HelpText <Enter> {
+        focus -force %W
+    }
     
     # Tab key bindings...
     bind HelpText <Tab> {
@@ -411,7 +414,12 @@ namespace eval shtmlview {
         $master prevlink %W
         break
     }
-    
+    bind HelpText <Return> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master BrowseInsert
+    }
+
     # Additional Help specific bindings
     bind HelpText <b> {
         set master [::shtmlview::shtmlview GetInstance %W]
@@ -428,10 +436,20 @@ namespace eval shtmlview {
         if {"$master" eq {}} {return}
         $master searchforward %W
     }
+    bind HelpText <n> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master _SForward %W
+    }
     bind HelpText <r> {
         set master [::shtmlview::shtmlview GetInstance %W]
         if {"$master" eq {}} {return}
         $master searchbackward %W
+    }
+    bind HelpText <m> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master _SBackward %W
     }
 
     snit::widget shtmlview {
@@ -516,20 +534,22 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.minus -image ::viewmag-22 -command [mymethod setSize -1]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
             $self balloon $win.toolbar.minus "decrease font size"                        
+            pack [${tile}::button $win.toolbar.help -image ::help-22 -command [mymethod help]] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
+            $self balloon $win.toolbar.help "show help text"                        
             
             install status  using label $win.toolbar.status -anchor w -relief flat \
                   -borderwidth 2 -justify left -width 35 -pady 5
             pack $status -fill x -side left
             install cmdlabel using label $win.toolbar.cmdlbl -width 15
             install command using entry $win.toolbar.command -width 20
-            pack $cmdlabel -fill x -side left -pady 5 -padx 5
-            pack $command -fill x -side left -pady 5 -padx 5
-            
+            pack $command -fill x -side right -pady 5 -padx 20
+            pack $cmdlabel -fill x -side right -pady 5 -padx 0
 
             frame $win.mf
             
             install helptext using text $win.mf.helptext -background white \
-                  -width 80 -border 10 -relief flat \
+                  -width 80 -border 10 -relief flat -spacing1 5 -spacing2 5 -spacing3 5 \
                   -wrap word -yscrollcommand [list $win.mf.s set]
             ${tile}::scrollbar $win.mf.s -command [list $helptext yview]
             grid $helptext $win.mf.s -sticky nsew
@@ -653,6 +673,19 @@ namespace eval shtmlview {
             set current "[::grab current $win]"
             #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
         }
+        method BrowseInsert {} {
+            set tags [$helptext tag names insert]
+            if {[lsearch $tags link] > -1} {
+                set idx [lsearch -regexp $tags {L:.+}]
+                if {$idx >= 0} {
+                    set link [lindex $tags $idx]
+                    regsub L: $link {} link
+                    HMlink_callback $selfns $helptext $link
+                }
+            }
+            #HMlink_hit $selfns $helptext $x $y
+        }
+
         #-- A simple balloon, modified from Bag of Tk algorithms:  
         method balloon {w text {display false}} {
             if {$display} {
@@ -724,6 +757,20 @@ namespace eval shtmlview {
             set Size [expr {$Size+$val}]
             HMset_state $helptext -size $Size
             render $selfns $helptext $Url
+        }
+        method getKeyBindings {} {
+            set keys "\nKey bindings:" 
+            append keys "\n b - previous page in history"
+            append keys "\n f - next page in history"
+            append keys "\n m - previous search entry"
+            append keys "\n n - next search entry"
+            append keys "\n r - search backward"
+            append keys "\n s - search forward"
+            append keys "\n Return - process current hyperlink"            
+            append keys "\n TAB - next hyperlink"
+        }
+        method help {} {
+            tk_messageBox -title "About!" -icon info -message "shtmlview help browser version [package present shtmlview::shtmlview]\n[$self getKeyBindings]" -type ok
         }
         method open {} {
             set url ""
@@ -797,7 +844,7 @@ namespace eval shtmlview {
         method _SForward {w} {
             ##
             set lastsearch [$command get]
-            set pos [$w search -forwards -nocase "$lastsearch" insert]
+            set pos [$w search -forwards -nocase "$lastsearch" "insert +1c"]
             if {"$pos" eq "[$w index insert]"} {
                 set pos [$w search -forwards -nocase "$lastsearch" "$pos+1c"]
             }
@@ -840,6 +887,15 @@ namespace eval shtmlview {
         proc render {selfns win url {push yes}} {
             ##
             set url [file normalize $url]
+            if {![file exists [regsub {#.*} $url ""]]} {
+                set ocol [$win cget -background]
+                $win configure -background orange
+                update idletasks
+                after 500
+                $win configure -background $ocol
+                $status configure -text "Error: [file tail [regsub {#.*} $url {}]] does not exists!"
+                return
+            }
             set t1 [clock milliseconds]
             set fragment ""
             #puts "fetching1 $url"
@@ -976,6 +1032,7 @@ namespace eval shtmlview {
             # generic link enter callback
             
             $win tag bind link <1> "[myproc HMlink_hit $selfns $win %x %y]"
+            #$win tag bind link <Return> "[myproc HMlink_hit $selfns $win %x %y]"
         }
         
         proc HMset_indent {win cm} {
@@ -2491,8 +2548,12 @@ namespace eval shtmlview {
             # callback to library for display
             
             #	puts stderr "*** HMset_image: src = $src, Url = $Url"
+            puts "image: $src"
             if {[string match /* $src]} {
 		set image $src
+            } elseif {[string match http* $src]} {
+                $handle configure -text [regsub {.+/} $src ""]
+                return
             } else {
 		set image [file dirname $Url]/$src
             }
@@ -2747,6 +2808,21 @@ namespace eval shtmlview {
     typeconstructor {
         # some images
         catch {
+            image create photo ::help-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAQCBCQuNBwiJAwiLAwaJAwSHAwSFIy+3ERynCw2
+                PCQuPAwmPCxOZCxWdJzG3FSazBwmNAQKDAQGBDRmhBQyTDxujDR2rIy21AwW
+                JDyGxCxmjAwmNDRihAQOFDxmhCxunBQWFAwaLCRahDR6rESGvDQ2PCRWdDRu
+                nDSGvCRSdAwWHCwuLDSOzHSmxDyKxBxCZBwqNHSu1DyOzAQSHAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAah
+                QIBwCAgIBAPCoGAgOoeBAyKhWCwYDUf0CX1AIhLiJEGpBLiAAaRxdgYsl7Yb
+                k8igBZoN5xmAdDxoanp8HyANISF8EBsiXBMjJBolBEQmGHFoRScbKHIKDykq
+                K5lFAZRCnyknTaROLA8tq61OChgtKqyzQgEYEJi6UC4vI3LAASkbMBPARAEB
+                dszR0sACEaPSMTIQM8W6KzNl3bo0NOJDdEEAIf5oQ3JlYXRlZCBieSBCTVBU
+                b0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4LiBB
+                bGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5jb20A
+                Ow==
+            }
+
             image create photo ::viewmag+22 -data {
                 R0lGODlhFgAWAIUAAPwCBBQSFJyanKy2tLzCxHyChNTa3Nzq7Nz29Nzy9Mzy
                 9MTu9OTy9Nzi5Oz6/OT29MTi5Kzi7NTy9KTm7JzW3ITO1Lzq7IzW5HzK1LS+
@@ -2968,9 +3044,9 @@ namespace eval shtmlview {
 		dl	"\n" /dl	"\n"
 		dt	"\n"
 		form "\n"	/form "\n"
-		h1	"\n\n"	/h1	"\n"
-		h2	"\n\n"	/h2	"\n"
-		h3	"\n\n"	/h3	"\n"
+		h1	"\n"	/h1	"\n"
+		h2	"\n"	/h2	"\n"
+		h3	"\n"	/h3	"\n"
 		h4	"\n"	/h4	"\n"
 		h5	"\n"	/h5	"\n"
 		h6	"\n"	/h6	"\n"

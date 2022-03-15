@@ -67,7 +67,7 @@ Instead, it is the subset of that API that is expected not to change in future v
 
 [section INSTALLATION]
 
-The widget requires the tcllib [cmd snit] package and optional if desired to display Markdown files the tcllib [cmd Markdown] library.
+The widget requires the tcllib [cmd snit] package and optional, if desired to display Markdown files, the tcllib [cmd Markdown] library.
 The [cmd shtmlview::shtmlview] package is delivered as a normal Tcl package
 folder which can be placed anywhere on your file system or in a folder
 belonging to your Tcl library path. In case you installed it into a non-standard folder
@@ -188,8 +188,8 @@ facilities for the widget.
 
 The widget contain standard navigation key bindings to browse the content of
 an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
-forward and reverse searches in the content. The keys b and f are bound to
-browsing forward and backward in the browse history.
+forward and reverse searches in the content. The keys n (next) and p (previous) are used to repeat the current search.
+The keys b and f are bound to browsing forward and backward in the browse history. The Tab key browses to the next hyperlink, and pressing the Return/Enter key process the current link.
 
 [section EXAMPLE]
 [example {
@@ -219,11 +219,12 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
 [para]
-- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option
+- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option, browse fix for non-existing files, keyboard bindings for next and previous search, return and tab for links
 
 [section TODO]
 [para]
 - Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
+- Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
 
 [section Thanks]
 
