@@ -136,7 +136,7 @@
 <ul class="doctools_syntax">
 <li><a href="#1"><b class="cmd">::shtmlview::shtmlview</b> <i class="arg">pathName</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
 <li><a href="#2"><i class="arg">pathName</i> <b class="method">back</b></a></li>
-<li><a href="#3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i></a></li>
+<li><a href="#3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i> <span class="opt">?args?</span></a></li>
 <li><a href="#4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></li>
 <li><a href="#5"><i class="arg">pathName</i> <b class="method">forward</b></a></li>
 <li><a href="#6"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></li>
@@ -210,8 +210,10 @@ commands and options:</p>
 <dl class="doctools_definitions">
 <dt><a name="2"><i class="arg">pathName</i> <b class="method">back</b></a></dt>
 <dd><p>Displays the previous HTML and Markdown page in the browsing history if any.</p></dd>
-<dt><a name="3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i></a></dt>
-<dd><p>Displays the HTML or Markdown page given by filename.</p></dd>
+<dt><a name="3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i> <span class="opt">?args?</span></a></dt>
+<dd><p>Displays the HTML or Markdown page given by filename(s). 
+The first given filename will be shown in the widget, the other, 
+optional given filenames will be added to the history stack only and can be walked using the history keys, f and b.</p></dd>
 <dt><a name="4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></dt>
 <dd><p>Search and hilights the given string from the current index either
 in the given direction either forward (default) or backwards.</p></dd>
@@ -261,8 +263,9 @@ facilities for the widget.</p></dd>
 <div id="section6" class="doctools_section"><h2><a name="section6">BINDINGS FOR THE WIDGET</a></h2>
 <p>The widget contain standard navigation key bindings to browse the content of
 an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
-forward and reverse searches in the content. The keys n (next) and p (previous) are used to repeat the current search.
-The keys b and f are bound to browsing forward and backward in the browse history. The Tab key browses to the next hyperlink, and pressing the Return/Enter key process the current link.</p>
+forward and reverse searches in the content. The keys 'n' (next) and 'p' (previous) are used to repeat the current search.
+The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history. The 'q' key deletes the current file from the history and displays the next one.
+The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link. The key combination 'Ctrl-r' reloads the current page.</p>
 </div>
 <div id="section7" class="doctools_section"><h2><a name="section7">EXAMPLE</a></h2>
 <pre class="doctools_example">
@@ -287,7 +290,8 @@ The keys b and f are bound to browsing forward and backward in the browse histor
 </div>
 <div id="section9" class="doctools_section"><h2><a name="section9">TODO</a></h2>
 <p>- Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
-- Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows</p>
+- Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
+- see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)</p>
 </div>
 <div id="section10" class="doctools_section"><h2><a name="section10">Thanks</a></h2>
 <p>Stephen Uhler, Clif Flynt and Robert Heller, they provided the majority of the code in this widget.</p>

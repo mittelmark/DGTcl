@@ -111,9 +111,11 @@ commands and options:
 Displays the previous HTML and Markdown page in the browsing history if any.
 
 
-[call [arg pathName] [method browse] [arg filename]]
+[call [arg pathName] [method browse] [arg filename] [opt args]]
 
-Displays the HTML or Markdown page given by filename.
+Displays the HTML or Markdown page given by filename(s). 
+The first given filename will be shown in the widget, the other, 
+optional given filenames will be added to the history stack only and can be walked using the history keys, f and b.
 
 [call [arg pathName] [method dosearch] [arg string] [arg direction]]
 
@@ -197,8 +199,9 @@ facilities for the widget.
 
 The widget contain standard navigation key bindings to browse the content of
 an HTML or Markdown page. Furthermore the keypress s and r are bound to the start of
-forward and reverse searches in the content. The keys n (next) and p (previous) are used to repeat the current search.
-The keys b and f are bound to browsing forward and backward in the browse history. The Tab key browses to the next hyperlink, and pressing the Return/Enter key process the current link.
+forward and reverse searches in the content. The keys 'n' (next) and 'p' (previous) are used to repeat the current search.
+The keys 'f' and 'b' keys are bound to browsing forward and backward in the browse history. The 'q' key deletes the current file from the history and displays the next one.
+The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key process the current link. The key combination 'Ctrl-r' reloads the current page.
 
 [section EXAMPLE]
 [example {
@@ -234,6 +237,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [para]
 - Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
 - Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
+- see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
 
 [section Thanks]
 

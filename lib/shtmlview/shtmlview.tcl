@@ -431,10 +431,20 @@ namespace eval shtmlview {
         if {"$master" eq {}} {return}
         $master forward
     }
+    bind HelpText <q> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master delete
+    }
     bind HelpText <s> {
         set master [::shtmlview::shtmlview GetInstance %W]
         if {"$master" eq {}} {return}
         $master searchforward %W
+    }
+    bind HelpText <Control-r> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master reload
     }
     bind HelpText <n> {
         set master [::shtmlview::shtmlview GetInstance %W]
@@ -524,6 +534,9 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.forward -image ::navforward22 -command [mymethod forward] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.forward "go forward in history"
+            pack [${tile}::button $win.toolbar.delete -image ::editdelete-22 -command [mymethod delete] -state disabled] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.delete "delete file from history"
             
             pack [${tile}::button $win.toolbar.reload -image ::actreload22 -command [mymethod reload]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
@@ -617,6 +630,11 @@ namespace eval shtmlview {
             } else {
                 $win.toolbar.forward configure -state normal
             }
+            if {[llength $topicstack] > 1} {
+                $win.toolbar.delete configure -state normal
+            } else {
+                $win.toolbar.delete configure -state disabled
+            }
         }
         method configureHome {opt value} {
             set options(-home) $value
@@ -661,7 +679,7 @@ namespace eval shtmlview {
             set url [lindex $topicstack $curtopicindex]
             return $url
         }
-        method browse {url} {
+        method browse {url args} {
             ## Public method to display help on a specific topic.
             # @param topic The topic text to display help for.
             # we call this before rendering just to allow different 
@@ -671,6 +689,16 @@ namespace eval shtmlview {
             render $selfns $helptext [file normalize $url]
             #$hull draw $helptext
             set current "[::grab current $win]"
+            if {[llength $topicstack] == 2} {
+                $win.toolbar.back configure -state disabled
+            }
+            foreach arg $args {
+                if {[file exists $arg]} {
+                    $win.toolbar.delete configure -state normal
+                    $win.toolbar.forward configure -state normal
+                    lappend topicstack [file normalize $arg]
+                }
+            }
             #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
         }
         method BrowseInsert {} {
@@ -729,11 +757,23 @@ namespace eval shtmlview {
             incr curtopicindex
             return [lindex $topicstack $curtopicindex]
         }
+        proc deletetopic {selfns} {
+            set ntopics [lrange $topicstack 0 $curtopicindex-1]
+            foreach el [lrange $topicstack $curtopicindex+1 end] {
+                lappend ntopics $el
+            }
+            if {$curtopicindex >= [llength $ntopics]} {
+                set curtopicindex [expr {[llength  $ntopics]-1}]
+            }
+            set topicstack $ntopics
+            return [lindex $topicstack $curtopicindex]
+        }
         method reload {} {
             set url [lindex $topicstack $curtopicindex]
             if {"$url" eq {}} {return}
-            render $selfns $helptext $url no
-            
+            set yview [$helptext yview]
+            render $selfns $helptext [regsub {#.*} $url ""] no
+            $helptext yview moveto [lindex $yview 0]
         }
         method home {} {
             set url [lindex $topicstack 0]
@@ -753,6 +793,12 @@ namespace eval shtmlview {
             if {"$url" eq {}} {return}
             render $selfns $helptext $url no
         }
+        method delete {} {
+            ##
+            set url [deletetopic $selfns]
+            if {"$url" eq {}} {return}
+            render $selfns $helptext $url no
+        }
         method setSize {val} {
             set Size [expr {$Size+$val}]
             HMset_state $helptext -size $Size
@@ -764,6 +810,7 @@ namespace eval shtmlview {
             append keys "\n f - next page in history"
             append keys "\n m - previous search entry"
             append keys "\n n - next search entry"
+            append keys "\n q - delete page from history"
             append keys "\n r - search backward"
             append keys "\n s - search forward"
             append keys "\n Return - process current hyperlink"            
@@ -785,8 +832,7 @@ namespace eval shtmlview {
                 
             }
             if {"$url" eq {}} {return}
-            render $selfns $helptext [file normalize $url] no
-            
+            render $selfns $helptext [file normalize $url] yes
         }
 
         method nextlink {w} {
@@ -1310,6 +1356,32 @@ namespace eval shtmlview {
                   "[lindex $var(list) end] indent$level $var(font)"
             set data {}
         }
+        proc HMtag_div {selfns win param text} {
+            ##
+            upvar #0 HM$win var
+            upvar $text data
+            if {[regexp {class=["'](.+?)['"]} $param -> clss]} {
+                set var(divclss) $clss
+                set var(dividx) [$win index "insert linestart"]
+            } else {
+                set var(divclss) ""
+                set var(dividx)  ""
+            }
+            #$win insert $var(S_insert) "<div>" 
+            set data {}
+        }
+        proc HMtag_/div {selfns win param text} {
+            upvar #0 HM$win var
+            upvar $text data
+            if {$var(divclss) ne ""} {
+                #$win insert $var(S_insert) "</div>" 
+                $win tag add div$var(divclss) $var(dividx) [$win index "insert lineend"]
+                set var(divclss) ""
+            }
+            set data {}
+            
+        }
+
         proc HMtag_table {selfns win param text} {
             upvar #0 HM$win var
             upvar $text data
@@ -2809,6 +2881,27 @@ namespace eval shtmlview {
     typeconstructor {
         # some images
         catch {
+            image create photo ::editdelete-22 -data {
+                R0lGODlhFgAWAIYAAASC/FRSVExKTERCRDw6PDQyNCwuLBweHBwaHAwODAwK
+                DAQCBExOTNze3NTW1MTGxLS2tJyanPz+/Ozu7BQSFCwqLDw+POTi5PTu7MzK
+                xIR+fCQmJPz6/Oze1NTGvPz69Pzy7Pz29LyyrPy+vPyupPTm1BQWFIQCBPwC
+                BMS6rPzSzNTOxPTi1NS+rPTezNzOxPTizOzWxMy2pOzaxMy2nPTaxOzOtMyy
+                nOzSvMyqjPx+fOzGpMSihPTq3OzKrOTCpNzKxNTCtAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
+                LAAAAAAWABYAAAf8gACCAQIDBAUGBwgJCgsLgpCRAAwNlZYODxALEY+SkAMN
+                EqKjEw0UD5yegqCjrRMVEqidkgWhraMWF7GptLa3EgEWFRSOnhW+vxgZEBqz
+                kBvItxwdHryRCNGjHyAhHSLOgtgSI60c2yQjJd+eJqEnKK0hJCgnJSngAO0S
+                F+8qEvL0VrBogW+BLX4oVKgIyMIFQU8KfDV4R+8FDBcxZBREthAFiRIsOsyg
+                sVEUh4Un3pGoUcPGjZInK65QicPlxg8oX5RwqNJGjo0hdJwQ6EIkjRM6dvDY
+                CKIHSBc1Ztjw4eOH0oIrsgIJEqSFDBo0cuTgsdSTo7No0xYTZCcQACH+aENy
+                ZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERldmVsQ29y
+                IDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6Ly93d3cu
+                ZGV2ZWxjb3IuY29tADs=
+            }
+
             image create photo ::help-22 -data {
                 R0lGODlhFgAWAIUAAPwCBAQCBCQuNBwiJAwiLAwaJAwSHAwSFIy+3ERynCw2
                 PCQuPAwmPCxOZCxWdJzG3FSazBwmNAQKDAQGBDRmhBQyTDxujDR2rIy21AwW
@@ -3244,7 +3337,9 @@ if {[info exists argv0] && [info script] eq $argv0} {
             } else {
                 # standard html
                 $help configure -home [lindex $argv 0] 
-                $help browse [lindex $argv 0] 
+                $help browse {*}[lrange $argv 0 end]
+                [$help getTextWidget] tag configure divblue -foreground blue
+                update idletasks
             }
         } else {
             puts "Error: file [lindex $argv 0] does not exists\n or unknown option [lindex $argv 0]"
