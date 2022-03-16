@@ -511,7 +511,7 @@ namespace eval shtmlview {
             set options(-toolbar) true
             set options(-tablesupport) true
             if {$options(-home) ne ""} {
-                lappend topicstack $options(-home)
+                lappend topicstack [file normalize $options(-home)]
                 incr curtopicindex
             }
             if {[namespace exists ::ttk]} {
@@ -639,7 +639,7 @@ namespace eval shtmlview {
         method configureHome {opt value} {
             set options(-home) $value
             if {$value ne [lindex $topicstack 0]} {
-                set topicstack [linsert $topicstack 0 $value]
+                set topicstack [linsert $topicstack 0 [file normalize $value]]
                 set curtopicindex 0
             }
         }
@@ -689,7 +689,7 @@ namespace eval shtmlview {
             render $selfns $helptext [file normalize $url]
             #$hull draw $helptext
             set current "[::grab current $win]"
-            if {[llength $topicstack] == 2} {
+            if {[llength $topicstack] == 1} {
                 $win.toolbar.back configure -state disabled
             }
             foreach arg $args {
@@ -736,13 +736,16 @@ namespace eval shtmlview {
         
         proc pushcurrenttopic {selfns url} {
             if {[llength $topicstack] == 0 || $curtopicindex < 0} {
-                set topicstack [list "$url"]
+                set topicstack [list [file normalize $url]]
                 set curtopicindex 0
             } else {
                 set topicstack [lrange $topicstack 0 $curtopicindex]
-                lappend topicstack "$url"
+                if {[lindex $topicstack end] ne $url} {
+                    lappend topicstack [file normalize "$url"]
+                }
                 incr curtopicindex
             }
+            puts "history: $topicstack"
         }
         proc backcurrenttopic {selfns} {
             if {[llength $topicstack] == 0 || $curtopicindex <= 0} {return {}}
@@ -3312,6 +3315,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
             $help dosearch the forward
             after 1000
             puts [$help helptext yview moveto 0.1]
+            $help browse [file join [file dirname [info script]] shtmlview.html]
         } elseif {[lindex $argv 0] eq "--docu"} {
             set docu [file join [file dirname [info script]] shtmlview.html]
             set help [::shtmlview::shtmlview .help \
