@@ -2658,6 +2658,9 @@ namespace eval shtmlview {
             # dg addon 
             # let's just ignore style tags content
             foreach line [split $result "\n"] {
+                set line [regsub {<li><p>(.+)</p></li>} $line "<li>\\1</li>"]
+                set line [regsub {<dd><p>} $line "<dd>"]                
+                set line [regsub {</p></dd>} $line "</dd>"]                                
                 if {[regexp -nocase {<style>} $line] || [regexp -nocase {<style\s+type="text/css">} $line]} {
                     set flag false
                 } elseif {[regexp {</style>} $line]} {
@@ -3204,6 +3207,7 @@ namespace eval shtmlview {
 		dfn    {style i}	
 		dir    {indent 1}
 		dl     {indent 1}
+		dd     {indent 2}                
 		em     {style i}
 		h1     {size 20 weight bold}
 		h2     {size 18}		

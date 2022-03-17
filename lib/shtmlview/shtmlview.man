@@ -113,7 +113,7 @@ Each time a HTML or Markdown page is rendered the given [option -browsecmd] is i
 
 [opt_def -historycombo boolean]
 
-If true (default) displays a ttk::combobox if the tile package is available in the toolbar.
+If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar.
 Can be only set a widget creation.
 
 [opt_def -home string]
@@ -241,7 +241,32 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
 [para]
-- 2022-03-XX version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option, browse fix for non-existing files, keyboard bindings for next and previous search, return and tab for links, historycombo option, HTML 3.2 tags div, sub, sup, small, big
+2022-03-XX version 1.0.0
+
+[list_begin itemized]
+
+[item] HTML 3.2 tags div, sub, sup, small, big
+
+[item] initial support for Markdown files
+
+[item] initial support for base64 encoded inline image files
+
+[item] support for jpg images if img::jpeg library is available
+
+[item] back and forward as well for anchors
+
+[item] first and last browse entry buttons for history
+
+[item] history with full file path to allow directory changes
+
+[item] improved usage line and install option
+[item] keyboard bindings for next and previous search
+[item] return and tab for links
+[item] historycombo option
+[item] toolbar fix
+[item] browse fix for non-existing files
+
+[list_end]
 
 [section TODO]
 [para]
