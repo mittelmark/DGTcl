@@ -524,10 +524,10 @@ namespace eval shtmlview {
             # @param ... Option value pairs.
             set options(-toolbar) true
             set options(-tablesupport) true
-            if {$options(-home) ne ""} {
-                lappend topicstack [file normalize $options(-home)]
-                incr curtopicindex
-            }
+            #if {$options(-home) ne ""} {
+            #    lappend topicstack [file normalize $options(-home)]
+            #    incr curtopicindex
+            #}
             if {[namespace exists ::ttk]} {
                 set tile ttk
             } else {
@@ -541,6 +541,9 @@ namespace eval shtmlview {
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
             $self balloon $win.toolbar.home "go to first htmlfile"
             
+            pack [${tile}::button $win.toolbar.start -image ::start-22 -command [mymethod start] -state disabled] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.start "go to first entry in history"
             pack [${tile}::button $win.toolbar.back -image ::navback22 -command [mymethod back] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.back "go back in history"
@@ -548,6 +551,11 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.forward -image ::navforward22 -command [mymethod forward] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.forward "go forward in history"
+            
+            pack [${tile}::button $win.toolbar.finish -image ::finish-22 -command [mymethod finish] -state disabled] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.finish "go to last entry in history"
+
             pack [${tile}::button $win.toolbar.delete -image ::editdelete-22 -command [mymethod delete] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.delete "delete file from history"
@@ -653,13 +661,17 @@ namespace eval shtmlview {
         method CurTopChange {args} {
             if {$curtopicindex > 0} {
                 $win.toolbar.back configure -state normal
+                $win.toolbar.start configure -state normal
             } else {
                 $win.toolbar.back configure -state disabled
+                $win.toolbar.start configure -state disabled
             }
             if {$curtopicindex == [expr {[llength $topicstack]-1}]} {
                 $win.toolbar.forward configure -state disabled
+                $win.toolbar.finish configure -state disabled
             } else {
                 $win.toolbar.forward configure -state normal
+                $win.toolbar.finish configure -state normal
             }
             if {[llength $topicstack] > 1} {
                 $win.toolbar.delete configure -state normal
@@ -669,10 +681,6 @@ namespace eval shtmlview {
         }
         method configureHome {opt value} {
             set options(-home) $value
-            if {$value ne [lindex $topicstack 0]} {
-                set topicstack [linsert $topicstack 0 [file normalize $value]]
-                set curtopicindex 0
-            }
         }
         method configureToolbar {opt value} {
             set options(-toolbar) $value
@@ -736,6 +744,7 @@ namespace eval shtmlview {
                 if {[file exists $arg]} {
                     $win.toolbar.delete configure -state normal
                     $win.toolbar.forward configure -state normal
+                    $win.toolbar.finish configure -state normal
                     lappend topicstack [file normalize $arg]
                 }
             }
@@ -835,10 +844,19 @@ namespace eval shtmlview {
             $helptext yview moveto [lindex $yview 0]
         }
         method home {} {
+            if {$options(-home) eq ""} {
+                set options(-home) [lindex $topicstack 0]
+            }
             set url [lindex $topicstack 0]
             if {"$url" eq {}} {return}
             render $selfns $helptext $url no
-
+        }
+        method start {} {
+            ##
+            set url [lindex $topicstack 0]
+            if {"$url" eq {}} {return}
+            render $selfns $helptext $url no
+            set curtopicindex 0
         }
         method back {} {
             ##
@@ -849,6 +867,13 @@ namespace eval shtmlview {
         method forward {} {
             ##
             set url [forwardcurrenttopic $selfns]
+            if {"$url" eq {}} {return}
+            render $selfns $helptext $url no
+        }
+        method finish {} {
+            ##
+            set url [lindex $topicstack end]
+            set curtopicindex [expr {[llength $topicstack]-1}]
             if {"$url" eq {}} {return}
             render $selfns $helptext $url no
         }
@@ -993,6 +1018,9 @@ namespace eval shtmlview {
         proc render {selfns win url {push yes}} {
             ##
             set url [file normalize $url]
+            if {$options(-home) eq ""} {
+                set options(-home) [regsub {#.*} $url ""]
+            }
             set ourl $url
             if {![file exists [regsub {#.*} $url ""]]} {
                 set ocol [$win cget -background]
@@ -3126,6 +3154,39 @@ namespace eval shtmlview {
                 w0KMyEYoBfkJBAAh/mhDcmVhdGVkIGJ5IEJNUFRvR0lGIFBybyB2ZXJzaW9u
                 IDIuNQ0KqSBEZXZlbENvciAxOTk3LDE5OTguIEFsbCByaWdodHMgcmVzZXJ2
                 ZWQuDQpodHRwOi8vd3d3LmRldmVsY29yLmNvbQA7
+            }
+        }
+        catch {
+            image create photo ::start-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBCRGZAxCZGyavExmjHyatOTy9CxihISe
+                vPz+/KzO3BRylAw+XDRWbPz6/FzC3CSuzDyexJzO5Mzq9CxSdAQOFISmxNzu
+                9HTS5BSmxAyexDSuzJTa7Mzu9Kzi7GS21CRmjAQOHHSWtLze7AyWvHzG3BRi
+                hCTO3BS+1AyixBSWvBSOtBSStAQWJDzW5BTC3BSqzBS21CTC1ETW3AQSHEze
+                7BRqlBRmjAQCDBR+pBRefBRSdAQKFAAAACH5BAEAAAAALAAAAAAWABYAAAa0
+                QIBwSCwaj8ikMqBcMpsCQTEwIDQBUWKgYHgqs8LAAZGwQqWAgGLBaDgEj0Fg
+                jh5mxRBERDKhICAQFRYXRVEBGBAZGhscHR4VHyAhIiOFAiQZJRoSGyaNJxQn
+                EyiVRFEoGykqKyYsJiYtLi0mKC+WFygrMDEyMzQ1wDQqKDaWADYoMzcqsjg5
+                DSgoBISmaCOoMG4v29s2OsZCyDs8DldgQtc95WdFPg7rV0Y+XvHt9ff4SXRB
+                ACH+aENyZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERl
+                dmVsQ29yIDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6
+                Ly93d3cuZGV2ZWxjb3IuY29tADs=
+            }
+
+        }
+        catch {
+            image create photo ::finish-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBBxCXDR+nIS21Aw+XJTC1Nzu/KzO3Pz+
+                /Nzq9Pz6/MTe7KTW5FzC1Nzu9CRKZMzi7IzK3Lzi7LTe7HzG3Gy+3AyuzAye
+                xFzC3DRSbHy+1Dy61CSqzAySvAyStLze7IzO5AyGrEze7BRmjCTC1ETS3ETa
+                5BTC3Bx2nAyWvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAak
+                QIBwSCwaj8hkMqBsBgTN5IAAJQqqykCBasUmDQcEV3gtBs7oATihGJeJgcOC
+                QWc0HA8Ig/seRiQTFAsVFhcYGRp6VH1CGwscHQ8dGB4fIBkPIWKMAAMLIiAj
+                IJcgH5gkGSWcARIiJicoJikpHikoHqqrKiW8JSogKymoqgCrV8cCARgkuFWc
+                RwYeqVjPRgEExEPVRQbZ2l5IBuBRQ0zk5+hRBkEAIf5oQ3JlYXRlZCBieSBC
+                TVBUb0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4
+                LiBBbGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5j
+                b20AOw==
             }
         }
 	
