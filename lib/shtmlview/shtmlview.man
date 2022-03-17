@@ -99,6 +99,43 @@ Creates and configures a shtmlview widget.
 
 [list_end]
 
+[section {WIDGET OPTIONS}]
+
+[para]
+
+To configure the internal text widget the helptext command courld be used directly.
+
+[list_begin options]
+
+[opt_def -browsecmd cmd]
+
+Each time a HTML or Markdown page is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
+
+[opt_def -historycombo boolean]
+
+If true (default) displays a ttk::combobox if the tile package is available in the toolbar.
+Can be only set a widget creation.
+
+[opt_def -home string]
+
+Set's the homepage filename of the shtmlview widget. If not set, the first page browsed
+will be automatically set as the home page.
+
+[opt_def -tablesupport boolean]
+
+If true (default) the widget will provide some table support. This will have
+some undesired results if table tags are misused as markup tool. Simple html
+tables with th and td tags should display however well if no internal markup
+inside those tags is implemented.
+
+[opt_def -toolbar boolean]
+
+If true (default) a toolbar will be displayed on top providing standard buttons for
+methods [method back], [method forward] and [method home] as well as search
+facilities for the widget. Default: true
+
+[list_end]
+
 [section {WIDGET COMMANDS}]
 
 Each shtmlview widget created with the above command supports the following
@@ -109,7 +146,6 @@ commands and options:
 [call [arg pathName] [method back]]
 
 Displays the previous HTML and Markdown page in the browsing history if any.
-
 
 [call [arg pathName] [method browse] [arg filename] [opt args]]
 
@@ -125,6 +161,14 @@ in the given direction either forward (default) or backwards.
 [call [arg pathName] [method forward]]
 
 Displays the next HTML or Markdown page in the browsing history if any.
+
+[call [arg pathName] [method getFiles]]
+
+This command returns a list of all visited files, cleaned up for multiple entries and without anchor links.
+
+[call [arg pathName] [method getHistory]]
+
+This command returns a list of the current history of visited files and anchors.
 
 [call [arg pathName] [method getTextWidget]]
 
@@ -155,45 +199,11 @@ Displays a standard file dialog to open a HTML or Markdown page to be displayed 
 
 Reloads and redisplays the current HTML or Markdown page visible inside the [cmd shtmlview::shtmlview] widget.
 
-
 [call [arg pathName] [method url]]
 
 Returns the current URL displayed in the [cmd ::shtmlview::shtmlview] widget.
 
 [list_end]
-
-[section {WIDGET OPTIONS}]
-
-[para]
-
-To configure the internal text widget the helptext command courld be used directly.
-
-[list_begin options]
-
-[opt_def -browsecmd cmd]
-
-Each time a HTML or Markdown page is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
-
-[opt_def -home string]
-
-Set's the homepage filename of the shtmlview widget. If not set, the first page browsed
-will be automatically set as the home page.
-
-[opt_def -tablesupport boolean]
-
-If true (default) the widget will provide some table support. This will have
-some undesired results if table tags are misused as markup tool. Simple html
-tables with th and td tags should display however well if no internal markup
-inside those tags is implemented.
-
-[opt_def -toolbar boolean]
-
-If true (default) a toolbar will be displayed on top providing standard buttons for
-methods [method back], [method forward] and [method home] as well as search
-facilities for the widget.
-
-[list_end]
-
 
 [section "BINDINGS FOR THE WIDGET"]
 
@@ -231,7 +241,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
 
 [para]
-- 2022-03-12 version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option, browse fix for non-existing files, keyboard bindings for next and previous search, return and tab for links
+- 2022-03-XX version 1.0.0 - toolbar fix, back and forward as well for anchors, history with full file path to allow directory changes, initial support for Markdown files, initial support for base64 encoded inline image files, support for jpg images, improved usage line and install option, browse fix for non-existing files, keyboard bindings for next and previous search, return and tab for links, historycombo option, HTML 3.2 tags div, sub, sup, small, big
 
 [section TODO]
 [para]

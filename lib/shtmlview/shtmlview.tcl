@@ -112,6 +112,16 @@ catch {
     package require tile
 }
 
+if {[info command luniq] eq ""} {
+    proc luniq list {
+        set res {}
+        foreach i $list {
+            if {[lsearch $res $i]<0} {lappend res $i}
+        }
+        set res
+    }
+}
+
 namespace eval shtmlview {
     # Robert Heller: It uses code originally written by Stephen Uhler and 
     # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).  
@@ -476,6 +486,7 @@ namespace eval shtmlview {
         option -toolbar -configuremethod configureToolbar
         option -browsecmd -default "" 
         option -home -default "" -configuremethod configureHome
+        option -historycombo false 
         ## The text area ScrolledWindow component.
         component     helptext;#	Help text
         ## The text area component.
@@ -496,6 +507,9 @@ namespace eval shtmlview {
         variable lasturl ""
         ##
         variable curtopicindex -1
+        variable combo
+        variable tile
+        variable files {}
         ##
 
         #delegate option {-textwidth textWidth TextWidth} to helptext as -width
@@ -553,6 +567,12 @@ namespace eval shtmlview {
             
             install status  using label $win.toolbar.status -anchor w -relief flat \
                   -borderwidth 2 -justify left -width 35 -pady 5
+            if {$tile ne ""} {
+                pack [ttk::combobox $win.toolbar.combo -state readonly -width 50] -padx 5 -pady 5 -side left
+                set combo $win.toolbar.combo
+                $combo set "history ..."
+                bind $combo <<ComboboxSelected>> [mymethod browseHistory]
+            }
             pack $status -fill x -side left
             install cmdlabel using label $win.toolbar.cmdlbl -width 15
             install command using entry $win.toolbar.command -width 20
@@ -596,6 +616,9 @@ namespace eval shtmlview {
             if {!$options(-toolbar)} {
                 pack forget $win.toolbar
             }
+            if {!$options(-historycombo)} {
+                pack forget $combo
+            }
             trace add variable [myvar curtopicindex] write [mymethod CurTopChange]
         }
         typemethod   GetInstance {widget} {
@@ -613,6 +636,14 @@ namespace eval shtmlview {
                 catch {unset _WidgetMap($widget)}
                 return {}
             }
+        }
+        method getHistory {} {
+            return $topicstack
+        }
+        method getFiles {} {
+            set files [lmap file $files { regsub {#.*} $file "" }]
+            set files [luniq $files]
+            return $files
         }
         method getTextWidget {} {
             # returns to helptext widget
@@ -679,6 +710,15 @@ namespace eval shtmlview {
             set url [lindex $topicstack $curtopicindex]
             return $url
         }
+        method browseHistory {} {
+            set value [$combo get]
+            if {$value eq "history ..."} { return }
+            set idx [regsub {^([0-9]+).+} $value "\\1"]
+            incr idx -1
+            set curtopicindex $idx
+            render $selfns $helptext [$self url] no
+            $combo set "history ..."
+        }
         method browse {url args} {
             ## Public method to display help on a specific topic.
             # @param topic The topic text to display help for.
@@ -698,6 +738,11 @@ namespace eval shtmlview {
                     $win.toolbar.forward configure -state normal
                     lappend topicstack [file normalize $arg]
                 }
+            }
+            if {$tile ne ""} {
+                set ::xx 0
+                $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
+                
             }
             #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
         }
@@ -739,13 +784,19 @@ namespace eval shtmlview {
                 set topicstack [list [file normalize $url]]
                 set curtopicindex 0
             } else {
+                set end [lrange $topicstack $curtopicindex+1 end]
                 set topicstack [lrange $topicstack 0 $curtopicindex]
                 if {[lindex $topicstack end] ne $url} {
                     lappend topicstack [file normalize "$url"]
                 }
                 incr curtopicindex
+                lappend topicstack {*}$end
             }
-            puts "history: $topicstack"
+            if {$tile ne ""} {
+                set ::xx 0
+                $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
+            }
+            #puts "history: $topicstack"
         }
         proc backcurrenttopic {selfns} {
             if {[llength $topicstack] == 0 || $curtopicindex <= 0} {return {}}
@@ -769,6 +820,11 @@ namespace eval shtmlview {
                 set curtopicindex [expr {[llength  $ntopics]-1}]
             }
             set topicstack $ntopics
+            if {$tile ne ""} {
+                set ::xx 0
+                $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
+            }
+
             return [lindex $topicstack $curtopicindex]
         }
         method reload {} {
@@ -816,6 +872,7 @@ namespace eval shtmlview {
             append keys "\n q - delete page from history"
             append keys "\n r - search backward"
             append keys "\n s - search forward"
+            append keys "\n Ctrl-r - reload page"            
             append keys "\n Return - process current hyperlink"            
             append keys "\n TAB - next hyperlink"
         }
@@ -936,6 +993,7 @@ namespace eval shtmlview {
         proc render {selfns win url {push yes}} {
             ##
             set url [file normalize $url]
+            set ourl $url
             if {![file exists [regsub {#.*} $url ""]]} {
                 set ocol [$win cget -background]
                 $win configure -background orange
@@ -945,26 +1003,21 @@ namespace eval shtmlview {
                 $status configure -text "Error: [file tail [regsub {#.*} $url {}]] does not exists!"
                 return
             }
+            lappend files $url
             set t1 [clock milliseconds]
             set fragment ""
-            #puts "fetching1 $url"
             if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
             regexp {([^#]*)#(.+)} $url dummy url fragment
-            #puts "fetching2 $url"
             if {$url eq [regsub {#.+} $lasturl ""] && $fragment ne ""} {
                 set url $lasturl
-                #render $selfns $win $url#$fragment
                 HMgoto $selfns $win $fragment
                 set lasturl $url#$fragment
-                #puts "fetching $lasturl done"
-                #pushcurrenttopic $selfns $lasturl
+                if {$options(-browsecmd) ne ""} {
+                    $options(-browsecmd) $ourl
+                }
                 return
             }
             set lasturl $url
-            #if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
-            #if {[regexp {^/} $url] < 1} {
-            #set url [file join $options(-helpdirectory) $url]
-            #}
             set Url $url
             HMreset_win $win
             $win configure -cursor xterm
@@ -1009,11 +1062,10 @@ namespace eval shtmlview {
             regexp {([^#]*)#(.+)} $url dummy url fragment
             if {$url != "" && $fragment != ""} {
                 HMgoto $selfns $win $fragment
-                return
+                #return
             }
-
             if {$options(-browsecmd) ne ""} {
-                $options(-browsecmd) $url
+                $options(-browsecmd) $ourl
             }
         }
         # Simple HTML display library by Stephen Uhler (stephen.uhler@sun.com)
@@ -3323,7 +3375,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
             $help browse [$help cget -home]
             pack $help -fill both -expand true -side top
         } elseif {[file exists [lindex $argv 0]]} {
-            set help [::shtmlview::shtmlview .help \
+            set help [::shtmlview::shtmlview .help -historycombo true \
                       -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
             pack $help -side top -fill both -expand true 
             if {[file extension [lindex $argv 0]] eq ".tcl" || [file extension [lindex $argv 0]] eq ".tm" } {
