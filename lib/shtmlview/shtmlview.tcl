@@ -509,7 +509,7 @@ namespace eval shtmlview {
         variable curtopicindex -1
         variable combo
         variable tile
-        variable files {}
+        variable stack {}
         ##
 
         #delegate option {-textwidth textWidth TextWidth} to helptext as -width
@@ -646,10 +646,10 @@ namespace eval shtmlview {
             }
         }
         method getHistory {} {
-            return $topicstack
+            return [list $topicstack {*}$stack]
         }
         method getFiles {} {
-            set files [lmap file $files { regsub {#.*} $file "" }]
+            set files [lmap file [list $topicstack {*}$stack] { regsub {#.*} $file "" }]
             set files [luniq $files]
             return $files
         }
@@ -734,6 +734,11 @@ namespace eval shtmlview {
             # instances of shtmlview
             set lasturl $url
             $self configureTableSupport -tablesupport $options(-tablesupport)
+            foreach arg $args {
+                if {[file exists $arg]} {
+                    lappend stack [file normalize $arg]
+                }
+            }
             render $selfns $helptext [file normalize $url]
             #$hull draw $helptext
             set current "[::grab current $win]"
@@ -748,6 +753,7 @@ namespace eval shtmlview {
                     lappend topicstack [file normalize $arg]
                 }
             }
+            set stack {}
             if {$tile ne ""} {
                 set ::xx 0
                 $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
@@ -1035,7 +1041,6 @@ namespace eval shtmlview {
                 }
                 return
             }
-            lappend files $url
             set t1 [clock milliseconds]
             set fragment ""
             if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
@@ -3211,7 +3216,6 @@ namespace eval shtmlview {
 		dfn    {style i}	
 		dir    {indent 1}
 		dl     {indent 1}
-		dd     {indent 2}                
 		em     {style i}
 		h1     {size 20 weight bold}
 		h2     {size 18}		
