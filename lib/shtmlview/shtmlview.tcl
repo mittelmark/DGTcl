@@ -1029,6 +1029,10 @@ namespace eval shtmlview {
                 after 500
                 $win configure -background $ocol
                 $status configure -text "Error: [file tail [regsub {#.*} $url {}]] does not exists!"
+                if {[llength $topicstack] == 0} {
+                    $win insert end "\nError: File [regsub {#.*} $url {}] does not exists!\n"
+                    $win tag add hilite 1.0 end
+                }
                 return
             }
             lappend files $url
