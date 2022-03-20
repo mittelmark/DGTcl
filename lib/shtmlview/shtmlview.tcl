@@ -1857,18 +1857,44 @@ namespace eval shtmlview {
             # now callback to the application
             set src ""
             HMextract_param $param src
-            #	puts stderr "*** HMtag_img: src = $src"
-            #	puts stderr "*** HMtag_img: alt = $alt"
             if {[regexp -nocase {^.*data:image/.*base64,} $src]} {
-                set img [image create photo -data [regsub {.*base64,\s*} $src ""]]
-                $label configure -image $img
+                # inline images
+                if {[regexp {^.*data:image/jpe?g.*base64,} $src]} {
+                    if {[package version img::jpeg] eq ""} {
+                        $label configure -text "jpeg image"
+                    } else {
+                        set img [image create photo -data [regsub {.*base64,\s*} $src ""]]
+                        $label configure -image $img
+                    }
+                } elseif {[regexp {^.*data:image/svg.*base64,} $src]} {
+                    if {[info command ::svgconvert::svgconv] eq ""} {
+                        $label configure -text "svg image"
+                    } else {
+                        $label configure -image [::svgconvert::svgimg -data [regsub {.*base64,\s*} $src ""]]
+                    }
+                } else {
+                    set img [image create photo -data [regsub {.*base64,\s*} $src ""]]
+                    $label configure -image $img
+                }
             } else {
                 if {[regexp -nocase {(jpg|jpeg)$} $src]} {
                     if {[package version img::jpeg] eq ""} {
-                        puts "please install package tkimg to supprt jpeg files"
+                        $label configure -text "jpeg img"
+                    } else {
+                        HMset_image $selfns $win $label $src
                     }
+                    
+                } elseif {[regexp -nocase {svg$} $src]} {
+                    set file [file join [file dirname $Url] $src]
+                    if {[info command ::svgconvert::svgconv] eq ""} {
+                        $label configure -text "svg img"
+                    } else {
+                        $label configure -image [::svgconvert::svgimg -file $file]
+                    }
+                } else {
+                    HMset_image $selfns $win $label $src
                 }
-                HMset_image $selfns $win $label $src
+
             }
             #	puts stderr "*** HMtag_img: after HMset_image, label = $label"
             return $label	;# used by the forms package for input_image types
@@ -2089,567 +2115,6 @@ namespace eval shtmlview {
             return $result
         }
 
-        ##########################################################
-        # html forms management commands
-        
-        # As each form element is located, it is created and rendered.  Additional
-        # state is stored in a form specific global variable to be processed at
-        # the end of the form, including the "reset" and "submit" options.
-        # Remember, there can be multiple forms existing on multiple pages.  When
-        # HTML tables are added, a single form could be spread out over multiple
-        # text widgets, which makes it impractical to hang the form state off the
-        # HM$win structure.  We don't need to check for the existance of required
-        # parameters, we just "fail" and get caught in HMrender
-        
-
-
-        proc HMtag_isindex {selfns win param text} {
-            ##########################################################
-            # html isindex tag.  Although not strictly forms, they're close enough
-            # to be in this file
-            # is-index forms
-            # make a frame with a label, entry, and submit button
-            
-            upvar #0 HM$win var
-            
-            set item $win.$var(tags)
-            if {[winfo exists $item]} {
-		destroy $item
-            }
-            frame $item -relief ridge -bd 3
-            set prompt "Enter search keywords here"
-            HMextract_param $param prompt
-            label $item.label -text [HMmap_esc $prompt] -font $var(xfont)
-            entry $item.entry
-            bind $item.entry <Return> "$item.submit invoke"
-            button $item.submit -text search -font $var(xfont) -command \
-                  [myproc HMsubmit_index $selfns $win "$param" \[HMmap_reply \[$item.entry get\]\]]
-            pack $item.label -side top
-            pack $item.entry $item.submit -side left
-            
-            # insert window into text widget
-            
-            $win insert $var(S_insert) \n isindex
-            HMwin_install $win $item
-            $win insert $var(S_insert) \n isindex
-            bind $item <Visibility> {focus %W.entry}
-        }
-        
-        
-        proc HMsubmit_index {selfns win param text} {
-            ## This is called when the isindex form is submitted.
-            # The default version calls HMlink_callback.  Isindex tags should either
-            # be deprecated, or fully supported (e.g. they need an href parameter)
-            HMlink_callback $selfns $win ?$text
-        }
-        
-        
-        proc HMtag_form {selfns win param text} {
-            ## initialize form state.  All of the state for this form is kept
-            # in a global array whose name is stored in the form_id field of
-            # the main window array.
-            # Parameters: ACTION, METHOD, ENCTYPE
-            upvar #0 HM$win var
-            
-            # create a global array for the form
-            set id HM$win.form$var(tags)
-            upvar #0 $id form
-            
-            # missing /form tag, simulate it
-            if {[info exists var(form_id)]} {
-		puts "Missing end-form tag !!!! $var(form_id)"
-		HMtag_/form $win {} {}
-            }
-            catch {unset form}
-            set var(form_id) $id
-            
-            set form(param) $param		;# form initial parameter list
-            set form(reset) ""			;# command to reset the form
-            set form(reset_button) ""	;# list of all reset buttons
-            set form(submit) ""			;# command to submit the form
-            set form(submit_button) ""	;# list of all submit buttons
-        }
-        
-        
-        proc HMtag_/form {selfns win param text} {
-            ## Where we're done try to get all of the state into the widgets so
-            # we can free up the form structure here.  Unfortunately, we can't!
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            # make submit button entries for all radio buttons
-            foreach name [array names form radio_*] {
-		regsub radio_ $name {} name
-		lappend form(submit) [list $name \$form(radio_$name)]
-            }
-            
-            # process the reset button(s)
-            
-            foreach item $form(reset_button) {
-		$item configure -command $form(reset)
-            }
-            
-            # no submit button - add one
-            if {$form(submit_button) == ""} {
-		HMinput_submit $win {}
-            }
-            
-            # process the "submit" command(s)
-            # each submit button could have its own name,value pair
-            
-            foreach item $form(submit_button) {
-		set submit $form(submit)
-		catch {lappend submit $form(submit_$item)}
-		$item configure -command  \
-                      [list HMsubmit_button $win $var(form_id) $form(param) \
-                       $submit]
-            }
-                
-            # unset all unused fields here
-            unset form(reset) form(submit) form(reset_button) form(submit_button)
-            unset var(form_id)
-        }
-        
-            
-        proc HMtag_input {selfns win param text} {
-            ###################################################################
-            # handle form input items
-            # each item type is handled in a separate procedure
-            # Each "type" procedure needs to:
-            # - create the window
-            # - initialize it
-            # - add the "submit" and "reset" commands onto the proper Q's
-            #   "submit" is subst'd
-            #   "reset" is eval'd
-            upvar #0 HM$win var
-            
-            set type text	;# the default
-            HMextract_param $param type
-            set type [string tolower $type]
-            if {[catch {HMinput_$type $win $param} err]} {
-		puts stderr $err
-            }
-        }
-        
-        
-        proc HMinput_text {win param {show {}}} {
-            ## input type=text
-            # parameters NAME (reqd), MAXLENGTH, SIZE, VALUE
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            # make the entry
-            HMextract_param $param name		;# required
-            set item $win.input_text,$var(tags)
-            set size 20; HMextract_param $param size
-            set maxlength 0; HMextract_param $param maxlength
-            entry $item -width $size -show $show
-            
-            # set the initial value
-            set value ""; HMextract_param $param value
-            $item insert 0 $value
-            
-            # insert the entry
-            HMwin_install $win $item
-            
-            # set the "reset" and "submit" commands
-            append form(reset) ";$item delete 0 end;$item insert 0 [list $value]"
-            lappend form(submit) [list $name "\[$item get]"]
-            
-            # handle the maximum length (broken - no way to cleanup bindtags state)
-            if {$maxlength} {
-		bindtags $item "[bindtags $item] max$maxlength"
-		bind max$maxlength <KeyPress> "%W delete $maxlength end"
-            }
-        }
-        
-        
-        proc HMinput_password {win param} {
-            ## password fields - same as text, only don't show data
-            # parameters NAME (reqd), MAXLENGTH, SIZE, VALUE
-            HMinput_text $win $param *
-        }
-        
-        
-        proc HMinput_checkbox {win param} {
-            ## checkbuttons are missing a "get" option, so we must use a global
-            # variable to store the value.
-            # Parameters NAME, VALUE, (reqd), CHECKED
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            HMextract_param $param name
-            HMextract_param $param value
-            
-            # Set the global variable, don't use the "form" alias as it is not
-            # defined in the global scope of the button
-            set variable $var(form_id)(check_$var(tags))	
-            set item $win.input_checkbutton,$var(tags)
-            checkbutton $item -variable $variable -off {} -on $value -text "  "
-            if {[HMextract_param $param checked]} {
-		$item select
-		append form(reset) ";$item select"
-            } else {
-		append form(reset) ";$item deselect"
-            }
-            
-            HMwin_install $win $item
-            lappend form(submit) [list $name \$form(check_$var(tags))]
-        }
-        
-        
-        proc HMinput_radio {win param} {
-            ## radio buttons.  These are like check buttons, but only one can be selected
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            HMextract_param $param name
-            HMextract_param $param value
-            
-            set first [expr ![info exists form(radio_$name)]]
-            set variable $var(form_id)(radio_$name)
-            set variable $var(form_id)(radio_$name)
-            set item $win.input_radiobutton,$var(tags)
-            radiobutton $item -variable $variable -value $value -text " "
-            
-            HMwin_install $win $item
-            
-            if {$first || [HMextract_param $param checked]} {
-		$item select
-		append form(reset) ";$item select"
-            } else {
-		append form(reset) ";$item deselect"
-            }
-            
-            # do the "submit" actions in /form so we only end up with 1 per button grouping
-            # contributing to the submission
-        }
-        
-
-        proc HMinput_hidden {win param} {
-            ## hidden fields, just append to the "submit" data
-            # params: NAME, VALUE (reqd)
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            HMextract_param $param name
-            HMextract_param $param value
-            lappend form(submit) [list $name $value]
-        }
-        
-
-        proc HMinput_image {win param} {
-            ## handle input images.  The spec isn't very clear on these, so I'm not
-            # sure its quite right
-            # Use std image tag, only set up our own callbacks
-            #  (e.g. make sure ismap isn't set)
-            # params: NAME, SRC (reqd) ALIGN
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            HMextract_param $param name
-            set name		;# barf if no name is specified
-            set item [HMtag_img $win $param {}]
-            $item configure -relief raised -bd 2 -bg blue
-            
-            # make a dummy "submit" button, and invoke it to send the form.
-            # We have to get the %x,%y in the value somehow, so calculate it during
-            # binding, and save it in the form array for later processing
-            
-            set submit $win.dummy_submit,$var(tags)
-            if {[winfo exists $submit]} {
-		destroy $submit
-            }
-            button $submit	-takefocus 0;# this never gets mapped!
-            lappend form(submit_button) $submit
-            set form(submit_$submit) [list $name $name.\$form(X).\$form(Y)]
-            
-            $item configure -takefocus 1
-            bind $item <FocusIn> "catch \{$win see $item\}"
-            bind $item <1> "$item configure -relief sunken"
-            bind $item <Return> "
-               set $var(form_id)(X) 0
-               set $var(form_id)(Y) 0
-               $submit invoke	
-            "
-            bind $item <ButtonRelease-1> "
-            set $var(form_id)(X) %x
-            set $var(form_id)(Y) %y
-            $item configure -relief raised
-            $submit invoke	
-            "
-        }
-        
-        
-        proc HMinput_reset {win param} {
-            ## Set up the reset button.  Wait for the /form to attach
-            # the -command option.  There could be more that 1 reset button
-            # params VALUE
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            set value reset
-            HMextract_param $param value
-            
-            set item $win.input_reset,$var(tags)
-            button $item -text [HMmap_esc $value]
-            HMwin_install $win $item
-            lappend form(reset_button) $item
-        }
-        
-        
-        proc HMinput_submit {win param} {
-            ## Set up the submit button.  Wait for the /form to attach
-            # the -command option.  There could be more that 1 submit button
-            # params: NAME, VALUE
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            HMextract_param $param name
-            set value submit
-            HMextract_param $param value
-            set item $win.input_submit,$var(tags)
-            button $item -text [HMmap_esc $value] -fg blue
-            HMwin_install $win $item
-            lappend form(submit_button) $item
-            # need to tie the "name=value" to this button
-            # save the pair and do it when we finish the submit button
-            catch {set form(submit_$item) [list $name $value]}
-        }
-        
-        
-        proc HMtag_select {selfns win param text} {
-            #########################################################################
-            # selection items
-            # They all go into a list box.  We don't what to do with the listbox until
-            # we know how many items end up in it.  Gather up the data for the "options"
-            # and finish up in the /select tag
-            # params: NAME (reqd), MULTIPLE, SIZE 
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            
-            HMextract_param $param name
-            set size 5;  HMextract_param $param size
-            set form(select_size) $size
-            set form(select_name) $name
-            set form(select_values) ""		;# list of values to submit
-            if {[HMextract_param $param multiple]} {
-		set mode multiple
-            } else {
-		set mode single
-            }
-            set item $win.select,$var(tags)
-            frame $item
-            set form(select_frame) $item
-            listbox $item.list -selectmode $mode -width 0 -exportselection 0
-            HMwin_install $win $item
-        }
-        
-        
-        proc HMtag_option {selfns win param text} {
-            ## select options
-            # The values returned in the query may be different from those
-            # displayed in the listbox, so we need to keep a separate list of
-            # query values.
-            #  form(select_default) - contains the default query value
-            #  form(select_frame) - name of the listbox's containing frame
-            #  form(select_values)  - list of query values
-            # params: VALUE, SELECTED
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            upvar $text data
-            set frame $form(select_frame)
-            
-            # set default option (or options)
-            if {[HMextract_param $param selected]} {
-                lappend form(select_default) [$form(select_frame).list size]
-            }
-            set value [string trimright $data " \n"]
-            $frame.list insert end $value
-            HMextract_param $param value
-            lappend form(select_values) $value
-            set data ""
-        }
-        
-        
-        proc HMtag_/select {selfns win param text} {
-            ## do most of the work here!
-            # if SIZE>1, make the listbox.  Otherwise make a "drop-down"
-            # listbox with a label in it
-            # If the # of items > size, add a scroll bar
-            # This should probably be broken up into callbacks to make it
-            # easier to override the "look".
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            set frame $form(select_frame)
-            set size $form(select_size)
-            set items [$frame.list size]
-            
-            # set the defaults and reset button
-            append form(reset) ";$frame.list selection clear 0  $items"
-            if {[info exists form(select_default)]} {
-                foreach i $form(select_default) {
-                    $frame.list selection set $i
-                    append form(reset) ";$frame.list selection set $i"
-		}
-            } else {
-		$frame.list selection set 0
-		append form(reset) ";$frame.list selection set 0"
-            }
-            
-            # set up the submit button. This is the general case.  For single
-            # selections we could be smarter
-            
-            for {set i 0} {$i < $size} {incr i} {
-		set value [format {[expr {[%s selection includes %s] ? {%s} : {}}]} \
-                           $frame.list $i [lindex $form(select_values) $i]]
-		lappend form(submit) [list $form(select_name) $value]
-            }
-            
-            # show the listbox - no scroll bar
-            
-            if {$size > 1 && $items <= $size} {
-		$frame.list configure -height $items
-		pack $frame.list
-                
-                # Listbox with scrollbar
-                
-            } elseif {$size > 1} {
-		scrollbar $frame.scroll -command "$frame.list yview"  \
-                      -orient v -takefocus 0
-		$frame.list configure -height $size \
-                      -yscrollcommand "$frame.scroll set"
-		pack $frame.list $frame.scroll -side right -fill y
-                
-                # This is a joke!
-                
-            } else {
-		scrollbar $frame.scroll -command "$frame.list yview"  \
-                      -orient h -takefocus 0
-		$frame.list configure -height 1 \
-                      -yscrollcommand "$frame.scroll set"
-		pack $frame.list $frame.scroll -side top -fill x
-            }
-            
-            # cleanup
-
-            foreach i [array names form select_*] {
-		unset form($i)
-            }
-        }
-        
-
-        proc HMtag_textarea {selfns win param text} {
-            ## do a text area (multi-line text)
-            # params: COLS, NAME, ROWS (all reqd, but default rows and cols anyway)
-            upvar #0 HM$win var
-            upvar #0 $var(form_id) form
-            upvar $text data
-            
-            set rows 5; HMextract_param $param rows
-            set cols 30; HMextract_param $param cols
-            HMextract_param $param name
-            set item $win.textarea,$var(tags)
-            frame $item
-            text $item.text -width $cols -height $rows -wrap none \
-                  -yscrollcommand "$item.scroll set" -padx 3 -pady 3
-            scrollbar $item.scroll -command "$item.text yview"  -orient v
-            $item.text insert 1.0 $data
-            HMwin_install $win $item
-            pack $item.text $item.scroll -side right -fill y
-            lappend form(submit) [list $name "\[$item.text get 0.0 end]"]
-            append form(reset) ";$item.text delete 1.0 end; \
-            $item.text insert 1.0 [list $data]"
-            set data ""
-        }
-        
-
-        proc HMwin_install {win item} {
-            ## procedure to install windows into the text widget
-            # - win:  name of the text widget
-            # - item: name of widget to install
-            upvar #0 HM$win var
-            $win window create $var(S_insert) -window $item -align bottom
-            $win tag add indent$var(level) $item
-            set focus [expr {[winfo class $item] != "Frame"}]
-            $item configure -takefocus $focus
-            bind $item <FocusIn> "$win see $item"
-        }
-
-
-        proc HMsubmit_button {win form_id param stuff} {
-            #####################################################################
-            # Assemble and submit the query
-            # each list element in "stuff" is a name/value pair
-            # - The names are the NAME parameters of the various fields
-            # - The values get run through "subst" to extract the values
-            # - We do the user callback with the list of name value pairs
-            upvar #0 HM$win var
-            upvar #0 $form_id form
-            set query ""
-            foreach pair $stuff {
-		set value [subst [lindex $pair 1]]
-		if {$value != ""} {
-                    set item [lindex $pair 0]
-                    lappend query $item $value
-                }
-            }
-            # this is the user callback.
-            HMsubmit_form $win $param $query
-        }
-        
-        
-        proc HMsubmit_form {win param query} {
-            ## sample user callback for form submission
-            # should be replaced by the application
-            # Sample version generates a string suitable for http
-            set result ""
-            set sep ""
-            foreach i $query {
-		append result  $sep [HMmap_reply $i]
-		if {$sep != "="} {set sep =} {set sep &}
-            }
-            puts $result
-        }
-        
-        
-        proc HMmap_reply {string} {
-            ## 1 leave alphanumerics characters alone
-            # 2 Convert every other character to an array lookup
-            # 3 Escape constructs that are "special" to the tcl parser
-            # 4 "subst" the result, doing all the array substitutions
-            regsub -all \[^$HMalphanumeric\] $string {$HMform_map(&)} string
-            regsub -all \n $string {\\n} string
-            regsub -all \t $string {\\t} string
-            regsub -all {[][{})\\]\)} $string {\\&} string
-            return [subst $string]
-        }
-
-
-        proc HMcgiDecode {data} {
-            ## convert a x-www-urlencoded string int a a list of name/value pairs
-            # 1  convert a=b&c=d... to {a} {b} {c} {d}...
-            # 2, convert + to  " "
-            # 3, convert %xx to char equiv
-            set data [split $data "&="]
-            foreach i $data {
-		lappend result [cgiMap $i]
-            }
-            return $result
-        }
-        
-        proc HMcgiMap {data} {
-            ##
-            regsub -all {\+} $data " " data
-            
-            if {[regexp % $data]} {
-		regsub -all {([][$\\])} $data {\\\1} data
-		regsub -all {%([0-9a-fA-F][0-9a-fA-F])} $data  {[format %c 0x\1]} data
-		return [subst $data]
-            } else {
-		return $data
-            }
-        }
-        
-
         proc get_html {file} {
             ## given a file name, return its html, or invent some html if the file can't
             # be opened.
@@ -2831,131 +2296,11 @@ namespace eval shtmlview {
             #	  puts stderr "*** HMtag_link: rel = $rel, link_type = $link_type, href = $href"
             if {"$rel" eq {stylesheet} &&
                 "$link_type" eq {text/css}} {
-                HMload_css $selfns $win $href
+                #HMload_css $selfns $win $href
             }
 	}
     }
 
-    proc HMload_css {selfns win href} {
-        ##
-        if {[string match /* $href]} {
-            set Css $href
-        } else {
-            set Css [file dirname $Url]/$href
-        }
-        #      puts stderr "*** HMload_css: Css is $Css"
-        if {[catch {open "$Css" r} css_fp]} {return}
-        set buffer {}
-        while {[gets $css_fp line] >= 0} {
-            append buffer "$line"
-            if {[info complete "$buffer"]} {
-                regsub -all {/\*.*\*/} "$buffer" {} buffer
-                if {[regexp {([^[:space:]]+)[[:space:]]*\{([^\}]+)\}} "$buffer" -> key attributes] > 0} {
-                    set cssArray($key) "$attributes"
-                }
-                set buffer {}
-            } else {
-                append buffer "\n"
-            }
-        }
-        close $css_fp
-        if {$win eq $toc} {
-            array set toc_css [array get cssArray]
-        } else {
-            array set helptext_css [array get cssArray]
-        }
-        #      parray cssArray
-    }
-    
-    proc HMappend_css {varName cssBlock} {
-    ##
-
-    #      puts stderr "*** HMappend_css $varName $cssBlock"
-    upvar $varName var
-    while {[regexp {([^:]+):[[:space:]]*([^;]+);?[[:space:]]*(.*)$} $cssBlock -> key attr rest] > 0} {
-        #	puts stderr "*** HMappend_css: key = $key, attr = $attr"
-	set cssBlock $rest
-	switch -exact $key {
-	  font-size {
-	    if {[regexp {([[:digit:]]+)%} $attr -> percent] > 0} {
-	      set val [expr {int((double($percent)/100.0)*14)}]
-	      set index [lsearch -exact $var size]
-	      set vindex [expr {$index + 1}]
-	      if {$index >= 0 && [expr {$index % 2}] == 0} {
-		set var [lreplace $var $vindex $vindex $val]
-	      } else {
-		lappend var size $val
-	      }
-	    };# elseif... -- need to find CSS book!
-	  }
-	  font-weight {
-	    set index [lsearch -exact $var weight]
-	    set vindex [expr {$index + 1}]
-	    if {$index >= 0 && [expr {$index % 2}] == 0} {
-	      set var [lreplace $var $vindex $vindex $attr]
-	    } else {
-	      lappend var weight $attr
-	    }
-	  }
-	  font-family {
-	    set index [lsearch -exact $var family]
-	    set vindex [expr {$index + 1}]
-	    switch -exact $attr {
-	      monospace {set val courier}
-	      sans-serif {set val helvetica}
-	      serif  {set val times}
-	      default {set val $attr}
-	    }
-	    if {$index >= 0 && [expr {$index % 2}] == 0} {
-	      set var [lreplace $var $vindex $vindex $val]
-	    } else {
-	      lappend var family $val
-	    }
-	  }
-	  font-style {
-	    set index [lsearch -exact $var style]
-	    set vindex [expr {$index + 1}]
-	    if {$index >= 0 && [expr {$index % 2}] == 0} {
-	      set var [lreplace $var $vindex $vindex $attr]
-	    } else {
-	      lappend var style $attr
-	    }
-	  }
-	  text-decoration {
-	    switch -exact $attr {
-	      underline {
-		set val underline
-		set index [lsearch -exact $var Tunderline]
-	        set vindex [expr {$index + 1}]
-		if {$index >= 0 && [expr {$index % 2}] == 0} {
-		  set var [lreplace $var $vindex $vindex $val]
-		} else {
-		  lappend var Tunderline $val
-		}
-	      }
-	      overline {
-		set val overline
-		set index [lsearch -exact $var Toverstrike
-		set vindex [expr {$index + 1}]
-		if {$index >= 0 && [expr {$index % 2}] == 0} {
-		  set var [lreplace $var $vindex $vindex $val]
-		} else {
-		  lappend var Toverstrike $val
-		}
-	      }
-	    }
-	  }
-	  text-align {
-	  }
-	  text-indent {
-	  }
-	  margin-left {
-	  }
-	  margin-right {
-	  }
-	}
-      }
-    }
 
     typevariable HMtag_map -array  {}
     ##
@@ -3374,8 +2719,196 @@ namespace eval shtmlview {
   }
 }
 
+namespace eval ::svgconvert {
+    # collect all the include directories
+    catch {
+        package require critcl
+    }
+    if {[info command ::critcl::compiling] ne "" && [critcl::compiling]} {
+        catch {
+        set options [regsub -all -- -I [exec pkg-config --cflags --libs cairo --libs librsvg-2.0] "I "]
+        set dirs [list]
+        foreach {i dir} $options {
+            if {$i eq "I"} {
+                lappend dirs $dir
+            }
+        }
+        critcl::clibraries -lrsvg-2 -lm -lgio-2.0 -lgdk_pixbuf-2.0 -lgobject-2.0 -lglib-2.0 -lcairo -pthread
+        critcl::config I $dirs
+        critcl::ccode {
+            #include <string.h>
+            #include <stdio.h>
+            #include <cairo.h>
+            #include <cairo/cairo-pdf.h>
+            #include <cairo/cairo-svg.h>        
+            #include <librsvg/rsvg.h>
+        }
+        
+        
+        critcl::cproc svgconvert {char* svgfile  char* outfile double scalex double scaley} void {
+            // new
+            char *epdf = ".pdf";
+            char *esvg = ".svg";
+            char *pdf = strstr(outfile, epdf);
+            char *svg = strstr(outfile, esvg);    
+            
+            RsvgHandle *handle;
+            //RsvgDimensionData dimension_data; // deprecated
+            gdouble width = 0.0;
+            gdouble height = 0.0;
+            GError* err = NULL;
+            handle = rsvg_handle_new_from_file(svgfile, &err);
+            
+            if (err != NULL) {
+                fprintf(stderr, "libsvgconv: Failed to load svg: '%s'; %s\n", svgfile, (char*) err->message);
+                g_error_free(err);
+                err = NULL;
+            }
+            
+            cairo_surface_t *surface;
+            cairo_t *ctx;
+            
+            //rsvg_handle_get_dimensions(handle, &dimension_data); // deprecated
+            rsvg_handle_get_intrinsic_size_in_pixels(handle,&width, &height);
+            double resx = width*scalex ; //((double) dimension_data.width) * scalex;
+            double resy = height*scaley; //((double) dimension_data.height) * scaley;
+            if (pdf) {
+                surface = cairo_pdf_surface_create(outfile, (int) resx, (int) resy); 
+            } else if (svg) {
+                surface = cairo_svg_surface_create(outfile, (int) resx, (int) resy); 
+            } else {
+                surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, (int) resx, (int) resy);
+                //surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, (int) resx, (int) resy);
+            }
+            ctx = cairo_create(surface);
+            
+            cairo_set_source_rgba(ctx, 255, 255, 255, 0);
 
-#package provide shtmlview::shtmlview 0.9.0
+            //cairo_scale(ctx, scalex, scaley);
+            RsvgRectangle viewport = {
+                .x = 0.0,
+                .y = 0.0,
+                .width = resx,
+                .height = resy,
+            };
+            //rsvg_handle_render_cairo(handle, ctx); // deprecated
+            //cairo_set_source_rgba(ctx, 0,0,0,0);
+            //cairo_rectangle(ctx,0,0,resx,resy);
+            rsvg_handle_render_document(handle,ctx,&viewport,NULL);
+
+            cairo_paint(ctx);
+            cairo_show_page(ctx);
+            cairo_destroy(ctx);
+            // Destroying cairo context
+            cairo_surface_flush(surface);
+            if (pdf || svg) {
+                // Destroying PDF surface
+                cairo_surface_destroy(surface);
+            } else {
+                cairo_surface_write_to_png(surface, outfile);
+                cairo_surface_destroy(surface);
+            } 
+        }
+        proc svgconv {infile outfile {scalex 1.0} {scaley 1.0}} {
+            if {$scalex != $scaley} {
+                set scaley $scalex
+            }
+            if {![file exists $infile]} {
+                error "Error: File $infile does not exist!"
+            }
+            svgconvert::svgconvert $infile $outfile $scalex $scaley
+        }
+        }
+    } 
+    #puts "critcl: [info command ::svgconvert::svgconv]"
+    if {[info command ::svgconvert::svgconv] eq "" && [auto_execok rsvg-convert] ne ""} {
+        proc svgconv {infile outfile {scalex 1.0} {scaley 1.0}} {
+            puts "converting $infile using rsvg-convert"
+            if {$scalex != $scaley} {
+                set scaley $scalex
+            }
+            if {![file exists $infile]} {
+                error "Error: File $infile does not exist!"
+            }
+            exec rsvg-convert $infile -o $outfile -z $scalex
+        }
+    } elseif {[info command ::svgconvert::svgconv] eq "" && [auto_execok cairosvg] ne ""} {
+        proc svgconv {infile outfile {scalex 1.0} {scaley 1.0}} {
+            if {$scalex != $scaley} {
+                set scaley $scalex
+            }
+            if {![file exists $infile]} {
+                error "Error: File $infile does not exist!"
+            }
+            exec cairosvg -f [string range [string tolower [file extension $outfile]] 1 end] -o $outfile -s $scalex $infile 
+        }
+    } elseif {[info command ::svgconvert::svgconv] eq ""}  {
+        puts stderr "Error: no svg conversion available, neither critcl and librsvg2-dev or the terminal applications rsvg-convert or cairosvg are available!\nPlease install one of the tools to support svg display!"
+    }
+        
+    proc svg2svg {svginfile svgoutfile {scalex 1.0} {scaley 1.0}} {
+        if {[file extension $svgoutfile] ne ".svg"} {
+            error "Error: File extension for $svgoutfile is not .svg!"
+        }
+        svgconv $svginfile $svgoutfile $scalex $scaley
+    }
+    proc svg2pdf {svgfile pdffile {scalex 1.0} {scaley 1.0}} {
+        if {[file extension $pdffile] ne ".pdf"} {
+            error "Error: File extension for $pdffile is not .pdf!"
+        }
+        svgconv $svgfile $pdffile $scalex $scaley
+    }
+    proc svg2png {svgfile pngfile {scalex 1.0} {scaley 1.0}} {
+        if {[file extension $pngfile] ne ".png"} {
+            error "Error: File extension for $pngfile is not .png!"
+        }
+        svgconv $svgfile $pngfile $scalex $scaley
+    }
+    proc svgimg {type {src ""}} {
+        if {$src eq ""} {
+            set src $type
+            set type "-file"
+        }
+        if {$type eq "-file"} {
+            if {![regexp {\.svg$} $src]} {
+                error "Only svg files can be converted"
+            }
+            set tmpfile [file tempfile].png
+            svg2png $src $tmpfile
+            set img [image create photo -file $tmpfile]
+            $img write $tmpfile -background white
+            set img [image create photo -file $tmpfile]
+            file delete $tmpfile
+            return $img
+        } elseif {$type eq "-data"} {
+            set svgfile [file tempfile].svg
+            set out [open $svgfile w 0600]
+            puts $out [binary decode base64 $src]
+            close $out
+            set img [svgimg -file $svgfile]
+            file delete $svgfile
+            return $img
+        }
+        
+    }
+    proc svg2base64 {filename} {
+        if [catch {open $filename r} infh] {
+            puts stderr "Cannot open $filename: $infh"
+        } else {
+            set lines [read $infh]
+            set b64 [binary encode base64 $lines]
+            close $infh
+            return $b64
+        }
+    }
+    proc base642svg {base64 filename} {
+        set svgfile $filename
+        set out [open $svgfile w 0600]
+        puts $out [binary decode base64 $base64]
+        close $out
+    }
+    namespace export svg2pdf svg2png svg2svg svgimg svg2base64
+}
 
 if {[info exists argv0] && [info script] eq $argv0} {
     option add *Font			TkDefaultFont
@@ -3464,7 +2997,7 @@ if {[info exists argv0] && [info script] eq $argv0} {
                 }
 
             } else {
-                # standard html
+                # standard html or Markdown
                 $help configure -home [lindex $argv 0] 
                 $help browse {*}[lrange $argv 0 end]
                 [$help getTextWidget] tag configure divblue -foreground blue
@@ -3477,7 +3010,6 @@ if {[info exists argv0] && [info script] eq $argv0} {
     } else {
         usage
     }
-
 }
     
     

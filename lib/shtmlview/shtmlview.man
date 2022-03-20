@@ -4,10 +4,10 @@
 [keywords text]
 [keywords html]
 [keywords widget]
-[copyright {2018-2022, Detlef Groth <detlef@dgroth.de>}]
-[copyright {1995-1999, Stephen Uhler}]
-[copyright {2000, Clif Flynt}]
+[copyright {2018-2022, Detlef Groth <detlef(at)dgroth(dot)de>}]
 [copyright {2009, Robert Heller}]
+[copyright {2000, Clif Flynt}]
+[copyright {1995-1999, Stephen Uhler}]
 
 [moddesc   {basic HTML and Markdown viewer widget}]
 [titledesc {pur Tcl/Tk text widget with basic support for HTML and Markdown markup rendering}]
@@ -238,7 +238,17 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 - 2022-02-25 version 0.9.2 - fix for tk_textCopy and documentation update
 
 [para]
-- 2022-03-06 version 0.9.3 - support for MouseWheel bindings and fixing hyperlinks to http(s) links, support for file-anchor links like 'file.html#anchor', support for '#' as link to the top, thanks to aplsimple for suggestions and bug reports
+
+2022-03-06 version 0.9.3
+
+[list_begin itemized]
+
+[item] support for MouseWheel bindings
+[item] fixing hyperlinks to http(s) links
+[item] support for file-anchor links like 'file.html#anchor'
+[item] support for '#' as link to the top
+[item] thanks to aplsimple for suggestions and bug reports
+[list_end]
 
 [para]
 2022-03-XX version 1.0.0
@@ -253,6 +263,8 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 
 [item] support for jpg images if img::jpeg library is available
 
+[item] support for svg images if critcl and librsvg-dev(el) or terminal application rsvg-convert or cairosvg are available
+
 [item] back and forward as well for anchors
 
 [item] first and last browse entry buttons for history
@@ -265,14 +277,19 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [item] historycombo option
 [item] toolbar fix
 [item] browse fix for non-existing files
+[item] removed unused css/stylesheet and web forms code
+[item] thanks to pepdiz for bug-reports and suggestions
 
 [list_end]
 
 [section TODO]
 [para]
-- Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
-- Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
-- see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
+
+[list_begin itemized]
+[item] Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
+[item] Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
+[item] More tags, see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
+[list_end]
 
 [section Thanks]
 
