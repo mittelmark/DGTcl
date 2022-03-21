@@ -1079,6 +1079,7 @@ namespace eval shtmlview {
                 } else {
                     set md ""
                     while {[gets $infh line] >= 0} {
+                        set line [regsub {!\[\]\((.+?)\)} $line "!\[ \](\\1)"]
                         append md "$line\n"
                     }
                     close $infh
