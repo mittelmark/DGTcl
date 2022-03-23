@@ -251,7 +251,7 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [list_end]
 
 [para]
-2022-03-XX version 1.0.0
+2022-03-26 version 1.0.0
 
 [list_begin itemized]
 
