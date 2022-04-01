@@ -111,6 +111,10 @@ To configure the internal text widget the helptext command courld be used direct
 
 Each time a HTML or Markdown page is rendered the given [option -browsecmd] is invoked. The actual URL is appended as first argument to the command.
 
+[opt_def -closebutton boolean]
+
+Should the close button in the toolbar been shown, useful if your widget is embedded in a toplevel, default: true
+
 [opt_def -historycombo boolean]
 
 If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar.
@@ -279,6 +283,13 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [item] browse fix for non-existing files
 [item] removed unused css/stylesheet and web forms code
 [item] thanks to pepdiz for bug-reports and suggestions
+
+[para]
+2022-04-XX version 1.1.0
+
+[item] file open remembers now the last directory
+
+[item] file close button added with option -closebutton useful for toplevel windows
 
 [list_end]
 

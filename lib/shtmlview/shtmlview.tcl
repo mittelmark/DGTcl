@@ -484,6 +484,7 @@ namespace eval shtmlview {
         
         option -tablesupport -configuremethod configureTableSupport
         option -toolbar -configuremethod configureToolbar
+        option -closebutton -configuremethod configureClosebutton
         option -browsecmd -default "" 
         option -home -default "" -configuremethod configureHome
         option -historycombo false 
@@ -505,6 +506,7 @@ namespace eval shtmlview {
         variable Url
         variable topicstack {}
         variable lasturl ""
+        variable lastdir ""
         ##
         variable curtopicindex -1
         variable combo
@@ -536,10 +538,10 @@ namespace eval shtmlview {
             pack [${tile}::frame $win.toolbar] -side top -fill x -expand false
             pack [${tile}::button $win.toolbar.open -image ::fileopen22 -command [mymethod open]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
-            $self balloon $win.toolbar.open "open a local htmlfile"
+            $self balloon $win.toolbar.open "open a local html or md file"
             pack [${tile}::button $win.toolbar.home -image ::navhome22 -command [mymethod home]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
-            $self balloon $win.toolbar.home "go to first htmlfile"
+            $self balloon $win.toolbar.home "go to first html/md file"
             
             pack [${tile}::button $win.toolbar.start -image ::start-22 -command [mymethod start] -state disabled] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
@@ -572,6 +574,10 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.help -image ::help-22 -command [mymethod help]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
             $self balloon $win.toolbar.help "show help text"                        
+            
+            pack [${tile}::button $win.toolbar.close -image ::fileclose-22 -command [mymethod close]] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.toolbar.close "close help window"
             
             install status  using label $win.toolbar.status -anchor w -relief flat \
                   -borderwidth 2 -justify left -width 35 -pady 5
@@ -692,6 +698,15 @@ namespace eval shtmlview {
                 pack forget $win.toolbar
             }
         }
+        method configureClosebutton {opt value} {
+            set options(-toolbar) $value
+            if {$value} {
+                pack $win.toolbar.close -side left -padx 5 -pady 5 \
+                      -ipadx 2 -ipady 2 -after $win.toolbar.help
+            } else {
+                pack forget $win.toolbar.close
+            }
+        }
         method configureTableSupport {opt value} {
             set options($opt) $value
             if {!$value} {
@@ -759,7 +774,6 @@ namespace eval shtmlview {
                 $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
                 
             }
-            #if {"$current" ne "" && "$current" ne "$win"} {BWidget::grab set $win}
         }
         method BrowseInsert {} {
             set tags [$helptext tag names insert]
@@ -808,10 +822,10 @@ namespace eval shtmlview {
                 lappend topicstack {*}$end
             }
             if {$tile ne ""} {
+                # todo fix for global variable
                 set ::xx 0
                 $combo configure -values [lmap a $topicstack { set x "[incr xx] [file tail $a]" }]
             }
-            #puts "history: $topicstack"
         }
         proc backcurrenttopic {selfns} {
             if {[llength $topicstack] == 0 || $curtopicindex <= 0} {return {}}
@@ -856,6 +870,13 @@ namespace eval shtmlview {
             set url [lindex $topicstack 0]
             if {"$url" eq {}} {return}
             render $selfns $helptext $url no
+        }
+        method close {} {
+            set answer [tk_messageBox -title "Closing application ..." -message "Dou you like to close the help window ?" -type yesno -icon question]
+            if { $answer } {
+                set parent [winfo parent $win]
+                destroy $parent
+            }
         }
         method start {} {
             ##
@@ -917,10 +938,13 @@ namespace eval shtmlview {
                 {{Markdown Files}   {.md .Rmd .Tmd}}                
                 {{All Files}        *          }
             }
-            set filename [tk_getOpenFile -filetypes $types -initialdir [file normalize [lindex $topicstack 0]]]
+            if {$lastdir eq ""} {
+                set lastdir [file normalize [lindex $topicstack 0]]
+            }
+            set filename [tk_getOpenFile -filetypes $types -initialdir $lastdir]
             if {$filename != ""} {
                 set url $filename
-                
+                set lastdir [file dirname [file normalize $filename]]
             }
             if {"$url" eq {}} {return}
             render $selfns $helptext [file normalize $url] yes
@@ -1062,7 +1086,7 @@ namespace eval shtmlview {
             $status configure -text "Displaying $url"
             HMset_state $win -stop 1
             update idletasks
-            if {$fragment != ""} {
+            if {$fragment ne ""} {
                 HMgoto $selfns $win $fragment
             }
             HMset_state $win -stop 0
@@ -1098,7 +1122,7 @@ namespace eval shtmlview {
             set t [expr {([clock milliseconds] - $t1)/1000.0}]
             $status configure -text [format "[file tail $url] loaded in %0.3f sec" $t]
             regexp {([^#]*)#(.+)} $url dummy url fragment
-            if {$url != "" && $fragment != ""} {
+            if {$url ne "" && $fragment ne ""} {
                 HMgoto $selfns $win $fragment
                 #return
             }
@@ -2321,6 +2345,89 @@ namespace eval shtmlview {
     ##
     typeconstructor {
         # some images
+        catch {
+            image create photo ::start-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBCRGZAxCZGyavExmjHyatOTy9CxihISe
+                vPz+/KzO3BRylAw+XDRWbPz6/FzC3CSuzDyexJzO5Mzq9CxSdAQOFISmxNzu
+                9HTS5BSmxAyexDSuzJTa7Mzu9Kzi7GS21CRmjAQOHHSWtLze7AyWvHzG3BRi
+                hCTO3BS+1AyixBSWvBSOtBSStAQWJDzW5BTC3BSqzBS21CTC1ETW3AQSHEze
+                7BRqlBRmjAQCDBR+pBRefBRSdAQKFAAAACH5BAEAAAAALAAAAAAWABYAAAa0
+                QIBwSCwaj8ikMqBcMpsCQTEwIDQBUWKgYHgqs8LAAZGwQqWAgGLBaDgEj0Fg
+                jh5mxRBERDKhICAQFRYXRVEBGBAZGhscHR4VHyAhIiOFAiQZJRoSGyaNJxQn
+                EyiVRFEoGykqKyYsJiYtLi0mKC+WFygrMDEyMzQ1wDQqKDaWADYoMzcqsjg5
+                DSgoBISmaCOoMG4v29s2OsZCyDs8DldgQtc95WdFPg7rV0Y+XvHt9ff4SXRB
+                ACH+aENyZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERl
+                dmVsQ29yIDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6
+                Ly93d3cuZGV2ZWxjb3IuY29tADs=
+            }
+        }
+        catch {
+            image create photo ::finish-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBBxCXDR+nIS21Aw+XJTC1Nzu/KzO3Pz+
+                /Nzq9Pz6/MTe7KTW5FzC1Nzu9CRKZMzi7IzK3Lzi7LTe7HzG3Gy+3AyuzAye
+                xFzC3DRSbHy+1Dy61CSqzAySvAyStLze7IzO5AyGrEze7BRmjCTC1ETS3ETa
+                5BTC3Bx2nAyWvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAak
+                QIBwSCwaj8hkMqBsBgTN5IAAJQqqykCBasUmDQcEV3gtBs7oATihGJeJgcOC
+                QWc0HA8Ig/seRiQTFAsVFhcYGRp6VH1CGwscHQ8dGB4fIBkPIWKMAAMLIiAj
+                IJcgH5gkGSWcARIiJicoJikpHikoHqqrKiW8JSogKymoqgCrV8cCARgkuFWc
+                RwYeqVjPRgEExEPVRQbZ2l5IBuBRQ0zk5+hRBkEAIf5oQ3JlYXRlZCBieSBC
+                TVBUb0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4
+                LiBBbGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5j
+                b20AOw==
+            }
+        }
+        catch {
+            image create photo ::start-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBCRGZAxCZGyavExmjHyatOTy9CxihISe
+                vPz+/KzO3BRylAw+XDRWbPz6/FzC3CSuzDyexJzO5Mzq9CxSdAQOFISmxNzu
+                9HTS5BSmxAyexDSuzJTa7Mzu9Kzi7GS21CRmjAQOHHSWtLze7AyWvHzG3BRi
+                hCTO3BS+1AyixBSWvBSOtBSStAQWJDzW5BTC3BSqzBS21CTC1ETW3AQSHEze
+                7BRqlBRmjAQCDBR+pBRefBRSdAQKFAAAACH5BAEAAAAALAAAAAAWABYAAAa0
+                QIBwSCwaj8ikMqBcMpsCQTEwIDQBUWKgYHgqs8LAAZGwQqWAgGLBaDgEj0Fg
+                jh5mxRBERDKhICAQFRYXRVEBGBAZGhscHR4VHyAhIiOFAiQZJRoSGyaNJxQn
+                EyiVRFEoGykqKyYsJiYtLi0mKC+WFygrMDEyMzQ1wDQqKDaWADYoMzcqsjg5
+                DSgoBISmaCOoMG4v29s2OsZCyDs8DldgQtc95WdFPg7rV0Y+XvHt9ff4SXRB
+                ACH+aENyZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERl
+                dmVsQ29yIDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6
+                Ly93d3cuZGV2ZWxjb3IuY29tADs=
+            }
+
+        }
+        catch {
+            image create photo ::finish-22 -data {
+                R0lGODlhFgAWAIUAAPwCBAw2VAQCBBxCXDR+nIS21Aw+XJTC1Nzu/KzO3Pz+
+                /Nzq9Pz6/MTe7KTW5FzC1Nzu9CRKZMzi7IzK3Lzi7LTe7HzG3Gy+3AyuzAye
+                xFzC3DRSbHy+1Dy61CSqzAySvAyStLze7IzO5AyGrEze7BRmjCTC1ETS3ETa
+                5BTC3Bx2nAyWvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAak
+                QIBwSCwaj8hkMqBsBgTN5IAAJQqqykCBasUmDQcEV3gtBs7oATihGJeJgcOC
+                QWc0HA8Ig/seRiQTFAsVFhcYGRp6VH1CGwscHQ8dGB4fIBkPIWKMAAMLIiAj
+                IJcgH5gkGSWcARIiJicoJikpHikoHqqrKiW8JSogKymoqgCrV8cCARgkuFWc
+                RwYeqVjPRgEExEPVRQbZ2l5IBuBRQ0zk5+hRBkEAIf5oQ3JlYXRlZCBieSBC
+                TVBUb0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4
+                LiBBbGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5j
+                b20AOw==
+            }
+        }
+        catch {
+            image create photo ::fileclose-22 -data {
+                R0lGODlhFgAWAIUAAPwCBERGRERCRDw6PCwqLExOTFRWVHRydGxqbGRiZCQi
+                JISChIyKjHx6fDQyNBwaHJSWlKSipBQWFJyanPz+/JSSlCQmJAwKDCwuLBwe
+                HBQSFGxubExKTISGhDQ2NFxeXFRSVDw+PAwODAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAbZ
+                QIBwSCwaj8jkMSAYDAgEJbFgOBwQCUOAoJAaFgvGonHIBhyP5BcSgUAYDWxg
+                gD4WFmx3e3HQngkSRgYMEBMUFG4MCId0BGlEAQeEhocVDYcUdBYKF0QCB3gR
+                lJgUAQEYBBkaRAMbDZMMpAYcT46rQwMJrgsdC6QcfwoPnUMOBgkIV6SHHg6b
+                w0QEAQYfBpggBZjPGsRD0gEchxwCIR6HChnQRQ8DIU4DTR4Em+ncRw8O+fmo
+                XPXdRg+gQLFgIYM/KRIkoDP4QMKFf0o0aBAh4qGUixgzCrETBAAh/mhDcmVh
+                dGVkIGJ5IEJNUFRvR0lGIFBybyB2ZXJzaW9uIDIuNQ0KqSBEZXZlbENvciAx
+                OTk3LDE5OTguIEFsbCByaWdodHMgcmVzZXJ2ZWQuDQpodHRwOi8vd3d3LmRl
+                dmVsY29yLmNvbQA7
+            }
+        }
+
         catch {
             image create photo ::editdelete-22 -data {
                 R0lGODlhFgAWAIYAAASC/FRSVExKTERCRDw6PDQyNCwuLBweHBwaHAwODAwK

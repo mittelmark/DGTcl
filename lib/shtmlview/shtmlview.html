@@ -211,6 +211,8 @@ package require shtmlview::shtmlview
 <dl class="doctools_options">
 <dt><b class="option">-browsecmd</b> cmd</dt>
 <dd><p>Each time a HTML or Markdown page is rendered the given <b class="option">-browsecmd</b> is invoked. The actual URL is appended as first argument to the command.</p></dd>
+<dt><b class="option">-closebutton</b> boolean</dt>
+<dd><p>Should the close button in the toolbar been shown, useful if your widget is embedded in a toplevel, default: true</p></dd>
 <dt><b class="option">-historycombo</b> boolean</dt>
 <dd><p>If true (default is false) displays a ttk::combobox if the tile package is available in the toolbar.
 Can be only set a widget creation.</p></dd>
@@ -319,7 +321,10 @@ The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key p
 <li><p>toolbar fix</p></li>
 <li><p>browse fix for non-existing files</p></li>
 <li><p>removed unused css/stylesheet and web forms code</p></li>
-<li><p>thanks to pepdiz for bug-reports and suggestions</p></li>
+<li><p>thanks to pepdiz for bug-reports and suggestions</p>
+<p>2022-04-XX version 1.1.0</p></li>
+<li><p>file open remembers now the last directory</p></li>
+<li><p>file close button added with option -closebutton useful for toplevel windows</p></li>
 </ul>
 </div>
 <div id="section9" class="doctools_section"><h2><a name="section9">TODO</a></h2>
