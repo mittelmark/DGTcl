@@ -2621,39 +2621,6 @@ namespace eval shtmlview {
                 ZWQuDQpodHRwOi8vd3d3LmRldmVsY29yLmNvbQA7
             }
         }
-        catch {
-            image create photo ::start-22 -data {
-                R0lGODlhFgAWAIUAAPwCBAw2VAQCBCRGZAxCZGyavExmjHyatOTy9CxihISe
-                vPz+/KzO3BRylAw+XDRWbPz6/FzC3CSuzDyexJzO5Mzq9CxSdAQOFISmxNzu
-                9HTS5BSmxAyexDSuzJTa7Mzu9Kzi7GS21CRmjAQOHHSWtLze7AyWvHzG3BRi
-                hCTO3BS+1AyixBSWvBSOtBSStAQWJDzW5BTC3BSqzBS21CTC1ETW3AQSHEze
-                7BRqlBRmjAQCDBR+pBRefBRSdAQKFAAAACH5BAEAAAAALAAAAAAWABYAAAa0
-                QIBwSCwaj8ikMqBcMpsCQTEwIDQBUWKgYHgqs8LAAZGwQqWAgGLBaDgEj0Fg
-                jh5mxRBERDKhICAQFRYXRVEBGBAZGhscHR4VHyAhIiOFAiQZJRoSGyaNJxQn
-                EyiVRFEoGykqKyYsJiYtLi0mKC+WFygrMDEyMzQ1wDQqKDaWADYoMzcqsjg5
-                DSgoBISmaCOoMG4v29s2OsZCyDs8DldgQtc95WdFPg7rV0Y+XvHt9ff4SXRB
-                ACH+aENyZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERl
-                dmVsQ29yIDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6
-                Ly93d3cuZGV2ZWxjb3IuY29tADs=
-            }
-
-        }
-        catch {
-            image create photo ::finish-22 -data {
-                R0lGODlhFgAWAIUAAPwCBAw2VAQCBBxCXDR+nIS21Aw+XJTC1Nzu/KzO3Pz+
-                /Nzq9Pz6/MTe7KTW5FzC1Nzu9CRKZMzi7IzK3Lzi7LTe7HzG3Gy+3AyuzAye
-                xFzC3DRSbHy+1Dy61CSqzAySvAyStLze7IzO5AyGrEze7BRmjCTC1ETS3ETa
-                5BTC3Bx2nAyWvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAALAAAAAAWABYAAAak
-                QIBwSCwaj8hkMqBsBgTN5IAAJQqqykCBasUmDQcEV3gtBs7oATihGJeJgcOC
-                QWc0HA8Ig/seRiQTFAsVFhcYGRp6VH1CGwscHQ8dGB4fIBkPIWKMAAMLIiAj
-                IJcgH5gkGSWcARIiJicoJikpHikoHqqrKiW8JSogKymoqgCrV8cCARgkuFWc
-                RwYeqVjPRgEExEPVRQbZ2l5IBuBRQ0zk5+hRBkEAIf5oQ3JlYXRlZCBieSBC
-                TVBUb0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5NywxOTk4
-                LiBBbGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNvci5j
-                b20AOw==
-            }
-        }
 	
         ############################################
 	# mapping of html tags to text tag properties
