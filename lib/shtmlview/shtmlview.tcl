@@ -1108,7 +1108,17 @@ namespace eval shtmlview {
                     }
                     close $infh
                 }
-                set html [Markdown::convert $md]
+                set mhtml [Markdown::convert $md]
+                set html ""
+                foreach line [split $mhtml "\n"] {
+                    set line [regsub {<li><p>(.+)</p>} $line "<li>\\1"]
+                    set line [regsub {<dd><p>} $line "<dd>"]                
+                    set line [regsub {</p></dd>} $line "</dd>"]        
+                    set line [regsub {href="([^"].*)\\.md"} $line "href=\"\\1.md\""] ;# "
+                    set line [regsub -all {href="([^"].*)\\_([^"].*.md)"} $line "href=\"\\1_\\2\""] ;# "
+                    set line [regsub {<br/>} $line "<br>"]
+                    append html "$line\n"
+                }
             } else {
                 set html [get_html $url]
             }
@@ -1188,8 +1198,8 @@ namespace eval shtmlview {
             
             # for horizontal rules
             $win tag configure thin -font [HMx_font times 2 medium r]
-            $win tag configure hr -relief sunken -borderwidth 2 -wrap none \
-                  -tabs [winfo width $win]
+            $win tag configure hr -relief ridge -borderwidth 2 -overstrike 1 -wrap none -rmargin 20 -spacing1 10 -spacing3 10 \
+                  -tabs [winfo width $win] -foreground grey80
             bind $win <Configure> {
 		%W tag configure hr -tabs %w
 		%W tag configure last -spacing3 %h
@@ -1426,11 +1436,10 @@ namespace eval shtmlview {
             } 
             set data ""
         }
-        
         proc HMtag_hr {selfns win param text} {
             ##
             upvar #0 HM$win var
-            $win insert $var(S_insert) "\n" space "\n" thin "\t" "thin hr" "\n" thin
+            $win insert $var(S_insert) "" space "\n" thin "\t" "thin hr" "\n\n" thin
         }
         
         # list element tags

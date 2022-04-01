@@ -291,6 +291,8 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 
 [item] file close button added with option -closebutton useful for toplevel windows
 
+[item] some backslash fixes for Markdown links
+
 [list_end]
 
 [section TODO]
