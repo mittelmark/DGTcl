@@ -456,6 +456,11 @@ namespace eval shtmlview {
         if {"$master" eq {}} {return}
         $master reload
     }
+    bind HelpText <Control-u> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master sourceView
+    }
     bind HelpText <n> {
         set master [::shtmlview::shtmlview GetInstance %W]
         if {"$master" eq {}} {return}
@@ -507,11 +512,14 @@ namespace eval shtmlview {
         variable topicstack {}
         variable lasturl ""
         variable lastdir ""
+        variable lastyview [list 0 1]
         ##
         variable curtopicindex -1
         variable combo
         variable tile
         variable stack {}
+        variable view browse
+        
         ##
 
         #delegate option {-textwidth textWidth TextWidth} to helptext as -width
@@ -863,6 +871,33 @@ namespace eval shtmlview {
             render $selfns $helptext [regsub {#.*} $url ""] no
             $helptext yview moveto [lindex $yview 0]
         }
+        method sourceView {} {
+            if {$view eq "browse"} {
+                if {[regexp -nocase {html?$} $Url]} {
+                    set view html
+                } elseif {[regexp -nocase {md?$} $Url]} {
+                    set view md
+                }
+                set lastyview [$helptext yview]
+                $helptext delete 1.0 end
+                if [catch {open $Url r} infh] {
+                    puts stderr "Cannot open $filename: $infh"
+                } else {
+                    $helptext insert 1.0 [read $infh]
+                    close $infh
+                }
+            } elseif {$view eq "html"} {
+                render $selfns $helptext [regsub {#.*} $Url ""] no
+                $helptext yview moveto [lindex $lastyview 0]
+                set view browse
+            } elseif {$view eq "md"} {
+                # show html
+                set html [md2html $Url]
+                $helptext delete 1.0 end
+                $helptext insert 1.0 $html
+                set view html
+            }
+        }
         method home {} {
             if {$options(-home) eq ""} {
                 set options(-home) [lindex $topicstack 0]
@@ -925,6 +960,7 @@ namespace eval shtmlview {
             append keys "\n r - search backward"
             append keys "\n s - search forward"
             append keys "\n Ctrl-r - reload page"            
+            append keys "\n Ctrl-u - toggle source and browse view"            
             append keys "\n Return - process current hyperlink"            
             append keys "\n TAB - next hyperlink"
         }
@@ -1045,6 +1081,36 @@ namespace eval shtmlview {
             $self hilightSearch $w $pos
             focus $w
         }
+        proc md2html {url} {
+            if {[info commands ::Markdown::convert] eq ""} {
+                catch { package require Markdown }
+                if {[info commands ::Markdown::convert] eq ""} {
+                    error "package Markdown can't be loaded!"
+                }
+            }
+            if [catch {open $url r} infh] {
+                error "Cannot open $url: $infh"
+            } else {
+                set md ""
+                while {[gets $infh line] >= 0} {
+                    set line [regsub {!\[\]\((.+?)\)} $line "!\[ \](\\1)"]
+                    append md "$line\n"
+                }
+                close $infh
+            }
+            set mhtml [Markdown::convert $md]
+            set html ""
+            foreach line [split $mhtml "\n"] {
+                set line [regsub {<li><p>(.+)</p>} $line "<li>\\1"]
+                set line [regsub {<dd><p>} $line "<dd>"]                
+                set line [regsub {</p></dd>} $line "</dd>"]        
+                set line [regsub {href="([^"].*)\\.md"} $line "href=\"\\1.md\""] ;# "
+                set line [regsub -all {href="([^"].*)\\_([^"].*.md)"} $line "href=\"\\1_\\2\""] ;# "
+                set line [regsub {<br/>} $line "<br>"]
+                append html "$line\n"
+            }
+            return $html
+        }
         proc render {selfns win url {push yes}} {
             ##
             set url [file normalize $url]
@@ -1092,33 +1158,7 @@ namespace eval shtmlview {
             HMset_state $win -stop 0
             set err no
             if {[regexp {[Mm][Dd]$} $url]} {
-                if {[info commands ::Markdown::convert] eq ""} {
-                    catch { package require Markdown }
-                    if {[info commands ::Markdown::convert] eq ""} {
-                        error "package Markdown can't be loaded!"
-                    }
-                }
-                if [catch {open $url r} infh] {
-                    error "Cannot open $url: $infh"
-                } else {
-                    set md ""
-                    while {[gets $infh line] >= 0} {
-                        set line [regsub {!\[\]\((.+?)\)} $line "!\[ \](\\1)"]
-                        append md "$line\n"
-                    }
-                    close $infh
-                }
-                set mhtml [Markdown::convert $md]
-                set html ""
-                foreach line [split $mhtml "\n"] {
-                    set line [regsub {<li><p>(.+)</p>} $line "<li>\\1"]
-                    set line [regsub {<dd><p>} $line "<dd>"]                
-                    set line [regsub {</p></dd>} $line "</dd>"]        
-                    set line [regsub {href="([^"].*)\\.md"} $line "href=\"\\1.md\""] ;# "
-                    set line [regsub -all {href="([^"].*)\\_([^"].*.md)"} $line "href=\"\\1_\\2\""] ;# "
-                    set line [regsub {<br/>} $line "<br>"]
-                    append html "$line\n"
-                }
+                set html [md2html $url]
             } else {
                 set html [get_html $url]
             }

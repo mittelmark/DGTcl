@@ -287,6 +287,8 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [para]
 2022-04-XX version 1.1.0
 
+[item] keybinding Ctrl-u to source view for HTML and Markdown files
+
 [item] file open remembers now the last directory
 
 [item] file close button added with option -closebutton useful for toplevel windows
@@ -300,8 +302,11 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 
 [list_begin itemized]
 [item] Markdown rendering using tcllib library Markdown in case URL ends with .md (done)
-[item] Support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
-[item] More tags, see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
+[item] support for SVG images for instance using svgconvert https://wiki.tcl-lang.org/page/svgconvert at least on Linux/Windows
+[item] more tags, see tag history add 3.2 tags: http://www.martinrinehart.com/frontend-engineering/engineers/html/html-tag-history.html (done)
+[item] source view using Ctrl-u (done)
+[item] edit view using Ctrl-Shift-e
+[item] fixing mouse wheel issues
 [list_end]
 
 [section Thanks]
