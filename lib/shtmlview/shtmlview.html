@@ -146,7 +146,8 @@
 <li><a href="#10"><i class="arg">pathName</i> <b class="method">home</b></a></li>
 <li><a href="#11"><i class="arg">pathName</i> <b class="method">open</b></a></li>
 <li><a href="#12"><i class="arg">pathName</i> <b class="method">reload</b></a></li>
-<li><a href="#13"><i class="arg">pathName</i> <b class="method">url</b></a></li>
+<li><a href="#13"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i></a></li>
+<li><a href="#14"><i class="arg">pathName</i> <b class="method">url</b></a></li>
 </ul>
 </div>
 </div>
@@ -267,7 +268,9 @@ required. Alternatively the <b class="method">helptext</b> command can be used. 
 <dd><p>Displays a standard file dialog to open a HTML or Markdown page to be displayed in the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
 <dt><a name="12"><i class="arg">pathName</i> <b class="method">reload</b></a></dt>
 <dd><p>Reloads and redisplays the current HTML or Markdown page visible inside the <b class="cmd">shtmlview::shtmlview</b> widget.</p></dd>
-<dt><a name="13"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
+<dt><a name="13"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i></a></dt>
+<dd><p>Renders the given HTML or Markdown string, if the string does not contain a HTML tag as intial text it is taken as Markdown.</p></dd>
+<dt><a name="14"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
 <dd><p>Returns the current URL displayed in the <b class="cmd">::shtmlview::shtmlview</b> widget.</p></dd>
 </dl>
 </div>
@@ -321,12 +324,17 @@ The 'TAB' key browses to the next hyperlink, and pressing the Return/Enter key p
 <li><p>toolbar fix</p></li>
 <li><p>browse fix for non-existing files</p></li>
 <li><p>removed unused css/stylesheet and web forms code</p></li>
-<li><p>thanks to pepdiz for bug-reports and suggestions</p>
-<p>2022-04-XX version 1.1.0</p></li>
+<li><p>thanks to pepdiz for bug-reports and suggestions</p></li>
+</ul>
+<p>2022-04-XX version 1.1.0</p>
+<ul class="doctools_itemized">
 <li><p>keybinding Ctrl-u to source view for HTML and Markdown files</p></li>
-<li><p>file open remembers now the last directory</p></li>
+<li><p>keybinding Ctrl-Shift-e to use a simple text editor for file editing</p></li>
+<li><p>file open remembers now the last directory and the last file extension</p></li>
 <li><p>file close button added with option -closebutton useful for toplevel windows</p></li>
 <li><p>some backslash fixes for Markdown links</p></li>
+<li><p>adding span tag for styling</p></li>
+<li><p>adding render method to read HTML directly without filename</p></li>
 </ul>
 </div>
 <div id="section9" class="doctools_section"><h2><a name="section9">TODO</a></h2>

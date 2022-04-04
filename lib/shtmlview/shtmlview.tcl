@@ -461,6 +461,11 @@ namespace eval shtmlview {
         if {"$master" eq {}} {return}
         $master sourceView
     }
+    bind HelpText <Control-Shift-E> {
+        set master [::shtmlview::shtmlview GetInstance %W]
+        if {"$master" eq {}} {return}
+        $master editView
+    }
     bind HelpText <n> {
         set master [::shtmlview::shtmlview GetInstance %W]
         if {"$master" eq {}} {return}
@@ -494,7 +499,8 @@ namespace eval shtmlview {
         option -home -default "" -configuremethod configureHome
         option -historycombo false 
         ## The text area ScrolledWindow component.
-        component     helptext;#	Help text
+        component  helptext
+        component  edittext
         ## The text area component.
         variable      helptext_css -array {}
         ## The text area stylesheet.
@@ -512,14 +518,16 @@ namespace eval shtmlview {
         variable topicstack {}
         variable lasturl ""
         variable lastdir ""
-        variable lastyview [list 0 1]
+        variable lastyview
+        variable lasteview 
+        
         ##
         variable curtopicindex -1
         variable combo
         variable tile
         variable stack {}
         variable view browse
-        
+        variable editstatus "edit messsage"
         ##
 
         #delegate option {-textwidth textWidth TextWidth} to helptext as -width
@@ -534,6 +542,8 @@ namespace eval shtmlview {
             # @param ... Option value pairs.
             set options(-toolbar) true
             set options(-tablesupport) true
+            array set lasteview [list]
+            array set lastyview [list]            
             #if {$options(-home) ne ""} {
             #    lappend topicstack [file normalize $options(-home)]
             #    incr curtopicindex
@@ -586,6 +596,11 @@ namespace eval shtmlview {
             pack [${tile}::button $win.toolbar.close -image ::fileclose-22 -command [mymethod close]] \
                   -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
             $self balloon $win.toolbar.close "close help window"
+            if {$tile eq "ttk"} {
+                foreach btn [list open home start back forward finish delete reload plus minus help close] {
+                    $win.toolbar.${btn} configure -style ToolButton
+                }
+            }
             
             install status  using label $win.toolbar.status -anchor w -relief flat \
                   -borderwidth 2 -justify left -width 35 -pady 5
@@ -601,7 +616,7 @@ namespace eval shtmlview {
             pack $command -fill x -side right -pady 5 -padx 20
             pack $cmdlabel -fill x -side right -pady 5 -padx 0
 
-            frame $win.mf
+            ${tile}::frame $win.mf
             
             install helptext using text $win.mf.helptext -background white \
                   -width 80 -border 10 -relief flat -spacing1 5 -spacing2 5 -spacing3 5 \
@@ -641,6 +656,59 @@ namespace eval shtmlview {
             if {!$options(-historycombo)} {
                 pack forget $combo
             }
+            ${tile}::frame $win.ef   
+            
+            pack [${tile}::frame $win.ef.toolbar] -side top -fill x -expand false
+            pack [${tile}::button $win.ef.toolbar.new -image ::filenew22 -command [mymethod editNew ]] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
+            $self balloon $win.ef.toolbar.new "create a new HTML or Markdown file"
+            pack [${tile}::button $win.ef.toolbar.open -image ::fileopen22 -command [mymethod editOpen]] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5 
+            $self balloon $win.ef.toolbar.open "open a local html or md file\nfor editing"
+            
+            pack [${tile}::button $win.ef.toolbar.save -image ::filesave-22 -command [mymethod editSave] -state disabled] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.ef.toolbar.save "save the current file"
+            
+            pack [${tile}::button $win.ef.toolbar.saveas -image ::filesaveas-22 -command [mymethod editSaveAs] -state normal] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.ef.toolbar.saveas "save the current file with new name"
+
+            pack [${tile}::button $win.ef.toolbar.run -image ::actrun22 -command [mymethod editView] -state normal] \
+                  -ipadx 2 -ipady 2 -side left -padx 5 -pady 5
+            $self balloon $win.ef.toolbar.run "back to help window"
+
+            if {$tile eq "ttk"} {
+                foreach btn [list new open save saveas run] {
+                    $win.ef.toolbar.${btn} configure -style ToolButton
+                }
+            }
+            set font TkFixedFont
+            catch {
+                if {"Red Hat Mono" in [font families]} {
+                    font create RedHatMono -family "Red Hat Mono" -size 12
+                    set font RedHatMono
+                } elseif {"Ubuntu Mono" in [font families]} {
+                    font create UbuntuMono -family "Ubuntu Mono" -size 12
+                    set font UbuntuMono
+                } elseif {"Consolas" in [font families]} {
+                    font create Consolas -family Consolas -size 12
+                    set font Consolas
+                } 
+            }
+            ${tile}::frame $win.ef.frame
+            install edittext using text $win.ef.frame.text  -border 10 -relief flat -wrap word -font $font -undo true -yscrollcommand [list $win.ef.frame.sb set]
+            ${tile}::scrollbar $win.ef.frame.sb -command [list $edittext yview]
+            ${tile}::label $win.ef.label -textvariable [myvar editstatus]
+            bind $edittext <Control-Shift-E> [mymethod editView]
+            bind $edittext <Control-s> [mymethod editSave]
+            bind $edittext <Control-plus> [mymethod setSize 1]
+            bind $edittext <Control-minus> [mymethod setSize -1]
+            bind $edittext <Key> [mymethod editKey] 
+            pack $edittext -side left -fill both -expand true
+            pack $win.ef.frame.sb   -side right -fill y -expand false
+            pack $win.ef.label -side bottom -fill x -expand false -padx 5 -pady 5
+            pack $win.ef.frame   -side top -fill both -expand true
             trace add variable [myvar curtopicindex] write [mymethod CurTopChange]
         }
         typemethod   GetInstance {widget} {
@@ -749,6 +817,18 @@ namespace eval shtmlview {
             set curtopicindex $idx
             render $selfns $helptext [$self url] no
             $combo set "history ..."
+        }
+        method render {text} {
+            set ext html
+            if {![regexp {^\s*<} $text]} {
+                set ext md 
+            }
+            set filename [file tempfile].$ext
+            set out [open $filename w 0600]
+            puts $out $text
+            close $out
+            render $selfns $helptext [file normalize $filename ] no
+            file delete $filename
         }
         method browse {url args} {
             ## Public method to display help on a specific topic.
@@ -871,6 +951,133 @@ namespace eval shtmlview {
             render $selfns $helptext [regsub {#.*} $url ""] no
             $helptext yview moveto [lindex $yview 0]
         }
+        method editOpen {} {
+            if {[$edittext edit modified]} {
+                set answer [tk_messageBox -title "File changed ..." -message "File was changed,\ndo you like to save it?" -type yesnocancel -icon question]
+                if {$answer eq "cancel"} {
+                    return
+                }
+                if { $answer eq "yes"} {
+                    $self editSave
+                } 
+            }
+            set types {
+                {{Markdown Files}       {.md}        }
+                {{All Files}        *             }
+            }
+            set filename [tk_getOpenFile -filetypes $types]
+            if {$filename ne ""} {
+                if [catch {open $filename r} infh] {
+                    puts stderr "Cannot open $filename: $infh"
+                    
+                } else {
+                    $edittext delete 1.0 end
+                    $edittext insert 1.0 [read $infh]
+                    close $infh
+                    set Url [file normalize $filename]
+                    set editstatus "Use Ctrl-s to save [regsub {#.*} $Url {}]"
+                }
+            }
+        }
+        method editNew {} {
+            if {[$edittext edit modified]} {
+                set answer [tk_messageBox -title "File changed ..." -message "File was changed,\ndo you like to save it?" -type yesnocancel -icon question]
+                if {$answer eq "cancel"} {
+                    return
+                }
+                if { $answer eq "yes"} {
+                    $self editSave
+                } 
+            }
+            set Url noname.md
+            $edittext delete 1.0 end
+            set editstatus "Write down Markdown markup and text and Ctrl-s to save it!"
+        }
+        method editKey {} {
+            if {[$edittext edit modified]} {
+                $win.ef.toolbar.save configure -state normal
+            }
+        }
+        method editSaveAs {} {
+            set ext [string tolower [file extension [regsub {#.*} $Url ""]]]
+            if {$ext eq ".md"} {
+                set types {
+                    {{Markdown Files}       {.md}        }
+                    {{HTML     Files}       {.html .htm}        }                    
+                    {{All Files}        *             }
+                }
+            } else {
+                set types {
+                    {{HTML     Files}       {.html .htm}        }                    
+                    {{Markdown Files}       {.md}        }
+                    {{All Files}        *             }
+                }
+            }
+            unset -nocomplain savefile
+            set savefile [tk_getSaveFile -filetypes $types -initialdir $lastdir]
+            if {$savefile != ""} {
+                set Url [file normalize $savefile]                    
+            }
+            $self editSave
+        }
+        method editSave {} {
+            if {$Url eq "noname.md"} {
+                set types {
+                    {{Markdown Files}       {.md}        }
+                    {{HTML     Files}       {.md}        }                    
+                    {{All Files}        *             }
+                }
+                unset -nocomplain savefile
+                set savefile [tk_getSaveFile -filetypes $types -initialdir $lastdir]
+                if {$savefile != ""} {
+                    set Url [file normalize $savefile]                    
+                } else {
+                    return
+                }
+
+            }
+            set file [regsub {#.*} $Url ""]
+            set out [open $file w 0600]
+            puts -nonewline $out [$edittext get 1.0 end]
+            close $out
+            set editstatus "File [file tail [regsub {#.*} $Url {}]] saved! Use Ctrl-Shift-e to switch back to browser!"
+            $edittext edit modified false
+            $win.ef.toolbar.save configure -state disabled
+        }
+        method editView {} {
+            if {$view eq "browse"} {
+                pack forget $win.mf
+                set key [regsub {#.*} $Url ""] 
+                set lastyview($key) [$helptext yview]
+                pack $win.ef -side top -fill both -expand true
+                $edittext delete 1.0 end
+                if [catch {open [regsub {#.*} $Url ""] r} infh] {
+                    puts stderr "Cannot open $filename: $infh"
+                } else {
+                    $edittext insert 1.0 [read $infh]
+                    close $infh
+                    $edittext edit modified false
+                }
+                set view edit
+                pack forget $win.toolbar
+                set editstatus "Use Ctrl-s to save [regsub {#.*} $Url {}]"
+
+                if {[info exists lasteview($key)]} {
+                    $edittext yview moveto [lindex $lasteview($key) 0]
+                }
+            } else {
+                set key [regsub {#.*} $Url ""] 
+                set lasteview($key) [$edittext yview]
+                pack forget $win.ef
+                pack $win.mf -side top -fill both -expand true
+                set view browse
+                $self browse $Url
+                if {[info exists lastyview($key)]} {
+                    $helptext yview moveto [lindex $lastyview($key) 0]  
+                }
+                pack $win.toolbar -side top -fill x -expand false -before $win.mf
+            }
+        }
         method sourceView {} {
             if {$view eq "browse"} {
                 if {[regexp -nocase {html?$} $Url]} {
@@ -949,6 +1156,15 @@ namespace eval shtmlview {
             set Size [expr {$Size+$val}]
             HMset_state $helptext -size $Size
             render $selfns $helptext $Url
+            set size [font configure [$edittext cget -font] -size]
+            if {$size < 0} {
+                # pixel
+                incr size [expr {$val*-1}]
+            } else {
+                incr size $val
+            }
+            font configure [$edittext cget -font] -size $size
+            update idletasks
         }
         method getKeyBindings {} {
             set keys "\nKey bindings:" 
@@ -959,9 +1175,11 @@ namespace eval shtmlview {
             append keys "\n q - delete page from history"
             append keys "\n r - search backward"
             append keys "\n s - search forward"
-            append keys "\n Ctrl-r - reload page"            
-            append keys "\n Ctrl-u - toggle source and browse view"            
-            append keys "\n Return - process current hyperlink"            
+            append keys "\n Ctrl-Shift-E - toogle edit mode"  
+            append keys "\n      save files in edit mode with Ctrl-s,\n      go back with Ctrl-Shift-E"
+            append keys "\n Ctrl-r - reload page"
+            append keys "\n Ctrl-u - toggle source and browse view"
+            append keys "\n Return - process current hyperlink"        
             append keys "\n TAB - next hyperlink"
         }
         method help {} {
@@ -973,6 +1191,9 @@ namespace eval shtmlview {
                 {{HTML Files}       {.htm .html}}
                 {{Markdown Files}   {.md .Rmd .Tmd}}                
                 {{All Files}        *          }
+            }
+            if {[regexp -nocase {md$} [regsub {#.*} $Url ""]]} {
+                set types [list [lindex $types 1] [lindex $types 0] [lindex $types 2]]
             }
             if {$lastdir eq ""} {
                 set lastdir [file normalize [lindex $topicstack 0]]
@@ -1522,8 +1743,28 @@ namespace eval shtmlview {
                   "[lindex $var(list) end] indent$level $var(font)"
             set data {}
         }
+        proc HMtag_span {selfns win param text} {
+            upvar #0 HM$win var
+            upvar $text data
+            if {[regexp {class=["'](.+?)['"]} $param -> clss]} {
+                set var(spanclss) $clss
+                set var(spanidx) [$win index "insert linestart"]
+            } else {
+                set var(spanclss) ""
+                set var(spanidx)  ""
+            }
+            set data {}
+        }
+        proc HMtag_/span {selfns win param text} {
+            upvar #0 HM$win var
+            upvar $text data
+            if {$var(spanclss) ne ""} {
+                $win tag add span$var(spanclss) $var(dividx) [$win index "insert lineend"]
+                set var(spanclss) ""
+            }
+            set data {}
+        }
         proc HMtag_div {selfns win param text} {
-            ##
             upvar #0 HM$win var
             upvar $text data
             if {[regexp {class=["'](.+?)['"]} $param -> clss]} {
@@ -1533,19 +1774,16 @@ namespace eval shtmlview {
                 set var(divclss) ""
                 set var(dividx)  ""
             }
-            #$win insert $var(S_insert) "<div>" 
             set data {}
         }
         proc HMtag_/div {selfns win param text} {
             upvar #0 HM$win var
             upvar $text data
             if {$var(divclss) ne ""} {
-                #$win insert $var(S_insert) "</div>" 
                 $win tag add div$var(divclss) $var(dividx) [$win index "insert lineend"]
                 set var(divclss) ""
             }
             set data {}
-            
         }
 
         proc HMtag_table {selfns win param text} {
@@ -1583,8 +1821,8 @@ namespace eval shtmlview {
                    }
                }
                #font configure TkDefaultFont -size 16
-                            $win insert $var(S_insert) {*}[textTabulate $win $var(tabletext) -columns [llength $var(tablecols)] \
-                                           -headers $var(tablecols) -indent ${mindent}c -font $Font]
+               $win insert $var(S_insert) {*}[textTabulate $win $var(tabletext) -columns [llength $var(tablecols)] \
+                                              -headers $var(tablecols) -indent ${mindent}c -font $Font]
             } else {
                  set var(Table_end) [$win index end]
                  #puts "reached $var(Table_start) $var(Table_end)"
@@ -2393,7 +2631,101 @@ namespace eval shtmlview {
     typevariable HMalphanumeric
     ##
     typeconstructor {
+        if {[namespace exists ::ttk]} {
+            ttk::style layout ToolButton [ttk::style layout TButton]
+            ttk::style configure ToolButton [ttk::style configure TButton]
+            ttk::style configure ToolButton -relief groove
+            ttk::style configure ToolButton -borderwidth 2
+            ttk::style configure ToolButton -padding {2 2 2 2} 
+        }
         # some images
+        catch {
+            image create photo ::filesave-22 -data {
+                R0lGODlhFgAWAIYAAPwCBGSipLTa5JzS1JzO1IS+xEyGjEx+hERudDRKTPz+
+                /MTq7Lzm7GSqtFSanDxaXNTS1BS6LASiHASWFASKFPz6/Nzy9Mzq9Gy6vARi
+                FARyDBSeLGxqbOTi5KTSrJz2rJTmnITOlGyipGyyvGSWbGyudJS+nHR2dOzq
+                7JyanLSytMTCxISChKSmpHRydFxWXMTGxGxmbMzKzNza3MzOzLy6vFRSVMzG
+                zPz2/IyKjKyqrIR+hKSipFxaXNze3Ly+vPTy9JSSlExGTIyOjISGhHx6fGxu
+                bJyenIyGjERCRNzW3GRiZDw6POTm5FxeXDQuNOTe5CQiJJyWnExOTLS2tOzm
+                7KSepHRudDw2PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
+                LAAAAAAWABYAAAf/gACCg4SFhocBAgMEBQEGBwgICYeFAQoLCwwNDgYPlAAQ
+                ERITFAEVFhcYDg8ZGhschh0eHx8gISKXIw8kJSEmJ7EQCgoVKBCWDykqECgr
+                sIUdwgoqLC0uIi8sHCgVMDGxMhXDxCgzNDPcFTU2sTc40znUOjs8LMQ6PYY+
+                Pyjj4+LDgAQRYmhGDWn+xuHosINdoRk8gkgcMoQIiyInjHBwwYHgQx08eBxJ
+                ITEHkh0nTnDgkMSQkpAWT+xw4SJGjB5GlnBgYghCChZLiuhAV6FCkxk2ljh5
+                YkhGkB1CnPCAEiUGkGhCbPSI0lRKwx46qFqdAWFKDxtMC1HJUUTICx5VIqqW
+                W5HVBtdCVpBc6cGBB5AKVyGsYIKFyd1PiBMrXqzYTiAAIf5oQ3JlYXRlZCBi
+                eSBCTVBUb0dJRiBQcm8gdmVyc2lvbiAyLjUNCqkgRGV2ZWxDb3IgMTk5Nywx
+                OTk4LiBBbGwgcmlnaHRzIHJlc2VydmVkLg0KaHR0cDovL3d3dy5kZXZlbGNv
+                ci5jb20AOw==
+            }
+        }
+        catch {
+            image create photo ::filesaveas-22 -data {
+                R0lGODlhFgAWAIYAAPwCBJyyvGyipKza3JTOzIS+xEyGjER2dDxudDRKTNTe
+                5JSyxPz6/LTm5FyqrFSanDRaXJyuvMTCxBSyLASeFASWFASGFPT6/Ozq7Mzq
+                7GSutARiDARyDBSaJGxqbFyGnHSmvPTy9JS+lJTypIzinHzKjFySZGyudGxu
+                bER6lFySrHyqxPT29OTm5NTS1GSipPz+/JyanLSytMzOzDxuhFyatJy2xKyq
+                rISChKSipFRSVGRmZFxeXCRKVEyKrNzm7Nza3Ly+vFxaXMzWpPy6fHx6fKyu
+                rKSmpHR2dHx+fDRidPxyJPzKrPzixIyOjFROTOyifPz25Py+lExKTJRuHMRe
+                LOSOXPSifOTGvHRydGxqXERGRGxGJKRaLOSGVOyWbPy6lDw6PGxSPJRaNMx2
+                TNyynGRiZMzKzJSSlExOTHxybHxSPGRGNNTW1AQCBDQyNDwqJFRWVCwqLJSW
+                lBwaHJyenCQiJOzu7MTGxDw+PDQ2NAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
+                LAAAAAAWABYAAAf/gACCg4SFhgABhQIDBAQFAgYHBwgJhQoLigwNmw4PBhCG
+                EQwBEhMUFRYCFxgZGg8QGxwdHoMfICELIiMjJCWqrRAmJyUiKIMpKisXARgs
+                LC0uLzAQMTIzGBK0gjTINSw2GDc4OR4vOjg7zRI8gz3cPiA/C80sGEAzLhgM
+                IUFChO7dhhApYgTHESQ3ksBgcURHoR5KUvhYwqRJMxgMYGjE4OSJIYgplkCJ
+                IkWfRgYsFOCYYihGDypVrFyJggUJkiwetGTJssWQjCxauHTx8gVMFhxFduYM
+                Y0gCjiw6xIwh86WMmR08POwww7TQGTRZ0uhQs4YMmzZuXOjgweONoTNOTYps
+                SVMEjRY4T2acmRInjpymc+QKcSKDjpkiZ85s0aHjbyEZTsLGqeOCjo4gEiQs
+                1mHHUI6ncTzkaHHnHp4gefTo6XyotevXsGPDphMIACH+aENyZWF0ZWQgYnkg
+                Qk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqpIERldmVsQ29yIDE5OTcsMTk5
+                OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0dHA6Ly93d3cuZGV2ZWxjb3Iu
+                Y29tADs=
+            }
+        }
+        catch {
+            image create photo ::actrun22 -data {
+                R0lGODlhFgAWAIYAAPwCBAwKDAwKBCQiHNze3AQCBBwWFDw6NPTy9PTy/Dw2
+                NKyytOTi3LS2tMTKzMzOxLy+tLy+vBQODNze5NTS1JyalIyCbIx6VIRyVISG
+                fJyelOTq7EQ+NMTGxKyurGxeRLyKPOSmROSuVOy2XOSiTLzCzNTOzDw+NCwq
+                LHxuVOy6bPzGfOSuXNTW1LSyrMSWRNymTOSmTKSCTPTGjPzSnPzWnMyaVBQS
+                DMTCxPz+/KyahNSeRHxeLJRyTPzmtPzarOy6fJyajNza1Ly6vLyulFRCJPzi
+                rPTOlMS2pNTSzMTCvJyenBQWFNzKtPz6vPzyvPzqtOzGlOTe1AwGBFxWTLy6
+                tPTm1PzSpPzutPz2xPTSnOTSxOy2dPzapPzerOzm5IR+dPzu5Pzu1PzqxPzy
+                5Pz+9GRiXGxuZKympHR2bOTm5Pz6/MzSzBwaFJSSjCQmHPz2/AwODAAAAAAA
+                AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAAA
+                LAAAAAAWABYAAAf/gACCg4SFhoeEAQKIjIIDBAQDjYMFBoMHCAkKgwYFhwUL
+                DAUKCg0ODxCkBQgRnoUSExMUDxUWFxgZGpAbFIuGHB0eHyAhIiMkIB8lJieI
+                KCUpJCTGIyorLCktKIUDpC4YLzAxIjIyMzQ1NhgdpJI3ODktJTowOyM8Ejc9
+                Pj9AQUIEclAocCMIBQhDiOwgoaKIoCI+jBxBkkSJkCWemIyq0GSHCBVHihRx
+                8gRKFCmpKhGaQqWKFYZXsGR5kkXLFgRUXBUqkCGCFS5AjnTx0sXKlyA6CRVg
+                AAHMAilhxIwhU6ZFkBY5kgKYUoXBAzMKzixZ4AJNGgVm1KxhM0WpmQpUMtoo
+                aOPGxAM3Nw60oYLGjNYCbzYJOgAnRzNBJ95oPYQCgpJtkwzFoULlRuRPiy9f
+                NhAIACH+aENyZWF0ZWQgYnkgQk1QVG9HSUYgUHJvIHZlcnNpb24gMi41DQqp
+                IERldmVsQ29yIDE5OTcsMTk5OC4gQWxsIHJpZ2h0cyByZXNlcnZlZC4NCmh0
+                dHA6Ly93d3cuZGV2ZWxjb3IuY29tADs=
+            }
+        }
+        catch {
+            image create photo ::filenew22 -data {
+                R0lGODlhFgAWAIUAAPwCBExOTERCRDw6PCwuLBwaHAwODAQCBOze1NTW1OTi
+                5Nze3MTGxLS2tJyanPz+/Ozu7OTi3BQSFCwqLDw+PDQyNFRSVPTu7MzKxLyy
+                rIR+fCQmJPz6/NTOxPz69Pzy7PTu5Pz29Pzu5PTq5PTm1My6pBQWFPTq3PTm
+                3NS+rAwKDPTi1PTezOzWxMy2pPz27PTazOzSvMyynOzaxOzOtPTaxOzKrMyq
+                jOzGpMymhPTizOTCpNzSzNTGvMymjMSihCH5BAEAAAAALAAAAAAWABYAAAbo
+                QIBwSCwaiYGAYEAgFAqGg/Q4DCASCsTiymgcHAcqQLB4mM+QiIQBppLPcMjk
+                wQ4bB2X4maKgt4sVCHpnFhQTElNFE3mDDxcYGRp2RBuMgxwIHX9EBZZwHh8g
+                CBmTQ52NISEiIyQlpUImng8hHyInKAgprwAqgnC0IKwrLLpGB4wctLYkwy0u
+                uwd9Z8AnJywsLcVFx2YcL7UnJCwwLTEy0GXJoSgrCCwzNDTnxgjeH9UrKzXw
+                NDY36LRGhEOwLx4NHDmgJbh3QoeOgv127EhojEeHDj16pEhRQoZHHzl+QJNC
+                sqTJSXaCAAAh/mhDcmVhdGVkIGJ5IEJNUFRvR0lGIFBybyB2ZXJzaW9uIDIu
+                NQ0KqSBEZXZlbENvciAxOTk3LDE5OTguIEFsbCByaWdodHMgcmVzZXJ2ZWQu
+                DQpodHRwOi8vd3d3LmRldmVsY29yLmNvbQA7
+            }
+        }
         catch {
             image create photo ::start-22 -data {
                 R0lGODlhFgAWAIUAAPwCBAw2VAQCBCRGZAxCZGyavExmjHyatOTy9CxihISe
@@ -2742,8 +3074,8 @@ namespace eval shtmlview {
 		dl	"\n" /dl	"\n"
 		dt	"\n"
 		form "\n"	/form "\n"
-		h1	"\n\n"	/h1	"\n"
-		h2	"\n\n"	/h2	"\n"
+		h1	"\n"	/h1	"\n"
+		h2	"\n"	/h2	"\n"
 		h3	"\n"	/h3	"\n"
 		h4	"\n"	/h4	"\n"
 		h5	"\n"	/h5	"\n"
@@ -2753,7 +3085,7 @@ namespace eval shtmlview {
 		/ul "\n"
 		/ol "\n"
 		/menu "\n"
-		p	"\n"    /p ""
+		p	"\n"    /p "\n"
 		pre "\n"	/pre "\n"
 	}
 
@@ -3046,11 +3378,13 @@ if {[info exists argv0] && [info script] eq $argv0} {
         puts "Usage as application: $::argv0 \[OPTION\] \[FILENAME\]\n"
         puts "  FILENAME: HTML file or Markdown file"
         puts "  OPTION:"
-        puts "    --help    - display this help message"
-        puts "    --version - display current version of the package/application"
-        puts "    --install - create a Tcl module file ready for install"
-        puts "    --test    - run a test with two widgets in one toplevel"
-        puts "    --docu    - display the package documentation"
+        puts "    --help        - display this help message"
+        puts "    --version     - display current version of the package/application"
+        puts "    --install     - create a Tcl module file ready for install"
+        puts "    --render text - renders the given HTML or Markdown string"
+        puts "    --render -    - renders the HTML or Markdown given from stdin"
+        puts "    --test      - run a test with two widgets in one toplevel"
+        puts "    --docu      - display the package documentation"
         puts "\nUsage as Tcl package:"
         puts "\n  package require shtmlview"
         puts "  shtmlview::shtmlview .help"
@@ -3098,6 +3432,17 @@ if {[info exists argv0] && [info script] eq $argv0} {
             after 1000
             puts [$help helptext yview moveto 0.1]
             $help browse [file join [file dirname [info script]] shtmlview.html]
+        } elseif {[lindex $argv 0] eq "--render"} {
+            set help [::shtmlview::shtmlview .help \
+                      -tablesupport false -toolbar false]
+            if {[llength $argv] == 2 && [lindex $argv 1] ne "-"} {
+                 $help render [regsub -all {\\n} [lindex $argv 1] "\n"]
+             } elseif {[llength $argv] == 1 || [lindex $argv 1] eq "-"} {
+                 $help render [read stdin]
+             } else {
+                 $help render "<b>Hello World</b>"
+             }
+            pack $help -fill both -expand true -side top
         } elseif {[lindex $argv 0] eq "--docu"} {
             set docu [file join [file dirname [info script]] shtmlview.html]
             set help [::shtmlview::shtmlview .help \

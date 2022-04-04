@@ -203,6 +203,10 @@ Displays a standard file dialog to open a HTML or Markdown page to be displayed 
 
 Reloads and redisplays the current HTML or Markdown page visible inside the [cmd shtmlview::shtmlview] widget.
 
+[call [arg pathName] [method render] [arg text]]
+
+Renders the given HTML or Markdown string, if the string does not contain a HTML tag as intial text it is taken as Markdown.
+
 [call [arg pathName] [method url]]
 
 Returns the current URL displayed in the [cmd ::shtmlview::shtmlview] widget.
@@ -283,18 +287,19 @@ Further examples are in the source package for [package shtmlview::shtmlview].
 [item] browse fix for non-existing files
 [item] removed unused css/stylesheet and web forms code
 [item] thanks to pepdiz for bug-reports and suggestions
+[list_end]
 
 [para]
 2022-04-XX version 1.1.0
 
+[list_begin itemized]
 [item] keybinding Ctrl-u to source view for HTML and Markdown files
-
-[item] file open remembers now the last directory
-
+[item] keybinding Ctrl-Shift-e to use a simple text editor for file editing
+[item] file open remembers now the last directory and the last file extension
 [item] file close button added with option -closebutton useful for toplevel windows
-
 [item] some backslash fixes for Markdown links
-
+[item] adding span tag for styling
+[item] adding render method to read HTML directly without filename
 [list_end]
 
 [section TODO]
