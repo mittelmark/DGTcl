@@ -1,5 +1,5 @@
 [comment {-*- tcl -*- doctools manpage}]
-[manpage_begin shtmlview n 1.0.0]
+[manpage_begin shtmlview n 1.1.0]
 [see_also text]
 [keywords text]
 [keywords html]
@@ -15,7 +15,7 @@
 [require snit]
 [require "Markdown ;# optional Markdown support"]
 [require "img::jpeg ;# optional jpeg image support"]
-[require shtmlview::shtmlview [opt 1.0.0]]
+[require shtmlview::shtmlview [opt 1.1.0]]
 
 [description]
 
