@@ -137,16 +137,20 @@
 <li><a href="#2"><i class="arg">pathName</i> <b class="method">back</b></a></li>
 <li><a href="#3"><i class="arg">pathName</i> <b class="method">browse</b> <i class="arg">filename</i> <span class="opt">?args?</span></a></li>
 <li><a href="#4"><i class="arg">pathName</i> <b class="method">dosearch</b> <i class="arg">string</i> <i class="arg">direction</i></a></li>
-<li><a href="#5"><i class="arg">pathName</i> <b class="method">forward</b></a></li>
-<li><a href="#6"><i class="arg">pathName</i> <b class="method">getFiles</b></a></li>
-<li><a href="#7"><i class="arg">pathName</i> <b class="method">getHistory</b></a></li>
-<li><a href="#8"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></li>
-<li><a href="#9"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
-<li><a href="#10"><i class="arg">pathName</i> <b class="method">home</b></a></li>
-<li><a href="#11"><i class="arg">pathName</i> <b class="method">open</b></a></li>
-<li><a href="#12"><i class="arg">pathName</i> <b class="method">reload</b></a></li>
-<li><a href="#13"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i></a></li>
-<li><a href="#14"><i class="arg">pathName</i> <b class="method">url</b></a></li>
+<li><a href="#5"><i class="arg">pathName</i> <b class="method">edittext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
+<li><a href="#6"><i class="arg">pathName</i> <b class="method">editView</b></a></li>
+<li><a href="#7"><i class="arg">pathName</i> <b class="method">forward</b></a></li>
+<li><a href="#8"><i class="arg">pathName</i> <b class="method">getFiles</b></a></li>
+<li><a href="#9"><i class="arg">pathName</i> <b class="method">getHistory</b></a></li>
+<li><a href="#10"><i class="arg">pathName</i> <b class="method">getEditWidget</b></a></li>
+<li><a href="#11"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></li>
+<li><a href="#12"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></li>
+<li><a href="#13"><i class="arg">pathName</i> <b class="method">home</b></a></li>
+<li><a href="#14"><i class="arg">pathName</i> <b class="method">open</b></a></li>
+<li><a href="#15"><i class="arg">pathName</i> <b class="method">reload</b></a></li>
+<li><a href="#16"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i> <span class="opt">?ext?</span></a></li>
+<li><a href="#17"><i class="arg">pathName</i> <b class="method">sourceView</b></a></li>
+<li><a href="#18"><i class="arg">pathName</i> <b class="method">url</b></a></li>
 </ul>
 </div>
 </div>
@@ -241,19 +245,42 @@ They can be walked to using the history keys, <b class="const">f</b> and <b clas
 <dd><p>Search for and highlight the given string starting from the current index in the
 specified direction. The direction has to be either <b class="const">forward</b> (default) or
 <b class="const">backwards</b>.</p></dd>
-<dt><a name="5"><i class="arg">pathName</i> <b class="method">forward</b></a></dt>
+<dt><a name="5"><i class="arg">pathName</i> <b class="method">edittext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
+<dd><p>This command exposes the internal text editor, not the viewer, widget. See the following example:</p>
+<pre class="doctools_example">
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+    .help edittext configure -background salmon
+</pre>
+</dd>
+<dt><a name="6"><i class="arg">pathName</i> <b class="method">editView</b></a></dt>
+<dd><p>This command switches the widget from a viewer to an editor mode, where the user can edit and
+change the currently loaded file. To switch to a non-editable source display see <b class="method">sourceView</b> below.</p>
+<pre class="doctools_example">
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+</pre>
+</dd>
+<dt><a name="7"><i class="arg">pathName</i> <b class="method">forward</b></a></dt>
 <dd><p>Displays the next HTML or Markdown page in the browsing history if any.</p></dd>
-<dt><a name="6"><i class="arg">pathName</i> <b class="method">getFiles</b></a></dt>
+<dt><a name="8"><i class="arg">pathName</i> <b class="method">getFiles</b></a></dt>
 <dd><p>This command returns a list of all visited files.
 Duplicates and anchor links are removed from the raw data.</p></dd>
-<dt><a name="7"><i class="arg">pathName</i> <b class="method">getHistory</b></a></dt>
+<dt><a name="9"><i class="arg">pathName</i> <b class="method">getHistory</b></a></dt>
 <dd><p>This command returns a list of the current history of visited files and anchors.</p></dd>
-<dt><a name="8"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></dt>
+<dt><a name="10"><i class="arg">pathName</i> <b class="method">getEditWidget</b></a></dt>
+<dd><p>This commands returns the internal pathname of the text editor widget to edit and change the current document.
+This enables the developer to directly access it, if required or desired.
+Remember, this is dangerous.
+See also <b class="method">edittext</b>, above.</p></dd>
+<dt><a name="11"><i class="arg">pathName</i> <b class="method">getTextWidget</b></a></dt>
 <dd><p>This commands returns the internal pathname of the text widget.
 This enables the developer to directly access it, if required or desired.
 Remember, this is dangerous.
 See also <b class="method">helptext</b>, below.</p></dd>
-<dt><a name="9"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
+<dt><a name="12"><i class="arg">pathName</i> <b class="method">helptext</b> <i class="arg">cmd</i> <span class="opt">?<i class="arg">options</i>?</span></a></dt>
 <dd><p>This command exposes the internal text widget. See the following example:</p>
 <pre class="doctools_example">
     ::shtmlview::shtmlview .help
@@ -261,18 +288,27 @@ See also <b class="method">helptext</b>, below.</p></dd>
     .help helptext configure -background yellow
 </pre>
 </dd>
-<dt><a name="10"><i class="arg">pathName</i> <b class="method">home</b></a></dt>
+<dt><a name="13"><i class="arg">pathName</i> <b class="method">home</b></a></dt>
 <dd><p>Displays either the page set by option <b class="option">-home</b>, or the first page
 <b class="method">browse</b> was called for.</p></dd>
-<dt><a name="11"><i class="arg">pathName</i> <b class="method">open</b></a></dt>
+<dt><a name="14"><i class="arg">pathName</i> <b class="method">open</b></a></dt>
 <dd><p>Uses a standard file open dialog to select a HTML or Markdown page for display,
 and then rendered the selected file, if any.</p></dd>
-<dt><a name="12"><i class="arg">pathName</i> <b class="method">reload</b></a></dt>
+<dt><a name="15"><i class="arg">pathName</i> <b class="method">reload</b></a></dt>
 <dd><p>Reloads and redisplays the currently shown page.</p></dd>
-<dt><a name="13"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i></a></dt>
-<dd><p>Renders the given HTML or Markdown string.
+<dt><a name="16"><i class="arg">pathName</i> <b class="method">render</b> <i class="arg">text</i> <span class="opt">?ext?</span></a></dt>
+<dd><p>Renders the given HTML or Markdown string or using the given optional render method for a given extension.
 If the string does not start with a recognized HTML tag then it will be treated as Markdown.</p></dd>
-<dt><a name="14"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
+<dt><a name="17"><i class="arg">pathName</i> <b class="method">sourceView</b></a></dt>
+<dd><p>This command switches the widget from a browse mode to a source code view mode, where the user can view
+the source code of the currently loaded file. To switch to a editable source display see <b class="method">editView</b> above.</p>
+<pre class="doctools_example">
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help sourceView
+</pre>
+</dd>
+<dt><a name="18"><i class="arg">pathName</i> <b class="method">url</b></a></dt>
 <dd><p>Returns the currently shown URL.</p></dd>
 </dl>
 </div>
@@ -326,21 +362,20 @@ If the string does not start with a recognized HTML tag then it will be treated 
 <p>More examples can be found in the sources of the package.</p>
 </div>
 <div id="section7" class="doctools_section"><h2><a name="section7">CHANGELOG</a></h2>
-<dl class="doctools_definitions">
-<dt>2022-02-25 version 0.9.2</dt>
-<dd><ul class="doctools_itemized">
+<p>2022-02-25 version 0.9.2</p>
+<ul class="doctools_itemized">
 <li><p>Fix for <b class="cmd">tk_textCopy</b> and documentation update</p></li>
-</ul></dd>
-<dt>2022-03-06 version 0.9.3</dt>
-<dd><ul class="doctools_itemized">
+</ul>
+<p>2022-03-06 version 0.9.3</p>
+<ul class="doctools_itemized">
 <li><p>Support for MouseWheel bindings</p></li>
 <li><p>Fixing hyperlinks to http(s) links</p></li>
 <li><p>Support for file-anchor links like <b class="const">file.html#anchor</b></p></li>
 <li><p>Support for <b class="const">#</b> as link to the top</p></li>
 <li><p>Thanks to aplsimple for suggestions and bug reports</p></li>
-</ul></dd>
-<dt>2022-03-26 version 1.0.0</dt>
-<dd><ul class="doctools_itemized">
+</ul>
+<p>2022-03-26 version 1.0.0</p>
+<ul class="doctools_itemized">
 <li><p>HTML 3.2 tags div, sub, sup, small, big</p></li>
 <li><p>Initial support for Markdown files</p></li>
 <li><p>Initial support for base64 encoded inline image files</p></li>
@@ -357,9 +392,9 @@ If the string does not start with a recognized HTML tag then it will be treated 
 <li><p>Browse fix for non-existing files</p></li>
 <li><p>Removed unused css/stylesheet and web forms code</p></li>
 <li><p>Thanks to pepdiz for bug-reports and suggestions</p></li>
-</ul></dd>
-<dt>2022-04-XX version 1.1.0</dt>
-<dd><ul class="doctools_itemized">
+</ul>
+<p>2022-04-XX version 1.1.0</p>
+<ul class="doctools_itemized">
 <li><p>Keybinding Ctrl-u to source view for HTML and Markdown files</p></li>
 <li><p>Keybinding Ctrl-Shift-e to use a simple text editor for file editing</p></li>
 <li><p>File open dialog now remembers the last directory and the last file extension</p></li>
@@ -367,8 +402,8 @@ If the string does not start with a recognized HTML tag then it will be treated 
 <li><p>Some backslash fixes for Markdown links</p></li>
 <li><p>Adding span tag for styling</p></li>
 <li><p>Adding render method to read HTML directly without filename</p></li>
-</ul></dd>
-</dl>
+<li><p>Adding plugin structure for own file types like Tcl dtp man pages</p></li>
+</ul>
 </div>
 <div id="section8" class="doctools_section"><h2><a name="section8">TODO</a></h2>
 <ul class="doctools_itemized">

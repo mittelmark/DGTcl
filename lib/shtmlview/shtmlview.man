@@ -179,6 +179,28 @@ Search for and highlight the given string starting from the current index in the
 specified direction. The direction has to be either [const forward] (default) or
 [const backwards].
 
+[call [arg pathName] [method edittext] [arg cmd] [opt [arg options]]]
+
+This command exposes the internal text editor, not the viewer, widget. See the following example:
+
+[example {
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+    .help edittext configure -background salmon
+}]
+
+[call [arg pathName] [method editView]]
+
+This command switches the widget from a viewer to an editor mode, where the user can edit and
+change the currently loaded file. To switch to a non-editable source display see [method sourceView] below.
+
+[example {
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help editView
+}]
+
 [call [arg pathName] [method forward]]
 
 Displays the next HTML or Markdown page in the browsing history if any.
@@ -192,6 +214,16 @@ Duplicates and anchor links are removed from the raw data.
 [call [arg pathName] [method getHistory]]
 
 This command returns a list of the current history of visited files and anchors.
+
+[call [arg pathName] [method getEditWidget]]
+
+This commands returns the internal pathname of the text editor widget to edit and change the current document.
+
+This enables the developer to directly access it, if required or desired.
+
+Remember, this is dangerous.
+
+See also [method edittext], above.
 
 [call [arg pathName] [method getTextWidget]]
 
@@ -228,11 +260,22 @@ and then rendered the selected file, if any.
 
 Reloads and redisplays the currently shown page.
 
-[call [arg pathName] [method render] [arg text]]
+[call [arg pathName] [method render] [arg text] [opt ext]]
 
-Renders the given HTML or Markdown string.
+Renders the given HTML or Markdown string or using the given optional render method for a given extension.
 
 If the string does not start with a recognized HTML tag then it will be treated as Markdown.
+
+[call [arg pathName] [method sourceView]]
+
+This command switches the widget from a browse mode to a source code view mode, where the user can view
+the source code of the currently loaded file. To switch to a editable source display see [method editView] above.
+
+[example {
+    ::shtmlview::shtmlview .help
+    .help browse index.md
+    .help sourceView
+}]
 
 [call [arg pathName] [method url]]
 
@@ -282,15 +325,14 @@ More examples can be found in the sources of the package.
 
 [section CHANGELOG]
 
-[list_begin definitions]
 
-[def {2022-02-25 version 0.9.2}]
+2022-02-25 version 0.9.2
 
 [list_begin itemized]
 [item] Fix for [cmd tk_textCopy] and documentation update
 [list_end]
 
-[def {2022-03-06 version 0.9.3}]
+2022-03-06 version 0.9.3
 
 [list_begin itemized]
 
@@ -301,7 +343,7 @@ More examples can be found in the sources of the package.
 [item] Thanks to aplsimple for suggestions and bug reports
 [list_end]
 
-[def {2022-03-26 version 1.0.0}]
+2022-03-26 version 1.0.0
 
 [list_begin itemized]
 
@@ -323,7 +365,7 @@ More examples can be found in the sources of the package.
 [item] Thanks to pepdiz for bug-reports and suggestions
 [list_end]
 
-[def {2022-04-XX version 1.1.0}]
+2022-04-XX version 1.1.0
 
 [list_begin itemized]
 [item] Keybinding Ctrl-u to source view for HTML and Markdown files
@@ -333,9 +375,9 @@ More examples can be found in the sources of the package.
 [item] Some backslash fixes for Markdown links
 [item] Adding span tag for styling
 [item] Adding render method to read HTML directly without filename
+[item] Adding plugin structure for own file types like Tcl dtp man pages
 [list_end]
 
-[list_end][comment {-- definitions}]
 
 [section TODO]
 

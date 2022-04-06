@@ -111,6 +111,12 @@ catch {
     # optional
     package require tile
 }
+catch {
+    package require Markdown
+}
+catch {
+    package require dtplite
+}
 
 if {[info command luniq] eq ""} {
     proc luniq list {
@@ -122,7 +128,7 @@ if {[info command luniq] eq ""} {
     }
 }
 
-namespace eval shtmlview {
+namespace eval ::shtmlview {
     # Robert Heller: It uses code originally written by Stephen Uhler and
     # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).
     # I have modified it further and embedded
@@ -520,7 +526,10 @@ namespace eval shtmlview {
         variable lastdir ""
         variable lastyview
         variable lasteview
-
+        variable types {
+            {{HTML Files}  {.html .htm} }
+            {{All Files}    *           }
+        }
         ##
         variable curtopicindex -1
         variable combo
@@ -533,6 +542,7 @@ namespace eval shtmlview {
         #delegate option {-textwidth textWidth TextWidth} to helptext as -width
         #option -side -readonly yes -default top -type {snit::enum -values {top bottom}}
         expose helptext
+        expose edittext
         #delegate method * to helptext
         #delegate option * to helptext
         #delegate method yview to helptext
@@ -710,6 +720,12 @@ namespace eval shtmlview {
             pack $win.ef.label -side bottom -fill x -expand false -padx 5 -pady 5
             pack $win.ef.frame   -side top -fill both -expand true
             trace add variable [myvar curtopicindex] write [mymethod CurTopChange]
+            if {[info commands ::Markdown::convert] ne ""} {
+                set types [linsert $types end-1 {{Markdown Files} {.md} }]
+            }
+            if {[info commands ::dtplite::do] ne ""} {
+                $self addFileType {{Tcl man files} {.man}}
+            }
         }
         typemethod   GetInstance {widget} {
             ## @publicsection Returns the parent object given the specificed
@@ -726,6 +742,9 @@ namespace eval shtmlview {
                 catch {unset _WidgetMap($widget)}
                 return {}
             }
+        }
+        method addFileType {filetype} {
+            set types [linsert $types end-1 $filetype]
         }
         method getHistory {} {
             return [list $topicstack {*}$stack]
@@ -818,10 +837,13 @@ namespace eval shtmlview {
             render $selfns $helptext [$self url] no
             $combo set "history ..."
         }
-        method render {text} {
-            set ext html
-            if {![regexp {^\s*<} $text]} {
-                set ext md
+        method render {text {ext ""}} {
+            if {$ext eq ""} { 
+                # guessing
+                set ext html
+                if {![regexp {^\s*<} $text]} {
+                    set ext md
+                }
             }
             set filename [file tempfile].$ext
             set out [open $filename w 0600]
@@ -961,10 +983,7 @@ namespace eval shtmlview {
                     $self editSave
                 }
             }
-            set types {
-                {{Markdown Files}       {.md}        }
-                {{All Files}        *             }
-            }
+            $self UpdateTypes
             set filename [tk_getOpenFile -filetypes $types]
             if {$filename ne ""} {
                 if [catch {open $filename r} infh] {
@@ -998,21 +1017,17 @@ namespace eval shtmlview {
                 $win.ef.toolbar.save configure -state normal
             }
         }
-        method editSaveAs {} {
+        method UpdateTypes {} {
             set ext [string tolower [file extension [regsub {#.*} $Url ""]]]
-            if {$ext eq ".md"} {
-                set types {
-                    {{Markdown Files}       {.md}        }
-                    {{HTML     Files}       {.html .htm}        }
-                    {{All Files}        *             }
-                }
-            } else {
-                set types {
-                    {{HTML     Files}       {.html .htm}        }
-                    {{Markdown Files}       {.md}        }
-                    {{All Files}        *             }
-                }
+            set idx [lsearch -index 1 $types *$ext*]
+            if {$idx > 0} {
+                set el [lindex $types $idx]
+                set types [lreplace $types $idx $idx]
+                set types [linsert $types 0 $el]
             }
+        }
+        method editSaveAs {} {
+            $self UpdateTypes
             unset -nocomplain savefile
             set savefile [tk_getSaveFile -filetypes $types -initialdir $lastdir]
             if {$savefile != ""} {
@@ -1021,12 +1036,8 @@ namespace eval shtmlview {
             $self editSave
         }
         method editSave {} {
+            $self UpdateTypes
             if {$Url eq "noname.md"} {
-                set types {
-                    {{Markdown Files}       {.md}        }
-                    {{HTML     Files}       {.md}        }
-                    {{All Files}        *             }
-                }
                 unset -nocomplain savefile
                 set savefile [tk_getSaveFile -filetypes $types -initialdir $lastdir]
                 if {$savefile != ""} {
@@ -1082,10 +1093,11 @@ namespace eval shtmlview {
             if {$view eq "browse"} {
                 if {[regexp -nocase {html?$} $Url]} {
                     set view html
-                } elseif {[regexp -nocase {md?$} $Url]} {
+                } else {
                     set view md
-                }
-                set lastyview [$helptext yview]
+                } 
+                set key [regsub {#.*} $Url ""]
+                set lastyview($key) [$helptext yview]
                 $helptext delete 1.0 end
                 if [catch {open $Url r} infh] {
                     puts stderr "Cannot open $filename: $infh"
@@ -1095,14 +1107,21 @@ namespace eval shtmlview {
                 }
             } elseif {$view eq "html"} {
                 render $selfns $helptext [regsub {#.*} $Url ""] no
-                $helptext yview moveto [lindex $lastyview 0]
+                set key [regsub {#.*} $Url ""]
+                $helptext yview moveto [lindex $lastyview($key) 0]
                 set view browse
             } elseif {$view eq "md"} {
                 # show html
-                set html [md2html $Url]
-                $helptext delete 1.0 end
-                $helptext insert 1.0 $html
-                set view html
+                set ext [string tolower [string range [file extension [regsub {#.*} $Url ""]] 1 end]]
+                if {[info commands ${ext}2html] ne ""} {
+                    set html [${ext}2html $Url]
+                    set html [cleanHTML $html]
+                    $helptext delete 1.0 end
+                    $helptext insert 1.0 $html
+                    set view html
+                 } else {
+                     error "No method ::shtmlview::${ext}2html for converting!"
+                 }
             }
         }
         method home {} {
@@ -1188,14 +1207,7 @@ namespace eval shtmlview {
         }
         method open {} {
             set url ""
-            set types {
-                {{HTML Files}       {.htm .html}}
-                {{Markdown Files}   {.md .Rmd .Tmd}}
-                {{All Files}        *          }
-            }
-            if {[regexp -nocase {md$} [regsub {#.*} $Url ""]]} {
-                set types [list [lindex $types 1] [lindex $types 0] [lindex $types 2]]
-            }
+            $self UpdateTypes
             if {$lastdir eq ""} {
                 set lastdir [file normalize [lindex $topicstack 0]]
             }
@@ -1320,8 +1332,9 @@ namespace eval shtmlview {
                 }
                 close $infh
             }
-            set mhtml [Markdown::convert $md]
-            set html ""
+            return [Markdown::convert $md]
+        }
+        proc cleanHTML {mhtml} {
             foreach line [split $mhtml "\n"] {
                 set line [regsub {<li><p>(.+)</p>} $line "<li>\\1"]
                 set line [regsub {<dd><p>} $line "<dd>"]
@@ -1379,10 +1392,27 @@ namespace eval shtmlview {
             }
             HMset_state $win -stop 0
             set err no
-            if {[regexp {[Mm][Dd]$} $url]} {
-                set html [md2html $url]
-            } else {
+            set ext [string tolower [string range [file extension [regsub {#.*} $url ""]] 1 end]]
+            if {$ext in [list html htm]} {
                 set html [get_html $url]
+            } elseif {[info commands ${ext}2html] ne ""} {
+                set html [${ext}2html [regsub {#.*} $url ""]]
+            } else {
+                set filename [regsub {#.*} $url ""]
+                if [catch {open $filename r} infh] {
+                    puts stderr "Cannot open $filename: $infh"
+                } else {
+                    set html [read $infh]
+                    close $infh
+                    $helptext delete 1.0 end
+                    $helptext insert 1.0 $html
+                    if {$options(-browsecmd) ne ""} {
+                        $options(-browsecmd) $ourl
+                    }
+                    set t [expr {([clock milliseconds] - $t1)/1000.0}]
+                    $status configure -text [format "[file tail $url] loaded in %0.3f sec" $t]
+                    return
+                }
             }
             if {[catch {HMparse_html $html [myproc HMrender $selfns $win]} error]} {
                 set _errorInfo $::errorInfo
@@ -3081,7 +3111,7 @@ namespace eval shtmlview {
 		h4	"\n"	/h4	"\n"
 		h5	"\n"	/h5	"\n"
 		h6	"\n"	/h6	"\n"
-		li   "\n"
+		li   "\n"       /li     ""
 		/dir "\n"
 		/ul "\n"
 		/ol "\n"
@@ -3366,7 +3396,20 @@ namespace eval ::svgconvert {
     }
     namespace export svg2pdf svg2png svg2svg svgimg svg2base64
 }
-
+proc ::shtmlview::man2html {url} {
+    #package require dtplite
+    set tempfile [file tempfile].html
+    # why not dtplite -o .... (command does not exists)
+    ::dtplite::do [list -o $tempfile html $url]
+    if {[catch {open $tempfile r} infh]} {
+        error "Cannot open $url: $infh"
+    } else {
+        set html [read $infh]
+        close $infh
+        file delete $tempfile
+        return $html
+    }
+}
 if {[info exists argv0] && [info script] eq $argv0} {
     option add *Font			TkDefaultFont
     option add *selectBackground	#678db2
