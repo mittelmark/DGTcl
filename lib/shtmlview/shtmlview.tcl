@@ -114,9 +114,6 @@ catch {
 catch {
     package require Markdown
 }
-catch {
-    package require dtplite
-}
 
 if {[info command luniq] eq ""} {
     proc luniq list {
@@ -129,6 +126,7 @@ if {[info command luniq] eq ""} {
 }
 
 namespace eval ::shtmlview {
+    variable filetypes [list]
     # Robert Heller: It uses code originally written by Stephen Uhler and
     # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).
     # I have modified it further and embedded
@@ -520,7 +518,7 @@ namespace eval ::shtmlview {
         ## Widget map.
 
         variable Size 1
-        variable Url
+        variable Url ""
         variable topicstack {}
         variable lasturl ""
         variable lastdir ""
@@ -723,9 +721,10 @@ namespace eval ::shtmlview {
             if {[info commands ::Markdown::convert] ne ""} {
                 set types [linsert $types end-1 {{Markdown Files} {.md} }]
             }
-            if {[info commands ::dtplite::do] ne ""} {
-                $self addFileType {{Tcl man files} {.man}}
+            foreach ftype $::shtmlview::filetypes {
+                $self addFileType $ftype
             }
+                
         }
         typemethod   GetInstance {widget} {
             ## @publicsection Returns the parent object given the specificed
@@ -1114,8 +1113,8 @@ namespace eval ::shtmlview {
                 # show html
                 set ext [string tolower [string range [file extension [regsub {#.*} $Url ""]] 1 end]]
                 if {[info commands ${ext}2html] ne ""} {
-                    set html [${ext}2html $Url]
-                    set html [cleanHTML $html]
+                    set html [${ext}2html $Url false]
+                    #set html [cleanHTML $html]
                     $helptext delete 1.0 end
                     $helptext insert 1.0 $html
                     set view html
@@ -3396,21 +3395,12 @@ namespace eval ::svgconvert {
     }
     namespace export svg2pdf svg2png svg2svg svgimg svg2base64
 }
-proc ::shtmlview::man2html {url} {
-    #package require dtplite
-    set tempfile [file tempfile].html
-    # why not dtplite -o .... (command does not exists)
-    ::dtplite::do [list -o $tempfile html $url]
-    if {[catch {open $tempfile r} infh]} {
-        error "Cannot open $url: $infh"
-    } else {
-        set html [read $infh]
-        close $infh
-        file delete $tempfile
-        return $html
-    }
-}
+
 if {[info exists argv0] && [info script] eq $argv0} {
+    set dir [info script]
+    if {[file exists shtmlview-man.tcl]} {
+        source shtmlview-man.tcl
+    }
     option add *Font			TkDefaultFont
     option add *selectBackground	#678db2
     option add *selectForeground	white

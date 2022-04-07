@@ -323,6 +323,67 @@ The following keys are bound to the widget for navigation and other actions:
 
 More examples can be found in the sources of the package.
 
+[section EXTENSIONS]
+
+[para] 
+
+The widget can easily extended for the display of other file formats which can be converted either by other Tcl packages or by external applications like [cmd pandoc] into HTML. 
+
+The developer has first to append the filetype to the shtmlview variable
+filetypes and then a function [cmd ::shtmlview::EXT2html] has to be created
+which returns the generated HTML code. Here an example of the already included
+extension to view Tcl man pages inside the [cmd shtmlview] widget:
+
+[example {
+# if you like to have a package
+package require shtmlview::shtmlview
+package provide shtmlview::man2html 0.1
+# check for required tools or applications if you use exec
+catch {
+    package require dtplite
+}
+if {[info commands ::dtplite::do] eq ""} {
+    return
+}
+
+# package exists, extend list of file types
+lappend ::shtmlview::filetypes {{Tcl man files} {.man}}
+
+# define function for files with extension .man
+proc ::shtmlview::man2html {url {clean true}} {
+    set tempfile [file tempfile].html
+    ::dtplite::do [list -o $tempfile html $url]
+    if {[catch {open $tempfile r} infh]} {
+        error "Cannot open $url: $infh"
+    } else {
+        # perform some cleanups for better display in view mode
+        if {$clean} {
+            set html [shtmlview::cleanHTML [read $infh]]
+        } else {
+            # for source view real HTML should be shown
+            set html [read $infh]
+        }
+        close $infh
+        file delete $tempfile
+        return $html
+    }
+}
+
+}]
+
+[para]
+
+Here the extension is defined as a package, but this is optional, you can as
+well simply paste the required extension code into your application.
+
+[para]
+
+Instead of using Tcl packages you could as well use external applications like
+[cmd pandoc] and use the [cmd exec] command to do your conversion to HTML
+code. In this case you should use [cmd auto_execok] to check at the beginning for the command. With pandoc you can convert several dozens of filetypes to HTML.
+
+
+
 [section CHANGELOG]
 
 
@@ -376,6 +437,7 @@ More examples can be found in the sources of the package.
 [item] Adding span tag for styling
 [item] Adding render method to read HTML directly without filename
 [item] Adding plugin structure for own file types like Tcl dtp man pages
+[item] Placing Tcl man file extension in its own package
 [list_end]
 
 
