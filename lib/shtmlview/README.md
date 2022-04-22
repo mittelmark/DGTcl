@@ -12,7 +12,8 @@ only relative filenames for images and links should be used. The widget supports
 base64 encoded images embedded directly into HTML pages.
 
 * [Manual](http://htmlpreview.github.io/?https://github.com/mittelmark/shtmlview/blob/master/shtmlview/shtmlview.html)
-* [Download](https://downgit.github.io/#/home?url=https://github.com/mittelmark/shtmlview/tree/main/shtmlview)
+* [Download Git Latest 1.1.0](https://downgit.github.io/#/home?url=https://github.com/mittelmark/shtmlview/tree/main/shtmlview)
+* [Download Git Stable 1.0.0](https://github.com/mittelmark/shtmlview/archive/refs/tags/v1.0.0.zip)
 
 ### Standalone Application
 
@@ -44,5 +45,5 @@ documentation explaining more options.
 * [x] svg file and inline data support using svgconvert [https://github.com/mittelmark/svgconvert/](https://github.com/mittelmark/svgconvert/) !
 * [x] more investigations into the existing css functionality, keept it or throw it a away  (thrown away, we should keep it minimal)
 * [x] removal of forms part (thrown away - no chance to implement a web browser)
-* [ ] edit/view button to switch between view and edit mode to directly edit and save for instance a Markdown document should be a widget adaptor to not blow up the code
-* [ ] help megawidget with TOC and index search such as dgHelpBrowser
+* [x] edit/view mode using Ctrl-Shift-e to switch between view and edit mode to directly edit and save for instance a Markdown document
+* [ ] help megawidget with TOC and index search such as dgHelpBrowser (new megawidget)
