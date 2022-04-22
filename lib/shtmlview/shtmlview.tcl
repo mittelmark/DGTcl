@@ -1,3 +1,4 @@
+# -*- mode: tcl ; fill-column: 80 -*-
 #* shtmlview HTML-Viewer
 #* Cleaned up version of Robert Heller's HTMLHelp tool
 #* Detlef Groth's one just can load and display htmlpages
@@ -100,20 +101,17 @@
 if {[info exists argv0] && [lindex $argv 0] eq [info script]} {
     lappend auto_path [file join [file dirname [info script]] .. libs]
 }
+
+package require Tcl 8.5
 package require Tk
 package require snit
+
 package provide shtmlview::shtmlview 1.1.0
-catch {
-    # optional
-    package require img::jpeg
-}
-catch {
-    # optional
-    package require tile
-}
-catch {
-    package require Markdown
-}
+
+# Optional packages supporting various features (jpeg images, tile/themes)
+# Markdown support - See bottom
+catch { package require img::jpeg }
+catch { package require tile      }
 
 if {[info command luniq] eq ""} {
     proc luniq list {
@@ -125,15 +123,77 @@ if {[info command luniq] eq ""} {
     }
 }
 
+namespace eval ::shtmlview {}
+
+# API: Register a format converter
+proc ::shtmlview::converter {extension description command} {
+    variable filetypes
+    variable converter
+
+    lappend filetypes [list $description $extension]
+    set converter($extension) $command
+    return
+}
+
+# Internal: Check presence of a converter for the extension
+proc ::shtmlview::HasConverter {ext} {
+    variable converter
+    return [info exists converter($ext)]
+}
+
+# Internal: Invoke converter for file
+proc ::shtmlview::Convert {url {clean true}} {
+    variable converter
+    set ext [string tolower [file extension [TrimAnchor $url]]]
+
+    if {![info exists converter($ext)]} {
+	return -code error "Unable to convert $ext"
+    }
+
+    set cmd $converter($ext)
+    lappend cmd $url
+
+    set html [uplevel #0 $cmd]
+
+    if {$clean} {
+	set html [shtmlview::cleanHTML $html]
+    }
+
+    return $html
+}
+
+# Internal: Sensibly name a common internal operation.
+proc ::shtmlview::TrimAnchor {url} {
+    return [regsub "#.*" $url {}]
+}
+
+proc ::shtmlview::md2html {url} {
+    if {[info commands ::Markdown::convert] eq ""} {
+        catch { package require Markdown }
+        if {[info commands ::Markdown::convert] eq ""} {
+            error "package Markdown can't be loaded!"
+        }
+    }
+    if [catch {open $url r} infh] {
+        error "Cannot open $url: $infh"
+    } else {
+        set md ""
+        while {[gets $infh line] >= 0} {
+            set line [regsub {!\[\]\((.+?)\)} $line "!\[ \](\\1)"]
+            append md "$line\n"
+        }
+        close $infh
+    }
+    return [Markdown::convert $md]
+}
+
 namespace eval ::shtmlview {
     variable filetypes [list]
     # Robert Heller: It uses code originally written by Stephen Uhler and
-    # modified by Clif Flynt  (htmllib 0.3 through 0.3.4).
-    # I have modified it further and embedded
-    # into a snit widget adapter object to create a full featured help
-    # dialog object.  I also added limited support for cascading style
-    # sheets.
-    #
+    # modified by Clif Flynt (htmllib 0.3 through 0.3.4). I have modified it
+    # further and embedded into a snit widget adapter object to create a full
+    # featured help dialog object.  I also added limited support for cascading
+    # style sheets.
     #
     # @author Stephen Uhler \<stephen.uhler\@sun.com\>,
     #	  Clif Flynt \<clif\@cflynt.com\>,
@@ -724,7 +784,7 @@ namespace eval ::shtmlview {
             foreach ftype $::shtmlview::filetypes {
                 $self addFileType $ftype
             }
-                
+
         }
         typemethod   GetInstance {widget} {
             ## @publicsection Returns the parent object given the specificed
@@ -749,7 +809,9 @@ namespace eval ::shtmlview {
             return [list $topicstack {*}$stack]
         }
         method getFiles {} {
-            set files [lmap file [list $topicstack {*}$stack] { regsub {#.*} $file "" }]
+            set files [lmap file [list $topicstack {*}$stack] {
+		shtmlview::TrimAnchor $file
+	    }]
             set files [luniq $files]
             return $files
         }
@@ -837,7 +899,7 @@ namespace eval ::shtmlview {
             $combo set "history ..."
         }
         method render {text {ext ""}} {
-            if {$ext eq ""} { 
+            if {$ext eq ""} {
                 # guessing
                 set ext html
                 if {![regexp {^\s*<} $text]} {
@@ -967,14 +1029,18 @@ namespace eval ::shtmlview {
         }
         method reload {} {
             set url [lindex $topicstack $curtopicindex]
-            if {"$url" eq {}} {return}
+            if {$url eq {}} return
             set yview [$helptext yview]
-            render $selfns $helptext [regsub {#.*} $url ""] no
+            render $selfns $helptext [TrimAnchor $url] no
             $helptext yview moveto [lindex $yview 0]
         }
         method editOpen {} {
             if {[$edittext edit modified]} {
-                set answer [tk_messageBox -title "File changed ..." -message "The file has changed,\nwould you like to save it?" -type yesnocancel -icon question]
+                set answer [tk_messageBox \
+				-title "File changed ..." \
+				-message "The file has changed,\nwould you like to save it?" \
+				-type yesnocancel \
+				-icon question]
                 if {$answer eq "cancel"} {
                     return
                 }
@@ -993,7 +1059,7 @@ namespace eval ::shtmlview {
                     $edittext insert 1.0 [read $infh]
                     close $infh
                     set Url [file normalize $filename]
-                    set editstatus "Use Ctrl-s to save [regsub {#.*} $Url {}]"
+                    set editstatus "Use Ctrl-s to save $Url"
                 }
             }
         }
@@ -1017,7 +1083,7 @@ namespace eval ::shtmlview {
             }
         }
         method UpdateTypes {} {
-            set ext [string tolower [file extension [regsub {#.*} $Url ""]]]
+            set ext [string tolower [file extension [TrimAnchor $Url]]]
             set idx [lsearch -index 1 $types *$ext*]
             if {$idx > 0} {
                 set el [lindex $types $idx]
@@ -1046,22 +1112,22 @@ namespace eval ::shtmlview {
                 }
 
             }
-            set file [regsub {#.*} $Url ""]
+            set file [TrimAnchor $Url]
             set out [open $file w 0600]
             puts -nonewline $out [$edittext get 1.0 end]
             close $out
-            set editstatus "File [file tail [regsub {#.*} $Url {}]] saved! Use Ctrl-Shift-e to switch back to browser!"
+            set editstatus "File [file tail [shtmlview::TrimAnchor $Url]] saved! Use Ctrl-Shift-e to switch back to browser!"
             $edittext edit modified false
             $win.ef.toolbar.save configure -state disabled
         }
         method editView {} {
             if {$view eq "browse"} {
                 pack forget $win.mf
-                set key [regsub {#.*} $Url ""]
+                set key [shtmlview::TrimAnchor $Url]
                 set lastyview($key) [$helptext yview]
                 pack $win.ef -side top -fill both -expand true
                 $edittext delete 1.0 end
-                if [catch {open [regsub {#.*} $Url ""] r} infh] {
+                if [catch {open [shtmlview::TrimAnchor $Url] r} infh] {
                     puts stderr "Cannot open $filename: $infh"
                 } else {
                     $edittext insert 1.0 [read $infh]
@@ -1070,13 +1136,13 @@ namespace eval ::shtmlview {
                 }
                 set view edit
                 pack forget $win.toolbar
-                set editstatus "Use Ctrl-s to save [regsub {#.*} $Url {}]"
+                set editstatus "Use Ctrl-s to save [shtmlview::TrimAnchor $Url]"
 
                 if {[info exists lasteview($key)]} {
                     $edittext yview moveto [lindex $lasteview($key) 0]
                 }
             } else {
-                set key [regsub {#.*} $Url ""]
+                set key [shtmlview::TrimAnchor $Url]
                 set lasteview($key) [$edittext yview]
                 pack forget $win.ef
                 pack $win.mf -side top -fill both -expand true
@@ -1094,8 +1160,8 @@ namespace eval ::shtmlview {
                     set view html
                 } else {
                     set view md
-                } 
-                set key [regsub {#.*} $Url ""]
+                }
+                set key [shtmlview::TrimAnchor $Url]
                 set lastyview($key) [$helptext yview]
                 $helptext delete 1.0 end
                 if [catch {open $Url r} infh] {
@@ -1105,22 +1171,16 @@ namespace eval ::shtmlview {
                     close $infh
                 }
             } elseif {$view eq "html"} {
-                render $selfns $helptext [regsub {#.*} $Url ""] no
-                set key [regsub {#.*} $Url ""]
+                render $selfns $helptext [shtmlview::TrimAnchor $Url] no
+                set key [shtmlview::TrimAnchor $Url]
                 $helptext yview moveto [lindex $lastyview($key) 0]
                 set view browse
             } elseif {$view eq "md"} {
                 # show html
-                set ext [string tolower [string range [file extension [regsub {#.*} $Url ""]] 1 end]]
-                if {[info commands ${ext}2html] ne ""} {
-                    set html [${ext}2html $Url false]
-                    #set html [cleanHTML $html]
-                    $helptext delete 1.0 end
-                    $helptext insert 1.0 $html
-                    set view html
-                 } else {
-                     error "No method ::shtmlview::${ext}2html for converting!"
-                 }
+		set html [shtmlview::Convert $Url false]
+		$helptext delete 1.0 end
+		$helptext insert 1.0 $html
+		set view html
             }
         }
         method home {} {
@@ -1314,25 +1374,6 @@ namespace eval ::shtmlview {
             $self hilightSearch $w $pos
             focus $w
         }
-        proc md2html {url} {
-            if {[info commands ::Markdown::convert] eq ""} {
-                catch { package require Markdown }
-                if {[info commands ::Markdown::convert] eq ""} {
-                    error "package Markdown can't be loaded!"
-                }
-            }
-            if [catch {open $url r} infh] {
-                error "Cannot open $url: $infh"
-            } else {
-                set md ""
-                while {[gets $infh line] >= 0} {
-                    set line [regsub {!\[\]\((.+?)\)} $line "!\[ \](\\1)"]
-                    append md "$line\n"
-                }
-                close $infh
-            }
-            return [Markdown::convert $md]
-        }
         proc cleanHTML {mhtml} {
             foreach line [split $mhtml "\n"] {
                 set line [regsub {<li><p>(.+)</p>} $line "<li>\\1"]
@@ -1349,18 +1390,18 @@ namespace eval ::shtmlview {
             ##
             set url [file normalize $url]
             if {$options(-home) eq ""} {
-                set options(-home) [regsub {#.*} $url ""]
+                set options(-home) [shtmlview::TrimAnchor $url]
             }
             set ourl $url
-            if {![file exists [regsub {#.*} $url ""]]} {
+            if {![file exists [shtmlview::TrimAnchor $url]]} {
                 set ocol [$win cget -background]
                 $win configure -background orange
                 update idletasks
                 after 500
                 $win configure -background $ocol
-                $status configure -text "Error: [file tail [regsub {#.*} $url {}]] does not exists!"
+                $status configure -text "Error: [file tail [shtmlview::TrimAnchor $url]] does not exist!"
                 if {[llength $topicstack] == 0} {
-                    $win insert end "\nError: File [regsub {#.*} $url {}] does not exist!\n"
+                    $win insert end "\nError: File [shtmlview::TrimAnchor $url] does not exist!\n"
                     $win tag add hilite 1.0 end
                 }
                 return
@@ -1369,7 +1410,7 @@ namespace eval ::shtmlview {
             set fragment ""
             if {$push && $win eq $helptext} {pushcurrenttopic $selfns $url}
             regexp {([^#]*)#(.+)} $url dummy url fragment
-            if {$url eq [regsub {#.+} $lasturl ""] && $fragment ne ""} {
+            if {$url eq [shtmlview::TrimAnchor $lasturl] && ($fragment ne "")} {
                 set url $lasturl
                 HMgoto $selfns $win $fragment
                 set lasturl $url#$fragment
@@ -1391,13 +1432,13 @@ namespace eval ::shtmlview {
             }
             HMset_state $win -stop 0
             set err no
-            set ext [string tolower [string range [file extension [regsub {#.*} $url ""]] 1 end]]
-            if {$ext in [list html htm]} {
+	    set ext [string tolower [file extension [TrimAnchor $url]]]
+	    if {$ext in {.html .htm}} {
                 set html [get_html $url]
-            } elseif {[info commands ${ext}2html] ne ""} {
-                set html [${ext}2html [regsub {#.*} $url ""]]
+            } elseif {[shtmlview::HasConverter $ext]} {
+		set html [shtmlview::Convert $url]
             } else {
-                set filename [regsub {#.*} $url ""]
+                set filename [shtmlview::TrimAnchor $url]
                 if [catch {open $filename r} infh] {
                     puts stderr "Cannot open $filename: $infh"
                 } else {
@@ -3199,9 +3240,6 @@ namespace eval ::shtmlview {
 	}
 
     }
-
-
-
   }
 }
 
@@ -3395,12 +3433,32 @@ namespace eval ::svgconvert {
     }
     namespace export svg2pdf svg2png svg2svg svgimg svg2base64
 }
+catch {
+    package require Markdown
+    ::shtmlview::converter .md {} ::shtmlview::md2html
+}
 
 if {[info exists argv0] && [info script] eq $argv0} {
-    set dir [info script]
-    if {[file exists shtmlview-man.tcl]} {
-        source shtmlview-man.tcl
+
+    # Support various non-HTML formats, if possible
+    set sdir [file dirname [info script]]
+    catch { 
+        if {[file exists [file join $sdir shtmlview-doctools.tcl]]} {
+            
+            source [file join $sdir shtmlview-doctools.tcl]
+        } else {
+            package require shtmlview::doctools 
+        }
     }
+    catch { 
+        if {[file exists [file join $sdir shtmlview-mkdoc.tcl]]} {
+            source [file join $sdir shtmlview-mkdoc.tcl]
+        } else {
+            package require shtmlview::mkdoc  
+        }
+        
+    }
+
     option add *Font			TkDefaultFont
     option add *selectBackground	#678db2
     option add *selectForeground	white
@@ -3483,33 +3541,21 @@ if {[info exists argv0] && [info script] eq $argv0} {
             $help browse [$help cget -home]
             pack $help -fill both -expand true -side top
         } elseif {[file exists [lindex $argv 0]]} {
+	    set file [lindex $argv 0]
+
             set help [::shtmlview::shtmlview .help -historycombo true \
                       -tablesupport true -home [file join [file dirname [info script]] shtmlview.html]]
             pack $help -side top -fill both -expand true
-            if {[file extension [lindex $argv 0]] eq ".tcl" || [file extension [lindex $argv 0]] eq ".tm" } {
-                # guess we have mkdoc format
-                if { [ catch {  package require mkdoc::mkdoc } ] } {
-                    # error handling
-		    puts stderr "Error:"
-		    puts stderr "Extracting and rendering mkdoc documentation embedded"
-		    puts stderr "in Tcl source code files requires package mkdoc::mkdoc!"
-                } else {
-                    set tmpfile [file tempfile]
-                    mkdoc::mkdoc [lindex $argv 0] ${tmpfile}.html -html
-                    $help browse ${tmpfile}.html
-                    wm protocol . WM_DELETE_WINDOW atExit
-                }
 
-            } else {
-                # standard html or Markdown
-                $help configure -home [lindex $argv 0]
-                $help browse {*}[lrange $argv 0 end]
-                [$help getTextWidget] tag configure divblue -foreground blue
-                update idletasks
-            }
+	    # Standard formats (HTML + whatever plugins got found)
+	    $help configure -home $file
+	    $help browse {*}$argv
+	    [$help getTextWidget] tag configure divblue -foreground blue
+	    update idletasks
+
         } else {
-            puts stderr "Error: file [lindex $argv 0] does not exist"
-	    puts stderr " or unknown option [lindex $argv 0]"
+	    set file [lindex $argv 0]
+            puts stderr "Error: file $file does not exist, or unknown option $file"
             usage
         }
     } else {
@@ -3517,5 +3563,9 @@ if {[info exists argv0] && [info script] eq $argv0} {
     }
 }
 
+# #############################################################
+## If support is available, allow for markdown -- Move to plugin package
 
 
+# #############################################################
+return
