@@ -2,9 +2,9 @@
 # pandoc-tcl-filter - standalone application and pandoc filter
 #                     for literate programming
 # Author: Detlef Groth, Schwielowsee, Germany
-# Version: 0.7.1 - 2023-01-22
+# Version: 0.8.1 - 2023-01-22
 
-package provide pandoc 0.7.1
+package provide pandoc 0.8.1
 
 if {[llength $argv] > 0 && ([lsearch -exact $argv -v] >= 0 || [lsearch -exact $argv --version] >= 0)} {
     puts "[package present pandoc]"
