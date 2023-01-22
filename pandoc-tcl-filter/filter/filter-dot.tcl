@@ -38,12 +38,13 @@
 #' The following options can be given via code chunks or in the YAML header.
 #' 
 #' > - app - the application to be called, such as dot, neato, twopi etc default: dot
+#'   - echo - should the source code of the code block be shown, default: true
 #'   - ext - file file extension, can be svg, png, pdf, default: svg
+#'   - eval - should the code in the code block be evaluated, default: true
+#'   - fig - should a figure be created, default: true
 #'   - imagepath - output imagepath, default: images
 #'   - include - should the created image be automatically included, default: true
 #'   - results - should the output of the command line application been shown, should be show or hide, default: hide
-#'   - eval - should the code in the code block be evaluated, default: true
-#'   - fig - should a figure be created, default: true
 #' 
 #' The last three options should be normally not used, they are here just for 
 #' compatibility reasons with the other filters.

@@ -2,9 +2,9 @@
 # pandoc-tcl-filter - standalone application and pandoc filter
 #                     for literate programming
 # Author: Detlef Groth, Schwielowsee, Germany
-# Version: 0.7.0 - 2022-02-XX
+# Version: 0.7.1 - 2023-01-22
 
-package provide pandoc 0.7.0
+package provide pandoc 0.7.1
 
 if {[llength $argv] > 0 && ([lsearch -exact $argv -v] >= 0 || [lsearch -exact $argv --version] >= 0)} {
     puts "[package present pandoc]"
@@ -231,6 +231,11 @@ proc debug {jsonData} {
 }
 
 proc lineFilter {argv} {
+    if {[info exists ::env(FILTEREVAL)]} {
+        set evalvar  $::env(FILTEREVAL)
+    } else {
+        set evalvar true
+    }
     set args [split $argv " "]
     set infile [lindex $args 0]
     set outfile [lindex $args 1]
@@ -259,7 +264,7 @@ proc lineFilter {argv} {
         set yamltext ""
         set filt "xxx"
         set ind ""
-        set ddef [dict create echo true results show eval true] 
+        set ddef [dict create echo true results show eval $evalvar] 
         set yamldict [dict create]
         set pre false
         while {[gets $infh line] >= 0} {
@@ -343,7 +348,7 @@ proc lineFilter {argv} {
                         if {[info procs filter-$filt] eq "filter-$filt"} {
                             set code [regsub {.*`\.?[a-z]{2,4} ([^`]+)`.+} $line "\\1"]
                             puts "processing inline code $code"
-                            set res [lindex [filter-$filt $code [dict create eval true results show echo false]] 0]
+                            set res [lindex [filter-$filt $code [dict create eval $evalvar results show echo false]] 0]
                             set line [regsub {(.*)`\.?[a-z]{2,4} ([^`]+)`(.+)} $line "\\1$res\\3"]
                         }
                     }
@@ -509,8 +514,8 @@ package require rl_json
 #' pandoc-tcl-filter.tapp --gui
 #' ```
 #' 
-#' Where options for the filter and the standalone mode
-#' are the usual pandoc options. For HTML conversion you should use for instance:
+#' Where options for the filter and the standalone mode are the usual pandoc options.
+#' For HTML conversion you should use for instance:
 #' 
 #' ```
 #' pandoc-tcl-filter.tapp infile.md outfile.html --css style.css -s --toc
@@ -859,7 +864,7 @@ package require rl_json
 #' 
 #' *MIT License*
 #' 
-#' Copyright (c) 2021-2022 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
+#' Copyright (c) 2021-2023 Dr. Detlef Groth, Caputh-Schwielowsee, Germany
 #' 
 #' Permission is hereby granted, free of charge, to any person obtaining a copy
 #' of this software and associated documentation files (the "Software"), to deal
@@ -898,6 +903,7 @@ proc getMetaDict {meta fkey} {
             dict set d $key [rl_json::json get $meta $fkey c $key c 0 c]
         }
     }
+    #puts stderr $d
     return $d    
 }
 
@@ -953,7 +959,7 @@ proc codeBlock {} {
     uplevel 1 {
         set type [rl_json::json get $jsonData blocks {*}$tkey] ;#type
         set attr [rl_json::json get $jsonData blocks {*}$akey] ;# attributes
-        set a [dict create echo true results show eval true] 
+        set a [dict create echo true results show eval $evalvar] 
         set d [getMetaDict $meta $type]
         set a [dict merge $a $d]
         if {[llength $attr] > 0} {
@@ -1021,6 +1027,12 @@ proc codeBlock {} {
 }
 # the main method parsing the json data
 proc main {jsonData} {
+    if {[info exists ::env(FILTEREVAL)]} {
+        set evalvar $::env(FILTEREVAL)
+    } else {
+        set evalvar true
+    }
+    #puts stderr "Ecal should be $evalvar"
     set blocks ""
     set jsonImg {
        {
@@ -1123,9 +1135,9 @@ proc main {jsonData} {
     append ret ",\"pandoc-api-version\":[::rl_json::json extract $jsonData pandoc-api-version]"
     
     append ret ",\"meta\":[::rl_json::json extract $jsonData meta]"
-    set out [open out.json w 0600]
-    puts $out "{$ret}"
-    close $out
+    #set out [open out.json w 0600]
+    #puts $out "{$ret}"
+    #close $out
     return "{$ret}"
 }
 

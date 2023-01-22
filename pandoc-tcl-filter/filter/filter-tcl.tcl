@@ -6,7 +6,7 @@
 #'
 #' ------
 #' 
-#' ```{.tcl results="asis" echo=false}
+#' ```{.tcl results="asis" echo=false eval=true}
 #' include header.md
 #' ```
 #' 
@@ -45,6 +45,23 @@
 #' - _eval_ - should the code be evaluated, default: true
 #' - _results_ - should the code output be shown, either "show", "hide" or "asis", default: "show"
 #' - _echo_ - should the code itself been shown, default: true
+#' 
+#' You can set these options in the YAML header of the document like this to make other defaults:
+#' 
+#' ```
+#'     ---
+#'     title: "your title"
+#'     author: "your name"
+#'     tcl:
+#'        eval: 0
+#'        results: "hide"
+#'        echo: 1
+#'     ---
+#' ```
+#' 
+#' The eval option can be as well set to false or true using the environment variable `FILTEREVAL`. If you set this value to 0 the code chunks will  be not evaluated.
+#'
+#' Please note that in the document header *true* or *false* is not possible only using 1 and 0 as values.
 #' 
 #' Here an example where we hide the code itself and only show the output using the chunk argument `echo=false`:
 #' 
@@ -259,7 +276,7 @@ proc luniq {L} {
 
 set appdir [file dirname [info script]]
 if {[file exists  [file join $appdir .. lib]]} {
-    puts here
+    #puts here
     lappend auto_path [file normalize [file join $appdir lib]]
 }
 

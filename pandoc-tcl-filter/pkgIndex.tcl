@@ -1,1 +1,1 @@
-package ifneeded pandoc 0.6.0 [list source [file join $dir pandoc-tcl-filter.tcl]]
+package ifneeded pandoc 0.7.1 [list source [file join $dir pandoc-tcl-filter.tcl]]
