@@ -268,6 +268,7 @@ proc lineFilter {argv} {
         set yamldict [dict create]
         set pre false
         while {[gets $infh line] >= 0} {
+            set line [regsub {```tcl} $line {```.tcl}]
             incr n
             # TODO: simple YAML parsing
             if {$n < 5 && !$yamlflag && [regexp {^---} $line]} {
@@ -309,7 +310,6 @@ proc lineFilter {argv} {
                 
             } elseif {$flag && [regexp {^>? ?\s{0,2}```} $line]} {
                 set flag false
-                #puts $cont
                 if {[info procs filter-$filt] ne ""} {
                     puts "processing chunk filter[incr i] $filt $options"
 
@@ -903,7 +903,6 @@ proc getMetaDict {meta fkey} {
             dict set d $key [rl_json::json get $meta $fkey c $key c 0 c]
         }
     }
-    #puts stderr $d
     return $d    
 }
 
@@ -962,6 +961,7 @@ proc codeBlock {} {
         set a [dict create echo true results show eval $evalvar] 
         set d [getMetaDict $meta $type]
         set a [dict merge $a $d]
+        #puts stderr $a
         if {[llength $attr] > 0} {
             foreach el $attr {
                 dict set a [lindex $el 0] [lindex $el 1]
