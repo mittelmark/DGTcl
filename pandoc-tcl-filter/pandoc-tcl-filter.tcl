@@ -4,7 +4,7 @@
 # Author: Detlef Groth, Schwielowsee, Germany
 # Version: 0.8.1 - 2023-01-22
 
-package provide pandoc 0.8.1
+package provide pandoc 0.8.2
 
 if {[llength $argv] > 0 && ([lsearch -exact $argv -v] >= 0 || [lsearch -exact $argv --version] >= 0)} {
     puts "[package present pandoc]"
@@ -937,14 +937,16 @@ proc walk {key {ind 1}} {
         if {$l > 2} {
             lappend tkey t
             lappend ckey c
-            set t [::rl_json::json get $jsonData blocks {*}$tkey]
-            if {$t eq "Code"} {
-                lappend ckey 1
-                #lappend ckey
-                set code [::rl_json::json get $jsonData blocks {*}$ckey]
-                #puts "$sind  code: $code" 
-                if {[regexp {^[a-zA-Z0-9]{1,3} .+} $code]} {
-                    lappend inlineCodes [list $ckey $code]
+            if {[::rl_json::json exists $jsonData blocks {*}$tkey]} {
+                set t [::rl_json::json get $jsonData blocks {*}$tkey]
+                if {$t eq "Code"} {
+                    lappend ckey 1
+                    #lappend ckey
+                    set code [::rl_json::json get $jsonData blocks {*}$ckey]
+                    #puts "$sind  code: $code" 
+                    if {[regexp {^[a-zA-Z0-9]{1,3} .+} $code]} {
+                        lappend inlineCodes [list $ckey $code]
+                    }
                 }
             } else {
                 walk $ckey $ind 
