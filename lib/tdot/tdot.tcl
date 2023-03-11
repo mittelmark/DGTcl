@@ -603,13 +603,13 @@ tdot proc write {{device ""}} {
         set res [exec $dot -Ttk $tfile]
         $c delete all
         eval $res
-        return ""
     } else {
         set extension [string range [file extension $device] 1 end]
         exec $dot -T$extension $tfile -o $device
-        return ""
     }
+
     catch { file delete $tfile }
+    return ""
 }
     
 # private function 
